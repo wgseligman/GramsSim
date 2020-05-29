@@ -9,9 +9,15 @@ If you want a formatted (or easier-to-read) version of this file, scroll to the 
 Visit <https://github.com/> and sign up for an account if you don't already have one.
 
 I strongly advise you to use SSH as the means to access a repository, 
-and to set up an SSH key: <https://help.github.com/articles/generating-an-ssh-key/>,
+and to [set up an SSH key](https://help.github.com/articles/generating-an-ssh-key/),
 otherwise you'll have to type in a password every time you issue a git
 request against the repository. 
+
+Once this is done, you can download a copy of the GramsG4 repository:
+
+    git clone git@github.com:wgseligman/GramsG4.git
+    cd GramsG4
+    git checkout develop
 
 ### Prerequisites
 
@@ -42,10 +48,158 @@ On RHEL-derived Linux distributions (e.g., Scientific Linux, CentOS) you can ins
  
 ### Prepare your local computer 
    
-If you are working remotely (e.g., on a laptop), you will also need to
+If you are working remotely (e.g., on a laptop), and you want to use
+the interactive display, you will also need to
 install and/or activate both X-Windows and OpenGL for your local
 computer. You can find instructions
 [here](https://www.hoffman2.idre.ucla.edu/access/x11_forwarding/).
+
+## Running GramsG4
+
+To make things easier, I'm going to define a variable for the repository
+directory in your area. You may want to include a suitably modified version
+of this command in one of your shell startup files:
+
+    # This is directory that contains GramsG4, not GramsG4 itself.
+    cd ..
+    export GGDIR=$PWD
+
+To build/compile:
+
+    # Set up ROOT and Geant4 as appropriate for your system
+    # For example, at Nevis type
+    module load cmake root geant4
+    
+    # Create a separate build/work directory. This directory should
+    # not be the GramsG4 directory or a sub-directory of it.
+    cd $GGDIR
+    mkdir GramsG4-work
+    cd GramsG4-work
+    
+    # Build
+    cmake $GGDIR/GramsG4
+    make
+
+To run the nng4sim simulation:
+
+    # After succesfully making the executable "gramsg4", you can run it
+    # in the nng4sim_build directory:
+    ./gramsg4
+
+If no one has changed the defaults (see **Program Options** below), the Geant4 simulation
+will execute the contents of the file `run.mac`. If you'd like to see an interactive
+display:
+
+    ./gramsg4 --ui
+     
+### Making changes
+
+When you want to start editing code for the first time:
+
+    cd $GGDIR/GramsG4
+    git flow init 
+
+You'll be asked a bunch of questions. The answer to the first one
+"Branch name for production releases:" is 'develop' (without the
+quotes). Accept the defaults for everything else.
+
+If you get a message that git flow is not recognized, it means that
+the gitflow package has to be installed on your machine.   
+
+You only have to type `git flow init` once, the first time you edit
+code in that directory. Don't type it again, unless you git clone a
+brand-new repository.
+
+When you want to start on a new task:
+
+    git flow feature start $USER_MyMagnificentFeatureName
+
+The '$USER_' means that your feature name should begin with your 
+account name. That way you know who is doing what. 
+
+To "bookmark" changes you've made to your copy of the `$GGDIR/GramsG4` directory:
+
+    git add my_file.cc # if you create a new file
+    git commit -m "Comment about your changes"
+
+To incorporate changes that other people have made and checked into
+the repository:
+
+    git fetch origin
+    git rebase origin/develop
+
+When you've finished working on your task (after testing it, putting
+in the comments, writing the documentation, discussing it at a group
+meeting, etc.):
+
+    git flow feature finish
+    git push origin/develop
+
+If you want other people to see your feature work without making
+changes to the develop branch:
+
+    git flow feature publish $USER_MyMagnificentFeatureName
+
+### Work files
+
+The `gramsg4` program requires several input files (e.g., `grams.gdml`, `options.xml`).
+These are copied from the GramsG4 directory to your work/build directory when you executed the `cmake` command. Go ahead and make
+any changes you want to these work files; they won't affect the original files in 
+`$GGDIR/GramsG4`. 
+
+If you feel that your changes to these work files should become part of the git
+repository, be sure to copy the changed work files to `$GGDIR/GramsG4` and
+"bookmark" them as described above. 
+
+### Development "flow"
+
+What may not be clear from the above is that you'll typically "sit" in your
+work/build directory. You'll run `gramsg4`, make changes, then run it again. 
+
+If you want to change the program code, edit the C++ files in `$GGDIR/GramsG4`;
+e.g.,
+
+    cd $GGDIR/GramsG4-work
+    emacs ../GramsG4/include/MyPhysicsList.hh
+    make
+    ./gramsg4 
+    
+If you want to change the work files, just edit them in your build directory:
+
+    emacs grams.gdml
+    
+You do *not* have to execute the `cmake` command if you edit the C++ files. 
+However, if you edit or change the work files in `$GGDIR/GramsG4`, you *will* have 
+to type
+
+    cd $GGDIR/GramsG4-work
+    cmake $GGDIR/GramsG4
+
+again to copy the revised work files.
+
+When you've made your changes and wish to "bookmark" them:
+
+    cd $GGDIR/GramsG4
+    git commit -m "Comment about your changes"
+
+*Because I am lazy, I usually do something like this:*
+
+    (cd ../GramsG4; git commit -m)
+    
+*and use the up-arrow key to re-invoke that command after each development milestone.*
+
+## Detector geometry
+
+A version of the detector geometry is defined in `grams.gdml`. As the extension implies,
+it is written in the geometry-definition language [GDML](http://lcgapp.cern.ch/project/simu/framework/GDML/doc/GDMLmanual.pdf).
+
+If you want to make changes to the detector geometry (including the colors used for
+the `--ui` interactive display), edit `grams.gdml`. If you're having trouble 
+understanding the contents of the file:
+
+   - Read the comments within the file.
+   - Refer to the [GDML](http://lcgapp.cern.ch/project/simu/framework/GDML/doc/GDMLmanual.pdf) manual.
+   - Refer to the [Geant4 Applications Guide](http://geant4-userdoc.web.cern.ch/geant4-userdoc/UsersGuides/ForApplicationDeveloper/html/), especially the [geometry section](http://geant4-userdoc.web.cern.ch/geant4-userdoc/UsersGuides/ForApplicationDeveloper/html/Detector/Geometry/geometry.html) which explains the difference between solids, logical volumes, and physical volumes. 
 
 ## Program options
 
