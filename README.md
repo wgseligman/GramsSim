@@ -61,7 +61,7 @@ To make things easier, I'm going to define a variable for the repository
 directory in your area. You may want to include a suitably modified version
 of this command in one of your shell startup files:
 
-    # This is directory that contains GramsG4, not GramsG4 itself.
+    # $GGDIR is the directory that contains GramsG4, not GramsG4 itself.
     cd ..
     export GGDIR=$PWD
 
@@ -81,10 +81,10 @@ To build/compile:
     cmake $GGDIR/GramsG4
     make
 
-To run the nng4sim simulation:
+To run the simulation:
 
     # After succesfully making the executable "gramsg4", you can run it
-    # in the nng4sim_build directory:
+    # in the build directory:
     ./gramsg4
 
 If no one has changed the defaults (see **Program Options** below), the Geant4 simulation
