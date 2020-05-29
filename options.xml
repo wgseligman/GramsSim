@@ -1,0 +1,91 @@
+<?xml version = "1.0" encoding = "UTF-8" ?>
+
+<!-- Please see README.md for documentation. -->
+
+<parameters>
+  
+  <global>
+  
+    <!-- The following line does nothing! It's there for documentation:
+    the default value of the 'options' option is "options.xml" -->
+    <option name="options" value="options.xml" type="string" desc="XML file of options">
+        If you want to, you can include text like this within an option
+        tag. You can use this for additional documentation. The program
+        does not read or interpret it. 
+    </option>
+
+    <option name="verbose" short="v" value="false" type="bool" desc="display details"/>
+    <option name="debug" short="d" value="false" type="bool" />
+    <option name="help" short="h" value="false" type="bool" desc="show help then exit" />
+
+  </global>
+
+  <gramsg4>
+
+    <!-- The file that contains the GDML description of the detector -->
+    <option name="gdmlfile" short="g" value="grams.gdml" type="string" 
+        desc="input GDML detector desc"/>    
+
+    <!-- If not blank, 2rite a parsed version of the GDML input file.
+    This can be used as input to ROOT, since ROOT doesn't accept the
+    GDML <loop> tags. -->
+    <option name="gdmlout" value="" type="string" 
+        desc="write parsed GDML to this file" />    
+
+    <!-- If you want to use gramsg4 in batch mode, this is the
+    file of Geant4 commands to be executed. If UI is on, this file is not
+    run automatically. -->
+    <option name="macrofile" short="m" value="run.mac" type="string" 
+        desc="G4 command batch file"/>
+
+    <!-- If this flag is turned on, gramsg4 will start in an
+    interactive graphical mode. It will then execute the contents
+    of the Geant4 command file specified by option 'uimacrofile' -->
+    <option name="ui" value="false" type="boolean" desc="start UI session"/>
+    <option name="uimacrofile" value="vis.mac" type="string" desc="G4 command file for UI"/>
+
+    <!-- The physics list to be used by the detector simulation. --> 
+    <option name="physicslist" short= "p" value="FTFP_BERT" type="string" 
+        desc="physics list">
+        "FTFP_BERT" - typical for HEP applications
+        "QGSP_BIC_HP" - typical medical applications
+        "QGSP_BIC_HP_EMY+G4OpticalPhysics" - Gave this a try. Needs review.
+        See README.md for references.
+    </option>
+
+    <!-- Display available physics lists. --> 
+    <option name="showphysicslists" short="l" value="false" type="boolean" 
+        desc="show physics lists then exit" />
+
+    <!-- If # threads > 0, enable multi-threaded execution. 
+    Note that this does not magically make your program thread-safe -->
+    <option name="nthreads" short = "t" value="0" type="integer" desc="number of threads"/>
+
+    <!-- Variables that have to do with Random Number Generation (RNG).
+    You can leave these alone until you want to create a particular
+    Monte Carlo event. -->
+
+    <option name="rngseed" short="s" value="-1" type="integer" desc="random number seed">
+        The random number seed for the simulation. Use -1 if you want the
+        program to start with a random value and you're not interested 
+        in recreating the run.
+    </option>
+    <option name="rngdir" value="" type="string" desc="rng save/restore directory">
+        The directory to save/restore the state of the random-number generation
+        engine. If this is blank (value=""), do not save/restore the RNG state.
+    </option>
+    <option name="rngperevent" value="0" type="integer" desc="rng save per event">
+        value="0" - Do not save per-event RNG state in 'rngdir'.
+        value="1" - Save RNG state before primary-particle generation.
+        value="2" - Save RNG state before event processing (after primary generation)
+        value="3" - Both are stored.
+    </option>
+    <option name="rngrestorefile" value="" type="string" desc="restore rng from file">
+        Restore the RNG at the start of the job from this file within 'rngdir'. 
+        Use the value of 'rngseed' if this is blank; otherwise get the state from
+        'rngdir/rngrestorefile'. 
+    </option>
+    
+  </gramsg4>
+
+</parameters>

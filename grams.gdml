@@ -1,0 +1,989 @@
+<?xml version="1.0" ?>
+<gdml xmlns:gdml="http://cern.ch/2001/Schemas/GDML" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="GDMLSchema/gdml.xsd">
+<!-- 
+
+07-Apr-2020 WGS: 
+
+Everything in this file is preliminary. Please assume it's wrong
+until you're satisfied that it's right. By the way, I composed the
+scintillators of milk chocolate; you'd better look up what 
+scintillator is actually made of. Similarly with PTFE, which I assume
+was a 50/50 mix of platinum and iron. 
+
+No, not really. But please look at everything in this file as if it were
+a potential joke. Do NOT treat it as a black box whose contents cannot
+be changed!
+
+Source for all the serious stuff: the GRAMS paper arXiv:1901.03430v3
+Source for the mistakes and stupid jokes: William Seligman (WGS) seligman@nevis.columbia.edu
+
+-->
+
+  <define>
+
+    <position name="posCenter" unit="cm" x="0" y="0" z="0"/>
+
+    <!-- 5-May-2020 WGS: Everything will eventually get placed into a large
+    world volume. Typically you want a volume that's big enough to contain 
+    everything you're modeling, plus some space to both inject incoming
+    particles and track outgong particles from the detector simulation. -->
+    
+    <quantity name="worldVolumeXSize" type="length" value="250" unit="cm" />
+    <quantity name="worldVolumeYSize" type="length" value="400" unit="cm" />
+    <quantity name="worldVolumeZSize" type="length" value="500" unit="cm" />
+    
+    <!-- 5-May-2020 WGS: All length units are cm. Many of the dimensions
+    used below are 'constant' or 'variable' so they can be used in calculations. -->
+
+    <!-- ************** LArTPC section ************** -->
+    
+    <constant name="lArTPCXSize" value="20" />
+    <constant name="lArTPCYSize" value="140" />
+    <constant name="lArTPCZSize" value="20" />
+
+    <!-- 5-May-2020 WGS: For all I know the cryostat will be made of insulating foam.
+    With no other information, I'm assuming a steel cryostat of 1cm thickness. -->
+    <constant name="cryostatThickness" value="1.0" />
+    <constant name="cryostatXSize" value="lArTPCXSize + 2*cryostatThickness" />
+    <constant name="cryostatYSize" value="lArTPCYSize + 2*cryostatThickness" />
+    <constant name="cryostatZSize" value="lArTPCZSize + 2*cryostatThickness" />
+
+    <!-- 5-May-2020 WGS: For the x-y wires, use the wire spacing from the paper (0.2mm) 
+    and radius from MicroBooNE.-->
+    <constant name="wireSpacing" value="0.02" />
+    <constant name="wireRadius" value="0.0075" />
+    <constant name="lengthXWire" value="lArTPCXSize" />
+    <constant name="lengthYWire" value="lArTPCYSize" />
+    <!-- 5-May-2020 WGS: Since I have to pick one plane (X or Y) to be the anode plane,
+    I'll pick X. The X-plane defines z=0 for the coordinate system (this is a LArSoft
+    convention). The distance between planes comes from MicroBoone: 3mm -->
+    <constant name="planeSeparation" value="0.3" />
+    
+    <!-- 6-May-2020 WGS: Define "wire planes" in which to place the wires. This extra
+    layer of geometry will make things easier in the long run; e.g., for placing the wires
+    within a mechanical frame. -->
+    <constant name="wirePlaneThickness" value="0.15" />
+    <constant name="wirePlaneXSize" value="lArTPCXSize" />
+    <constant name="wirePlaneYSize" value="lArTPCYSize" />
+    <constant name="wirePlaneZSize" value="wirePlaneThickness" />
+    
+    <!-- 6-May-2020 WGS: Create values and variables for loop statements
+    when we place the wires in the planes; see the <structure> section. -->
+    <constant name="numberXWires" value="( wirePlaneYSize / wireSpacing ) - 1" />
+    <constant name="numberYWires" value="( wirePlaneXSize / wireSpacing ) - 1" />
+    
+    <variable name="xWireLoopIndex" value="0" />
+    <variable name="yWireLoopIndex" value="0" />
+
+    <!-- 6-May-2020 WGS: By default, "tubes" are created along the z-axis. We'll
+    need a couple of rotation definitions to get the wires to go along the x and y axes.
+    -->
+    <!-- For y-wires -->
+    <rotation name="rPlus90AboutX" unit="deg" x="90" y="0"  z="0"/>
+    <!-- For x-wires -->
+    <rotation name="rPlus90AboutY" unit="deg" x="0"  y="90" z="0"/>
+ 
+    <!-- 6-May-2020 WGS: There has to be a cathode plate to provide the field along with
+    the anode plane (the x-wires in this draft geometry). -->
+    <constant name="cathodeThickness" value="0.1" />
+    <constant name="cathodeXSize" value="lArTPCXSize" />
+    <constant name="cathodeYSize" value="lArTPCYSize" />
+    <constant name="cathodeZSize" value="cathodeThickness" />
+   
+    <!-- 5-May-2020 WGS: How thick will the PTFE sheets be? I don't know, so 
+    assume 1mm. I assume the sheets will be mounted on the x-sides of the TPC. -->
+    <constant name="ptfeThickness" value="0.1" />
+    <constant name="ptfeXSize" value="lArTPCXSize" />
+    <constant name="ptfeYSize" value="ptfeThickness" />
+    <constant name="ptfeZSize" value="lArTPCZSize - 1.0" />
+    
+    <!-- 5-May-2020 WGS: How many active regions will there be? I don't know, 
+    so assume 5 PTFE sheets dividing the LAr into 6 regions (the number
+    in the diagrams in arXiv:1901.03430v3). -->
+    
+    <constant name="numberPtfeSheets" value="5" />
+    <constant name="numberActiveRegions" value="numberPtfeSheets + 1" />
+
+    <!-- 8-May-2020 WGS: How big will the active LAr region be? I don't know. 
+    To make the placement of the sensitive detector regions easier, I'm putting a
+    2 cm boundary in x and z, but over the complete y-length of the LArTPC. This
+    isn't realistic, but you have to start somewhere. -->
+
+    <constant name="activeRegionXSize" value="lArTPCXSize - 4.0" />
+    <constant name="activeRegionYSize" value="(lArTPCYSize - numberPtfeSheets*ptfeThickness) / numberActiveRegions" />
+    <constant name="activeRegionZSize" value="lArTPCZSize - 4.0" />
+    
+    <!-- 8-May-2020 WGS: We're going to place active LAr regions separated by the PTFE 
+    sheets in using a loop. -->
+    <variable name="activeRegionIndex" value="0" />
+    <variable name="ptfeIndex" value="0" />
+    
+    <!-- 5-May-2020 WGS: How big is a SIPM? I don't know. Make a guess. -->
+    <constant name="sipmThickness" value="0.1" />
+    <constant name="sipmXSize" value="1.0" />
+    <constant name="sipmYSize" value="1.0" />
+    <constant name="sipmZSize" value="sipmThickness" />
+
+    <!-- ************** Scintillator walls section **************
+
+    "Outer" and "inner" refer to the two main boxes of scintillator in the detector. 
+    Think of each box as a pair of x-walls, y-walls, and z-walls. Assume that 
+    opposite walls (e.g., in the plus and minus x-directions) are symmetric;
+    all we need to do is define the walls one side and mirror them on the other side 
+    of the box (see the <structure> section).
+    
+    However, the z-walls and the y-walls are _not_ the same, though they may look
+    like they have the same dimensions from a distance. Assuming that all the
+    scintillator strips will fit together, the lengths of the z-wall and y-wall strips
+    are slightly different. 
+    -->
+    
+    <constant name="outerVolumeXSize" value="200" />
+    <constant name="outerVolumeYSize" value="350" />
+    <constant name="outerVolumeZSize" value="200" />
+
+    <!-- 5-May-2020 WGS: The sole reason I've defined the scintillator 
+    width and thickness with these values is that they fit exactly in the crude
+    diagram I made of the detector. In the actual GRAMs detector they'll 
+    almost certainly be different. 
+    -->
+    <constant name="scintillatorThickness" value="1.0" />
+    <constant name="scintillatorWidth"     value="2.0" />
+    
+    <constant name="lengthOuterZwallXstrips" value="outerVolumeXSize" />
+    <constant name="lengthOuterZwallYstrips" value="outerVolumeYSize" />
+    <constant name="lengthOuterYwallXstrips" value="(outerVolumeXSize - 4*scintillatorThickness)" />
+    <constant name="lengthOuterYwallZstrips" value="(outerVolumeZSize - 4*scintillatorThickness)" />
+    <constant name="lengthOuterXwallZstrips" value="(outerVolumeZSize - 4*scintillatorThickness)" />
+    <constant name="lengthOuterXwallYstrips" value="outerVolumeYSize" />
+    
+    <constant name="numberOuterZwallXstrips" value="outerVolumeYSize / scintillatorWidth" />
+    <constant name="numberOuterZwallYstrips" value="outerVolumeXSize / scintillatorWidth" />
+    <constant name="numberOuterYwallXstrips" value="(outerVolumeZSize - 4*scintillatorThickness) / scintillatorWidth" />
+    <constant name="numberOuterYwallZstrips" value="(outerVolumeXSize - 4*scintillatorThickness) / scintillatorWidth" />
+    <constant name="numberOuterXwallZstrips" value="(outerVolumeYSize - 4*scintillatorThickness) / scintillatorWidth" />
+    <constant name="numberOuterXwallYstrips" value="(outerVolumeZSize - 4*scintillatorThickness) / scintillatorWidth" />
+
+    <!-- 7-May-2020 WGS: Define "walls" in which to place the scintillator strips. This extra
+    layer of geometry will make things easier in the long run; e.g., for placing the strips
+    within a mechanical frame. -->
+
+    <constant name="outerZwallXSize" value="outerVolumeXSize" />
+    <constant name="outerZwallYSize" value="outerVolumeYSize" />
+    <constant name="outerZwallZSize" value="2*scintillatorThickness" />
+
+    <constant name="outerYwallXSize" value="outerVolumeXSize" />
+    <constant name="outerYwallYSize" value="2*scintillatorThickness" />
+    <constant name="outerYwallZSize" value="outerVolumeZSize - 4*scintillatorThickness" />
+
+    <constant name="outerXwallXSize" value="2*scintillatorThickness" />
+    <constant name="outerXwallYSize" value="outerVolumeYSize" />
+    <constant name="outerXwallZSize" value="outerVolumeZSize - 4*scintillatorThickness" />
+
+    <!-- 7-May-2020 WGS: Create variables for loop statements
+    when we place the scintillator strips in the walls; see the <structure> section. -->
+    
+    <variable name="indexOuterZwallXstrips" value="0" />
+    <variable name="indexOuterZwallYstrips" value="0" />
+    <variable name="indexOuterYwallXstrips" value="0" />
+    <variable name="indexOuterYwallZstrips" value="0" />
+    <variable name="indexOuterXwallZstrips" value="0" />
+    <variable name="indexOuterXwallYstrips" value="0" />
+
+
+    <constant name="innerVolumeXSize" value="30" />
+    <constant name="innerVolumeYSize" value="150" />
+    <constant name="innerVolumeZSize" value="30" />
+
+    <constant name="lengthInnerZwallXstrips" value="innerVolumeXSize" />
+    <constant name="lengthInnerZwallYstrips" value="innerVolumeYSize" />
+    <constant name="lengthInnerYwallXstrips" value="(innerVolumeXSize - 4*scintillatorThickness)" />
+    <constant name="lengthInnerYwallZstrips" value="(innerVolumeZSize - 4*scintillatorThickness)" />
+    <constant name="lengthInnerXwallZstrips" value="(innerVolumeZSize - 4*scintillatorThickness)" />
+    <constant name="lengthInnerXwallYstrips" value="innerVolumeYSize" />
+    
+    <constant name="numberInnerZwallXstrips" value="innerVolumeYSize / scintillatorWidth" />
+    <constant name="numberInnerZwallYstrips" value="innerVolumeXSize / scintillatorWidth" />
+    <constant name="numberInnerYwallXstrips" value="(innerVolumeZSize - 4*scintillatorThickness) / scintillatorWidth" />
+    <constant name="numberInnerYwallZstrips" value="(innerVolumeXSize - 4*scintillatorThickness) / scintillatorWidth" />
+    <constant name="numberInnerXwallZstrips" value="(innerVolumeYSize - 4*scintillatorThickness) / scintillatorWidth" />
+    <constant name="numberInnerXwallYstrips" value="(innerVolumeZSize - 4*scintillatorThickness) / scintillatorWidth" />
+ 
+    <!-- 7-May-2020 WGS: Define "walls" in which to place the scintillator strips. This extra
+    layer of geometry will make things easier in the long run; e.g., for placing the strips
+    within a mechanical frame. -->
+
+    <constant name="InnerZwallXSize" value="innerVolumeXSize" />
+    <constant name="InnerZwallYSize" value="innerVolumeYSize" />
+    <constant name="InnerZwallZSize" value="2*scintillatorThickness" />
+
+    <constant name="InnerYwallXSize" value="innerVolumeXSize" />
+    <constant name="InnerYwallYSize" value="2*scintillatorThickness" />
+    <constant name="InnerYwallZSize" value="innerVolumeZSize - 4*scintillatorThickness" />
+
+    <constant name="InnerXwallXSize" value="2*scintillatorThickness" />
+    <constant name="InnerXwallYSize" value="innerVolumeYSize" />
+    <constant name="InnerXwallZSize" value="innerVolumeZSize - 4*scintillatorThickness" />
+
+    <!-- 7-May-2020 WGS: Create variables for loop statements
+    when we place the scintillator strips in the walls; see the <structure> section. -->
+
+    <variable name="indexInnerZwallXstrips" value="0" />
+    <variable name="indexInnerZwallYstrips" value="0" />
+    <variable name="indexInnerYwallXstrips" value="0" />
+    <variable name="indexInnerYwallZstrips" value="0" />
+    <variable name="indexInnerXwallZstrips" value="0" />
+    <variable name="indexInnerXwallYstrips" value="0" />
+    
+    <!-- 8-May-2020 WGS: The above walls are defined for the positive axes (x,y,z)>0.
+    Assume the negative-axis walls are the mirror images of the positive ones,
+    and can be defined in terms of a simple rotations. -->
+    <rotation name="rPlus180AboutX" unit="deg" x="180" y="0"    z="0"  />
+    <rotation name="rPlus180AboutY" unit="deg" x="0"   y="180"  z="0"  />
+    <rotation name="rPlus180AboutZ" unit="deg" x="0"   y="0"    z="180"/>
+
+    <!-- 10-May-2020 WGS: This is the offset of the inner detector from the center of
+    of the outer detector. According to the diagram in arXiv:1901.03430v3, this is
+    1.5m. We have to adjust a bit to make this the offset of the center of the 
+    inner detector from the center of the outer detector. -->
+    <constant name="innerDetectorOffsetInOuter" value ="(outerVolumeZSize - innerVolumeZSize)/2 - 150" />
+
+    <!-- 10-May-2020 WGS: This is the offset of the outer detector from the center of
+    of the world volume. This is tricky, because (to follow the LArSoft convention,
+    at least partly) the Anode wires (the plane of x-wires in this tentative geometry)
+    defines the z=0 axis. -->
+    
+    <!-- 15-May-2020 WGS: It took me 5 days to realize that, with z=0 set to the x-wires,
+    all of the TPC active region have z<0. The purpose of LArSoft's definition of having
+    the induction plane be at an axis=0 is to avoid negative numbers! Leave this
+    for now, and let the collaboration decide an appropriate coordinate system. -->
+    <constant name="outerDetectorOffsetInWorld" value ="-(lArTPCZSize/2) + (wirePlaneThickness/2) - innerDetectorOffsetInOuter" />
+
+  </define>
+  
+  <!-- 
+    List of materials stolen from MicroBooNE's GDML file.
+  -->
+  <materials>
+    <element Z="35" formula="Br" name="bromine">
+      <atom value="79.904"/>
+    </element>
+    <element Z="1" formula="H" name="hydrogen">
+      <atom value="1.0079"/>
+    </element>
+    <element Z="7" formula="N" name="nitrogen">
+      <atom value="14.0067"/>
+    </element>
+    <element Z="8" formula="O" name="oxygen">
+      <atom value="15.999"/>
+    </element>
+    <element Z="13" formula="Al" name="aluminum">
+      <atom value="26.9815"/>
+    </element>
+    <element Z="14" formula="Si" name="silicon">
+      <atom value="28.0855"/>
+    </element>
+    <element Z="6" formula="C" name="carbon">
+      <atom value="12.0107"/>
+    </element>
+    <element Z="19" formula="K" name="potassium">
+      <atom value="39.0983"/>
+    </element>
+    <element Z="24" formula="Cr" name="chromium">
+      <atom value="51.9961"/>
+    </element>
+    <element Z="26" formula="Fe" name="iron">
+      <atom value="55.8450"/>
+    </element>
+    <element Z="28" formula="Ni" name="nickel">
+      <atom value="58.6934"/>
+    </element>
+    <element Z="20" formula="Ca" name="calcium">
+      <atom value="40.078"/>
+    </element>
+    <element Z="12" formula="Mg" name="magnesium">
+      <atom value="24.305"/>
+    </element>
+    <element Z="11" formula="Na" name="sodium">
+      <atom value="22.99"/>
+    </element>
+    <element Z="22" formula="Ti" name="titanium">
+      <atom value="47.867"/>
+    </element>
+    <element Z="18" formula="Ar" name="argon">
+      <atom value="39.9480"/>
+    </element>
+    <material Z="1" formula=" " name="Vacuum">
+      <D unit="g/cm3" value="1.e-25"/>
+      <atom value="1.0079"/>
+    </material>
+    <material formula="ALUMINUM_Al" name="ALUMINUM_Al">
+      <D unit="g/cm3" value="2.6990"/>
+      <fraction n="1.0000" ref="aluminum"/>
+    </material>
+    <material formula="SILICON_Si" name="SILICON_Si">
+      <D unit="g/cm3" value="2.3300"/>
+      <fraction n="1.0000" ref="silicon"/>
+    </material>
+    <material formula="C38H40O6Br4" name="epoxy_resin">
+      <D unit="g/cm3" value="1.1250"/>
+      <composite n="38" ref="carbon"/>
+      <composite n="40" ref="hydrogen"/>
+      <composite n="6" ref="oxygen"/>
+      <composite n="4" ref="bromine"/>
+    </material>
+    <material formula="C25H42N2O6" name="PU_foam_dense">
+      <D unit="g/cm3" value=".224"/>
+      <composite n="25" ref="carbon"/>
+      <composite n="42" ref="hydrogen"/>
+      <composite n="2" ref="nitrogen"/>
+      <composite n="6" ref="oxygen"/>
+    </material>
+    <material formula="C25H42N2O6" name="PU_foam_light">
+      <D unit="g/cm3" value=".0384"/>
+      <composite n="25" ref="carbon"/>
+      <composite n="42" ref="hydrogen"/>
+      <composite n="2" ref="nitrogen"/>
+      <composite n="6" ref="oxygen"/>
+    </material>
+    <material formula="SiO2" name="SiO2">
+      <D unit="g/cm3" value="2.2"/>
+      <composite n="1" ref="silicon"/>
+      <composite n="2" ref="oxygen"/>
+    </material>
+    <material formula="Al2O3" name="Al2O3">
+      <D unit="g/cm3" value="3.97"/>
+      <composite n="2" ref="aluminum"/>
+      <composite n="3" ref="oxygen"/>
+    </material>
+    <material formula="Fe2O3" name="Fe2O3">
+      <D unit="g/cm3" value="5.24"/>
+      <composite n="2" ref="iron"/>
+      <composite n="3" ref="oxygen"/>
+    </material>
+    <material formula="CaO" name="CaO">
+      <D unit="g/cm3" value="3.35"/>
+      <composite n="1" ref="calcium"/>
+      <composite n="1" ref="oxygen"/>
+    </material>
+    <material formula="MgO" name="MgO">
+      <D unit="g/cm3" value="3.58"/>
+      <composite n="1" ref="magnesium"/>
+      <composite n="1" ref="oxygen"/>
+    </material>
+    <material formula="Na2O" name="Na2O">
+      <D unit="g/cm3" value="2.27"/>
+      <composite n="2" ref="sodium"/>
+      <composite n="1" ref="oxygen"/>
+    </material>
+    <material formula="TiO2" name="TiO2">
+      <D unit="g/cm3" value="4.23"/>
+      <composite n="1" ref="titanium"/>
+      <composite n="2" ref="oxygen"/>
+    </material>
+    <material name="fibrous_glass">
+      <D unit="g/cm3" value="2.74351"/>
+      <fraction n="0.600" ref="SiO2"/>
+      <fraction n="0.118" ref="Al2O3"/>
+      <fraction n="0.001" ref="Fe2O3"/>
+      <fraction n="0.224" ref="CaO"/>
+      <fraction n="0.034" ref="MgO"/>
+      <fraction n="0.010" ref="Na2O"/>
+      <fraction n="0.013" ref="TiO2"/>
+    </material>
+    <material name="FR4">
+      <D unit="g/cm3" value="1.5224"/>
+      <fraction n="0.47" ref="epoxy_resin"/>
+      <fraction n="0.53" ref="fibrous_glass"/>
+    </material>
+    <material formula="STEEL_STAINLESS_Fe7Cr2Ni" name="STEEL_STAINLESS_Fe7Cr2Ni">
+      <D unit="g/cm3" value="7.9300"/>
+      <fraction n="0.0010" ref="carbon"/>
+      <fraction n="0.1792" ref="chromium"/>
+      <fraction n="0.7298" ref="iron"/>
+      <fraction n="0.0900" ref="nickel"/>
+    </material>
+    <material formula="LAr" name="LAr">
+      <D unit="g/cm3" value="1.40"/>
+      <fraction n="1.0000" ref="argon"/>
+    </material>
+    <material formula=" " name="Air">
+      <D unit="g/cm3" value="0.001205"/>
+      <fraction n="0.781154" ref="nitrogen"/>
+      <fraction n="0.209476" ref="oxygen"/>
+      <fraction n="0.00937" ref="argon"/>
+    </material>
+    <material formula=" " name="G10">
+      <D unit="g/cm3" value="1.7"/>
+      <fraction n="0.2805" ref="silicon"/>
+      <fraction n="0.3954" ref="oxygen"/>
+      <fraction n="0.2990" ref="carbon"/>
+      <fraction n="0.0251" ref="hydrogen"/>
+    </material>
+    <material formula="H2O" name="Water">
+      <D unit="g/cm3" value="1.0"/>
+      <fraction n="0.1119" ref="hydrogen"/>
+      <fraction n="0.8881" ref="oxygen"/>
+    </material>
+    <material formula="Ti" name="Titanium">
+      <D unit="g/cm3" value="4.506"/>
+      <fraction n="1." ref="titanium"/>
+    </material>
+    <material formula="TPB" name="TPB">
+      <D unit="g/cm3" value="1.40"/>
+      <fraction n="1.0000" ref="argon"/>
+    </material>
+    <material name="Glass">
+      <D unit="g/cm3" value="2.74351"/>
+      <fraction n="0.600" ref="SiO2"/>
+      <fraction n="0.118" ref="Al2O3"/>
+      <fraction n="0.001" ref="Fe2O3"/>
+      <fraction n="0.224" ref="CaO"/>
+      <fraction n="0.034" ref="MgO"/>
+      <fraction n="0.010" ref="Na2O"/>
+      <fraction n="0.013" ref="TiO2"/>
+    </material>
+    <material name="Acrylic">
+      <D unit="g/cm3" value="1.19"/>
+      <fraction n="0.600" ref="carbon"/>
+      <fraction n="0.320" ref="oxygen"/>
+      <fraction n="0.080" ref="hydrogen"/>
+    </material>
+    <material name="Polystyrene">
+      <D unit="g/cm3" value="1.06"/>
+      <fraction n="0.077418" ref="hydrogen"/>
+      <fraction n="0.922582" ref="carbon"/>
+    </material>
+    <material formula="Ar" name="Argon_gas_87K">
+      <D unit="g/cm3" value="0.0056"/>
+      <!-- standard pressure, 87.3K -->
+      <fraction n="1.0000" ref="argon"/>
+    </material>
+
+    <!-- 8-May-2020 WGS: PTFE is a polymer chain. Its formula is (C2F4)n.
+    Maybe the following is correct. -->
+    <element Z="9" formula="F" name="flourine">
+      <atom value="18.998403"/>
+    </element>
+    <material name="PTFE">
+        <D unit="g/cm3" value="2.2"/>
+        <composite n="2" ref="carbon"/>
+        <composite n="4" ref="flourine"/>
+    </material>
+
+  </materials>
+
+  <solids>
+  
+    <!-- The constants and quantities used in this section are defined in the <define></define> 
+    section above. -->
+    <box lunit="cm" name="TPC" x="lArTPCXSize" y="lArTPCYSize" z="lArTPCZSize" />
+
+    <tube aunit="deg" deltaphi="360" lunit="cm" name="TPCXWire" rmax="wireRadius" z="lengthXWire" />
+    <tube aunit="deg" deltaphi="360" lunit="cm" name="TPCYWire" rmax="wireRadius" z="lengthYWire" />
+
+    <box lunit="cm" name="CathodePlate" x="cathodeXSize" y="cathodeYSize" z="cathodeZSize" />
+    <box lunit="cm" name="TPCWirePlane" x="wirePlaneXSize" y="wirePlaneYSize" z="wirePlaneZSize" />
+    <box lunit="cm" name="PTFESheet" x="ptfeXSize" y="ptfeYSize" z="ptfeZSize" />
+    <box lunit="cm" name="ActiveRegion" x="activeRegionXSize" y="activeRegionYSize" z="activeRegionZSize" />
+    <box lunit="cm" name="SIPM" x="sipmXSize" y="sipmYSize" z="sipmZSize" />
+  
+    <box lunit="cm" name="World" x="worldVolumeXSize" y="worldVolumeYSize" z="worldVolumeZSize"/>
+    <box lunit="cm" name="OuterDetector" x="outerVolumeXSize" y="outerVolumeYSize" z="outerVolumeZSize"/>
+    
+    <box lunit="cm" name="OuterZwallXstrip" x="lengthOuterZwallXstrips" y="scintillatorWidth" z="scintillatorThickness"/>
+    <box lunit="cm" name="OuterZwallYstrip" x="scintillatorWidth" y="lengthOuterZwallYstrips" z="scintillatorThickness"/>
+ 
+    <box lunit="cm" name="OuterYwallXstrip" x="lengthOuterYwallXstrips" y="scintillatorThickness" z="scintillatorWidth"/>
+    <box lunit="cm" name="OuterYwallZstrip" x="scintillatorWidth" y="scintillatorThickness" z="lengthOuterYwallZstrips"/>
+  
+    <box lunit="cm" name="OuterXwallZstrip" x="scintillatorThickness" y="scintillatorWidth" z="lengthOuterXwallZstrips"/>
+    <box lunit="cm" name="OuterXwallYstrip" x="scintillatorThickness" y="lengthOuterXwallYstrips" z="scintillatorWidth"/>
+
+    <box lunit="cm" name="OuterXwall" x="outerXwallXSize" y="outerXwallYSize" z="outerXwallZSize"/>
+    <box lunit="cm" name="OuterYwall" x="outerYwallXSize" y="outerYwallYSize" z="outerYwallZSize"/>
+    <box lunit="cm" name="OuterZwall" x="outerZwallXSize" y="outerZwallYSize" z="outerZwallZSize"/>
+    
+    <box lunit="cm" name="InnerDetector" x="innerVolumeXSize" y="innerVolumeYSize" z="innerVolumeZSize"/>
+    
+    <box lunit="cm" name="InnerZwallXstrip" x="lengthInnerZwallXstrips" y="scintillatorWidth" z="scintillatorThickness"/>
+    <box lunit="cm" name="InnerZwallYstrip" x="scintillatorWidth" y="lengthInnerZwallYstrips" z="scintillatorThickness"/>
+ 
+    <box lunit="cm" name="InnerYwallXstrip" x="lengthInnerYwallXstrips" y="scintillatorThickness" z="scintillatorWidth"/>
+    <box lunit="cm" name="InnerYwallZstrip" x="scintillatorWidth" y="scintillatorThickness" z="lengthInnerYwallZstrips"/>
+  
+    <box lunit="cm" name="InnerXwallZstrip" x="scintillatorThickness" y="scintillatorWidth" z="lengthInnerXwallZstrips"/>
+    <box lunit="cm" name="InnerXwallYstrip" x="scintillatorThickness" y="lengthInnerXwallYstrips" z="scintillatorWidth"/>
+
+    <box lunit="cm" name="InnerXwall" x="InnerXwallXSize" y="InnerXwallYSize" z="InnerXwallZSize"/>
+    <box lunit="cm" name="InnerYwall" x="InnerYwallXSize" y="InnerYwallYSize" z="InnerYwallZSize"/>
+    <box lunit="cm" name="InnerZwall" x="InnerZwallXSize" y="InnerZwallYSize" z="InnerZwallZSize"/>
+
+    <box lunit="cm" name="Cryostat" x="cryostatXSize" y="cryostatYSize" z="cryostatZSize" />
+
+  </solids>
+
+  <!-- 13-May-2020 WGS: The following tag will associate a Geant4 sensitive detector named
+  "LArSD" (for example) to a given volume. Note that this does not create the code for "LArSD" 
+  out of nowhere (don't get confused with options.xml!); you have to write the code for any
+  sensitive detectors and definie them to Geant4's SDManager.
+  
+  <auxiliary auxtype="SensDet" auxvalue="LArSD" />
+  -->
+
+  <!-- 13-May-2020 WGS: For the sake of G4 visualization, a volume can optionally be set
+  to a specific color. (If you're from England, you can also set a volume's visibility to 
+  a specific colour.) Colors and visibility are set on the volume level. The tag's structure is:
+  
+  <auxiliary auxtype="Color" auxvalue="G4Color" />
+  
+  where G4Color is from the set (white, gray, black, brown, red, green, blue, cyan, magenta, yellow, none) 
+  
+  If you use "none" the volume will be invisible. If you don't include this tag for a volume, 
+  then it will have the default color of white. 
+  -->
+  
+  <structure>
+  
+    <!-- 6-May-2020 WGS: Note that the materials used below are mostly the MicroBooNE definitions.
+    They may not apply to GRAMS. -->
+  
+    <volume name="volTPCXWire">
+      <materialref ref="Titanium"/>
+      <solidref ref="TPCXWire"/>
+      <auxiliary auxtype="Color" auxvalue="none" />
+    </volume>
+     <volume name="volTPCYWire">
+      <materialref ref="Titanium"/>
+      <solidref ref="TPCYWire"/>
+      <auxiliary auxtype="Color" auxvalue="none" />
+    </volume>
+
+    <!-- 6-May-2020 WGS: Use loops to place the wires within the planes. -->
+ 
+    <volume name="volTPCXPlane">
+      <materialref ref="LAr"/>
+      <solidref ref="TPCWirePlane"/>
+      <loop for="xWireLoopIndex" to="numberXWires - 1" step="1">
+        <physvol>
+            <volumeref ref="volTPCXWire"/>
+            <position name="posXwire" unit="cm" x="0" y="(-((numberXWires - 1) / 2) + xWireLoopIndex)*wireSpacing" z="0"/>
+            <rotationref ref="rPlus90AboutY"/>
+        </physvol>
+     </loop>
+     <auxiliary auxtype="Color" auxvalue="none" />
+    </volume>
+
+    <volume name="volTPCYPlane">
+      <materialref ref="LAr"/>
+      <solidref ref="TPCWirePlane"/>
+      <loop for="yWireLoopIndex" to="numberYWires - 1" step="1">
+        <physvol>
+            <volumeref ref="volTPCYWire"/>
+            <position name="posYwire" unit="cm" x="(-((numberYWires - 1) / 2) + yWireLoopIndex)*wireSpacing" y="0" z="0"/>
+            <rotationref ref="rPlus90AboutX"/>
+        </physvol>
+     </loop>
+     <auxiliary auxtype="Color" auxvalue="none" />
+    </volume>
+
+    <volume name="volTPCActive">
+      <materialref ref="LAr"/>
+      <solidref ref="ActiveRegion"/>
+      <auxiliary auxtype="SensDet" auxvalue="LArSensitiveDetector" />
+      <auxiliary auxtype="Color" auxvalue="red" />
+    </volume>
+
+    <volume name="volPTFESheet">
+      <materialref ref="PTFE"/>
+      <solidref ref="PTFESheet"/>
+      <auxiliary auxtype="Color" auxvalue="yellow" />
+    </volume>
+
+    <!-- 8-May-2020 WGS: As a first approximation, let's assume that
+    SIPMs are pure silicon. Question this assumption! -->
+    <volume name="volSIPM">
+      <materialref ref="SILICON_Si"/>
+      <solidref ref="SIPM"/>
+      <auxiliary auxtype="Color" auxvalue="gray" />
+    </volume>
+
+    <volume name="volCathodePlate">
+      <materialref ref="STEEL_STAINLESS_Fe7Cr2Ni"/>
+      <solidref ref="CathodePlate"/>
+      <auxiliary auxtype="Color" auxvalue="red" />
+    </volume>
+
+    <!-- LArTPC definition -->
+    <volume name="volTPC">
+      <materialref ref="LAr"/>
+      <solidref ref="TPC"/>
+      
+      <!-- 8-May-2020 WGS: Where will the cathode plate be? I don't know. Make a guess. -->
+      <physvol>
+        <volumeref ref="volCathodePlate"/>
+        <position name="posCathod" unit="cm" x="0" y="0" z="-(lArTPCZSize/2) + 2*cathodeThickness" />
+      </physvol>
+      
+      <!-- 8-May-2020 WGS: Where will the wire planes be? I don't know. Make a guess. -->
+      <physvol>
+        <volumeref ref="volTPCXPlane"/>
+        <position name="posXplane" unit="cm" x="0" y="0" z="(lArTPCZSize/2) - (wirePlaneThickness/2)" />
+      </physvol>
+      <physvol>
+        <volumeref ref="volTPCYPlane"/>
+        <position name="posYplane" unit="cm" x="0" y="0" z="(lArTPCZSize/2) - (wirePlaneThickness*3/2)"/>
+      </physvol>
+
+      <!-- 8-May-2020 WGS: For each active region, we have to place a volume representing that
+      region, the PTFE sheet that separates the regions, and a SIPM. -->
+      <loop for="ptfeIndex" to="numberPtfeSheets - 1" step="1">
+        <physvol>
+            <volumeref ref="volPTFESheet"/>
+            <position name="posPTFESheet" unit="cm" x="0" y="-(lArTPCYSize/2) + activeRegionYSize + ptfeYSize/2 + ptfeIndex*(activeRegionYSize + ptfeYSize)" z="0"/>
+        </physvol>
+      </loop>
+      
+      <loop for="activeRegionIndex" to="numberActiveRegions - 1" step="1">
+        <physvol>
+            <volumeref ref="volTPCActive"/>
+            <position name="posTPCActive" unit="cm" x="0" y="-(lArTPCYSize/2) + activeRegionYSize/2 + activeRegionIndex*(activeRegionYSize + ptfeYSize)" z="0"/>
+        </physvol>
+        <!-- 8-May-2020 WGS: Where are the SIPMs? How will they be mounted? I don't know.
+        For now, let them magically float 2cm above the bottom of the TPC, outside the
+        active TPC region. -->
+        <physvol>
+            <volumeref ref="volSIPM"/>
+            <position name="posSIPM" unit="cm" x="0" y="-(lArTPCYSize/2) + activeRegionYSize/2 + activeRegionIndex*(activeRegionYSize + ptfeYSize)" z="-(lArTPCZSize/2) + 2"/>
+        </physvol>
+      </loop>
+
+      <auxiliary auxtype="Color" auxvalue="magenta" />
+    </volume>
+    <!-- End of LArTPC definition -->
+    
+    <!-- Inner detector definition -->
+
+    <volume name="volCryostat">
+      <materialref ref="STEEL_STAINLESS_Fe7Cr2Ni"/>
+      <solidref ref="Cryostat"/>
+      <auxiliary auxtype="Color" auxvalue="gray" />
+    </volume>
+
+    <!-- 8-May-2020 WGS: Is "polystyrene" (used in MicroBoone) a reasonable description of scintillator? -->
+
+    <volume name="volInnerZwallXstrip">
+      <materialref ref="Polystyrene"/>
+      <solidref ref="InnerZwallXstrip"/>
+      <auxiliary auxtype="SensDet" auxvalue="ScintillatorSD" />
+      <auxiliary auxtype="Color" auxvalue="none" />
+    </volume>
+
+    <volume name="volInnerZwallYstrip">
+      <materialref ref="Polystyrene"/>
+      <solidref ref="InnerZwallYstrip"/>
+      <auxiliary auxtype="SensDet" auxvalue="ScintillatorSD" />
+      <auxiliary auxtype="Color" auxvalue="none" />
+    </volume>
+
+    <volume name="volInnerYwallXstrip">
+      <materialref ref="Polystyrene"/>
+      <solidref ref="InnerYwallXstrip"/>
+      <auxiliary auxtype="SensDet" auxvalue="ScintillatorSD" />
+      <auxiliary auxtype="Color" auxvalue="none" />
+    </volume>
+
+    <volume name="volInnerYwallZstrip">
+      <materialref ref="Polystyrene"/>
+      <solidref ref="InnerYwallZstrip"/>
+      <auxiliary auxtype="SensDet" auxvalue="ScintillatorSD" />
+      <auxiliary auxtype="Color" auxvalue="none" />
+    </volume>
+
+    <volume name="volInnerXwallZstrip">
+      <materialref ref="Polystyrene"/>
+      <solidref ref="InnerXwallZstrip"/>
+      <auxiliary auxtype="SensDet" auxvalue="ScintillatorSD" />
+      <auxiliary auxtype="Color" auxvalue="none" />
+    </volume>
+
+    <volume name="volInnerXwallYstrip">
+      <materialref ref="Polystyrene"/>
+      <solidref ref="InnerXwallYstrip"/>
+      <auxiliary auxtype="SensDet" auxvalue="ScintillatorSD" />
+      <auxiliary auxtype="Color" auxvalue="none" />
+    </volume>
+    
+    <!-- 8-May-2020 WGS: In the same way we placed x and y wires in their volumes, place the scintillator 
+    strips in the x, y, and z detector walls. -->
+    
+    <volume name="volInnerZwall">
+      <materialref ref="Air"/>
+      <solidref ref="InnerZwall"/>
+      <loop for="indexInnerZwallXstrips" to="numberInnerZwallXstrips - 1" step="1">
+        <physvol>
+            <volumeref ref="volInnerZwallXstrip"/>
+            <position name="posInnerZwallXstrip" unit="cm" x="0" y="-InnerZwallYSize/2 + scintillatorWidth/2 + indexInnerZwallXstrips*scintillatorWidth" z="scintillatorThickness/2"/>
+        </physvol>
+      </loop>
+      <loop for="indexInnerZwallYstrips" to="numberInnerZwallYstrips - 1" step="1">
+        <physvol>
+            <volumeref ref="volInnerZwallYstrip"/>
+            <position name="posInnerZwallYstrip" unit="cm" x="-InnerZwallXSize/2 + scintillatorWidth/2 + indexInnerZwallYstrips*scintillatorWidth" y="0" z="-scintillatorThickness/2"/>
+        </physvol>
+      </loop>
+      <auxiliary auxtype="Color" auxvalue="cyan" />
+    </volume>
+        
+    <volume name="volInnerYwall">
+      <materialref ref="Air"/>
+      <solidref ref="InnerYwall"/>
+      <loop for="indexInnerYwallXstrips" to="numberInnerYwallXstrips - 1" step="1">
+        <physvol>
+            <volumeref ref="volInnerYwallXstrip"/>
+            <position name="posInnerYwallXstrip" unit="cm" x="0" y="scintillatorThickness/2" z="-InnerYwallZSize/2 + scintillatorWidth/2 + indexInnerYwallXstrips*scintillatorWidth"/>
+        </physvol>
+      </loop>
+      <loop for="indexInnerYwallZstrips" to="numberInnerYwallZstrips - 1" step="1">
+        <physvol>
+            <volumeref ref="volInnerYwallZstrip"/>
+            <position name="posInnerYwallZstrip" unit="cm" x="-InnerYwallXSize/2 + scintillatorWidth/2 + indexInnerYwallZstrips*scintillatorWidth" y="-scintillatorThickness/2" z="0"/>
+        </physvol>
+     </loop>
+      <auxiliary auxtype="Color" auxvalue="cyan" />
+    </volume>
+         
+    <volume name="volInnerXwall">
+      <materialref ref="Air"/>
+      <solidref ref="InnerXwall"/>
+      <loop for="indexInnerXwallZstrips" to="numberInnerXwallZstrips - 1" step="1">
+        <physvol>
+            <volumeref ref="volInnerXwallZstrip"/>
+            <position name="posInnerXwallZstrip" unit="cm" x="scintillatorThickness/2" y="-InnerXwallYSize/2 + scintillatorWidth/2 + indexInnerXwallZstrips*scintillatorWidth" z="0"/>
+        </physvol>
+      </loop>
+      <loop for="indexInnerXwallYstrips" to="numberInnerXwallYstrips - 1" step="1">
+        <physvol>
+            <volumeref ref="volInnerXwallYstrip"/>
+            <position name="posInnerXwallYstrip" unit="cm" x="-scintillatorThickness/2" y="0" z="-InnerXwallZSize/2 + scintillatorWidth/2 + indexInnerXwallYstrips*scintillatorWidth"/>
+        </physvol>
+     </loop>
+      <auxiliary auxtype="Color" auxvalue="cyan" />
+    </volume>
+
+    <volume name="volInnerDetector">
+      <materialref ref="Air"/>
+      <solidref ref="InnerDetector"/>
+      
+      <!-- 10-May-2020 WGS: Place the positive-axis walls in the detector. -->
+      <physvol>
+        <volumeref ref="volInnerZwall" />
+        <position name="posInnerZwall" unit="cm" x="0" y="0" z="(innerVolumeZSize - InnerZwallZSize)/2" />
+      </physvol>
+      <physvol>
+        <volumeref ref="volInnerYwall" />
+        <position name="posInnerYwall" unit="cm" x="0" y="(innerVolumeYSize - InnerYwallYSize)/2" z="0" />
+      </physvol>
+      <physvol>
+        <volumeref ref="volInnerXwall" />
+        <position name="posInnerXwall" unit="cm" x="(innerVolumeXSize - InnerXwallXSize)/2" y="0" z="0" />
+      </physvol>
+      
+      <!-- 10-May-2020 WGS: Place the negative-axis walls in the detector, rotating each wall by 180 degrees. -->
+      <physvol>
+        <volumeref ref="volInnerZwall" />
+        <position name="posInnerZwallm" unit="cm" x="0" y="0" z="-(innerVolumeZSize - InnerZwallZSize)/2" />
+        <rotationref ref="rPlus180AboutZ" />
+      </physvol>
+      <physvol>
+        <volumeref ref="volInnerYwall" />
+        <position name="posInnerYwallm" unit="cm" x="0" y="-(innerVolumeYSize - InnerYwallYSize)/2" z="0" />
+       <rotationref ref="rPlus180AboutY" />
+      </physvol>
+      <physvol>
+        <volumeref ref="volInnerXwall" />
+        <position name="posInnerXwallm" unit="cm" x="-(innerVolumeXSize - InnerXwallXSize)/2" y="0" z="0" />
+        <rotationref ref="rPlus180AboutX" />
+      </physvol>
+
+      <!-- 10-May-2020 WGS: The cryostat -->
+      <physvol>
+        <volumeref ref="volCryostat" />
+        <positionref ref="posCenter" />
+      </physvol>
+      
+       <!-- 10-May-2020 WGS: The LArTPC -->
+      <physvol>
+        <volumeref ref="volTPC" />
+        <positionref ref="posCenter" />
+      </physvol>     
+
+      <auxiliary auxtype="Color" auxvalue="cyan" />
+    </volume>
+    <!-- End of Inner detector definition -->
+    
+
+    <!-- Outer detector definition -->
+
+    <!-- 8-May-2020 WGS: Is "polystyrene" (used in MicroBoone) a reasonable description of scintillator? -->
+
+    <volume name="volOuterZwallXstrip">
+      <materialref ref="Polystyrene"/>
+      <solidref ref="OuterZwallXstrip"/>
+      <auxiliary auxtype="SensDet" auxvalue="ScintillatorSD" />
+      <auxiliary auxtype="Color" auxvalue="none" />
+    </volume>
+
+    <volume name="volOuterZwallYstrip">
+      <materialref ref="Polystyrene"/>
+      <solidref ref="OuterZwallYstrip"/>
+      <auxiliary auxtype="SensDet" auxvalue="ScintillatorSD" />
+      <auxiliary auxtype="Color" auxvalue="none" />
+    </volume>
+
+    <volume name="volOuterYwallXstrip">
+      <materialref ref="Polystyrene"/>
+      <solidref ref="OuterYwallXstrip"/>
+      <auxiliary auxtype="SensDet" auxvalue="ScintillatorSD" />
+      <auxiliary auxtype="Color" auxvalue="none" />
+    </volume>
+
+    <volume name="volOuterYwallZstrip">
+      <materialref ref="Polystyrene"/>
+      <solidref ref="OuterYwallZstrip"/>
+      <auxiliary auxtype="SensDet" auxvalue="ScintillatorSD" />
+      <auxiliary auxtype="Color" auxvalue="none" />
+    </volume>
+
+    <volume name="volOuterXwallZstrip">
+      <materialref ref="Polystyrene"/>
+      <solidref ref="OuterXwallZstrip"/>
+      <auxiliary auxtype="SensDet" auxvalue="ScintillatorSD" />
+      <auxiliary auxtype="Color" auxvalue="none" />
+    </volume>
+
+    <volume name="volOuterXwallYstrip">
+      <materialref ref="Polystyrene"/>
+      <solidref ref="OuterXwallYstrip"/>
+      <auxiliary auxtype="SensDet" auxvalue="ScintillatorSD" />
+      <auxiliary auxtype="Color" auxvalue="none" />
+    </volume>
+    
+    <!-- 8-May-2020 WGS: In the same way we placed x and y wires in their volumes, place the scintillator 
+    strips in the x, y, and z detector walls. -->
+    
+    <volume name="volOuterZwall">
+      <materialref ref="Air"/>
+      <solidref ref="OuterZwall"/>
+      <loop for="indexOuterZwallXstrips" to="numberOuterZwallXstrips - 1" step="1">
+        <physvol>
+            <volumeref ref="volOuterZwallXstrip"/>
+            <position name="posOuterZwallXstrip" unit="cm" x="0" y="-outerZwallYSize/2 + scintillatorWidth/2 + indexOuterZwallXstrips*scintillatorWidth" z="scintillatorThickness/2"/>
+        </physvol>
+      </loop>
+      <loop for="indexOuterZwallYstrips" to="numberOuterZwallYstrips - 1" step="1">
+        <physvol>
+            <volumeref ref="volOuterZwallYstrip"/>
+            <position name="posOuterZwallYstrip" unit="cm" x="-outerZwallXSize/2 + scintillatorWidth/2 + indexOuterZwallYstrips*scintillatorWidth" y="0" z="-scintillatorThickness/2"/>
+        </physvol>
+      </loop>
+      <auxiliary auxtype="Color" auxvalue="cyan" />
+    </volume>
+        
+    <volume name="volOuterYwall">
+      <materialref ref="Air"/>
+      <solidref ref="OuterYwall"/>
+      <loop for="indexOuterYwallXstrips" to="numberOuterYwallXstrips - 1" step="1">
+        <physvol>
+            <volumeref ref="volOuterYwallXstrip"/>
+            <position name="posOuterYwallXstrip" unit="cm" x="0" y="scintillatorThickness/2" z="-outerYwallZSize/2 + scintillatorWidth/2 + indexOuterYwallXstrips*scintillatorWidth"/>
+        </physvol>
+      </loop>
+      <loop for="indexOuterYwallZstrips" to="numberOuterYwallZstrips - 1" step="1">
+        <physvol>
+            <volumeref ref="volOuterYwallZstrip"/>
+            <position name="posOuterYwallZstrip" unit="cm" x="-outerYwallXSize/2 + scintillatorWidth/2 + indexOuterYwallZstrips*scintillatorWidth" y="-scintillatorThickness/2" z="0"/>
+        </physvol>
+     </loop>
+     <auxiliary auxtype="Color" auxvalue="cyan" />
+    </volume>
+         
+    <volume name="volOuterXwall">
+      <materialref ref="Air"/>
+      <solidref ref="OuterXwall"/>
+      <loop for="indexOuterXwallZstrips" to="numberOuterXwallZstrips - 1" step="1">
+        <physvol>
+            <volumeref ref="volOuterXwallZstrip"/>
+            <position name="posOuterXwallZstrip" unit="cm" x="scintillatorThickness/2" y="-outerXwallYSize/2 + scintillatorWidth/2 + indexOuterXwallZstrips*scintillatorWidth" z="0"/>
+        </physvol>
+      </loop>
+      <loop for="indexOuterXwallYstrips" to="numberOuterXwallYstrips - 1" step="1">
+        <physvol>
+            <volumeref ref="volOuterXwallYstrip"/>
+            <position name="posOuterXwallYstrip" unit="cm" x="-scintillatorThickness/2" y="0" z="-outerXwallZSize/2 + scintillatorWidth/2 + indexOuterXwallYstrips*scintillatorWidth"/>
+        </physvol>
+     </loop>
+     <auxiliary auxtype="Color" auxvalue="cyan" />
+    </volume>
+
+    <volume name="volOuterDetector">
+      <materialref ref="Air"/>
+      <solidref ref="OuterDetector"/>
+      
+      <!-- 10-May-2020 WGS: Place the positive-axis walls in the detector. -->
+      <physvol>
+        <volumeref ref="volOuterZwall" />
+        <position name="posOuterZwall" unit="cm" x="0" y="0" z="(outerVolumeZSize - outerZwallZSize)/2" />
+      </physvol>
+      <physvol>
+        <volumeref ref="volOuterYwall" />
+        <position name="posOuterYwall" unit="cm" x="0" y="(outerVolumeYSize - outerYwallYSize)/2" z="0" />
+      </physvol>
+      <physvol>
+        <volumeref ref="volOuterXwall" />
+        <position name="posOuterXwall" unit="cm" x="(outerVolumeXSize - outerXwallXSize)/2" y="0" z="0" />
+      </physvol>
+      
+      <!-- 10-May-2020 WGS: Place the negative-axis walls in the detector, rotating each wall by 180 degrees. -->
+      <physvol>
+        <volumeref ref="volOuterZwall" />
+        <position name="posOuterZwallm" unit="cm" x="0" y="0" z="-(outerVolumeZSize - outerZwallZSize)/2" />
+        <rotationref ref="rPlus180AboutZ" />
+      </physvol>
+      <physvol>
+        <volumeref ref="volOuterYwall" />
+        <position name="posOuterYwallm" unit="cm" x="0" y="-(outerVolumeYSize - outerYwallYSize)/2" z="0" />
+       <rotationref ref="rPlus180AboutY" />
+      </physvol>
+      <physvol>
+        <volumeref ref="volOuterXwall" />
+        <position name="posOuterXwallm" unit="cm" x="-(outerVolumeXSize - outerXwallXSize)/2" y="0" z="0" />
+        <rotationref ref="rPlus180AboutX" />
+      </physvol>
+
+       <!-- 10-May-2020 WGS: The place the inner detector -->
+      <physvol>
+        <volumeref ref="volInnerDetector" />
+        <position name="posInnerDetector" unit="cm" x="0" y="0" z="innerDetectorOffsetInOuter"/>
+      </physvol>     
+
+      <auxiliary auxtype="Color" auxvalue="cyan" />
+    </volume>
+   <!-- End of Outer detector definition -->
+   
+    <volume name="volWorld">
+      <materialref ref="Air"/>
+      <solidref ref="World"/>
+      <physvol>
+        <volumeref ref="volOuterDetector"/>
+        <position name="posOuterDetector" unit="cm" x="0" y="0" z="outerDetectorOffsetInWorld"/>
+      </physvol>
+      <auxiliary auxtype="Color" auxvalue="none" />
+    </volume>
+  </structure>
+  
+  <setup name="Default" version="1.0">
+    <world ref="volWorld"/>
+  </setup>
+  
+</gdml>
