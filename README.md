@@ -17,6 +17,7 @@ Once this is done, you can download a copy of the GramsG4 repository:
 
     git clone git@github.com:wgseligman/GramsG4.git
     cd GramsG4
+    git fetch
     git checkout develop
 
 ### Prerequisites
