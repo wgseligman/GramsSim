@@ -78,21 +78,21 @@ in this analysis. The `<global>` section contains parameters that will apply to 
 than one program. Individual programs will have their options in their own sections.
 
 ```
-Anatomy of <option> tag:                                                                                  
+Anatomy of <option> tag: 
 
-   name  - used on the command line, and by the program                                                         
-           to fetch the value of the option                                                                     
+   name  - used on the command line, and by the program
+           to fetch the value of the option
+           
+   short - optional one-character abbreviation for
+           a short command-line option
+           
+   value - the number/text/bool used by the program;
+           can be overriden on the command line
 
-   short - optional one-character abbreviation for                                                              
-           a short command-line option                                                                          
-
-   value - the number/text/bool used by the program;                                                            
-           can be overriden on the command line                                                                 
-
-   type  - string/bool/integer/double                                                                           
-
+   type  - string/bool/integer/double
+   
    desc  - optional; brief description of the option (keep it 
-           less than 20 characters) ; used in the --help|-h message                                                                                           
+           less than 20 characters) ; used in the --help|-h message
 ```
 
 Note that the options in this XML file can be overridden by command-line options.
