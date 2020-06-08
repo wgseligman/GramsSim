@@ -9,11 +9,9 @@ If you want a formatted (or easier-to-read) version of this file, scroll to the 
 Visit <https://github.com/> and sign up for an account if you don't already have one.
 
 I strongly advise you to use SSH as the means to access a repository, 
-and to [set up an SSH key][10],
+and to [set up an SSH key](https://help.github.com/articles/generating-an-ssh-key/),
 otherwise you'll have to type in a password every time you issue a git
 request against the repository. 
-
-[10]: https://help.github.com/articles/generating-an-ssh-key/
 
 Once this is done, you can download a copy of the GramsG4 repository:
 
@@ -24,36 +22,24 @@ Once this is done, you can download a copy of the GramsG4 repository:
 
 ### Prerequisites
 
-If you're working on a system of the [Nevis Linux cluster][20], just type
+If you're working on a system of the [Nevis Linux cluster](https://twiki.nevis.columbia.edu/twiki/bin/view/Main/LinuxCluster), just type
 
     module load cmake root geant4
 
 and skip to the next section. Otherwise, read on.
 
-[20]: https://twiki.nevis.columbia.edu/twiki/bin/view/Main/LinuxCluster
-
 You will need recent versions of:
 
-   - [Cmake][30] (at least version 3.4, perhaps higher)
-   - [ROOT][40] (verified to work with ROOT 6.16 and higher)
-   - [Geant4][50] (verified to work with Geant4 10.5.0 and higher)
-
-   [30]: https://cmake.org/
-   [40]: https://root.cern.ch/
-   [50]: (http://geant4.web.cern.ch/)
+   - [Cmake](https://cmake.org/) (at least version 3.4, perhaps higher)
+   - [ROOT](https://root.cern.ch/) (verified to work with ROOT 6.16 and higher)
+   - [Geant4](http://geant4.web.cern.ch/) (verified to work with Geant4 10.5.0 and higher)
    
 You will also need the development libraries for:
 
-   - [GNU C++][60] (version 6.2 or higher, though the compilation might work with [clang][70])
-   - [Xerces-C][80]
-   - [OpenGL][90]
-   - [QT4][100]
-  
-   [60]: (https://gcc.gnu.org/)
-   [70]: (https://clang.llvm.org/)
-   [80]: (https://xerces.apache.org/xerces-c/)
-   [90]: (https://www.opengl.org/)
-   [100]: (https://www.qt.io/)
+   - [GNU C++](https://gcc.gnu.org/) (version 6.2 or higher, though the compilation might work with [clang](https://clang.llvm.org/))
+   - [Xerces-C](https://xerces.apache.org/xerces-c/)
+   - [OpenGL](https://www.opengl.org/)
+   - [QT4](https://www.qt.io/)
    
 On RHEL-derived Linux distributions (e.g., Scientific Linux, CentOS) you can install these development packages with:
 
@@ -67,9 +53,7 @@ If you are working remotely (e.g., on a laptop), and you want to use
 the interactive display, you will also need to
 install and/or activate both X-Windows and OpenGL for your local
 computer. You can find instructions
-[here][110].
-
-[110]: (https://www.hoffman2.idre.ucla.edu/access/x11_forwarding/)
+[here](https://www.hoffman2.idre.ucla.edu/access/x11_forwarding/).
 
 ## Running GramsG4
 
@@ -208,21 +192,15 @@ When you've made your changes and wish to "bookmark" them:
 ## Detector geometry
 
 A version of the detector geometry is defined in `grams.gdml`. As the extension implies,
-it is written in the geometry-definition language [GDML][120].
-
-[120]: (http://lcgapp.cern.ch/project/simu/framework/GDML/doc/GDMLmanual.pdf)
+it is written in the geometry-definition language [GDML](http://lcgapp.cern.ch/project/simu/framework/GDML/doc/GDMLmanual.pdf).
 
 If you want to make changes to the detector geometry (including the colors used for
 the `--ui` interactive display), edit `grams.gdml`. If you're having trouble 
 understanding the contents of the file:
 
    - Read the comments within the file.
-   - Refer to the [GDML][130] manual.
-   - Refer to the [Geant4 Applications Guide][140], especially the [geometry section][150] which explains the difference between solids, logical volumes, and physical volumes. 
-   
-   [130]: (http://lcgapp.cern.ch/project/simu/framework/GDML/doc/GDMLmanual.pdf)
-   [140]: (http://geant4-userdoc.web.cern.ch/geant4-userdoc/UsersGuides/ForApplicationDeveloper/html/)
-   [150]: (http://geant4-userdoc.web.cern.ch/geant4-userdoc/UsersGuides/ForApplicationDeveloper/html/Detector/Geometry/geometry.html)
+   - Refer to the [GDML](http://lcgapp.cern.ch/project/simu/framework/GDML/doc/GDMLmanual.pdf) manual.
+   - Refer to the [Geant4 Applications Guide](http://geant4-userdoc.web.cern.ch/geant4-userdoc/UsersGuides/ForApplicationDeveloper/html/), especially the [geometry section](http://geant4-userdoc.web.cern.ch/geant4-userdoc/UsersGuides/ForApplicationDeveloper/html/Detector/Geometry/geometry.html) which explains the difference between solids, logical volumes, and physical volumes. 
 
 ## Program options
 
@@ -273,7 +251,7 @@ Anatomy of <option> tag:
 ```
 
 Note that the options in this XML file can be overridden by command-line options.
-However, the contents of this file *define* those command-line options. For example:
+However, the contents of this file _define_ those command-line options. For example:
 
 ```  
   <option name="energyCut" value="12.5" type="double" desc="muon energy cut [MeV]"/>
@@ -380,7 +358,8 @@ For example:
 ```
 
 Units are whatever you want them to be, but it's probably safer to
-assume Geant4's standard units as defined in `SystemOfUnits.h`; these come from [CLHEP][160]. In particular:
+assume Geant4's standard units as defined in `SystemOfUnits.h`; these come from [CLHEP](https://proj-clhep.web.cern.ch/proj-clhep/). In particular:
+
 
 ```
   distance: mm
@@ -388,11 +367,10 @@ assume Geant4's standard units as defined in `SystemOfUnits.h`; these come from 
   energy:   MeV
 ```
 
-[160]: (https://proj-clhep.web.cern.ch/proj-clhep/)
-
 ## Physics lists and how to extend them
 
 If you looked at `options.xml` you saw an intriguing option (the list may not be `FTFP_BERT`):
+
 
 ```
     <option name="physicslist" short= "p" value="FTFP_BERT" type="string" desc="physics list"/>
@@ -406,7 +384,6 @@ If you run the program using the "&#x2011;&#x2011;showphysicslists" option (or s
 lists and modifiers. 
 
 Here's the first part of the output when I run this command with Geant4 10.5.1:
-
 ```
 ./gramsg4 -l
     
@@ -435,14 +412,12 @@ Unfortunately, at the time of this writing (May-2020) there isn't one
 single source that provides an answer. Here are some links to get you
 started:
 
-* [Short Guide to Choosing Your Physics List][170] (PDF presentation)
-* [G4 Physics List Guide][180] (incomplete)
+* [Short Guide to Choosing Your Physics List](https://indico.cern.ch/event/776050/contributions/3241826/attachments/1789270/2914266/ChoosingPhysLists.pdf) (PDF presentation)
+* [G4 Physics List Guide](http://geant4-userdoc.web.cern.ch/geant4-userdoc/UsersGuides/PhysicsListGuide/BackupVersions/V10.5-2.0/html/physicslistguide.html) (incomplete)
 
-[170]: (https://indico.cern.ch/event/776050/contributions/3241826/attachments/1789270/2914266/ChoosingPhysLists.pdf)
-[180]: (http://geant4-userdoc.web.cern.ch/geant4-userdoc/UsersGuides/PhysicsListGuide/BackupVersions/V10.5-2.0/html/physicslistguide.html)
-
-If you're just starting out, the Geant4 collaboration's recommendations for initial tests for high-energy physics aplications is `FTFP_BERT`. 
+If you're just starting out, the Geant4 collaboration's recommendations for initial tests is `FTFP_BERT`. 
 Here it is set explicitly on the command line:
+
 
     ./gramsg4 --physicslist FTFP_BERT
 
@@ -491,18 +466,13 @@ This will show you many places to get started!
    - git flow: <http://danielkummer.github.io/git-flow-cheatsheet/>
 
 Some git tips from other collaborations:  
-   - [git flow quick start guide][500]
-   - [while you are developing][510]
-
-[500]: (https://cdcvs.fnal.gov/redmine/projects/cet-is-public/wiki/Git_flow_quick_start)
-[510]: (https://cdcvs.fnal.gov/redmine/projects/uboonecode/wiki/Uboone_guide#While-you-are-developing)
+   - [git flow quick start guide](https://cdcvs.fnal.gov/redmine/projects/cet-is-public/wiki/Git_flow_quick_start)
+   - [while you are developing](https://cdcvs.fnal.gov/redmine/projects/uboonecode/wiki/Uboone_guide#While-you-are-developing)
 
 Toolkits:
-   - [Geant4 Manual][520]
-   - [ROOT Tutorial][530]
+   - [Geant4 Manual](http://geant4.web.cern.ch/geant4/UserDocumentation/UsersGuides/ForApplicationDeveloper/html/)
+   - [ROOT Tutorial](https://www.nevis.columbia.edu/~seligman/root-class/)
 
-[520]: (http://geant4.web.cern.ch/geant4/UserDocumentation/UsersGuides/ForApplicationDeveloper/html/)
-[530]: (https://www.nevis.columbia.edu/~seligman/root-class/)
 
 ## Viewing a Markdown document
 
@@ -512,7 +482,7 @@ formatting documents but still keeping the unformatted versions
 readable.
 
 If you want to read a formatted version of this document (so you're
-spared the funny backticks and hashtags and whatnot, and see links in-line), do a web search on
+spared the funny backticks and hashtags and whatnot), do a web search on
 "Markdown viewer" to find a suitable program. For example, at Nevis, all
 the Linux cluster systems have [pandoc](https://pandoc.org/) installed.
 You can view a plain text version of this document with:
