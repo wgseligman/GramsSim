@@ -61,7 +61,7 @@ To make things easier, I'm going to define a variable for the repository
 directory in your area. You may want to include a suitably modified version
 of this command in one of your shell startup files:
 
-    # This is directory that contains GramsG4, not GramsG4 itself.
+    # $GGDIR is the directory that contains GramsG4, not GramsG4 itself.
     cd ..
     export GGDIR=$PWD
 
@@ -81,10 +81,10 @@ To build/compile:
     cmake $GGDIR/GramsG4
     make
 
-To run the nng4sim simulation:
+To run the simulation:
 
     # After succesfully making the executable "gramsg4", you can run it
-    # in the nng4sim_build directory:
+    # in the build directory:
     ./gramsg4
 
 If no one has changed the defaults (see **Program Options** below), the Geant4 simulation
@@ -247,7 +247,7 @@ Anatomy of <option> tag:
    type  - string/bool/integer/double
    
    desc  - optional; brief description of the option (keep it 
-           less than 20 characters) ; used in the --help|-h message
+           less than 20 characters); used in the --help|-h message
 ```
 
 Note that the options in this XML file can be overridden by command-line options.
@@ -260,23 +260,23 @@ However, the contents of this file _define_ those command-line options. For exam
 means that you can set energyCut by either editing the XML file, or by using the
 option on the command line; e.g.:
 
-    gramsg4 --energyCut 15.6
+    ./gramsg4 --energyCut 15.6
 
 The default name and location of the XML file is "options.xml" in the
 current directory. You can override this on the command line; e.g.:
 
-    gramsg4 myOptions.xml  
+    ./gramsg4 myOptions.xml  
 
 If you're going to use that format, the XML file name must be the
 first argument. You can also supply the XML file name via the
 --options option, e.g.:
 
-    gramsg4 --options myWorkDirectory/myOptions.xml
+    ./gramsg4 --options myWorkDirectory/myOptions.xml
 
 Of course, you can mix and mash to your heart's content:
 
 
-    gramsg4 --energyCut 199.9 --options myEnergyStudyOptions.xml
+    ./gramsg4 --energyCut 199.9 --options myEnergyStudyOptions.xml
 
 If a job option has `type="boolean"`, then on the command line it takes no
 arguments; either it's there or it isn't. For example, if this is
@@ -289,7 +289,7 @@ in the XML file:
 then you could do this on the command line:
 
  
-    gramsg4 --makeHistograms --energyCut 123.45                      
+    ./gramsg4 --makeHistograms --energyCut 123.45                      
 
 
 You can define one-character short options:
@@ -299,7 +299,7 @@ You can define one-character short options:
 ```
 Then you can do:
 
-    gramsg4 -e 123.45 
+    ./gramsg4 -e 123.45 
 
 Be careful not to overuse the short options, since they can make the
 command harder to understand. 
@@ -321,10 +321,10 @@ the options XML file.
 
 Then all of the following are equivalent:
 
-    gramsg4 --nthreads 5
-    gramsg4 --nthreads=5
-    gramsg4 -t 5
-    gramsg4 -t5
+    ./gramsg4 --nthreads 5
+    ./gramsg4 --nthreads=5
+    ./gramsg4 -t 5
+    ./gramsg4 -t5
 
 ### Programming new options
 
@@ -385,7 +385,7 @@ lists and modifiers.
 
 Here's the first part of the output when I run this command with Geant4 10.5.1:
 ```
-gramsg4 -l
+./gramsg4 -l
     
 Available physics lists:
 Base G4VModularPhysicsLists in G4PhysListRegistry are:
