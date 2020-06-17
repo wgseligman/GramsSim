@@ -3,7 +3,7 @@
 #include "GramsG4ScintillatorSD.hh"
 #include "GramsG4LArSensitiveDetector.hh"
 #include "GramsG4LArSensitiveDetector.hh"
-#include "GramsG4Options.hh"
+#include "Options.hh"
 
 #include "G4Exception.hh"
 #include "G4SDManager.hh"
@@ -19,7 +19,7 @@
 GramsG4DetectorConstruction::GramsG4DetectorConstruction()
   : G4VUserDetectorConstruction()
 {   
-  auto options = GramsG4Options::GetInstance();
+  auto options = util::Options::GetInstance();
   G4bool verbose;
   options->GetOption("verbose",verbose);
 
@@ -28,7 +28,7 @@ GramsG4DetectorConstruction::GramsG4DetectorConstruction()
   
   // Fetch the GDML file with the detector description. 
   G4String gdmlFile;
-  auto success = GramsG4Options::GetInstance()->GetOption("gdmlfile",gdmlFile);
+  auto success = util::Options::GetInstance()->GetOption("gdmlfile",gdmlFile);
   if (success)
     fGDMLparser.Read(gdmlFile);
   else {
@@ -95,7 +95,7 @@ G4VPhysicalVolume* GramsG4DetectorConstruction::Construct()
 
 void GramsG4DetectorConstruction::ConstructSDandField()
 {
-  auto options = GramsG4Options::GetInstance();
+  auto options = util::Options::GetInstance();
 
   // Define the sensitive detectors and their names that
   // are recognized by this simulation. 

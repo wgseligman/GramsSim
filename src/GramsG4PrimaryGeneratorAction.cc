@@ -10,7 +10,7 @@
 #include "G4ParticleTable.hh"
 #include "G4ParticleDefinition.hh"
 #include "G4SystemOfUnits.hh"
-#include "GramsG4Options.hh"
+#include "Options.hh"
 
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -63,7 +63,7 @@ void GramsG4PrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
       break;
   }
 
-  auto options = GramsG4Options::GetInstance();
+  auto options = util::Options::GetInstance();
   G4bool debug;
   options->GetOption("debug",debug);
 

@@ -9,7 +9,7 @@
 #include "GramsG4PrimaryGeneratorAction.hh"
 #include "GramsG4DetectorConstruction.hh"
 #include "GramsG4ActionInitialization.hh"
-#include "GramsG4Options.hh"
+#include "Options.hh"
 
 #ifdef G4MULTITHREADED
 #include "G4MTRunManager.hh"
@@ -52,7 +52,7 @@ int main(int argc,char **argv)
 {
   // Initialize the options from the XML file and the
   // command line. Make sure this happens first!
-  auto options = GramsG4Options::GetInstance();
+  auto options = util::Options::GetInstance();
 
   // The third argument, 'gramsg4', is the name of the tag
   // to use for this program's options. See options.xml
