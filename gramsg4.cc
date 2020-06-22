@@ -9,7 +9,7 @@
 #include "GramsG4PrimaryGeneratorAction.hh"
 #include "GramsG4DetectorConstruction.hh"
 #include "GramsG4ActionInitialization.hh"
-#include "Options.hh"
+#include "Options.h"
 
 #ifdef G4MULTITHREADED
 #include "G4MTRunManager.hh"

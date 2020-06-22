@@ -3,7 +3,7 @@
 #include "GramsG4ScintillatorSD.hh"
 #include "GramsG4LArSensitiveDetector.hh"
 #include "GramsG4LArSensitiveDetector.hh"
-#include "Options.hh"
+#include "Options.h"
 
 #include "G4Exception.hh"
 #include "G4SDManager.hh"

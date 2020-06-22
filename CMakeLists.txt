@@ -38,12 +38,15 @@ include(${Geant4_USE_FILE})
 #
 include_directories(${PROJECT_SOURCE_DIR}/include 
                     ${PROJECT_SOURCE_DIR}/util/include
+                    ${PROJECT_SOURCE_DIR}/g4util/include
                     ${Geant4_INCLUDE_DIR}
                     ${ROOT_INCLUDE_DIR})
 file(GLOB sources ${PROJECT_SOURCE_DIR}/src/*.cc
-                  ${PROJECT_SOURCE_DIR}/util/src/*.cc)
+                  ${PROJECT_SOURCE_DIR}/util/src/*.cc
+                  ${PROJECT_SOURCE_DIR}/g4util/src/*.cc)
 file(GLOB headers ${PROJECT_SOURCE_DIR}/include/*.hh
-                  ${PROJECT_SOURCE_DIR}/util/include/*.hh)
+                  ${PROJECT_SOURCE_DIR}/util/include/*.h
+                  ${PROJECT_SOURCE_DIR}/g4util/include/*.h)
 
 #----------------------------------------------------------------------------
 # Add the executable, and link it to the Geant4 libraries
