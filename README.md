@@ -144,9 +144,9 @@ changes to the develop branch:
 ### Work files
 
 The `gramsg4` program requires several input files (e.g., `grams.gdml`, `options.xml`).
-These are copied from the GramsG4 directory to your work/build directory when you executed the `cmake` command. Go ahead and make
-any changes you want to these work files; they won't affect the original files in 
-`$GGDIR/GramsG4`. 
+These are copied from the GramsG4 directory to your work/build directory when you executed 
+the `cmake` command. Go ahead and make any changes you want to these work files; they won't 
+affect the original files in `$GGDIR/GramsG4`. 
 
 If you feel that your changes to these work files should become part of the git
 repository, be sure to copy the changed work files to `$GGDIR/GramsG4` and
@@ -199,7 +199,7 @@ the `--ui` interactive display), edit `grams.gdml`. If you're having trouble
 understanding the contents of the file:
 
    - Read the comments within the file.
-   - Refer to the [GDML](http://lcgapp.cern.ch/project/simu/framework/GDML/doc/GDMLmanual.pdf) manual.
+   - Refer to the [GDML manual](http://lcgapp.cern.ch/project/simu/framework/GDML/doc/GDMLmanual.pdf).
    - Refer to the [Geant4 Applications Guide](http://geant4-userdoc.web.cern.ch/geant4-userdoc/UsersGuides/ForApplicationDeveloper/html/), especially the [geometry section](http://geant4-userdoc.web.cern.ch/geant4-userdoc/UsersGuides/ForApplicationDeveloper/html/Detector/Geometry/geometry.html) which explains the difference between solids, logical volumes, and physical volumes. 
 
 ## Program options
