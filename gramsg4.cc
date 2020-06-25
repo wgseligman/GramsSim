@@ -1,15 +1,29 @@
 //
-/// \file persistency/gdml/GramsG4/gramsg4.cc
+/// \file GramsG4/gramsg4.cc
 /// \author William Seligman (seligman@nevis.columbia.edu)
 ///
 // --------------------------------------------------------------
 //      GEANT 4 - gramsg4
 // --------------------------------------------------------------
 
-#include "GramsG4PrimaryGeneratorAction.hh"
+// For processing command-line and XML file options.
+#include "Options.h" // in util/
+
+// There are three mandatory classes needed for any Geant4 application
+// to work. One is the detector geometry:
 #include "GramsG4DetectorConstruction.hh"
+
+// The other two are a way to create or fetch primary events, and
+// something for the simulation to with its events. These are both
+// defined here:
 #include "GramsG4ActionInitialization.hh"
-#include "Options.h"
+
+// Classes required for the UserActionManager.
+// See these header files for a description
+// of what a "user action manager" is and
+// why it's useful. 
+#include "UserAction.h"        // in g4util/
+#include "UserActionManager.h" // in g4util/
 
 #ifdef G4MULTITHREADED
 #include "G4MTRunManager.hh"
@@ -32,7 +46,7 @@
 // addition/replace along the same lines as EMX, EMY, etc
 #include "G4PhysListRegistry.hh"
 
-// allow ourselves to give the user extra info about available physics ctors
+// Allow ourselves to give the user extra info about available physics ctors
 #include "G4PhysicsConstructorFactory.hh"
 
 // Pull in a user defined physics list definition into the main
@@ -54,9 +68,9 @@ int main(int argc,char **argv)
   // command line. Make sure this happens first!
   auto options = util::Options::GetInstance();
 
-  // The third argument, 'gramsg4', is the name of the tag
-  // to use for this program's options. See options.xml
-  // and/or README.md to see how this workd.
+  // The third argument of ParseOptions, 'gramsg4', is the name of the
+  // tag to use for this program's options. See options.xml and/or
+  // README.md to see how this works.
   auto result = options->ParseOptions(argc, argv, "gramsg4");
 
   // Abort if we couldn't parse the job options.
@@ -99,27 +113,6 @@ int main(int argc,char **argv)
     options->PrintOptions();
     PrintAvailablePhysics();
   }
-
-  // Working with random numbers. First, define a RNG (Random Number
-  // Generator). (For a list of engines, see
-  // http://geant4.web.cern.ch/ooaandd/analysis/class_spec/global/randommisstat
-  // Note that I have no reason to expect that RanecuEngine is better
-  // or worse than any of the other flat distributions.
-  auto rngEngine = new CLHEP::RanecuEngine();
-
-  // Did the user supply a random-number seed?
-  // (Note that if they requested that the RNG
-  // be restored from a file, this will be ignored.)
-  G4int rngSeed;
-  options->GetOption("rngseed",rngSeed);
-  if ( rngSeed != 0 ) {
-    if (verbose) G4cout << "GramsG4::main(): Setting RNG seed to " 
-			<< rngSeed << G4endl;
-    rngEngine->setSeed(rngSeed);
-  }
-
-  // Save the engine.
-  G4Random::setTheEngine(rngEngine);
   
   // Set up the Geant4 Run Manager. 
 #ifdef G4MULTITHREADED
@@ -171,6 +164,27 @@ int main(int argc,char **argv)
       exit(EXIT_FAILURE);
     }
 
+  // Working with random numbers. First, define a RNG (Random Number
+  // Generator). (For a list of engines, see
+  // http://geant4.web.cern.ch/ooaandd/analysis/class_spec/global/randommisstat)
+  // Note that I have no reason to expect that RanecuEngine is better
+  // or worse than any of the other flat distributions.
+  auto rngEngine = new CLHEP::RanecuEngine();
+
+  // Did the user supply a random-number seed?
+  // (Note that if they requested that the RNG
+  // be restored from a file, this will be ignored.)
+  G4int rngSeed;
+  options->GetOption("rngseed",rngSeed);
+  if ( rngSeed != 0 ) {
+    if (verbose) G4cout << "GramsG4::main(): Setting RNG seed to " 
+			<< rngSeed << G4endl;
+    rngEngine->setSeed(rngSeed);
+  }
+
+  // Save the engine.
+  G4Random::setTheEngine(rngEngine);
+
   // Working with random-number generator (RNG) states.
   G4String rngDirectory;
   options->GetOption("rngdir",rngDirectory);
@@ -204,8 +218,23 @@ int main(int argc,char **argv)
   // Usual initializations: detector, physics, and user actions.
   runManager->SetUserInitialization(new GramsG4DetectorConstruction());
   runManager->SetUserInitialization(physics);
-  runManager->SetUserInitialization(new GramsG4ActionInitialization());
 
+  // ***** Set up the User Action Manager *****
+  // See the header files in directory g4util for a lengthy
+  // description of this facility. 
+
+  g4util::UserActionManager* uaManager = new g4util::UserActionManager();
+  // The UserActionManager is itself a UserAction class.
+  g4util::UserAction* uam = (g4util::UserAction*) uaManager;
+
+  // Pass the UserActionManager to Geant4's user-action initializer.
+  auto actInit = new GramsG4ActionInitialization();
+  actInit->SetUserActionLink(uam);
+  runManager->SetUserInitialization(actInit);
+
+  // ***** end User Action Manager setup *****
+
+  // Tell Geant4 we're about to begin. 
   runManager->Initialize();
 
   // Initialize visualization
