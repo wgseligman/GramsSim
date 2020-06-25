@@ -9,7 +9,7 @@
 /// UserAction to write events to a disk file.  Jane has written an
 /// UserAction that makes ntuples.  A big massive 500-CPU-hour run of
 /// G4 is planned, and we're all planning how to put our user-action
-// classes together.
+/// classes together.
 
 /// By using a UserActionManager class, each one of us can develop our
 /// own user-action classes independently.  Then, when we have the big

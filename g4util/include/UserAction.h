@@ -31,8 +31,8 @@
 
 // The following objects are the arguments to the methods
 // invoked in the user action classes.  In other words, they
-// contain the variables that we are normally able to record
-// in Geant.
+// contain the variables that we are normally able to examine
+// and write in a Geant4 simulation.
 
 #include "G4Run.hh"
 #include "G4Event.hh"
@@ -51,12 +51,8 @@ namespace g4util {
     // user action classes in Geant 4.0.1.   In this base class, the
     // methods are defined to do nothing.
 
-    // The method names begin with "Record" because almost every time
-    // this class is used, it has to do with 'recording' information
-    // from Geant4.
-
-    // Note: I don't implement a hook for the user stacking action since
-    // that method is not typically used for I/O.
+    // Note: I didn't implement a hook for the user stacking action since
+    // that method is not typically used for persistency.
 
     virtual void BeginOfRunAction(const G4Run*) {};
     virtual void EndOfRunAction(const G4Run*) {};
