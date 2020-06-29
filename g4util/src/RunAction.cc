@@ -1,12 +1,14 @@
 #include "RunAction.h"
 #include "UserAction.h"
 
+#include "G4UserRunAction.hh"
 #include "G4Run.hh"
 
 namespace g4util {
 
   RunAction::RunAction(UserAction* a)
-    : m_action(a)
+    : G4UserRunAction()
+    , m_action(a)
   {}
 
   RunAction::~RunAction() {;}

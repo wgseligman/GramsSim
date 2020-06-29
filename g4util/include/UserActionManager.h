@@ -50,7 +50,8 @@ namespace g4util {
     virtual void EndOfRunAction(const G4Run*);
     virtual void BeginOfEventAction(const G4Event*);
     virtual void EndOfEventAction(const G4Event*);
-    virtual void TrackingAction(const G4Track*);
+    virtual void PreTrackingAction (const G4Track*);
+    virtual void PostTrackingAction(const G4Track*);
     virtual void SteppingAction(const G4Step*);
 
   private:

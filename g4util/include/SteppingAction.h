@@ -16,7 +16,7 @@ namespace g4util {
 
     // If the constructor is called with an UserAction argument,
     // then we'll perform some record-keeping in UserSteppingAction.
-    SteppingAction(UserAction* a = 0) {m_action = a;}
+    SteppingAction(UserAction* a = 0);
 
     virtual ~SteppingAction() {};
   

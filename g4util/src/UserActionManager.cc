@@ -78,13 +78,23 @@ namespace g4util {
       }
   }
 
-  void UserActionManager::TrackingAction(const G4Track* a_track)
+  void UserActionManager::PreTrackingAction(const G4Track* a_track)
   {
     for ( auto i = m_userActions.begin(); 
 	  i != m_userActions.end(); 
 	  i++ )
       {
-	(*i)->TrackingAction(a_track);
+	(*i)->PreTrackingAction(a_track);
+      }
+  }
+
+  void UserActionManager::PostTrackingAction(const G4Track* a_track)
+  {
+    for ( auto i = m_userActions.begin(); 
+	  i != m_userActions.end(); 
+	  i++ )
+      {
+	(*i)->PostTrackingAction(a_track);
       }
   }
 

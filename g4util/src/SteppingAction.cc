@@ -1,9 +1,15 @@
 #include "SteppingAction.h"
 #include "UserAction.h"
 
+#include "G4UserSteppingAction.hh"
 #include "G4Step.hh"
 
 namespace g4util {
+
+  SteppingAction::SteppingAction( UserAction* a ) 
+    : G4UserSteppingAction()
+    , m_action(a)
+  {}
 
   void SteppingAction::UserSteppingAction(const G4Step* a_step)
   {

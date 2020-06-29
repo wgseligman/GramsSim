@@ -1,12 +1,14 @@
 #include "EventAction.h"
 #include "UserAction.h"
 
+#include "G4UserEventAction.hh"
 #include "G4Event.hh"
 
 namespace g4util {
 
   EventAction::EventAction(UserAction* a)
-    : m_action(a)
+    : G4UserEventAction()
+    , m_action(a)
   {}
 
   EventAction::~EventAction() {;}
