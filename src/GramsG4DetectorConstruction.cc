@@ -8,6 +8,7 @@
 #include "G4Exception.hh"
 #include "G4SDManager.hh"
 #include "G4LogicalVolumeStore.hh"
+#include "G4UserLimits.hh"
 #include "G4VisAttributes.hh"
 #include "G4Colour.hh"
 #include "G4GDMLParser.hh"
@@ -15,6 +16,7 @@
 #include "G4ios.hh"
 
 #include <stdio.h>
+#include <memory> // std::unique_ptr()
 
 GramsG4DetectorConstruction::GramsG4DetectorConstruction()
   : G4VUserDetectorConstruction()
@@ -28,7 +30,7 @@ GramsG4DetectorConstruction::GramsG4DetectorConstruction()
   
   // Fetch the GDML file with the detector description. 
   G4String gdmlFile;
-  auto success = util::Options::GetInstance()->GetOption("gdmlfile",gdmlFile);
+  auto success = options->GetOption("gdmlfile",gdmlFile);
   if (success)
     fGDMLparser.Read(gdmlFile);
   else {
@@ -40,16 +42,28 @@ GramsG4DetectorConstruction::GramsG4DetectorConstruction()
   }
 
   //
-  // Assign visibility and colors to volumes.
+  // Assign properties (like visibility and colors) to volumes.
   //
+
+  // Set up any special conditions for LAr TPC volumes. For now,
+  // that's just the step size within the LAr TPC.
+  G4double larTPCStepSize;
+  options->GetOption("stepsize",larTPCStepSize);
+  auto stepLimit( new G4UserLimits(larTPCStepSize)) ;
 
   G4cout << G4endl;
    
   // For each G4LogicalVolume...
   G4LogicalVolumeStore* lvs = G4LogicalVolumeStore::GetInstance();
-  for( auto lvciter = lvs->begin(); lvciter != lvs->end(); lvciter++ )
+  for( auto lviter = lvs->begin(); lviter != lvs->end(); lviter++ )
     {
-      G4GDMLAuxListType auxInfo = fGDMLparser.GetVolumeAuxiliaryInformation(*lvciter);
+      // Is this an active LAr TPC volume?
+      if ( (*lviter)->GetName() == "volTPCActive" ) {
+	// Attach any special volume properties.
+	(*lviter)->SetUserLimits(stepLimit);
+      }
+
+      G4GDMLAuxListType auxInfo = fGDMLparser.GetVolumeAuxiliaryInformation(*lviter);
       
       // Are there any <auxiliary/> tags for this volume?
       if (auxInfo.size()>0)
@@ -63,18 +77,18 @@ GramsG4DetectorConstruction::GramsG4DetectorConstruction()
 	      if ( str == "color" || str == "colour" ) {
 		val.toLower();
 		if ( val == "none" ) {
-		  (*lvciter)->SetVisAttributes(G4VisAttributes::GetInvisible());
+		  (*lviter)->SetVisAttributes(G4VisAttributes::GetInvisible());
 		  if (verbose)
 		    G4cout << "Set visiblity of '" 
-			   << (*lvciter)->GetName() << "' to none" << G4endl;
+			   << (*lviter)->GetName() << "' to none" << G4endl;
 		}
 		else {
 		  G4Colour color;
 		  if ( G4Colour::GetColour(val, color) ) {
-		    (*lvciter)->SetVisAttributes(G4VisAttributes(true, color));
+		    (*lviter)->SetVisAttributes(G4VisAttributes(true, color));
 		    if (verbose)
 		      G4cout << "Set color of '" 
-			     << (*lvciter)->GetName() 
+			     << (*lviter)->GetName() 
 			     << "' to " << val << G4endl;
 		  }
 		  else

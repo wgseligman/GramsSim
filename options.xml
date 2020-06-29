@@ -57,12 +57,18 @@
     <option name="showphysicslists" short="l" value="false" type="boolean" 
         desc="show physics lists then exit" />
 
+    <option name="stepsize" value="0.02" type="double" 
+        desc="LAr TPC step size" >
+      This is the step size for charged particles in the LAr TPC.
+      It should be the size of the voxels/pixels in the readout.
+    </option>
+
     <!-- If # threads > 0, enable multi-threaded execution. 
     Note that this does not magically make your program thread-safe -->
     <option name="nthreads" short = "t" value="0" type="integer" desc="number of threads"/>
 
     <!-- Variables that have to do with Random Number Generation (RNG).
-    You can leave these alone until you want to create a particular
+    You can leave these alone until you want to re-create a particular
     Monte Carlo event. -->
 
     <option name="rngseed" short="s" value="-1" type="integer" desc="random number seed">
