@@ -136,11 +136,13 @@ int main(int argc,char **argv)
   // "FTFP_BERT+OPTICAL" instead of "FTFP_BERT+G4OpticalPhysics".
   auto plreg = G4PhysListRegistry::Instance();
   plreg->AddPhysicsExtension("OPTICAL","G4OpticalPhysics");
+  plreg->AddPhysicsExtension("STEPLIMIT", "G4StepLimiterPhysics");
   plreg->AddPhysicsExtension("RADIO","G4RadioactiveDecayPhysics");
   plreg->AddPhysicsExtension("MYPHYSICS","MyG4PhysicsPhysics");
   if ( verbose ) {
     G4cout << "Extensible physics factory: adding extensions:" << G4endl
 	   << "   OPTICAL   ===> G4OpticalPhysics" << G4endl
+	   << "   STEPLIMIT ===> G4StepLimiterPhysics" << G4endl
 	   << "   RADIO     ===> G4RadioactiveDecayPhysics" << G4endl
 	   << "   MYPHYSICS ===> MyG4PhysicsPhysics" << G4endl
 	   << G4endl;

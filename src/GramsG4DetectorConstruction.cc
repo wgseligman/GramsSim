@@ -47,8 +47,8 @@ GramsG4DetectorConstruction::GramsG4DetectorConstruction()
 
   // Set up any special conditions for LAr TPC volumes. For now,
   // that's just the step size within the LAr TPC.
-  G4double larTPCStepSize;
-  options->GetOption("stepsize",larTPCStepSize);
+  G4double larTPCStepSize(0.);
+  bool haveTPCStepSize = options->GetOption("larstepsize",larTPCStepSize);
   auto stepLimit( new G4UserLimits(larTPCStepSize)) ;
 
   G4cout << G4endl;
@@ -57,13 +57,9 @@ GramsG4DetectorConstruction::GramsG4DetectorConstruction()
   G4LogicalVolumeStore* lvs = G4LogicalVolumeStore::GetInstance();
   for( auto lviter = lvs->begin(); lviter != lvs->end(); lviter++ )
     {
-      // Is this an active LAr TPC volume?
-      if ( (*lviter)->GetName() == "volTPCActive" ) {
-	// Attach any special volume properties.
-	(*lviter)->SetUserLimits(stepLimit);
-      }
+      auto logVol = *lviter;
 
-      G4GDMLAuxListType auxInfo = fGDMLparser.GetVolumeAuxiliaryInformation(*lviter);
+      G4GDMLAuxListType auxInfo = fGDMLparser.GetVolumeAuxiliaryInformation(logVol);
       
       // Are there any <auxiliary/> tags for this volume?
       if (auxInfo.size()>0)
@@ -74,21 +70,46 @@ GramsG4DetectorConstruction::GramsG4DetectorConstruction()
 	      G4String str=iaux->type;
 	      G4String val=iaux->value;
 	      str.toLower();
+
+	      // Check for any step limits.
+	      if ( str == "steplimit" ) {
+		try {
+		  double stepSize = std::stod(val);
+		  auto volStepLimit( new G4UserLimits(stepSize) );
+		  logVol->SetUserLimits(volStepLimit);
+		  if (verbose)
+		    G4cout << "Set maximum step size of '" 
+			   << logVol->GetName() << "' to " 
+			   << stepSize << G4endl;
+		} catch ( std::invalid_argument& e ) {
+		  G4ExceptionDescription description;
+		  description << "File " << __FILE__ << " Line " << __LINE__ 
+			      << " " << G4endl
+			      << "could not convert '" << val
+			      << "' to a number" << G4endl
+			      << "Step limit of volume '"
+			      << logVol->GetName() << "' unchanged";
+		  G4Exception("GramsG4DetectorConstruction()","invalid value",
+			      JustWarning, description);
+		}
+	      }
+
+	      // Check for any visibility changes.
 	      if ( str == "color" || str == "colour" ) {
 		val.toLower();
 		if ( val == "none" ) {
-		  (*lviter)->SetVisAttributes(G4VisAttributes::GetInvisible());
+		  logVol->SetVisAttributes(G4VisAttributes::GetInvisible());
 		  if (verbose)
 		    G4cout << "Set visiblity of '" 
-			   << (*lviter)->GetName() << "' to none" << G4endl;
+			   << logVol->GetName() << "' to none" << G4endl;
 		}
 		else {
 		  G4Colour color;
 		  if ( G4Colour::GetColour(val, color) ) {
-		    (*lviter)->SetVisAttributes(G4VisAttributes(true, color));
+		    logVol->SetVisAttributes(G4VisAttributes(true, color));
 		    if (verbose)
 		      G4cout << "Set color of '" 
-			     << (*lviter)->GetName() 
+			     << logVol->GetName() 
 			     << "' to " << val << G4endl;
 		  }
 		  else
@@ -97,6 +118,23 @@ GramsG4DetectorConstruction::GramsG4DetectorConstruction()
 	      } // if aux type is color
 	    } // for each aux tag
 	} // if aux tags
+
+      // Is this the active LAr TPC volume? And is there an option
+      // in the XML file that specifies the step limit for the LAr
+      // TPC? If so, override any step limits that came from the
+      // GDML file. 
+      if ( haveTPCStepSize  &&  logVol->GetName() == "volTPCActive" ) {
+	// Get any existing G4UserLimits stored in this volume 
+	// and delete it. 
+	auto oldLimits = logVol->GetUserLimits();
+	delete oldLimits;
+	// Attach the step limit from the options XML file. 
+	logVol->SetUserLimits(stepLimit);
+	if (verbose)
+	  G4cout << "Override: Set maximum step size of '" 
+		 << logVol->GetName() << "' to " << larTPCStepSize << G4endl;
+      }
+
     } // for each logical volume
   
   G4cout << std::endl;

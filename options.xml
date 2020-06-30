@@ -49,7 +49,7 @@
         desc="physics list">
         "FTFP_BERT" - typical for HEP applications
         "QGSP_BIC_HP" - typical medical applications
-        "QGSP_BIC_HP_EMY+G4OpticalPhysics" - Gave this a try. Needs review.
+        "QGSP_BIC_HP_EMY+OPTICAL+STEPLIMIT" - Gave this a try. Needs review.
         See README.md for references.
     </option>
 
@@ -57,10 +57,19 @@
     <option name="showphysicslists" short="l" value="false" type="boolean" 
         desc="show physics lists then exit" />
 
-    <option name="stepsize" value="0.02" type="double" 
+    <option name="larstepsize" value="0.02" type="double" 
         desc="LAr TPC step size" >
       This is the step size for charged particles in the LAr TPC.
+      It has no effect until the step-limit physics is turned on
+      ("G4StepLimiterPhysics" or simply STEPLIMIT) in physicslist
+      option above. 
+
       It should be the size of the voxels/pixels in the readout.
+
+      Units are mm (default G4 length unit). 
+
+      If this is commented out, the program will use the step size
+      in the GDML file for "volTPCActive".
     </option>
 
     <!-- If # threads > 0, enable multi-threaded execution. 

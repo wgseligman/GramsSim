@@ -531,6 +531,16 @@ Source for the mistakes and stupid jokes: William Seligman (WGS) seligman@nevis.
   <auxiliary auxtype="SensDet" auxvalue="LArSD" />
   -->
 
+  <!-- 29-Jun-2020 WGS: The following tag will assign a maximum step size
+  for a given volume. This will override Geant4's normal mechanism for determining
+  step size. Note that there may be an option in the XML options file that
+  will override this value. Units are G4's default (mm). Also note that for this
+  to have any effect, STEPLIMIT has to be turned on in the physics list
+  (see the options XML file).
+  
+  <auxiliary auxtype="StepLimit" auxvalue="0.02" />
+  -->
+
   <!-- 13-May-2020 WGS: For the sake of G4 visualization, a volume can optionally be set
   to a specific color. (If you're from England, you can also set a volume's visibility to 
   a specific colour.) Colors and visibility are set on the volume level. The tag's structure is:
@@ -591,6 +601,7 @@ Source for the mistakes and stupid jokes: William Seligman (WGS) seligman@nevis.
       <materialref ref="LAr"/>
       <solidref ref="ActiveRegion"/>
       <auxiliary auxtype="SensDet" auxvalue="LArSensitiveDetector" />
+      <auxiliary auxtype="StepLimit" auxvalue="0.02"/>
       <auxiliary auxtype="Color" auxvalue="red" />
     </volume>
 
