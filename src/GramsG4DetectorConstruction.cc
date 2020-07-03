@@ -2,7 +2,6 @@
 #include "GramsG4DetectorConstruction.hh"
 #include "GramsG4ScintillatorSD.hh"
 #include "GramsG4LArSensitiveDetector.hh"
-#include "GramsG4LArSensitiveDetector.hh"
 #include "Options.h"
 
 #include "G4Exception.hh"
@@ -153,7 +152,7 @@ void GramsG4DetectorConstruction::ConstructSDandField()
   // are recognized by this simulation. 
   G4SDManager* SDman = G4SDManager::GetSDMpointer();
   SDman->AddNewDetector( new GramsG4ScintillatorSD("ScintillatorSD") );
-  SDman->AddNewDetector( new GramsG4LArSensitiveDetector("LArSensitiveDetector") );
+  SDman->AddNewDetector( new LArSensitiveDetector("LArSensitiveDetector","LArHits") );
 
   // Use the <auxiliary/> tages in the GDML file to assign sensitive
   // detectors to volumes.

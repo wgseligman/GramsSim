@@ -1,10 +1,13 @@
-// This is a stub for a sensitive detector that will be
-// fully implemented after the GDML code for assigning
-// SDs to volumes is debugged. 
+/// \file GramsG4LArSensitiveDetector.hh
+/// \brief The sensitive detector that stores LArHits.
 
-#ifndef GramsG4LArSensitiveDetector_h
-#define GramsG4LArSensitiveDetector_h 1
+/// Store the energy/photon deposits in the 
+/// Active LAr TPC volume. 
 
+#ifndef LArSensitiveDetector_h
+#define LArSensitiveDetector_h 1
+
+#include "GramsG4LArHit.hh"
 
 #include "G4VSensitiveDetector.hh"
 
@@ -12,17 +15,19 @@
 #include "G4HCofThisEvent.hh"
 #include "G4TouchableHistory.hh"
 
-class GramsG4LArSensitiveDetector : public G4VSensitiveDetector 
+class LArSensitiveDetector : public G4VSensitiveDetector 
 {
 public:
-  GramsG4LArSensitiveDetector(const G4String& name)
-    : G4VSensitiveDetector(name)
-  {}
+  LArSensitiveDetector(const G4String& name,
+		       const G4String& hitsCollectionName);
 
-  virtual void   Initialize(G4HCofThisEvent*) {}
-  virtual G4bool ProcessHits(G4Step*, G4TouchableHistory*) {return true;}
-  virtual void   EndOfEvent(G4HCofThisEvent*) {}
+  virtual void   Initialize(G4HCofThisEvent*);
+  virtual G4bool ProcessHits(G4Step*, G4TouchableHistory*);
+  virtual void   EndOfEvent(G4HCofThisEvent*);
+
+private:
+  LArHitsCollection* m_hitsCollection;
 
 };
 
-#endif // GramsG4LArSensitiveDetector_h
+#endif // LArSensitiveDetector_h
