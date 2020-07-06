@@ -28,24 +28,22 @@ LArSensitiveDetector::LArSensitiveDetector(const G4String& name,
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-void LArSensitiveDetector::Initialize(G4HCofThisEvent* hce)
+void LArSensitiveDetector::Initialize(G4HCofThisEvent* a_hce)
 {
   // Create hits collection
-
   m_hitsCollection 
     = new LArHitsCollection(SensitiveDetectorName, collectionName[0]); 
 
   // Add this collection in "hits collection of this event" (HCE).
-
   G4int hcID 
     = G4SDManager::GetSDMpointer()->GetCollectionID(collectionName[0]);
-  hce->AddHitsCollection( hcID, m_hitsCollection ); 
+  a_hce->AddHitsCollection( hcID, m_hitsCollection ); 
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 G4bool LArSensitiveDetector::ProcessHits(G4Step* aStep, 
-				G4TouchableHistory*)
+					 G4TouchableHistory*)
 {  
   // energy deposit
   G4double edep = aStep->GetTotalEnergyDeposit();
@@ -56,7 +54,7 @@ G4bool LArSensitiveDetector::ProcessHits(G4Step* aStep,
   if (debug) {
     G4cout << "LArSensitiveDetector::ProcessHits - energy="
 	   << edep
-	   << " trac=" << aStep->GetTrack()->GetTrackID()
+	   << " track=" << aStep->GetTrack()->GetTrackID()
 	   << G4endl;
   }
 
@@ -106,10 +104,16 @@ void LArSensitiveDetector::EndOfEvent(G4HCofThisEvent*)
 
   if ( verbose ) { 
     G4int nofHits = m_hitsCollection->entries();
-    G4cout << G4endl
-	   << "-------->Hits Collection: in this event they are " << nofHits 
-	   << " hits in the LAr: " << G4endl;
-    for ( G4int i=0; i<nofHits; i++ ) (*m_hitsCollection)[i]->Print();
+    if ( nofHits == 0 )
+      G4cout << G4endl
+	     << "LArSensitiveDetector::EndOfEvent: in this event there was no"
+	     << " energy recorded in the LAr" << G4endl;
+    else {
+      G4cout << G4endl
+	     << "LArSensitiveDetector::EndOfEvent: in this event there are " << nofHits 
+	     << " hits in the LAr: " << G4endl;
+      for ( G4int i=0; i<nofHits; i++ ) (*m_hitsCollection)[i]->Print();
+    }
   }
 }
 

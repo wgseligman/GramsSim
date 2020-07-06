@@ -5,12 +5,14 @@
 //
 
 #include "GramsG4PrimaryGeneratorAction.hh"
+#include "Options.h"
+
 #include "G4Event.hh"
 #include "G4ParticleGun.hh"
 #include "G4ParticleTable.hh"
 #include "G4ParticleDefinition.hh"
 #include "G4SystemOfUnits.hh"
-#include "Options.h"
+#include "Randomize.hh"
 
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -41,27 +43,14 @@ GramsG4PrimaryGeneratorAction::~GramsG4PrimaryGeneratorAction()
 
 void GramsG4PrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 {
-  // For some reason, we're not incrementing the event ID
-  // when we're using the UI. So base the switch on the number
-  // of calls to this routine.
-  // G4int i = anEvent->GetEventID() % 3;
-  G4int i = nCalls++ % 3;
+  // For initial studies, shoot photons in a distribution 
+  // along the z-axis.
+
   G4ThreeVector position, momentum;
-  switch(i)
-  {
-    case 0:
-      position = G4ThreeVector(0.5*cm,0.5*cm,200*cm);
-      momentum = G4ThreeVector(0,0,-1);
-      break;
-    case 1:
-      position = G4ThreeVector(0.5*cm,-180*cm,-10*cm);
-      momentum = G4ThreeVector(0,1,0);
-      break;
-    case 2:
-      position = G4ThreeVector(-115*cm,0.5*cm,-10*cm);
-      momentum = G4ThreeVector(1,0,0);
-      break;
-  }
+  position = G4ThreeVector((G4UniformRand()-0.5) * 15.0*cm,
+			   (G4UniformRand()-0.5) * 15.0*cm,
+			   200*cm);
+  momentum = G4ThreeVector(0,0,-1);
 
   auto options = util::Options::GetInstance();
   G4bool debug;
