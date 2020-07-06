@@ -172,7 +172,7 @@ Source for the mistakes and stupid jokes: William Seligman (WGS) seligman@nevis.
     <constant name="outerZwallYSize" value="outerVolumeYSize" />
     <constant name="outerZwallZSize" value="2*scintillatorThickness" />
 
-    <constant name="outerYwallXSize" value="outerVolumeXSize" />
+    <constant name="outerYwallXSize" value="outerVolumeXSize - 4*scintillatorThickness" />
     <constant name="outerYwallYSize" value="2*scintillatorThickness" />
     <constant name="outerYwallZSize" value="outerVolumeZSize - 4*scintillatorThickness" />
 
@@ -217,7 +217,7 @@ Source for the mistakes and stupid jokes: William Seligman (WGS) seligman@nevis.
     <constant name="InnerZwallYSize" value="innerVolumeYSize" />
     <constant name="InnerZwallZSize" value="2*scintillatorThickness" />
 
-    <constant name="InnerYwallXSize" value="innerVolumeXSize" />
+    <constant name="InnerYwallXSize" value="innerVolumeXSize - 4*scintillatorThickness" />
     <constant name="InnerYwallYSize" value="2*scintillatorThickness" />
     <constant name="InnerYwallZSize" value="innerVolumeZSize - 4*scintillatorThickness" />
 
@@ -679,6 +679,12 @@ Source for the mistakes and stupid jokes: William Seligman (WGS) seligman@nevis.
       <materialref ref="STEEL_STAINLESS_Fe7Cr2Ni"/>
       <solidref ref="Cryostat"/>
       <auxiliary auxtype="Color" auxvalue="gray" />
+      
+       <!-- 10-May-2020 WGS: The LArTPC -->
+      <physvol>
+        <volumeref ref="volTPC" />
+        <positionref ref="posCenter" />
+      </physvol>     
     </volume>
 
     <!-- 8-May-2020 WGS: Is "polystyrene" (used in MicroBoone) a reasonable description of scintillator? -->
@@ -822,12 +828,6 @@ Source for the mistakes and stupid jokes: William Seligman (WGS) seligman@nevis.
         <volumeref ref="volCryostat" />
         <positionref ref="posCenter" />
       </physvol>
-      
-       <!-- 10-May-2020 WGS: The LArTPC -->
-      <physvol>
-        <volumeref ref="volTPC" />
-        <positionref ref="posCenter" />
-      </physvol>     
 
       <auxiliary auxtype="Color" auxvalue="cyan" />
     </volume>
