@@ -47,6 +47,7 @@ namespace gramsg4 {
 	m_momentum = G4ThreeVector(0,0,-1);
 	fParticleGun->SetParticlePosition(m_position);
 	fParticleGun->SetParticleMomentumDirection(m_momentum);
+	break;
 
       case commandMode:
 	// Get the particle type and energy from the Options XML file.

@@ -217,6 +217,12 @@ int main(int argc,char **argv)
       opticalPhysics->Configure(kScintillation,true);
       if (verbose) G4cout << "GramsG4::main(): Scintillation is on" << G4endl;
     }
+
+    // For now, make absolutely sure that the Cerenkov process is
+    // turned off.
+    opticalPhysics->Configure(kCerenkov,false);
+    opticalPhysics->SetCerenkovStackPhotons(false);
+    
   } // if opticalphysics
  
   /// NOTE: Almost certainly this code is not structured correctly

@@ -153,6 +153,8 @@ namespace gramsg4 {
     // Define the sensitive detectors and their names that
     // are recognized by this simulation. 
     G4SDManager* SDman = G4SDManager::GetSDMpointer();
+    // Make sure the hit collection name (the second argument) agrees
+    // with the name in GramsG4WriteHitsAction.cc
     SDman->AddNewDetector( new ScintillatorSD("ScintillatorSD") );
     SDman->AddNewDetector( new LArSensitiveDetector("LArSensitiveDetector","LArHits") );
 

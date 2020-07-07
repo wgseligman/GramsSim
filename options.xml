@@ -51,9 +51,9 @@
     <option name="energy" short="e" value="1" type="float" desc="event energy [MeV]"/>
     <option name="pdgcode" short="c" value="22" type="integer" desc="PDG code"/>
 
-    <!-- The name of the output file and directory. -->
+    <!-- The name of the output file. The G4 Analysis Manager will automatically
+    append '.root' to this name.-->
     <option name="outputfile" short="o" value="larhits" type="string" desc="output file"/>
-    <option name="outputdirectory" value="ntuple" type="string" desc="output directory"/>
 
     <!-- The physics list to be used by the detector simulation. --> 
     <option name="physicslist" short= "p" value="FTFP_BERT+OPTICAL+STEPLIMIT" type="string" 
