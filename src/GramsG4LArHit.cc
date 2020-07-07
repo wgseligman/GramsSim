@@ -6,6 +6,8 @@
 
 #include "GramsG4LArHit.hh"
 
+#include "G4EventManager.hh"
+#include "G4Event.hh"
 #include "G4UnitsTable.hh"
 #include "G4VVisManager.hh"
 #include "G4Circle.hh"
@@ -21,6 +23,7 @@ G4ThreadLocal G4Allocator<LArHit>* LArHitAllocator=0;
 LArHit::LArHit()
  : G4VHit() 
  , m_trackID(-1)
+ , m_pdgCode(0)
  , m_numPhotons(-1)
  , m_energy(0.)
  , m_position(G4ThreeVector())
@@ -36,6 +39,7 @@ LArHit::LArHit(const LArHit& right)
   : G4VHit()
 {
   m_trackID     = right.m_trackID;
+  m_pdgCode     = right.m_pdgCode;
   m_numPhotons  = right.m_numPhotons;
   m_energy      = right.m_energy;
   m_position    = right.m_position;
@@ -46,6 +50,7 @@ LArHit::LArHit(const LArHit& right)
 const LArHit& LArHit::operator=(const LArHit& right)
 {
   m_trackID     = right.m_trackID;
+  m_pdgCode     = right.m_pdgCode;
   m_numPhotons  = right.m_numPhotons;
   m_energy      = right.m_energy;
   m_position    = right.m_position;
@@ -81,13 +86,18 @@ void LArHit::Draw()
 
 void LArHit::Print()
 {
-  G4cout
-     << "  trackID: " << m_trackID << " numPhotons: " << m_numPhotons
-     << "Edep: "
-     << std::setw(7) << G4BestUnit(m_energy,"Energy")
-     << " Position: "
-     << std::setw(7) << G4BestUnit(m_position,"Length")
-     << G4endl;
+  auto eventID = G4EventManager::GetEventManager()->GetConstCurrentEvent()->GetEventID();
+
+  G4cout 
+    << " LArHit: eventID=" << eventID
+    << " trackID=" << m_trackID 
+    << " PDG=" << m_pdgCode
+    << " numPhotons=" << m_numPhotons
+    << " Edep="
+    << std::setw(7) << G4BestUnit(m_energy,"Energy")
+    << " Position="
+    << std::setw(7) << G4BestUnit(m_position,"Length")
+    << G4endl;
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

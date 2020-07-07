@@ -83,7 +83,11 @@ G4bool LArSensitiveDetector::ProcessHits(G4Step* aStep,
 
   LArHit* newHit = new LArHit();
 
-  newHit->SetTrackID  (aStep->GetTrack()->GetTrackID());
+  newHit->SetTrackID(aStep->GetTrack()->GetTrackID());
+  newHit->SetPDGCode(aStep->GetTrack()->
+		     GetDynamicParticle()->
+		     GetParticleDefinition()->
+		     GetPDGEncoding());
   newHit->SetNumPhotons(photons);
   newHit->SetEnergy(edep);
   newHit->SetPosition(position);

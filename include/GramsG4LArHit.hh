@@ -34,12 +34,14 @@ public:
   
   // Set methods
   void SetTrackID    (G4int track)      { m_trackID = track; };
+  void SetPDGCode    (G4int pdg)        { m_pdgCode = pdg; };
   void SetNumPhotons (G4int numPhotons) { m_numPhotons = numPhotons; };
   void SetEnergy     (G4double de)      { m_energy = de; };
   void SetPosition   (G4ThreeVector xyz){ m_position = xyz; };
   
   // Get methods
   G4int GetTrackID() const          { return m_trackID; };
+  G4int GetPDGCode() const          { return m_pdgCode; };
   G4int GetNumPhotons() const       { return m_numPhotons; };
   G4double GetEnergy() const        { return m_energy; };
   G4ThreeVector GetPosition() const { return m_position; };
@@ -47,6 +49,7 @@ public:
 private:
   
   G4int         m_trackID; 
+  G4int         m_pdgCode;
   G4int         m_numPhotons;
   G4double      m_energy;     ///< units MeV
   G4ThreeVector m_position;   ///< units mm

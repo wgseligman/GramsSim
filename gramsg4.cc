@@ -47,6 +47,9 @@
 // addition/replace along the same lines as EMX, EMY, etc
 #include "G4PhysListRegistry.hh"
 
+// For turning on optical photons.
+#include "G4OpticalPhysics.hh"
+
 // Allow ourselves to give the user extra info about available physics ctors
 #include "G4PhysicsConstructorFactory.hh"
 
@@ -185,6 +188,26 @@ int main(int argc,char **argv)
 		  FatalException, description);
       exit(EXIT_FAILURE);
     }
+
+  // Include optical photons if requested.
+  // This was copied from 
+  // artg4tk/artg4tk/pluginActions/physicsList/PhysicsList_service.cc 
+
+  G4OpticalPhysics* opticalPhysics = (G4OpticalPhysics*) physics->GetPhysics("Optical");
+  if ( opticalPhysics != NULL ) {
+
+    if (verbose) G4cout << "GramsG4::main(): Optical physics is on" << G4endl;
+
+    G4bool enable(false);
+    options->GetOption("enablescintillation",enable);
+    opticalPhysics->Configure(kScintillation,enable);
+    if (verbose && enable) G4cout << "GramsG4::main(): Scintillation is on" << G4endl;
+
+    options->GetOption("enablecerenkov",enable);
+    opticalPhysics->Configure(kCerenkov,enable);
+    if (verbose && enable) G4cout << "GramsG4::main(): Cerenkov is on" << G4endl;
+  }
+ 
 
   /// NOTE: Almost certainly this code is not structured correctly
   /// for a multi-threaded application. 

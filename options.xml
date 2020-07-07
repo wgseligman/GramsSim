@@ -61,6 +61,11 @@
         See README.md for references.
     </option>
 
+    <!-- Do we want to turn on these optical physics? Note that if you don't include
+    OPTICAL (or G4OpticalPhysics) in the physics list above, these will do nothing. -->
+    <option name="enablescintillation" value="true" type="boolean" desc="turn on scintillation" /> 
+    <option name="enablecerenkov" value="true" type="boolean" desc="turn on Cerenkov radiation" /> 
+
     <!-- Display available physics lists. --> 
     <option name="showphysicslists" short="l" value="false" type="boolean" 
         desc="show physics lists then exit" />
