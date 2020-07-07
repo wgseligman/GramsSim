@@ -206,22 +206,19 @@ int main(int argc,char **argv)
     // options to allow for greater control. For now, duplicate the
     // defaults used by artg4tk in LArSoft.
 
-    G4bool enable(false);
-    options->GetOption("enablescintillation",enable);
-    if (enable) {
+    opticalPhysics->SetScintillationStackPhotons(false);
+    G4bool disable;
+    options->GetOption("noscint",disable);
+    if (disable) {
+      opticalPhysics->Configure(kScintillation,false);
+      if (verbose) G4cout << "GramsG4::main(): Scintillation is off" << G4endl;
+    }
+    else {
       opticalPhysics->Configure(kScintillation,true);
-      opticalPhysics->SetScintillationByParticleType(true);
       if (verbose) G4cout << "GramsG4::main(): Scintillation is on" << G4endl;
     }
-
-    options->GetOption("enablecerenkov",enable);
-    if (enable) {
-      opticalPhysics->Configure(kCerenkov,enable);
-      if (verbose) G4cout << "GramsG4::main(): Cerenkov is on" << G4endl;
-    }
-  }
+  } // if opticalphysics
  
-
   /// NOTE: Almost certainly this code is not structured correctly
   /// for a multi-threaded application. 
 

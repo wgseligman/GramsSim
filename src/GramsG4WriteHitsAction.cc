@@ -7,6 +7,7 @@
 
 #include "GramsG4WriteHitsAction.hh"
 
+#include "Options.h" // in util/
 #include "UserAction.h" // in g4util/
 #include "Analysis.h" // in g4util/
 
@@ -17,7 +18,38 @@ namespace gramsg4 {
 
   WriteHitsAction::WriteHitsAction()
     : UserAction()
-  {}
+  {
+    // Access (maybe create) the G4AnalysisManager.
+    auto analysisManager = G4AnalysisManager::Instance();
+
+    auto options = util::Options::GetInstance();
+
+    G4String outputDirectory;
+    options->GetOption("outputDirectory",outputDirectory);
+    if ( outputDirectory.size() > 0 )
+      analysisManager->SetNtupleDirectoryName(outputDirectory);
+
+    G4bool verbose;
+    options->GetOption("verbose",verbose);
+    if (verbose)
+      analysisManager->SetVerboseLevel(1);
+
+    analysisManager->SetNtupleMerging(true);
+
+    // Creating ntuple
+    analysisManager->CreateNtuple("LArHits", "LAr TPC energy deposits");
+    analysisManager->CreateNtupleIColumn("Run");
+    analysisManager->CreateNtupleIColumn("Event");
+    analysisManager->CreateNtupleIColumn("TrackID");
+    analysisManager->CreateNtupleIColumn("PDGCode");
+    analysisManager->CreateNtupleIColumn("numPhotons");
+    analysisManager->CreateNtupleDColumn("energy");
+    analysisManager->CreateNtupleDColumn("xPos");
+    analysisManager->CreateNtupleDColumn("yPos");
+    analysisManager->CreateNtupleDColumn("zPos");
+    analysisManager->FinishNtuple();
+
+  }
 
   WriteHitsAction::~WriteHitsAction() {}
 
@@ -25,8 +57,11 @@ namespace gramsg4 {
   // the output file and write hits.
 
   void WriteHitsAction::BeginOfRunAction(const G4Run*) {}
+
   void WriteHitsAction::EndOfRunAction(const G4Run*) {}
+
   void WriteHitsAction::BeginOfEventAction(const G4Event*) {}
+
   void WriteHitsAction::EndOfEventAction(const G4Event*) {}
 
 } // namespace gramsg4

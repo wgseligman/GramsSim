@@ -53,11 +53,11 @@
 
     <!-- The name of the output directory. Note that to support multi-threaded
     execution, each event is written to a separate file within this directory. -->
-    <option name="outputdirectory" short="o" value="output" type="string" desc="output directory"/>
+    <option name="outputdirectory" short="o" value="ntuple" type="string" desc="output directory"/>
 
     
     <!-- The physics list to be used by the detector simulation. --> 
-    <option name="physicslist" short= "p" value="FTFP_BERT" type="string" 
+    <option name="physicslist" short= "p" value="FTFP_BERT+OPTICAL+STEPLIMIT" type="string" 
         desc="physics list">
         "FTFP_BERT" - typical for HEP applications
         "QGSP_BIC_HP" - typical medical applications
@@ -65,10 +65,11 @@
         See README.md for references.
     </option>
 
-    <!-- Do we want to turn on these optical physics? Note that if you don't include
-    OPTICAL (or G4OpticalPhysics) in the physics list above, these will do nothing. -->
-    <option name="enablescintillation" value="true" type="boolean" desc="turn on scintillation" /> 
-    <option name="enablecerenkov" value="true" type="boolean" desc="turn on Cerenkov radiation" /> 
+    <!-- Do we want to turn off this optical physics? Note that if you don't include
+    OPTICAL (or G4OpticalPhysics) in the physics list above, these processes
+    won't happen anyway. -->
+    <option name="noscint" value="false" type="boolean" 
+	    desc="turn off scintillation" /> 
 
     <!-- Display available physics lists. --> 
     <option name="showphysicslists" short="l" value="false" type="boolean" 
