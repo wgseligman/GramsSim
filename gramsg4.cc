@@ -26,6 +26,9 @@
 #include "UserAction.h"        // in g4util/
 #include "UserActionManager.h" // in g4util/
 
+// The user-action class that will write hits.
+#include "GramsG4WriteHitsAction.hh"
+
 #ifdef G4MULTITHREADED
 #include "G4MTRunManager.hh"
 #else
@@ -198,14 +201,24 @@ int main(int argc,char **argv)
 
     if (verbose) G4cout << "GramsG4::main(): Optical physics is on" << G4endl;
 
+    // There are many more optical-physics options than the ones
+    // listed below. At some point we may want to expand the user
+    // options to allow for greater control. For now, duplicate the
+    // defaults used by artg4tk in LArSoft.
+
     G4bool enable(false);
     options->GetOption("enablescintillation",enable);
-    opticalPhysics->Configure(kScintillation,enable);
-    if (verbose && enable) G4cout << "GramsG4::main(): Scintillation is on" << G4endl;
+    if (enable) {
+      opticalPhysics->Configure(kScintillation,true);
+      opticalPhysics->SetScintillationByParticleType(true);
+      if (verbose) G4cout << "GramsG4::main(): Scintillation is on" << G4endl;
+    }
 
     options->GetOption("enablecerenkov",enable);
-    opticalPhysics->Configure(kCerenkov,enable);
-    if (verbose && enable) G4cout << "GramsG4::main(): Cerenkov is on" << G4endl;
+    if (enable) {
+      opticalPhysics->Configure(kCerenkov,enable);
+      if (verbose) G4cout << "GramsG4::main(): Cerenkov is on" << G4endl;
+    }
   }
  
 
@@ -274,6 +287,9 @@ int main(int argc,char **argv)
   g4util::UserActionManager* uaManager = new g4util::UserActionManager();
   // The UserActionManager is itself a UserAction class.
   g4util::UserAction* uam = (g4util::UserAction*) uaManager;
+
+  // Add this application's user actions to our user-action manager.
+  uaManager->AddAndAdoptAction( new gramsg4::WriteHitsAction() );
 
   // Pass the UserActionManager to Geant4's user-action initializer.
   auto actInit = new GramsG4ActionInitialization();

@@ -13,6 +13,7 @@
 #include "G4EventManager.hh"
 #include "G4SteppingManager.hh"
 #include "G4Scintillation.hh"
+#include "G4Exception.hh"
 #include "G4ios.hh"
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -117,8 +118,8 @@ void LArSensitiveDetector::EndOfEvent(G4HCofThisEvent*)
 	     << "LArSensitiveDetector::EndOfEvent: in this event there are " << nofHits 
 	     << " hits in the LAr: " << G4endl;
       for ( G4int i=0; i<nofHits; i++ ) (*m_hitsCollection)[i]->Print();
-    }
-  }
+    } // display hits
+  } // if verbose
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

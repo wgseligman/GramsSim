@@ -50,8 +50,12 @@
     <option name="nevents" short="n" value="1000" type="integer" desc="number of events"/>
     <option name="energy" short="e" value="1" type="float" desc="event energy [MeV]"/>
     <option name="pdgcode" short="c" value="22" type="integer" desc="PDG code"/>
-    
 
+    <!-- The name of the output directory. Note that to support multi-threaded
+    execution, each event is written to a separate file within this directory. -->
+    <option name="outputdirectory" short="o" value="output" type="string" desc="output directory"/>
+
+    
     <!-- The physics list to be used by the detector simulation. --> 
     <option name="physicslist" short= "p" value="FTFP_BERT" type="string" 
         desc="physics list">
