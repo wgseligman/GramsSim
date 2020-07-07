@@ -8,6 +8,7 @@
 
 // For processing command-line and XML file options.
 #include "Options.h" // in util/
+#include "GramsG4RunMode.hh"
 
 // There are three mandatory classes needed for any Geant4 application
 // to work. One is the detector geometry:
@@ -113,6 +114,25 @@ int main(int argc,char **argv)
     options->PrintOptions();
     PrintAvailablePhysics();
   }
+
+  // Determine the run mode of this application.
+  // Default is take the run parameters from the command line. 
+  GramsG4RunMode::GetInstance()->SetRunMode(commandMode);
+
+  G4bool runUI(false);
+  options->GetOption("ui",runUI);
+   
+  G4String macroFile, uiMacroFile;
+  options->GetOption("macrofile",macroFile);
+  if (! runUI  &&  macroFile.size() > 0)   // batch mode  
+    GramsG4RunMode::GetInstance()->SetRunMode(batchMode);
+  else {
+    if ( runUI ) {
+      result = options->GetOption("uimacrofile",uiMacroFile);
+      if ( result && uiMacroFile.size() > 0 )
+	GramsG4RunMode::GetInstance()->SetRunMode(uiMode);
+    } // uimacrofile defined
+  } // runUI
   
   // Set up the Geant4 Run Manager. 
 #ifdef G4MULTITHREADED
@@ -165,6 +185,9 @@ int main(int argc,char **argv)
 		  FatalException, description);
       exit(EXIT_FAILURE);
     }
+
+  /// NOTE: Almost certainly this code is not structured correctly
+  /// for a multi-threaded application. 
 
   // Working with random numbers. First, define a RNG (Random Number
   // Generator). (For a list of engines, see
@@ -245,26 +268,36 @@ int main(int argc,char **argv)
 
   // Get the pointer to the User Interface manager
   G4UImanager* UImanager = G4UImanager::GetUIpointer();
-
-  G4bool runUI;
-  result = options->GetOption("ui",runUI);
    
   const G4String command("/control/execute ");
-  G4String filename;
-  result = options->GetOption("macrofile",filename);
-  if (! runUI  &&  filename.size() > 0)   // batch mode  
+
+  switch (GramsG4RunMode::GetInstance()->GetRunMode())
     {
-      UImanager->ApplyCommand(command+filename);
-    }
-  else           // interactive mode
-    {
-      result = options->GetOption("uimacrofile",filename);
-      if (result  &&  filename.size() > 0) {
+    case batchMode:
+      UImanager->ApplyCommand(command+macroFile);
+      break;
+    case uiMode:
+      {
 	G4UIExecutive* ui = new G4UIExecutive(argc, argv);
-	UImanager->ApplyCommand(command+filename);
+	UImanager->ApplyCommand(command+uiMacroFile);
 	ui->SessionStart();
 	delete ui;
       }
+      break;
+    case commandMode:
+      // If we get here, there are no macro files for input.
+      // Take the run parameters from the options XML file.
+      if (verbose) {
+	UImanager->ApplyCommand("/tracking/verbose 1");
+	UImanager->ApplyCommand("/control/verbose 1");
+	UImanager->ApplyCommand("/run/verbose 2");	  
+      } // verbose
+      G4int nevents;
+      options->GetOption("nevents",nevents);
+      if (nevents > 0) {
+	auto nstring = std::to_string(nevents);
+	UImanager->ApplyCommand("/run/beamOn " + nstring); 
+      } // nevents > 0
     }
 
   // Clean-up

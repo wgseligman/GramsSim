@@ -34,8 +34,8 @@
 
     <!-- If you want to use gramsg4 in batch mode, this is the
     file of Geant4 commands to be executed. If UI is on, this file is not
-    run automatically. -->
-    <option name="macrofile" short="m" value="run.mac" type="string" 
+    run automatically. Take a look at run.mac for some ideas. -->
+    <option name="macrofile" short="m" value="" type="string" 
         desc="G4 command batch file"/>
 
     <!-- If this flag is turned on, gramsg4 will start in an
@@ -43,6 +43,14 @@
     of the Geant4 command file specified by option 'uimacrofile' -->
     <option name="ui" value="false" type="boolean" desc="start UI session"/>
     <option name="uimacrofile" value="vis.mac" type="string" desc="G4 command file for UI"/>
+
+    <!-- If "ui" is false, and there is no macrofile, then take the run
+    parameters from the command line. Note that this is almost certainly
+    going to be replaced by a more sophisticated event generator. -->
+    <option name="nevents" short="n" value="1000" type="integer" desc="number of events"/>
+    <option name="energy" short="e" value="1" type="float" desc="event energy [MeV]"/>
+    <option name="pdgcode" short="c" value="22" type="integer" desc="PDG code"/>
+    
 
     <!-- The physics list to be used by the detector simulation. --> 
     <option name="physicslist" short= "p" value="FTFP_BERT" type="string" 
@@ -64,7 +72,7 @@
       ("G4StepLimiterPhysics" or simply STEPLIMIT) in physicslist
       option above. 
 
-      It should be the size of the voxels/pixels in the readout.
+      It should be the size of the voxels or pixels in the readout.
 
       Units are mm (default G4 length unit). 
 
