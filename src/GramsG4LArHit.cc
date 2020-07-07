@@ -16,88 +16,92 @@
 
 #include <iomanip>
 
-G4ThreadLocal G4Allocator<LArHit>* LArHitAllocator=0;
+namespace gramsg4 {
 
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+  G4ThreadLocal G4Allocator<LArHit>* LArHitAllocator=0;
 
-LArHit::LArHit()
- : G4VHit() 
- , m_trackID(-1)
- , m_pdgCode(0)
- , m_numPhotons(-1)
- , m_energy(0.)
- , m_position(G4ThreeVector())
-{}
+  //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+  LArHit::LArHit()
+    : G4VHit() 
+    , m_trackID(-1)
+    , m_pdgCode(0)
+    , m_numPhotons(-1)
+    , m_energy(0.)
+    , m_position(G4ThreeVector())
+  {}
 
-LArHit::~LArHit() {}
+  //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+  LArHit::~LArHit() {}
 
-LArHit::LArHit(const LArHit& right)
-  : G4VHit()
-{
-  m_trackID     = right.m_trackID;
-  m_pdgCode     = right.m_pdgCode;
-  m_numPhotons  = right.m_numPhotons;
-  m_energy      = right.m_energy;
-  m_position    = right.m_position;
-}
+  //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
-
-const LArHit& LArHit::operator=(const LArHit& right)
-{
-  m_trackID     = right.m_trackID;
-  m_pdgCode     = right.m_pdgCode;
-  m_numPhotons  = right.m_numPhotons;
-  m_energy      = right.m_energy;
-  m_position    = right.m_position;
-
-  return *this;
-}
-
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
-
-G4bool LArHit::operator==(const LArHit& right) const
-{
-  return ( this == &right ) ? true : false;
-}
-
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
-
-void LArHit::Draw()
-{
-  G4VVisManager* pVVisManager = G4VVisManager::GetConcreteInstance();
-  if(pVVisManager)
+  LArHit::LArHit(const LArHit& right)
+    : G4VHit()
   {
-    G4Circle circle(m_position);
-    circle.SetScreenSize(4.);
-    circle.SetFillStyle(G4Circle::filled);
-    G4Colour colour(1.,0.,0.);
-    G4VisAttributes attribs(colour);
-    circle.SetVisAttributes(attribs);
-    pVVisManager->Draw(circle);
+    m_trackID     = right.m_trackID;
+    m_pdgCode     = right.m_pdgCode;
+    m_numPhotons  = right.m_numPhotons;
+    m_energy      = right.m_energy;
+    m_position    = right.m_position;
   }
-}
 
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+  //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-void LArHit::Print()
-{
-  auto eventID = G4EventManager::GetEventManager()->GetConstCurrentEvent()->GetEventID();
+  const LArHit& LArHit::operator=(const LArHit& right)
+  {
+    m_trackID     = right.m_trackID;
+    m_pdgCode     = right.m_pdgCode;
+    m_numPhotons  = right.m_numPhotons;
+    m_energy      = right.m_energy;
+    m_position    = right.m_position;
 
-  G4cout 
-    << " LArHit: eventID=" << eventID
-    << " trackID=" << m_trackID 
-    << " PDG=" << m_pdgCode
-    << " numPhotons=" << m_numPhotons
-    << " Edep="
-    << std::setw(7) << G4BestUnit(m_energy,"Energy")
-    << " Position="
-    << std::setw(7) << G4BestUnit(m_position,"Length")
-    << G4endl;
-}
+    return *this;
+  }
 
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+  //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+
+  G4bool LArHit::operator==(const LArHit& right) const
+  {
+    return ( this == &right ) ? true : false;
+  }
+
+  //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+
+  void LArHit::Draw()
+  {
+    G4VVisManager* pVVisManager = G4VVisManager::GetConcreteInstance();
+    if(pVVisManager)
+      {
+	G4Circle circle(m_position);
+	circle.SetScreenSize(4.);
+	circle.SetFillStyle(G4Circle::filled);
+	G4Colour colour(1.,0.,0.);
+	G4VisAttributes attribs(colour);
+	circle.SetVisAttributes(attribs);
+	pVVisManager->Draw(circle);
+      }
+  }
+
+  //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+
+  void LArHit::Print()
+  {
+    auto eventID = G4EventManager::GetEventManager()->GetConstCurrentEvent()->GetEventID();
+
+    G4cout 
+      << " LArHit: eventID=" << eventID
+      << " trackID=" << m_trackID 
+      << " PDG=" << m_pdgCode
+      << " numPhotons=" << m_numPhotons
+      << " Edep="
+      << std::setw(7) << G4BestUnit(m_energy,"Energy")
+      << " Position="
+      << std::setw(7) << G4BestUnit(m_position,"Length")
+      << G4endl;
+  }
+
+  //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+
+} // namespace gramsg4

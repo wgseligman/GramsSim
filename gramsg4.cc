@@ -123,7 +123,7 @@ int main(int argc,char **argv)
 
   // Determine the run mode of this application.
   // Default is take the run parameters from the command line. 
-  GramsG4RunMode::GetInstance()->SetRunMode(commandMode);
+  gramsg4::RunMode::GetInstance()->SetRunMode(gramsg4::commandMode);
 
   G4bool runUI(false);
   options->GetOption("ui",runUI);
@@ -131,12 +131,12 @@ int main(int argc,char **argv)
   G4String macroFile, uiMacroFile;
   options->GetOption("macrofile",macroFile);
   if (! runUI  &&  macroFile.size() > 0)   // batch mode  
-    GramsG4RunMode::GetInstance()->SetRunMode(batchMode);
+    gramsg4::RunMode::GetInstance()->SetRunMode(gramsg4::batchMode);
   else {
     if ( runUI ) {
       result = options->GetOption("uimacrofile",uiMacroFile);
       if ( result && uiMacroFile.size() > 0 )
-	GramsG4RunMode::GetInstance()->SetRunMode(uiMode);
+	gramsg4::RunMode::GetInstance()->SetRunMode(gramsg4::uiMode);
     } // uimacrofile defined
   } // runUI
   
@@ -274,7 +274,7 @@ int main(int argc,char **argv)
   }
 
   // Usual initializations: detector, physics, and user actions.
-  runManager->SetUserInitialization(new GramsG4DetectorConstruction());
+  runManager->SetUserInitialization(new gramsg4::DetectorConstruction());
   runManager->SetUserInitialization(physics);
 
   // ***** Set up the User Action Manager *****
@@ -288,8 +288,8 @@ int main(int argc,char **argv)
   // Add this application's user actions to our user-action manager.
   uaManager->AddAndAdoptAction( new gramsg4::WriteHitsAction() );
 
-  // Pass the UserActionManager to Geant4's user-action initializer.
-  auto actInit = new GramsG4ActionInitialization();
+  // Pass the g4util::UserActionManager to Geant4's user-action initializer.
+  auto actInit = new gramsg4::ActionInitialization();
   actInit->SetUserActionLink(uam);
   runManager->SetUserInitialization(actInit);
 
@@ -307,12 +307,12 @@ int main(int argc,char **argv)
    
   const G4String command("/control/execute ");
 
-  switch (GramsG4RunMode::GetInstance()->GetRunMode())
+  switch (gramsg4::RunMode::GetInstance()->GetRunMode())
     {
-    case batchMode:
+    case gramsg4::batchMode:
       UImanager->ApplyCommand(command+macroFile);
       break;
-    case uiMode:
+    case gramsg4::uiMode:
       {
 	G4UIExecutive* ui = new G4UIExecutive(argc, argv);
 	UImanager->ApplyCommand(command+uiMacroFile);
@@ -320,7 +320,7 @@ int main(int argc,char **argv)
 	delete ui;
       }
       break;
-    case commandMode:
+    case gramsg4::commandMode:
       // If we get here, there are no macro files for input.
       // Take the run parameters from the options XML file.
       if (verbose) {

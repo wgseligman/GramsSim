@@ -24,20 +24,24 @@ class G4ParticleGun;
 /// Primary generator action; uses a "particle gun" to insert
 /// particles into the detector geometry.
 
-class GramsG4PrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction
-{
-public:
+namespace gramsg4 {
+
+  class PrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction
+  {
+  public:
   
-  GramsG4PrimaryGeneratorAction();
-  ~GramsG4PrimaryGeneratorAction();
+    PrimaryGeneratorAction();
+    ~PrimaryGeneratorAction();
   
-  virtual void GeneratePrimaries(G4Event* anEvent);
+    virtual void GeneratePrimaries(G4Event* anEvent);
   
-private:
+  private:
   
-  G4ParticleGun* fParticleGun;
-  G4ThreeVector m_position;
-  G4ThreeVector m_momentum;
-};
+    G4ParticleGun* fParticleGun;
+    G4ThreeVector m_position;
+    G4ThreeVector m_momentum;
+  };
+
+} // namespace gramsg4
 
 #endif

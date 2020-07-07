@@ -13,26 +13,30 @@
 #ifndef _GramsG4RunMode_H_
 #define _GramsG4RunMode_H_
 
-enum eRunMode { batchMode, uiMode, commandMode };
+namespace gramsg4 {
 
-class GramsG4RunMode 
-{
-public:
-   /// This is a singleton class.
-   /// According to <https://stackoverflow.com/questions/12248747/singleton-with-multithreads>
-   /// this method is compatible with multi-threaded running. 
+  enum eRunMode { batchMode, uiMode, commandMode };
 
-   static GramsG4RunMode* GetInstance() {
-      static GramsG4RunMode instance;
+  class RunMode 
+  {
+  public:
+    /// This is a singleton class.
+    /// According to <https://stackoverflow.com/questions/12248747/singleton-with-multithreads>
+    /// this method is compatible with multi-threaded running. 
+
+    static RunMode* GetInstance() {
+      static RunMode instance;
       return &instance;
-   }
+    }
 
-   void SetRunMode( eRunMode m ) { m_runMode = m; }
-   eRunMode GetRunMode() { return m_runMode; }
+    void SetRunMode( eRunMode m ) { m_runMode = m; }
+    eRunMode GetRunMode() { return m_runMode; }
 
-private:
-   eRunMode m_runMode;
+  private:
+    eRunMode m_runMode;
 
-};
+  };
+
+} // namespace gramsg4
 
 #endif // _GramsG4RunMode_H_

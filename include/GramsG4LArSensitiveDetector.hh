@@ -15,19 +15,23 @@
 #include "G4HCofThisEvent.hh"
 #include "G4TouchableHistory.hh"
 
-class LArSensitiveDetector : public G4VSensitiveDetector 
-{
-public:
-  LArSensitiveDetector(const G4String& name,
-		       const G4String& hitsCollectionName);
+namespace gramsg4 {
 
-  virtual void   Initialize(G4HCofThisEvent*);
-  virtual G4bool ProcessHits(G4Step*, G4TouchableHistory*);
-  virtual void   EndOfEvent(G4HCofThisEvent*);
+  class LArSensitiveDetector : public G4VSensitiveDetector 
+  {
+  public:
+    LArSensitiveDetector(const G4String& name,
+			 const G4String& hitsCollectionName);
 
-private:
-  LArHitsCollection* m_hitsCollection;
+    virtual void   Initialize(G4HCofThisEvent*);
+    virtual G4bool ProcessHits(G4Step*, G4TouchableHistory*);
+    virtual void   EndOfEvent(G4HCofThisEvent*);
 
-};
+  private:
+    LArHitsCollection* m_hitsCollection;
+
+  };
+
+} // namespace gramsg4
 
 #endif // LArSensitiveDetector_h
