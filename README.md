@@ -32,7 +32,7 @@ You will need recent versions of:
 
    - [Cmake](https://cmake.org/) (at least version 3.4, perhaps higher)
    - [ROOT](https://root.cern.ch/) (verified to work with ROOT 6.16 and higher)
-   - [Geant4](http://geant4.web.cern.ch/) (verified to work with Geant4 10.6.0 and higher)
+   - [Geant4](http://geant4.web.cern.ch/) (verified to work with Geant4 10.5.0 and higher)
    
 You will also need the development libraries for:
 
