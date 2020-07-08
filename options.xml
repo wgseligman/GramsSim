@@ -53,11 +53,14 @@
 
     <!-- The name of the output file. The G4 Analysis Manager will automatically
     append '.root' to this name.-->
-    <option name="outputfile" short="o" value="larhits" type="string" desc="output file"/>
+    <option name="outputfile" short="o" value="gramsg4" type="string" desc="output file"/>
 
     <!-- The physics list to be used by the detector simulation. --> 
     <option name="physicslist" short= "p" value="FTFP_BERT+OPTICAL+STEPLIMIT" type="string" 
         desc="physics list">
+        Here are few options. There are many, many others. Note that to simulate
+        voxels/pixels, you want to include +STEPLIMIT; to include scintillation
+        photons you want to include +OPTICAL. 
         "FTFP_BERT" - typical for HEP applications
         "QGSP_BIC_HP" - typical medical applications
         "QGSP_BIC_HP_EMY+OPTICAL+STEPLIMIT" - Gave this a try. Needs review.

@@ -1,12 +1,12 @@
-/// \file GramsG4WriteHitsAction.hh
+/// \file GramsG4WriteNtuplesAction.hh
 /// \brief User-action class to write out hits.
 
-/// This is a user-action class that writes out the
-/// event hits. At present, the output takes the form
-/// of basic (and inefficient) ROOT n-tuple.
+/// This is a user-action class that writes out the event hits and
+/// truth information. At present, the output takes the form of basic
+/// (and inefficient) ROOT n-tuples.
 
-#ifndef GramsG4WriteHitsAction_H
-#define GramsG4WriteHitsAction_H
+#ifndef GramsG4WriteNtuplesAction_H
+#define GramsG4WriteNtuplesAction_H
 
 #include "GramsG4LArHit.hh"
 #include "UserAction.h" // in g4util/
@@ -16,12 +16,12 @@ class G4Event;
 
 namespace gramsg4 {
 
-  class WriteHitsAction : public g4util::UserAction 
+  class WriteNtuplesAction : public g4util::UserAction 
   {
   public:
 
-    WriteHitsAction();
-    virtual ~WriteHitsAction();
+    WriteNtuplesAction();
+    virtual ~WriteNtuplesAction();
 
     // The user-action classes we'll need to define
     // the output file and write hits.
@@ -30,6 +30,8 @@ namespace gramsg4 {
     virtual void EndOfRunAction(const G4Run*);
     virtual void BeginOfEventAction(const G4Event*);
     virtual void EndOfEventAction(const G4Event*);
+    virtual void PreTrackingAction (const G4Track*);
+    virtual void PostTrackingAction(const G4Track*);
 
   private:
 
@@ -45,8 +47,11 @@ namespace gramsg4 {
     G4int m_LArNTID;
     G4int m_TrackNTID;
     G4int m_ScintNTID;
+
+    // Save the debugging state.
+    G4bool m_debug;
   };
 
 } // namespace gramsg4
 
-#endif // GramsG4WriteHitsAction_H
+#endif // GramsG4WriteNtuplesAction_H

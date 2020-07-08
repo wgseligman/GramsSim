@@ -26,8 +26,8 @@
 #include "UserAction.h"        // in g4util/
 #include "UserActionManager.h" // in g4util/
 
-// The user-action class that will write hits.
-#include "GramsG4WriteHitsAction.hh"
+// The user-action class that will write output.
+#include "GramsG4WriteNtuplesAction.hh"
 
 #ifdef G4MULTITHREADED
 #include "G4MTRunManager.hh"
@@ -292,7 +292,7 @@ int main(int argc,char **argv)
   g4util::UserAction* uam = (g4util::UserAction*) uaManager;
 
   // Add this application's user actions to our user-action manager.
-  uaManager->AddAndAdoptAction( new gramsg4::WriteHitsAction() );
+  uaManager->AddAndAdoptAction( new gramsg4::WriteNtuplesAction() );
 
   // Pass the g4util::UserActionManager to Geant4's user-action initializer.
   auto actInit = new gramsg4::ActionInitialization();

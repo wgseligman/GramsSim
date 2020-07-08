@@ -84,8 +84,8 @@ namespace gramsg4 {
     auto end   = aStep->GetPostStepPoint()->GetPosition();
     auto position = ( start + end ) / 2.;
 
-    auto tstart = aStep->GetPreStepPoint()->GetLocalTime();
-    auto tend   = aStep->GetPostStepPoint()->GetLocalTime();
+    auto tstart = aStep->GetPreStepPoint()->GetGlobalTime();
+    auto tend   = aStep->GetPostStepPoint()->GetGlobalTime();
     auto time = ( tstart + tend ) / 2.;
 
     LArHit* newHit = new LArHit();
