@@ -84,6 +84,10 @@ namespace gramsg4 {
     auto end   = aStep->GetPostStepPoint()->GetPosition();
     auto position = ( start + end ) / 2.;
 
+    auto tstart = aStep->GetPreStepPoint()->GetLocalTime();
+    auto tend   = aStep->GetPostStepPoint()->GetLocalTime();
+    auto time = ( tstart + tend ) / 2.;
+
     LArHit* newHit = new LArHit();
 
     newHit->SetTrackID(aStep->GetTrack()->GetTrackID());
@@ -93,6 +97,7 @@ namespace gramsg4 {
 		       GetPDGEncoding());
     newHit->SetNumPhotons(photons);
     newHit->SetEnergy(edep);
+    newHit->SetTime(time);
     newHit->SetPosition(position);
 
     m_hitsCollection->insert( newHit );

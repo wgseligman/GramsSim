@@ -47,7 +47,9 @@ namespace gramsg4 {
       analysisManager->SetVerboseLevel(1);
 
     // Without this, each execution thread writes its own file. It may
-    // turn out that's what we want after all, but let's see.
+    // turn out that's what we want after all, but let's see. Note that
+    // a consequence of merging files is that the events may not be in
+    // order in the output file if you use multiple threads. 
     analysisManager->SetNtupleMerging(true);
 
     // Open the output file.
@@ -85,9 +87,10 @@ namespace gramsg4 {
     analysisManager->CreateNtupleIColumn("PDGCode");    // id 3
     analysisManager->CreateNtupleIColumn("numPhotons"); // id 4
     analysisManager->CreateNtupleDColumn("energy");     // id 5
-    analysisManager->CreateNtupleDColumn("xPos");       // id 6
-    analysisManager->CreateNtupleDColumn("yPos");       // id 7
-    analysisManager->CreateNtupleDColumn("zPos");       // id 8
+    analysisManager->CreateNtupleDColumn("time");       // id 6
+    analysisManager->CreateNtupleDColumn("xPos");       // id 7
+    analysisManager->CreateNtupleDColumn("yPos");       // id 8
+    analysisManager->CreateNtupleDColumn("zPos");       // id 9
 
     if (debug) 
 	G4cout << "WriteHitsAction::BeginOfRunAction() - "
@@ -162,9 +165,10 @@ namespace gramsg4 {
       analysisManager->FillNtupleIColumn(m_LArNTID, 3, larHit->GetPDGCode() );
       analysisManager->FillNtupleIColumn(m_LArNTID, 4, larHit->GetNumPhotons() );
       analysisManager->FillNtupleDColumn(m_LArNTID, 5, larHit->GetEnergy() );
-      analysisManager->FillNtupleDColumn(m_LArNTID, 6, (larHit->GetPosition()).x() );
-      analysisManager->FillNtupleDColumn(m_LArNTID, 7, (larHit->GetPosition()).y() );
-      analysisManager->FillNtupleDColumn(m_LArNTID, 8, (larHit->GetPosition()).z() );
+      analysisManager->FillNtupleDColumn(m_LArNTID, 6, larHit->GetTime() );
+      analysisManager->FillNtupleDColumn(m_LArNTID, 7, (larHit->GetPosition()).x() );
+      analysisManager->FillNtupleDColumn(m_LArNTID, 8, (larHit->GetPosition()).y() );
+      analysisManager->FillNtupleDColumn(m_LArNTID, 9, (larHit->GetPosition()).z() );
 
       if (debug) 
 	G4cout << "WriteHitsAction::EndOfEventAction - Adding row" << G4endl;

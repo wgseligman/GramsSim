@@ -28,6 +28,7 @@ namespace gramsg4 {
     , m_pdgCode(0)
     , m_numPhotons(-1)
     , m_energy(0.)
+    , m_time(0.)
     , m_position(G4ThreeVector())
   {}
 
@@ -44,6 +45,7 @@ namespace gramsg4 {
     m_pdgCode     = right.m_pdgCode;
     m_numPhotons  = right.m_numPhotons;
     m_energy      = right.m_energy;
+    m_time        = right.m_time;
     m_position    = right.m_position;
   }
 
@@ -55,6 +57,7 @@ namespace gramsg4 {
     m_pdgCode     = right.m_pdgCode;
     m_numPhotons  = right.m_numPhotons;
     m_energy      = right.m_energy;
+    m_time        = right.m_time;
     m_position    = right.m_position;
 
     return *this;
@@ -97,6 +100,8 @@ namespace gramsg4 {
       << " numPhotons=" << m_numPhotons
       << " Edep="
       << std::setw(7) << G4BestUnit(m_energy,"Energy")
+      << " Time="
+      << std::setw(7) << G4BestUnit(m_time,"Time")
       << " Position="
       << std::setw(7) << G4BestUnit(m_position,"Length")
       << G4endl;

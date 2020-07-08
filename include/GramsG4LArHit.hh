@@ -39,6 +39,7 @@ namespace gramsg4 {
     void SetPDGCode    (G4int pdg)        { m_pdgCode = pdg; };
     void SetNumPhotons (G4int numPhotons) { m_numPhotons = numPhotons; };
     void SetEnergy     (G4double de)      { m_energy = de; };
+    void SetTime       (G4double t)       { m_time = t; };
     void SetPosition   (G4ThreeVector xyz){ m_position = xyz; };
   
     // Get methods
@@ -46,6 +47,7 @@ namespace gramsg4 {
     G4int GetPDGCode() const          { return m_pdgCode; };
     G4int GetNumPhotons() const       { return m_numPhotons; };
     G4double GetEnergy() const        { return m_energy; };
+    G4double GetTime() const          { return m_time; };
     G4ThreeVector GetPosition() const { return m_position; };
   
   private:
@@ -54,6 +56,7 @@ namespace gramsg4 {
     G4int         m_pdgCode;
     G4int         m_numPhotons;
     G4double      m_energy;     ///< units MeV
+    G4double      m_time  ;     ///< units ns
     G4ThreeVector m_position;   ///< units mm
   };
 
