@@ -81,7 +81,7 @@
         desc="LAr TPC step size" >
       This is the step size for charged particles in the LAr TPC.
       It has no effect until the step-limit physics is turned on
-      ("G4StepLimiterPhysics" or simply STEPLIMIT) in physicslist
+      ("G4StepLimiterPhysics" or simply STEPLIMIT) in the physicslist
       option above. 
 
       It should be the size of the voxels or pixels in the readout.
