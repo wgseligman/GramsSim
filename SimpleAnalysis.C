@@ -32,9 +32,10 @@
       // Display some counts, including those tracks that 
       // started in the active LAr. 
       std::cout << "Event " << event << " has "
-		<< tracks->GetEntriesFast() << " tracks, "
+		<< numLArHits << " hits and "
+		<< tracks->GetEntriesFast() << " tracks; "
 		<< tracks->GetEntries(findLArTracks) 
-		<< " started in the active LAr" << std::endl;
+		<< " of these tracks started in the active LAr" << std::endl;
 
       // Clean up. 
       delete tracks;
