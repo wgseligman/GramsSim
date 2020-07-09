@@ -1,15 +1,33 @@
 //
-/// \file persistency/gdml/GramsG4/gramsg4.cc
+/// \file GramsG4/gramsg4.cc
 /// \author William Seligman (seligman@nevis.columbia.edu)
 ///
 // --------------------------------------------------------------
 //      GEANT 4 - gramsg4
 // --------------------------------------------------------------
 
-#include "GramsG4PrimaryGeneratorAction.hh"
+// For processing command-line and XML file options.
+#include "Options.h" // in util/
+#include "GramsG4RunMode.hh"
+
+// There are three mandatory classes needed for any Geant4 application
+// to work. One is the detector geometry:
 #include "GramsG4DetectorConstruction.hh"
+
+// The other two are a way to create or fetch primary events, and
+// something for the simulation to with its events. These are both
+// defined here:
 #include "GramsG4ActionInitialization.hh"
-#include "GramsG4Options.hh"
+
+// Classes required for the UserActionManager.
+// See these header files for a description
+// of what a "user action manager" is and
+// why it's useful. 
+#include "UserAction.h"        // in g4util/
+#include "UserActionManager.h" // in g4util/
+
+// The user-action class that will write output.
+#include "GramsG4WriteNtuplesAction.hh"
 
 #ifdef G4MULTITHREADED
 #include "G4MTRunManager.hh"
@@ -32,7 +50,10 @@
 // addition/replace along the same lines as EMX, EMY, etc
 #include "G4PhysListRegistry.hh"
 
-// allow ourselves to give the user extra info about available physics ctors
+// For turning on optical photons.
+#include "G4OpticalPhysics.hh"
+
+// Allow ourselves to give the user extra info about available physics ctors
 #include "G4PhysicsConstructorFactory.hh"
 
 // Pull in a user defined physics list definition into the main
@@ -52,11 +73,11 @@ int main(int argc,char **argv)
 {
   // Initialize the options from the XML file and the
   // command line. Make sure this happens first!
-  auto options = GramsG4Options::GetInstance();
+  auto options = util::Options::GetInstance();
 
-  // The third argument, 'gramsg4', is the name of the tag
-  // to use for this program's options. See options.xml
-  // and/or README.md to see how this workd.
+  // The third argument of ParseOptions, 'gramsg4', is the name of the
+  // tag to use for this program's options. See options.xml and/or
+  // README.md to see how this works.
   auto result = options->ParseOptions(argc, argv, "gramsg4");
 
   // Abort if we couldn't parse the job options.
@@ -100,26 +121,24 @@ int main(int argc,char **argv)
     PrintAvailablePhysics();
   }
 
-  // Working with random numbers. First, define a RNG (Random Number
-  // Generator). (For a list of engines, see
-  // http://geant4.web.cern.ch/ooaandd/analysis/class_spec/global/randommisstat
-  // Note that I have no reason to expect that RanecuEngine is better
-  // or worse than any of the other flat distributions.
-  auto rngEngine = new CLHEP::RanecuEngine();
+  // Determine the run mode of this application.
+  // Default is take the run parameters from the command line. 
+  gramsg4::RunMode::GetInstance()->SetRunMode(gramsg4::commandMode);
 
-  // Did the user supply a random-number seed?
-  // (Note that if they requested that the RNG
-  // be restored from a file, this will be ignored.)
-  G4int rngSeed;
-  options->GetOption("rngseed",rngSeed);
-  if ( rngSeed != 0 ) {
-    if (verbose) G4cout << "GramsG4::main(): Setting RNG seed to " 
-			<< rngSeed << G4endl;
-    rngEngine->setSeed(rngSeed);
-  }
-
-  // Save the engine.
-  G4Random::setTheEngine(rngEngine);
+  G4bool runUI(false);
+  options->GetOption("ui",runUI);
+   
+  G4String macroFile, uiMacroFile;
+  options->GetOption("macrofile",macroFile);
+  if (! runUI  &&  macroFile.size() > 0)   // batch mode  
+    gramsg4::RunMode::GetInstance()->SetRunMode(gramsg4::batchMode);
+  else {
+    if ( runUI ) {
+      result = options->GetOption("uimacrofile",uiMacroFile);
+      if ( result && uiMacroFile.size() > 0 )
+	gramsg4::RunMode::GetInstance()->SetRunMode(gramsg4::uiMode);
+    } // uimacrofile defined
+  } // runUI
   
   // Set up the Geant4 Run Manager. 
 #ifdef G4MULTITHREADED
@@ -143,11 +162,13 @@ int main(int argc,char **argv)
   // "FTFP_BERT+OPTICAL" instead of "FTFP_BERT+G4OpticalPhysics".
   auto plreg = G4PhysListRegistry::Instance();
   plreg->AddPhysicsExtension("OPTICAL","G4OpticalPhysics");
+  plreg->AddPhysicsExtension("STEPLIMIT", "G4StepLimiterPhysics");
   plreg->AddPhysicsExtension("RADIO","G4RadioactiveDecayPhysics");
   plreg->AddPhysicsExtension("MYPHYSICS","MyG4PhysicsPhysics");
   if ( verbose ) {
     G4cout << "Extensible physics factory: adding extensions:" << G4endl
 	   << "   OPTICAL   ===> G4OpticalPhysics" << G4endl
+	   << "   STEPLIMIT ===> G4StepLimiterPhysics" << G4endl
 	   << "   RADIO     ===> G4RadioactiveDecayPhysics" << G4endl
 	   << "   MYPHYSICS ===> MyG4PhysicsPhysics" << G4endl
 	   << G4endl;
@@ -170,6 +191,63 @@ int main(int argc,char **argv)
 		  FatalException, description);
       exit(EXIT_FAILURE);
     }
+
+  // Include optical photons if requested.
+  // This was copied from 
+  // artg4tk/artg4tk/pluginActions/physicsList/PhysicsList_service.cc 
+
+  G4OpticalPhysics* opticalPhysics = (G4OpticalPhysics*) physics->GetPhysics("Optical");
+  if ( opticalPhysics != NULL ) {
+
+    if (verbose) G4cout << "GramsG4::main(): Optical physics is on" << G4endl;
+
+    // There are many more optical-physics options than the ones
+    // listed below. At some point we may want to expand the user
+    // options to allow for greater control. For now, duplicate the
+    // defaults used by artg4tk in LArSoft.
+
+    opticalPhysics->SetScintillationStackPhotons(false);
+    G4bool disable;
+    options->GetOption("noscint",disable);
+    if (disable) {
+      opticalPhysics->Configure(kScintillation,false);
+      if (verbose) G4cout << "GramsG4::main(): Scintillation is off" << G4endl;
+    }
+    else {
+      opticalPhysics->Configure(kScintillation,true);
+      if (verbose) G4cout << "GramsG4::main(): Scintillation is on" << G4endl;
+    }
+
+    // For now, make absolutely sure that the Cerenkov process is
+    // turned off.
+    opticalPhysics->Configure(kCerenkov,false);
+    opticalPhysics->SetCerenkovStackPhotons(false);
+    
+  } // if opticalphysics
+ 
+  /// NOTE: Almost certainly this code is not structured correctly
+  /// for a multi-threaded application. 
+
+  // Working with random numbers. First, define a RNG (Random Number
+  // Generator). (For a list of engines, see
+  // http://geant4.web.cern.ch/ooaandd/analysis/class_spec/global/randommisstat)
+  // Note that I have no reason to expect that RanecuEngine is better
+  // or worse than any of the other flat distributions.
+  auto rngEngine = new CLHEP::RanecuEngine();
+
+  // Did the user supply a random-number seed?
+  // (Note that if they requested that the RNG
+  // be restored from a file, this will be ignored.)
+  G4int rngSeed;
+  options->GetOption("rngseed",rngSeed);
+  if ( rngSeed != 0 ) {
+    if (verbose) G4cout << "GramsG4::main(): Setting RNG seed to " 
+			<< rngSeed << G4endl;
+    rngEngine->setSeed(rngSeed);
+  }
+
+  // Save the engine.
+  G4Random::setTheEngine(rngEngine);
 
   // Working with random-number generator (RNG) states.
   G4String rngDirectory;
@@ -202,10 +280,28 @@ int main(int argc,char **argv)
   }
 
   // Usual initializations: detector, physics, and user actions.
-  runManager->SetUserInitialization(new GramsG4DetectorConstruction());
+  runManager->SetUserInitialization(new gramsg4::DetectorConstruction());
   runManager->SetUserInitialization(physics);
-  runManager->SetUserInitialization(new GramsG4ActionInitialization());
 
+  // ***** Set up the User Action Manager *****
+  // See the header files in directory g4util for a lengthy
+  // description of this facility. 
+
+  g4util::UserActionManager* uaManager = new g4util::UserActionManager();
+  // The UserActionManager is itself a UserAction class.
+  g4util::UserAction* uam = (g4util::UserAction*) uaManager;
+
+  // Add this application's user actions to our user-action manager.
+  uaManager->AddAndAdoptAction( new gramsg4::WriteNtuplesAction() );
+
+  // Pass the g4util::UserActionManager to Geant4's user-action initializer.
+  auto actInit = new gramsg4::ActionInitialization();
+  actInit->SetUserActionLink(uam);
+  runManager->SetUserInitialization(actInit);
+
+  // ***** end User Action Manager setup *****
+
+  // Tell Geant4 we're about to begin. 
   runManager->Initialize();
 
   // Initialize visualization
@@ -214,26 +310,36 @@ int main(int argc,char **argv)
 
   // Get the pointer to the User Interface manager
   G4UImanager* UImanager = G4UImanager::GetUIpointer();
-
-  G4bool runUI;
-  result = options->GetOption("ui",runUI);
    
   const G4String command("/control/execute ");
-  G4String filename;
-  result = options->GetOption("macrofile",filename);
-  if (! runUI  &&  filename.size() > 0)   // batch mode  
+
+  switch (gramsg4::RunMode::GetInstance()->GetRunMode())
     {
-      UImanager->ApplyCommand(command+filename);
-    }
-  else           // interactive mode
-    {
-      result = options->GetOption("uimacrofile",filename);
-      if (result  &&  filename.size() > 0) {
+    case gramsg4::batchMode:
+      UImanager->ApplyCommand(command+macroFile);
+      break;
+    case gramsg4::uiMode:
+      {
 	G4UIExecutive* ui = new G4UIExecutive(argc, argv);
-	UImanager->ApplyCommand(command+filename);
+	UImanager->ApplyCommand(command+uiMacroFile);
 	ui->SessionStart();
 	delete ui;
       }
+      break;
+    case gramsg4::commandMode:
+      // If we get here, there are no macro files for input.
+      // Take the run parameters from the options XML file.
+      if (verbose) {
+	UImanager->ApplyCommand("/tracking/verbose 1");
+	UImanager->ApplyCommand("/control/verbose 1");
+	UImanager->ApplyCommand("/run/verbose 2");	  
+      } // verbose
+      G4int nevents;
+      options->GetOption("nevents",nevents);
+      if (nevents > 0) {
+	auto nstring = std::to_string(nevents);
+	UImanager->ApplyCommand("/run/beamOn " + nstring); 
+      } // nevents > 0
     }
 
   // Clean-up

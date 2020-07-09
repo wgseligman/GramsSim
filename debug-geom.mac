@@ -1,0 +1,14 @@
+###################################################
+# Geometry test
+###################################################
+
+# The following command will run a complete verification
+# of the detector geometry. In the case of GramsG4,
+# expect it to take a long time (hours!) because of the 
+# number of wires. 
+
+# To run this:
+# ./gramsg4 -m debug-geom.mac
+
+/geometry/test/run
+exit

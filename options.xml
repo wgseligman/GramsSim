@@ -34,8 +34,8 @@
 
     <!-- If you want to use gramsg4 in batch mode, this is the
     file of Geant4 commands to be executed. If UI is on, this file is not
-    run automatically. -->
-    <option name="macrofile" short="m" value="run.mac" type="string" 
+    run automatically. Take a look at run.mac for some ideas. -->
+    <option name="macrofile" short="m" value="" type="string" 
         desc="G4 command batch file"/>
 
     <!-- If this flag is turned on, gramsg4 will start in an
@@ -44,25 +44,60 @@
     <option name="ui" value="false" type="boolean" desc="start UI session"/>
     <option name="uimacrofile" value="vis.mac" type="string" desc="G4 command file for UI"/>
 
+    <!-- If "ui" is false, and there is no macrofile, then take the run
+    parameters from the command line. Note that this is almost certainly
+    going to be replaced by a more sophisticated event generator. -->
+    <option name="nevents" short="n" value="1000" type="integer" desc="number of events"/>
+    <option name="energy" short="e" value="1" type="float" desc="event energy [MeV]"/>
+    <option name="pdgcode" short="c" value="22" type="integer" desc="PDG code"/>
+
+    <!-- The name of the output file. The G4 Analysis Manager will automatically
+    append '.root' to this name.-->
+    <option name="outputfile" short="o" value="gramsg4" type="string" desc="output file"/>
+
     <!-- The physics list to be used by the detector simulation. --> 
-    <option name="physicslist" short= "p" value="FTFP_BERT" type="string" 
+    <option name="physicslist" short= "p" value="FTFP_BERT+OPTICAL+STEPLIMIT" type="string" 
         desc="physics list">
+        Here are few options. There are many, many others. Note that to simulate
+        voxels/pixels, you want to include +STEPLIMIT; to include scintillation
+        photons you want to include +OPTICAL. 
         "FTFP_BERT" - typical for HEP applications
         "QGSP_BIC_HP" - typical medical applications
-        "QGSP_BIC_HP_EMY+G4OpticalPhysics" - Gave this a try. Needs review.
+        "QGSP_BIC_HP_EMY+OPTICAL+STEPLIMIT" - Gave this a try. Needs review.
         See README.md for references.
     </option>
+
+    <!-- Do we want to turn off this optical physics? Note that if you don't include
+    OPTICAL (or G4OpticalPhysics) in the physics list above, these processes
+    won't happen anyway. -->
+    <option name="noscint" value="false" type="boolean" 
+	    desc="turn off scintillation" /> 
 
     <!-- Display available physics lists. --> 
     <option name="showphysicslists" short="l" value="false" type="boolean" 
         desc="show physics lists then exit" />
+
+    <option name="larstepsize" value="0.02" type="double" 
+        desc="LAr TPC step size" >
+      This is the step size for charged particles in the LAr TPC.
+      It has no effect until the step-limit physics is turned on
+      ("G4StepLimiterPhysics" or simply STEPLIMIT) in physicslist
+      option above. 
+
+      It should be the size of the voxels or pixels in the readout.
+
+      Units are mm (default G4 length unit). 
+
+      If this is commented out, the program will use the step size
+      in the GDML file for "volTPCActive".
+    </option>
 
     <!-- If # threads > 0, enable multi-threaded execution. 
     Note that this does not magically make your program thread-safe -->
     <option name="nthreads" short = "t" value="0" type="integer" desc="number of threads"/>
 
     <!-- Variables that have to do with Random Number Generation (RNG).
-    You can leave these alone until you want to create a particular
+    You can leave these alone until you want to re-create a particular
     Monte Carlo event. -->
 
     <option name="rngseed" short="s" value="-1" type="integer" desc="random number seed">

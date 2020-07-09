@@ -37,10 +37,16 @@ include(${Geant4_USE_FILE})
 # Locate sources and headers for this project
 #
 include_directories(${PROJECT_SOURCE_DIR}/include 
+                    ${PROJECT_SOURCE_DIR}/util/include
+                    ${PROJECT_SOURCE_DIR}/g4util/include
                     ${Geant4_INCLUDE_DIR}
                     ${ROOT_INCLUDE_DIR})
-file(GLOB sources ${PROJECT_SOURCE_DIR}/src/*.cc)
-file(GLOB headers ${PROJECT_SOURCE_DIR}/include/*.hh)
+file(GLOB sources ${PROJECT_SOURCE_DIR}/src/*.cc
+                  ${PROJECT_SOURCE_DIR}/util/src/*.cc
+                  ${PROJECT_SOURCE_DIR}/g4util/src/*.cc)
+file(GLOB headers ${PROJECT_SOURCE_DIR}/include/*.hh
+                  ${PROJECT_SOURCE_DIR}/util/include/*.h
+                  ${PROJECT_SOURCE_DIR}/g4util/include/*.h)
 
 #----------------------------------------------------------------------------
 # Add the executable, and link it to the Geant4 libraries
@@ -53,7 +59,7 @@ target_link_libraries(gramsg4 ${Geant4_LIBRARIES} )
 # build GramsG4. This is so that we can run the executable directly because it
 # relies on these scripts being in the current working directory.
 #
-set(GramsG4_SCRIPTS grams.gdml vis.mac run.mac options.xml)
+set(GramsG4_SCRIPTS grams.gdml vis.mac run.mac debug-geom.mac options.xml SimpleAnalysis.C)
 
 foreach(_script ${GramsG4_SCRIPTS})
   configure_file(

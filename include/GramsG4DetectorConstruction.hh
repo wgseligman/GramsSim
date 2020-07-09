@@ -10,11 +10,13 @@
 
 /// Detector construction using the geometry read from the GDML file
 
-class GramsG4DetectorConstruction : public G4VUserDetectorConstruction
-{
+namespace gramsg4 {
+
+  class DetectorConstruction : public G4VUserDetectorConstruction
+  {
   public:
     // Constructor
-    GramsG4DetectorConstruction();
+    DetectorConstruction();
     // Return a pointer to the world volume.
     virtual G4VPhysicalVolume* Construct();
     // Define the sensitive detectors.
@@ -23,6 +25,8 @@ class GramsG4DetectorConstruction : public G4VUserDetectorConstruction
   private:
     // The contents of the detector GDML file. 
     G4GDMLParser fGDMLparser;
-};
+  };
 
-#endif
+} // namespace gramsg4
+
+#endif // _GramsG4DETECTORCONSTRUCTION_H_

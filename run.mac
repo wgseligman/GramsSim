@@ -2,6 +2,9 @@
 # Batch running of events  
 ###################################################
 
+# Note that the /gun commands below are apparently
+# overridden by GramsG4PrimaryGeneratorAction.cc.
+
 # verbosity
 /tracking/verbose 1
 /control/verbose 1

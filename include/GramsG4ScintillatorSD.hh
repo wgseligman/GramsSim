@@ -5,24 +5,27 @@
 #ifndef GramsG4ScintillatorSD_h
 #define GramsG4ScintillatorSD_h 1
 
-
 #include "G4VSensitiveDetector.hh"
 
 #include "G4Step.hh"
 #include "G4HCofThisEvent.hh"
 #include "G4TouchableHistory.hh"
 
-class GramsG4ScintillatorSD : public G4VSensitiveDetector 
-{
-public:
-  GramsG4ScintillatorSD(const G4String& name)
-    : G4VSensitiveDetector(name)
-  {}
+namespace gramsg4 {
 
-  virtual void   Initialize(G4HCofThisEvent*) {}
-  virtual G4bool ProcessHits(G4Step*, G4TouchableHistory*) {return true;}
-  virtual void   EndOfEvent(G4HCofThisEvent*) {}
+  class ScintillatorSD : public G4VSensitiveDetector 
+  {
+  public:
+    ScintillatorSD(const G4String& name)
+      : G4VSensitiveDetector(name)
+    {}
 
-};
+    virtual void   Initialize(G4HCofThisEvent*) {}
+    virtual G4bool ProcessHits(G4Step*, G4TouchableHistory*) {return true;}
+    virtual void   EndOfEvent(G4HCofThisEvent*) {}
+
+  };
+
+} // namespace gramsg4
 
 #endif // GramsG4ScintillatorSD_h
