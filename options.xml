@@ -26,7 +26,7 @@
     <option name="gdmlfile" short="g" value="grams.gdml" type="string" 
         desc="input GDML detector desc"/>    
 
-    <!-- If not blank, 2rite a parsed version of the GDML input file.
+    <!-- If not blank, write a parsed version of the GDML input file.
     This can be used as input to ROOT, since ROOT doesn't accept the
     GDML <loop> tags. -->
     <option name="gdmlout" value="" type="string" 
