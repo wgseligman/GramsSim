@@ -138,7 +138,7 @@ Source for the mistakes and stupid jokes: William Seligman (WGS) seligman@nevis.
     are slightly different. 
     -->
     
-    <constant name="outerVolumeXSize" value="200" />
+    <constant name="outerVolumeXSize" value="350" />
     <constant name="outerVolumeYSize" value="350" />
     <constant name="outerVolumeZSize" value="200" />
 
@@ -191,7 +191,7 @@ Source for the mistakes and stupid jokes: William Seligman (WGS) seligman@nevis.
     <variable name="indexOuterXwallYstrips" value="0" />
 
 
-    <constant name="innerVolumeXSize" value="30" />
+    <constant name="innerVolumeXSize" value="150" />
     <constant name="innerVolumeYSize" value="150" />
     <constant name="innerVolumeZSize" value="30" />
 
