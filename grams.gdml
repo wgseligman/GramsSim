@@ -28,7 +28,7 @@ Source for the mistakes and stupid jokes: William Seligman (WGS) seligman@nevis.
     everything you're modeling, plus some space to both inject incoming
     particles and track outgong particles from the detector simulation. -->
     
-    <quantity name="worldVolumeXSize" type="length" value="250" unit="cm" />
+    <quantity name="worldVolumeXSize" type="length" value="400" unit="cm" />
     <quantity name="worldVolumeYSize" type="length" value="400" unit="cm" />
     <quantity name="worldVolumeZSize" type="length" value="500" unit="cm" />
     
@@ -37,7 +37,7 @@ Source for the mistakes and stupid jokes: William Seligman (WGS) seligman@nevis.
 
     <!-- ************** LArTPC section ************** -->
     
-    <constant name="lArTPCXSize" value="20" />
+    <constant name="lArTPCXSize" value="140" />
     <constant name="lArTPCYSize" value="140" />
     <constant name="lArTPCZSize" value="20" />
 
@@ -48,9 +48,9 @@ Source for the mistakes and stupid jokes: William Seligman (WGS) seligman@nevis.
     <constant name="cryostatYSize" value="lArTPCYSize + 2*cryostatThickness" />
     <constant name="cryostatZSize" value="lArTPCZSize + 2*cryostatThickness" />
 
-    <!-- 5-May-2020 WGS: For the x-y wires, use the wire spacing from the paper (0.2mm) 
-    and radius from MicroBooNE.-->
-    <constant name="wireSpacing" value="0.02" />
+    <!-- 5-May-2020 WGS: For the x-y wires, use the wire spacing from the GRAMS
+    collaboration meeting (2mm) and radius from MicroBooNE.-->
+    <constant name="wireSpacing" value="0.2" />
     <constant name="wireRadius" value="0.0075" />
     <constant name="lengthXWire" value="lArTPCXSize" />
     <constant name="lengthYWire" value="lArTPCYSize" />
