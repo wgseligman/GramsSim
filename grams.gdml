@@ -97,25 +97,25 @@ Source for the mistakes and stupid jokes: William Seligman (WGS) seligman@nevis.
     <constant name="ptfeYSize" value="ptfeThickness" />
     <constant name="ptfeZSize" value="lArTPCZSize - 1.0" />
     
-    <!-- 5-May-2020 WGS: How many active regions will there be? I don't know, 
-    so assume 5 PTFE sheets dividing the LAr into 6 regions (the number
+    <!-- 5-May-2020 WGS: How many active cells will there be? I don't know, 
+    so assume 5 PTFE sheets dividing the LAr into 6 cells (the number
     in the diagrams in arXiv:1901.03430v3). -->
     
     <constant name="numberPtfeSheets" value="5" />
-    <constant name="numberActiveRegions" value="numberPtfeSheets + 1" />
+    <constant name="numberActiveCells" value="numberPtfeSheets + 1" />
 
-    <!-- 8-May-2020 WGS: How big will the active LAr region be? I don't know. 
-    To make the placement of the sensitive detector regions easier, I'm putting a
+    <!-- 8-May-2020 WGS: How big will the active LAr cell be? I don't know. 
+    To make the placement of the sensitive detector cells easier, I'm putting a
     2 cm boundary in x and z, but over the complete y-length of the LArTPC. This
     isn't realistic, but you have to start somewhere. -->
 
-    <constant name="activeRegionXSize" value="lArTPCXSize - 4.0" />
-    <constant name="activeRegionYSize" value="(lArTPCYSize - numberPtfeSheets*ptfeThickness) / numberActiveRegions" />
-    <constant name="activeRegionZSize" value="lArTPCZSize - 4.0" />
+    <constant name="activeCellXSize" value="lArTPCXSize - 4.0" />
+    <constant name="activeCellYSize" value="(lArTPCYSize - numberPtfeSheets*ptfeThickness) / numberActiveCells" />
+    <constant name="activeCellZSize" value="lArTPCZSize - 4.0" />
     
-    <!-- 8-May-2020 WGS: We're going to place active LAr regions separated by the PTFE 
+    <!-- 8-May-2020 WGS: We're going to place active LAr cells separated by the PTFE 
     sheets in using a loop. -->
-    <variable name="activeRegionIndex" value="0" />
+    <variable name="activeCellIndex" value="0" />
     <variable name="ptfeIndex" value="0" />
     
     <!-- 5-May-2020 WGS: How big is a SIPM? I don't know. Make a guess. -->
@@ -254,7 +254,7 @@ Source for the mistakes and stupid jokes: William Seligman (WGS) seligman@nevis.
     defines the z=0 axis. -->
     
     <!-- 15-May-2020 WGS: It took me 5 days to realize that, with z=0 set to the x-wires,
-    all of the TPC active region have z<0. The purpose of LArSoft's definition of having
+    all of the TPC active cell have z<0. The purpose of LArSoft's definition of having
     the induction plane be at an axis=0 is to avoid negative numbers! Leave this
     for now, and let the collaboration decide an appropriate coordinate system. -->
     <constant name="outerDetectorOffsetInWorld" value ="-(lArTPCZSize/2) + (wirePlaneThickness/2) - innerDetectorOffsetInOuter" />
@@ -609,7 +609,7 @@ Source for the mistakes and stupid jokes: William Seligman (WGS) seligman@nevis.
     <box lunit="cm" name="CathodePlate" x="cathodeXSize" y="cathodeYSize" z="cathodeZSize" />
     <box lunit="cm" name="TPCWirePlane" x="wirePlaneXSize" y="wirePlaneYSize" z="wirePlaneZSize" />
     <box lunit="cm" name="PTFESheet" x="ptfeXSize" y="ptfeYSize" z="ptfeZSize" />
-    <box lunit="cm" name="ActiveRegion" x="activeRegionXSize" y="activeRegionYSize" z="activeRegionZSize" />
+    <box lunit="cm" name="ActiveCell" x="activeCellXSize" y="activeCellYSize" z="activeCellZSize" />
     <box lunit="cm" name="SIPM" x="sipmXSize" y="sipmYSize" z="sipmZSize" />
   
     <box lunit="cm" name="World" x="worldVolumeXSize" y="worldVolumeYSize" z="worldVolumeZSize"/>
@@ -723,7 +723,7 @@ Source for the mistakes and stupid jokes: William Seligman (WGS) seligman@nevis.
 
     <volume name="volTPCActive">
       <materialref ref="LAr"/>
-      <solidref ref="ActiveRegion"/>
+      <solidref ref="ActiveCell"/>
       <auxiliary auxtype="SensDet" auxvalue="LArSensitiveDetector" />
       <auxiliary auxtype="StepLimit" auxvalue="0.02"/>
       <auxiliary auxtype="Color" auxvalue="red" />
@@ -770,26 +770,26 @@ Source for the mistakes and stupid jokes: William Seligman (WGS) seligman@nevis.
         <position name="posYplane" unit="cm" x="0" y="0" z="(lArTPCZSize/2) - (wirePlaneThickness*3/2)"/>
       </physvol>
 
-      <!-- 8-May-2020 WGS: For each active region, we have to place a volume representing that
-      region, the PTFE sheet that separates the regions, and a SIPM. -->
+      <!-- 8-May-2020 WGS: For each active cell, we have to place a volume representing that
+      cell, the PTFE sheet that separates the cells, and a SIPM. -->
       <loop for="ptfeIndex" to="numberPtfeSheets - 1" step="1">
         <physvol>
             <volumeref ref="volPTFESheet"/>
-            <position name="posPTFESheet" unit="cm" x="0" y="-(lArTPCYSize/2) + activeRegionYSize + ptfeYSize/2 + ptfeIndex*(activeRegionYSize + ptfeYSize)" z="0"/>
+            <position name="posPTFESheet" unit="cm" x="0" y="-(lArTPCYSize/2) + activeCellYSize + ptfeYSize/2 + ptfeIndex*(activeCellYSize + ptfeYSize)" z="0"/>
         </physvol>
       </loop>
       
-      <loop for="activeRegionIndex" to="numberActiveRegions - 1" step="1">
+      <loop for="activeCellIndex" to="numberActiveCells - 1" step="1">
         <physvol>
             <volumeref ref="volTPCActive"/>
-            <position name="posTPCActive" unit="cm" x="0" y="-(lArTPCYSize/2) + activeRegionYSize/2 + activeRegionIndex*(activeRegionYSize + ptfeYSize)" z="0"/>
+            <position name="posTPCActive" unit="cm" x="0" y="-(lArTPCYSize/2) + activeCellYSize/2 + activeCellIndex*(activeCellYSize + ptfeYSize)" z="0"/>
         </physvol>
         <!-- 8-May-2020 WGS: Where are the SIPMs? How will they be mounted? I don't know.
         For now, let them magically float 2cm above the bottom of the TPC, outside the
-        active TPC region. -->
+        active TPC cell. -->
         <physvol>
             <volumeref ref="volSIPM"/>
-            <position name="posSIPM" unit="cm" x="0" y="-(lArTPCYSize/2) + activeRegionYSize/2 + activeRegionIndex*(activeRegionYSize + ptfeYSize)" z="-(lArTPCZSize/2) + 2"/>
+            <position name="posSIPM" unit="cm" x="0" y="-(lArTPCYSize/2) + activeCellYSize/2 + activeCellIndex*(activeCellYSize + ptfeYSize)" z="-(lArTPCZSize/2) + 2"/>
         </physvol>
       </loop>
 
