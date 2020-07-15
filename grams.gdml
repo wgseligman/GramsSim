@@ -743,14 +743,15 @@ Source for the mistakes and stupid jokes: William Seligman (WGS) seligman@nevis.
         <position name="posCathod" unit="cm" x="0" y="0" z="-(lArTPCZSize/2) + 2*cathodeThickness" />
       </physvol>
       
-      <!-- 8-May-2020 WGS: Where will the wire planes be? I don't know. Make a guess. -->
+      <!-- 08-May-2020 WGS: Where will the wire planes be? I don't know. Make a guess. -->
+      <!-- 15-Jul-2020 WGS: Leave just enough room for SIPMs above the wire planes. -->
       <physvol>
         <volumeref ref="volTPCXPlane"/>
-        <position name="posXplane" unit="cm" x="0" y="0" z="(lArTPCZSize/2) - (wirePlaneThickness/2)" />
+        <position name="posXplane" unit="cm" x="0" y="0" z="(lArTPCZSize/2) - (wirePlaneThickness/2) - sipmThickness" />
       </physvol>
       <physvol>
         <volumeref ref="volTPCYPlane"/>
-        <position name="posYplane" unit="cm" x="0" y="0" z="(lArTPCZSize/2) - (wirePlaneThickness*3/2)"/>
+        <position name="posYplane" unit="cm" x="0" y="0" z="(lArTPCZSize/2) - (wirePlaneThickness*3/2) - sipmThickness"/>
       </physvol>
 
       <!-- 8-May-2020 WGS: For each active cell, we have to place a volume representing that
@@ -767,12 +768,11 @@ Source for the mistakes and stupid jokes: William Seligman (WGS) seligman@nevis.
             <volumeref ref="volTPCActive"/>
             <position name="posTPCActive" unit="cm" x="0" y="-(lArTPCYSize/2) + activeCellYSize/2 + activeCellIndex*(activeCellYSize + ptfeYSize)" z="0"/>
         </physvol>
-        <!-- 8-May-2020 WGS: Where are the SIPMs? How will they be mounted? I don't know.
-        For now, let them magically float 2cm above the bottom of the TPC, outside the
-        active TPC cell. -->
+        <!-- 17-Jul-2020 WGS: Where are the SIPMs? How will they be mounted? I don't know.
+        For now, let them magically float just above the wire planes. -->
         <physvol>
             <volumeref ref="volSIPM"/>
-            <position name="posSIPM" unit="cm" x="0" y="-(lArTPCYSize/2) + activeCellYSize/2 + activeCellIndex*(activeCellYSize + ptfeYSize)" z="-(lArTPCZSize/2) + 2"/>
+            <position name="posSIPM" unit="cm" x="0" y="-(lArTPCYSize/2) + activeCellYSize/2 + activeCellIndex*(activeCellYSize + ptfeYSize)" z="(lArTPCZSize/2) - (sipmThickness)/2"/>
         </physvol>
       </loop>
 
