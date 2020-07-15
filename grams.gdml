@@ -128,7 +128,7 @@ Source for the mistakes and stupid jokes: William Seligman (WGS) seligman@nevis.
     each cell evenly and identicially. (This will become more complex if we
     explore "honeycomb" patterns.) -->
     <constant name="numberSIPMsInCell" value="6" />
-    <constant name="indexSIPMsInCell" value="0" />
+    <variable name="indexSIPMsInCell" value="0" />
     <constant name="sipmXseparation" value="activeCellXSize/numberSIPMsInCell" />
 
     <!-- ************** Scintillator walls section **************
@@ -779,7 +779,7 @@ Source for the mistakes and stupid jokes: William Seligman (WGS) seligman@nevis.
         <!-- 17-Jul-2020 WGS: Where are the SIPMs? How will they be mounted? I don't know.
         For now, let them magically float just above the wire planes, and let the
         positions be identical relative to each cell. -->
-        <loop for="indexSIPMsInCell" to="numberSIPMsInCell - 1" step="1">
+        <loop for="indexSIPMsInCell" from="0" to="numberSIPMsInCell - 1" step="1">
             <physvol>
                 <volumeref ref="volSIPM"/>
                 <position name="posSIPM" unit="cm" x="-(activeCellXSize/2) + (sipmXseparation/2) + (indexSIPMsInCell*sipmXseparation)" y="-(lArTPCYSize/2) + activeCellYSize/2 + activeCellIndex*(activeCellYSize + ptfeYSize)" z="(lArTPCZSize/2) - (sipmThickness)/2"/>
