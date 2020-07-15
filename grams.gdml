@@ -123,6 +123,13 @@ Source for the mistakes and stupid jokes: William Seligman (WGS) seligman@nevis.
     <constant name="sipmXSize" value="1.0" />
     <constant name="sipmYSize" value="1.0" />
     <constant name="sipmZSize" value="sipmThickness" />
+    <!-- 17-Jul-2020 WGS: How many SIPMs within each cell? What will their
+    arrangement be? I don't know. Start with evenly spacing the SIPMs within
+    each cell evenly and identicially. (This will become more complex if we
+    explore "honeycomb" patterns.) -->
+    <constant name="numberSIPMsInCell" value="6" />
+    <constant name="indexSIPMsInCell" value="0" />
+    <constant name="indexSIPMsInCell" value="lArTPCXSize/numberSIPMsInCell" />
 
     <!-- ************** Scintillator walls section **************
 
@@ -768,12 +775,17 @@ Source for the mistakes and stupid jokes: William Seligman (WGS) seligman@nevis.
             <volumeref ref="volTPCActive"/>
             <position name="posTPCActive" unit="cm" x="0" y="-(lArTPCYSize/2) + activeCellYSize/2 + activeCellIndex*(activeCellYSize + ptfeYSize)" z="0"/>
         </physvol>
+
         <!-- 17-Jul-2020 WGS: Where are the SIPMs? How will they be mounted? I don't know.
-        For now, let them magically float just above the wire planes. -->
-        <physvol>
-            <volumeref ref="volSIPM"/>
-            <position name="posSIPM" unit="cm" x="0" y="-(lArTPCYSize/2) + activeCellYSize/2 + activeCellIndex*(activeCellYSize + ptfeYSize)" z="(lArTPCZSize/2) - (sipmThickness)/2"/>
-        </physvol>
+        For now, let them magically float just above the wire planes, and let the
+        positions be identical relative to each cell. -->
+        <loop for="indexSIPMsInCell" to="numberSIPMsInCell - 1" step="1">
+            <physvol>
+                <volumeref ref="volSIPM"/>
+                <position name="posSIPM" unit="cm" x="-(lArTPCXSize/2) + (sipmXseparation/2) + (indexSIPMsInCell*sipmXseparation)" y="-(lArTPCYSize/2) + activeCellYSize/2 + activeCellIndex*(activeCellYSize + ptfeYSize)" z="(lArTPCZSize/2) - (sipmThickness)/2"/>
+            </physvol>
+        </loop>
+        
       </loop>
 
       <auxiliary auxtype="Color" auxvalue="magenta" />
