@@ -56,14 +56,14 @@
     <option name="outputfile" short="o" value="gramsg4" type="string" desc="output file"/>
 
     <!-- The physics list to be used by the detector simulation. --> 
-    <option name="physicslist" short= "p" value="FTFP_BERT+OPTICAL+STEPLIMIT" type="string" 
+    <option name="physicslist" short= "p" value="FTFP_BERT_LIV+OPTICAL+STEPLIMIT" type="string" 
         desc="physics list">
         Here are few options. There are many, many others. Note that to simulate
         voxels/pixels, you want to include +STEPLIMIT; to include scintillation
         photons you want to include +OPTICAL. 
         "FTFP_BERT" - typical for HEP applications
         "QGSP_BIC_HP" - typical medical applications
-        "QGSP_BIC_HP_EMY+OPTICAL+STEPLIMIT" - Gave this a try. Needs review.
+        "QGSP_BIC_HP_LIV+OPTICAL+STEPLIMIT" - Gave this a try. Needs review.
         See README.md for references.
     </option>
 

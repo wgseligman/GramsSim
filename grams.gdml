@@ -911,13 +911,6 @@ Source for the mistakes and stupid jokes: William Seligman (WGS) seligman@nevis.
       <auxiliary auxtype="Color" auxvalue="none" />
     </volume>
 
-    <volume name="volOuterZwallYstrip">
-      <materialref ref="Polystyrene"/>
-      <solidref ref="OuterZwallYstrip"/>
-      <auxiliary auxtype="SensDet" auxvalue="ScintillatorSD" />
-      <auxiliary auxtype="Color" auxvalue="none" />
-    </volume>
-
     <volume name="volOuterYwallXstrip">
       <materialref ref="Polystyrene"/>
       <solidref ref="OuterYwallXstrip"/>
@@ -925,23 +918,9 @@ Source for the mistakes and stupid jokes: William Seligman (WGS) seligman@nevis.
       <auxiliary auxtype="Color" auxvalue="none" />
     </volume>
 
-    <volume name="volOuterYwallZstrip">
-      <materialref ref="Polystyrene"/>
-      <solidref ref="OuterYwallZstrip"/>
-      <auxiliary auxtype="SensDet" auxvalue="ScintillatorSD" />
-      <auxiliary auxtype="Color" auxvalue="none" />
-    </volume>
-
     <volume name="volOuterXwallZstrip">
       <materialref ref="Polystyrene"/>
       <solidref ref="OuterXwallZstrip"/>
-      <auxiliary auxtype="SensDet" auxvalue="ScintillatorSD" />
-      <auxiliary auxtype="Color" auxvalue="none" />
-    </volume>
-
-    <volume name="volOuterXwallYstrip">
-      <materialref ref="Polystyrene"/>
-      <solidref ref="OuterXwallYstrip"/>
       <auxiliary auxtype="SensDet" auxvalue="ScintillatorSD" />
       <auxiliary auxtype="Color" auxvalue="none" />
     </volume>
