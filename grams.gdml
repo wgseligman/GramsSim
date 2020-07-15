@@ -150,19 +150,20 @@ Source for the mistakes and stupid jokes: William Seligman (WGS) seligman@nevis.
     <constant name="scintillatorThickness" value="1.0" />
     <constant name="scintillatorWidth"     value="2.0" />
     
+    <!-- 15-Jun-2020 WGS: Each wall contains a single layer of strips (in an
+    earlier version of this file, each wall had two layers of strips criss-crossing
+    each other). Assume the direction of the strips is such that strips will be
+    as short as possible, since (again by assumption) shorter strips are easier to
+    make than longer ones. 
+    -->
+    
     <constant name="lengthOuterZwallXstrips" value="outerVolumeXSize" />
-    <constant name="lengthOuterZwallYstrips" value="outerVolumeYSize" />
-    <constant name="lengthOuterYwallXstrips" value="(outerVolumeXSize - 4*scintillatorThickness)" />
-    <constant name="lengthOuterYwallZstrips" value="(outerVolumeZSize - 4*scintillatorThickness)" />
-    <constant name="lengthOuterXwallZstrips" value="(outerVolumeZSize - 4*scintillatorThickness)" />
-    <constant name="lengthOuterXwallYstrips" value="outerVolumeYSize" />
+    <constant name="lengthOuterYwallXstrips" value="(outerVolumeXSize - 2*scintillatorThickness)" />
+    <constant name="lengthOuterXwallZstrips" value="(outerVolumeZSize - 2*scintillatorThickness)" />
     
     <constant name="numberOuterZwallXstrips" value="outerVolumeYSize / scintillatorWidth" />
-    <constant name="numberOuterZwallYstrips" value="outerVolumeXSize / scintillatorWidth" />
-    <constant name="numberOuterYwallXstrips" value="(outerVolumeZSize - 4*scintillatorThickness) / scintillatorWidth" />
-    <constant name="numberOuterYwallZstrips" value="(outerVolumeXSize - 4*scintillatorThickness) / scintillatorWidth" />
-    <constant name="numberOuterXwallZstrips" value="(outerVolumeYSize - 4*scintillatorThickness) / scintillatorWidth" />
-    <constant name="numberOuterXwallYstrips" value="(outerVolumeZSize - 4*scintillatorThickness) / scintillatorWidth" />
+    <constant name="numberOuterYwallXstrips" value="(outerVolumeZSize - 2*scintillatorThickness) / scintillatorWidth" />
+    <constant name="numberOuterXwallZstrips" value="(outerVolumeYSize - 2*scintillatorThickness) / scintillatorWidth" />
 
     <!-- 7-May-2020 WGS: Define "walls" in which to place the scintillator strips. This extra
     layer of geometry will make things easier in the long run; e.g., for placing the strips
@@ -170,25 +171,22 @@ Source for the mistakes and stupid jokes: William Seligman (WGS) seligman@nevis.
 
     <constant name="outerZwallXSize" value="outerVolumeXSize" />
     <constant name="outerZwallYSize" value="outerVolumeYSize" />
-    <constant name="outerZwallZSize" value="2*scintillatorThickness" />
+    <constant name="outerZwallZSize" value="scintillatorThickness" />
 
-    <constant name="outerYwallXSize" value="outerVolumeXSize - 4*scintillatorThickness" />
-    <constant name="outerYwallYSize" value="2*scintillatorThickness" />
-    <constant name="outerYwallZSize" value="outerVolumeZSize - 4*scintillatorThickness" />
+    <constant name="outerYwallXSize" value="outerVolumeXSize - 2*scintillatorThickness" />
+    <constant name="outerYwallYSize" value="scintillatorThickness" />
+    <constant name="outerYwallZSize" value="outerVolumeZSize - 2*scintillatorThickness" />
 
-    <constant name="outerXwallXSize" value="2*scintillatorThickness" />
+    <constant name="outerXwallXSize" value="scintillatorThickness" />
     <constant name="outerXwallYSize" value="outerVolumeYSize" />
-    <constant name="outerXwallZSize" value="outerVolumeZSize - 4*scintillatorThickness" />
+    <constant name="outerXwallZSize" value="outerVolumeZSize - 2*scintillatorThickness" />
 
     <!-- 7-May-2020 WGS: Create variables for loop statements
     when we place the scintillator strips in the walls; see the <structure> section. -->
     
     <variable name="indexOuterZwallXstrips" value="0" />
-    <variable name="indexOuterZwallYstrips" value="0" />
     <variable name="indexOuterYwallXstrips" value="0" />
-    <variable name="indexOuterYwallZstrips" value="0" />
     <variable name="indexOuterXwallZstrips" value="0" />
-    <variable name="indexOuterXwallYstrips" value="0" />
 
 
     <constant name="innerVolumeXSize" value="150" />
@@ -196,18 +194,12 @@ Source for the mistakes and stupid jokes: William Seligman (WGS) seligman@nevis.
     <constant name="innerVolumeZSize" value="30" />
 
     <constant name="lengthInnerZwallXstrips" value="innerVolumeXSize" />
-    <constant name="lengthInnerZwallYstrips" value="innerVolumeYSize" />
-    <constant name="lengthInnerYwallXstrips" value="(innerVolumeXSize - 4*scintillatorThickness)" />
-    <constant name="lengthInnerYwallZstrips" value="(innerVolumeZSize - 4*scintillatorThickness)" />
-    <constant name="lengthInnerXwallZstrips" value="(innerVolumeZSize - 4*scintillatorThickness)" />
-    <constant name="lengthInnerXwallYstrips" value="innerVolumeYSize" />
+    <constant name="lengthInnerYwallXstrips" value="(innerVolumeXSize - 2*scintillatorThickness)" />
+    <constant name="lengthInnerXwallZstrips" value="(innerVolumeZSize - 2*scintillatorThickness)" />
     
     <constant name="numberInnerZwallXstrips" value="innerVolumeYSize / scintillatorWidth" />
-    <constant name="numberInnerZwallYstrips" value="innerVolumeXSize / scintillatorWidth" />
-    <constant name="numberInnerYwallXstrips" value="(innerVolumeZSize - 4*scintillatorThickness) / scintillatorWidth" />
-    <constant name="numberInnerYwallZstrips" value="(innerVolumeXSize - 4*scintillatorThickness) / scintillatorWidth" />
-    <constant name="numberInnerXwallZstrips" value="(innerVolumeYSize - 4*scintillatorThickness) / scintillatorWidth" />
-    <constant name="numberInnerXwallYstrips" value="(innerVolumeZSize - 4*scintillatorThickness) / scintillatorWidth" />
+    <constant name="numberInnerYwallXstrips" value="(innerVolumeZSize - 2*scintillatorThickness) / scintillatorWidth" />
+    <constant name="numberInnerXwallZstrips" value="(innerVolumeYSize - 2*scintillatorThickness) / scintillatorWidth" />
  
     <!-- 7-May-2020 WGS: Define "walls" in which to place the scintillator strips. This extra
     layer of geometry will make things easier in the long run; e.g., for placing the strips
@@ -215,25 +207,22 @@ Source for the mistakes and stupid jokes: William Seligman (WGS) seligman@nevis.
 
     <constant name="InnerZwallXSize" value="innerVolumeXSize" />
     <constant name="InnerZwallYSize" value="innerVolumeYSize" />
-    <constant name="InnerZwallZSize" value="2*scintillatorThickness" />
+    <constant name="InnerZwallZSize" value="scintillatorThickness" />
 
-    <constant name="InnerYwallXSize" value="innerVolumeXSize - 4*scintillatorThickness" />
-    <constant name="InnerYwallYSize" value="2*scintillatorThickness" />
-    <constant name="InnerYwallZSize" value="innerVolumeZSize - 4*scintillatorThickness" />
+    <constant name="InnerYwallXSize" value="innerVolumeXSize - 2*scintillatorThickness" />
+    <constant name="InnerYwallYSize" value="scintillatorThickness" />
+    <constant name="InnerYwallZSize" value="innerVolumeZSize - 2*scintillatorThickness" />
 
-    <constant name="InnerXwallXSize" value="2*scintillatorThickness" />
+    <constant name="InnerXwallXSize" value="scintillatorThickness" />
     <constant name="InnerXwallYSize" value="innerVolumeYSize" />
-    <constant name="InnerXwallZSize" value="innerVolumeZSize - 4*scintillatorThickness" />
+    <constant name="InnerXwallZSize" value="innerVolumeZSize - 2*scintillatorThickness" />
 
     <!-- 7-May-2020 WGS: Create variables for loop statements
     when we place the scintillator strips in the walls; see the <structure> section. -->
 
     <variable name="indexInnerZwallXstrips" value="0" />
-    <variable name="indexInnerZwallYstrips" value="0" />
     <variable name="indexInnerYwallXstrips" value="0" />
-    <variable name="indexInnerYwallZstrips" value="0" />
     <variable name="indexInnerXwallZstrips" value="0" />
-    <variable name="indexInnerXwallYstrips" value="0" />
     
     <!-- 8-May-2020 WGS: The above walls are defined for the positive axes (x,y,z)>0.
     Assume the negative-axis walls are the mirror images of the positive ones,
@@ -616,13 +605,10 @@ Source for the mistakes and stupid jokes: William Seligman (WGS) seligman@nevis.
     <box lunit="cm" name="OuterDetector" x="outerVolumeXSize" y="outerVolumeYSize" z="outerVolumeZSize"/>
     
     <box lunit="cm" name="OuterZwallXstrip" x="lengthOuterZwallXstrips" y="scintillatorWidth" z="scintillatorThickness"/>
-    <box lunit="cm" name="OuterZwallYstrip" x="scintillatorWidth" y="lengthOuterZwallYstrips" z="scintillatorThickness"/>
  
     <box lunit="cm" name="OuterYwallXstrip" x="lengthOuterYwallXstrips" y="scintillatorThickness" z="scintillatorWidth"/>
-    <box lunit="cm" name="OuterYwallZstrip" x="scintillatorWidth" y="scintillatorThickness" z="lengthOuterYwallZstrips"/>
   
     <box lunit="cm" name="OuterXwallZstrip" x="scintillatorThickness" y="scintillatorWidth" z="lengthOuterXwallZstrips"/>
-    <box lunit="cm" name="OuterXwallYstrip" x="scintillatorThickness" y="lengthOuterXwallYstrips" z="scintillatorWidth"/>
 
     <box lunit="cm" name="OuterXwall" x="outerXwallXSize" y="outerXwallYSize" z="outerXwallZSize"/>
     <box lunit="cm" name="OuterYwall" x="outerYwallXSize" y="outerYwallYSize" z="outerYwallZSize"/>
@@ -631,13 +617,10 @@ Source for the mistakes and stupid jokes: William Seligman (WGS) seligman@nevis.
     <box lunit="cm" name="InnerDetector" x="innerVolumeXSize" y="innerVolumeYSize" z="innerVolumeZSize"/>
     
     <box lunit="cm" name="InnerZwallXstrip" x="lengthInnerZwallXstrips" y="scintillatorWidth" z="scintillatorThickness"/>
-    <box lunit="cm" name="InnerZwallYstrip" x="scintillatorWidth" y="lengthInnerZwallYstrips" z="scintillatorThickness"/>
  
     <box lunit="cm" name="InnerYwallXstrip" x="lengthInnerYwallXstrips" y="scintillatorThickness" z="scintillatorWidth"/>
-    <box lunit="cm" name="InnerYwallZstrip" x="scintillatorWidth" y="scintillatorThickness" z="lengthInnerYwallZstrips"/>
   
     <box lunit="cm" name="InnerXwallZstrip" x="scintillatorThickness" y="scintillatorWidth" z="lengthInnerXwallZstrips"/>
-    <box lunit="cm" name="InnerXwallYstrip" x="scintillatorThickness" y="lengthInnerXwallYstrips" z="scintillatorWidth"/>
 
     <box lunit="cm" name="InnerXwall" x="InnerXwallXSize" y="InnerXwallYSize" z="InnerXwallZSize"/>
     <box lunit="cm" name="InnerYwall" x="InnerYwallXSize" y="InnerYwallYSize" z="InnerYwallZSize"/>
@@ -818,13 +801,6 @@ Source for the mistakes and stupid jokes: William Seligman (WGS) seligman@nevis.
       <auxiliary auxtype="Color" auxvalue="none" />
     </volume>
 
-    <volume name="volInnerZwallYstrip">
-      <materialref ref="Polystyrene"/>
-      <solidref ref="InnerZwallYstrip"/>
-      <auxiliary auxtype="SensDet" auxvalue="ScintillatorSD" />
-      <auxiliary auxtype="Color" auxvalue="none" />
-    </volume>
-
     <volume name="volInnerYwallXstrip">
       <materialref ref="Polystyrene"/>
       <solidref ref="InnerYwallXstrip"/>
@@ -832,23 +808,9 @@ Source for the mistakes and stupid jokes: William Seligman (WGS) seligman@nevis.
       <auxiliary auxtype="Color" auxvalue="none" />
     </volume>
 
-    <volume name="volInnerYwallZstrip">
-      <materialref ref="Polystyrene"/>
-      <solidref ref="InnerYwallZstrip"/>
-      <auxiliary auxtype="SensDet" auxvalue="ScintillatorSD" />
-      <auxiliary auxtype="Color" auxvalue="none" />
-    </volume>
-
     <volume name="volInnerXwallZstrip">
       <materialref ref="Polystyrene"/>
       <solidref ref="InnerXwallZstrip"/>
-      <auxiliary auxtype="SensDet" auxvalue="ScintillatorSD" />
-      <auxiliary auxtype="Color" auxvalue="none" />
-    </volume>
-
-    <volume name="volInnerXwallYstrip">
-      <materialref ref="Polystyrene"/>
-      <solidref ref="InnerXwallYstrip"/>
       <auxiliary auxtype="SensDet" auxvalue="ScintillatorSD" />
       <auxiliary auxtype="Color" auxvalue="none" />
     </volume>
@@ -862,13 +824,7 @@ Source for the mistakes and stupid jokes: William Seligman (WGS) seligman@nevis.
       <loop for="indexInnerZwallXstrips" to="numberInnerZwallXstrips - 1" step="1">
         <physvol>
             <volumeref ref="volInnerZwallXstrip"/>
-            <position name="posInnerZwallXstrip" unit="cm" x="0" y="-InnerZwallYSize/2 + scintillatorWidth/2 + indexInnerZwallXstrips*scintillatorWidth" z="scintillatorThickness/2"/>
-        </physvol>
-      </loop>
-      <loop for="indexInnerZwallYstrips" to="numberInnerZwallYstrips - 1" step="1">
-        <physvol>
-            <volumeref ref="volInnerZwallYstrip"/>
-            <position name="posInnerZwallYstrip" unit="cm" x="-InnerZwallXSize/2 + scintillatorWidth/2 + indexInnerZwallYstrips*scintillatorWidth" y="0" z="-scintillatorThickness/2"/>
+            <position name="posInnerZwallXstrip" unit="cm" x="0" y="-InnerZwallYSize/2 + scintillatorWidth/2 + indexInnerZwallXstrips*scintillatorWidth" z="0"/>
         </physvol>
       </loop>
       <auxiliary auxtype="Color" auxvalue="cyan" />
@@ -880,15 +836,9 @@ Source for the mistakes and stupid jokes: William Seligman (WGS) seligman@nevis.
       <loop for="indexInnerYwallXstrips" to="numberInnerYwallXstrips - 1" step="1">
         <physvol>
             <volumeref ref="volInnerYwallXstrip"/>
-            <position name="posInnerYwallXstrip" unit="cm" x="0" y="scintillatorThickness/2" z="-InnerYwallZSize/2 + scintillatorWidth/2 + indexInnerYwallXstrips*scintillatorWidth"/>
+            <position name="posInnerYwallXstrip" unit="cm" x="0" y="0" z="-InnerYwallZSize/2 + scintillatorWidth/2 + indexInnerYwallXstrips*scintillatorWidth"/>
         </physvol>
       </loop>
-      <loop for="indexInnerYwallZstrips" to="numberInnerYwallZstrips - 1" step="1">
-        <physvol>
-            <volumeref ref="volInnerYwallZstrip"/>
-            <position name="posInnerYwallZstrip" unit="cm" x="-InnerYwallXSize/2 + scintillatorWidth/2 + indexInnerYwallZstrips*scintillatorWidth" y="-scintillatorThickness/2" z="0"/>
-        </physvol>
-     </loop>
       <auxiliary auxtype="Color" auxvalue="cyan" />
     </volume>
          
@@ -898,15 +848,9 @@ Source for the mistakes and stupid jokes: William Seligman (WGS) seligman@nevis.
       <loop for="indexInnerXwallZstrips" to="numberInnerXwallZstrips - 1" step="1">
         <physvol>
             <volumeref ref="volInnerXwallZstrip"/>
-            <position name="posInnerXwallZstrip" unit="cm" x="scintillatorThickness/2" y="-InnerXwallYSize/2 + scintillatorWidth/2 + indexInnerXwallZstrips*scintillatorWidth" z="0"/>
+            <position name="posInnerXwallZstrip" unit="cm" x="0" y="-InnerXwallYSize/2 + scintillatorWidth/2 + indexInnerXwallZstrips*scintillatorWidth" z="0"/>
         </physvol>
       </loop>
-      <loop for="indexInnerXwallYstrips" to="numberInnerXwallYstrips - 1" step="1">
-        <physvol>
-            <volumeref ref="volInnerXwallYstrip"/>
-            <position name="posInnerXwallYstrip" unit="cm" x="-scintillatorThickness/2" y="0" z="-InnerXwallZSize/2 + scintillatorWidth/2 + indexInnerXwallYstrips*scintillatorWidth"/>
-        </physvol>
-     </loop>
       <auxiliary auxtype="Color" auxvalue="cyan" />
     </volume>
 
@@ -1011,13 +955,7 @@ Source for the mistakes and stupid jokes: William Seligman (WGS) seligman@nevis.
       <loop for="indexOuterZwallXstrips" to="numberOuterZwallXstrips - 1" step="1">
         <physvol>
             <volumeref ref="volOuterZwallXstrip"/>
-            <position name="posOuterZwallXstrip" unit="cm" x="0" y="-outerZwallYSize/2 + scintillatorWidth/2 + indexOuterZwallXstrips*scintillatorWidth" z="scintillatorThickness/2"/>
-        </physvol>
-      </loop>
-      <loop for="indexOuterZwallYstrips" to="numberOuterZwallYstrips - 1" step="1">
-        <physvol>
-            <volumeref ref="volOuterZwallYstrip"/>
-            <position name="posOuterZwallYstrip" unit="cm" x="-outerZwallXSize/2 + scintillatorWidth/2 + indexOuterZwallYstrips*scintillatorWidth" y="0" z="-scintillatorThickness/2"/>
+            <position name="posOuterZwallXstrip" unit="cm" x="0" y="-outerZwallYSize/2 + scintillatorWidth/2 + indexOuterZwallXstrips*scintillatorWidth" z="0"/>
         </physvol>
       </loop>
       <auxiliary auxtype="Color" auxvalue="cyan" />
@@ -1029,15 +967,9 @@ Source for the mistakes and stupid jokes: William Seligman (WGS) seligman@nevis.
       <loop for="indexOuterYwallXstrips" to="numberOuterYwallXstrips - 1" step="1">
         <physvol>
             <volumeref ref="volOuterYwallXstrip"/>
-            <position name="posOuterYwallXstrip" unit="cm" x="0" y="scintillatorThickness/2" z="-outerYwallZSize/2 + scintillatorWidth/2 + indexOuterYwallXstrips*scintillatorWidth"/>
+            <position name="posOuterYwallXstrip" unit="cm" x="0" y="0" z="-outerYwallZSize/2 + scintillatorWidth/2 + indexOuterYwallXstrips*scintillatorWidth"/>
         </physvol>
       </loop>
-      <loop for="indexOuterYwallZstrips" to="numberOuterYwallZstrips - 1" step="1">
-        <physvol>
-            <volumeref ref="volOuterYwallZstrip"/>
-            <position name="posOuterYwallZstrip" unit="cm" x="-outerYwallXSize/2 + scintillatorWidth/2 + indexOuterYwallZstrips*scintillatorWidth" y="-scintillatorThickness/2" z="0"/>
-        </physvol>
-     </loop>
      <auxiliary auxtype="Color" auxvalue="cyan" />
     </volume>
          
@@ -1047,15 +979,9 @@ Source for the mistakes and stupid jokes: William Seligman (WGS) seligman@nevis.
       <loop for="indexOuterXwallZstrips" to="numberOuterXwallZstrips - 1" step="1">
         <physvol>
             <volumeref ref="volOuterXwallZstrip"/>
-            <position name="posOuterXwallZstrip" unit="cm" x="scintillatorThickness/2" y="-outerXwallYSize/2 + scintillatorWidth/2 + indexOuterXwallZstrips*scintillatorWidth" z="0"/>
+            <position name="posOuterXwallZstrip" unit="cm" x="0" y="-outerXwallYSize/2 + scintillatorWidth/2 + indexOuterXwallZstrips*scintillatorWidth" z="0"/>
         </physvol>
       </loop>
-      <loop for="indexOuterXwallYstrips" to="numberOuterXwallYstrips - 1" step="1">
-        <physvol>
-            <volumeref ref="volOuterXwallYstrip"/>
-            <position name="posOuterXwallYstrip" unit="cm" x="-scintillatorThickness/2" y="0" z="-outerXwallZSize/2 + scintillatorWidth/2 + indexOuterXwallYstrips*scintillatorWidth"/>
-        </physvol>
-     </loop>
      <auxiliary auxtype="Color" auxvalue="cyan" />
     </volume>
 
