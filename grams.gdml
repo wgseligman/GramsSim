@@ -129,7 +129,7 @@ Source for the mistakes and stupid jokes: William Seligman (WGS) seligman@nevis.
     explore "honeycomb" patterns.) -->
     <constant name="numberSIPMsInCell" value="6" />
     <constant name="indexSIPMsInCell" value="0" />
-    <constant name="sipmXseparation" value="lArTPCXSize/numberSIPMsInCell" />
+    <constant name="sipmXseparation" value="activeCellXSize/numberSIPMsInCell" />
 
     <!-- ************** Scintillator walls section **************
 
@@ -782,7 +782,7 @@ Source for the mistakes and stupid jokes: William Seligman (WGS) seligman@nevis.
         <loop for="indexSIPMsInCell" to="numberSIPMsInCell - 1" step="1">
             <physvol>
                 <volumeref ref="volSIPM"/>
-                <position name="posSIPM" unit="cm" x="-(lArTPCXSize/2) + (sipmXseparation/2) + (indexSIPMsInCell*sipmXseparation)" y="-(lArTPCYSize/2) + activeCellYSize/2 + activeCellIndex*(activeCellYSize + ptfeYSize)" z="(lArTPCZSize/2) - (sipmThickness)/2"/>
+                <position name="posSIPM" unit="cm" x="-(activeCellXSize/2) + (sipmXseparation/2) + (indexSIPMsInCell*sipmXseparation)" y="-(lArTPCYSize/2) + activeCellYSize/2 + activeCellIndex*(activeCellYSize + ptfeYSize)" z="(lArTPCZSize/2) - (sipmThickness)/2"/>
             </physvol>
         </loop>
         
