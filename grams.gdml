@@ -129,7 +129,7 @@ Source for the mistakes and stupid jokes: William Seligman (WGS) seligman@nevis.
     explore "honeycomb" patterns.) -->
     <constant name="numberSIPMsInCell" value="6" />
     <constant name="indexSIPMsInCell" value="0" />
-    <constant name="indexSIPMsInCell" value="lArTPCXSize/numberSIPMsInCell" />
+    <constant name="sipmXseparation" value="lArTPCXSize/numberSIPMsInCell" />
 
     <!-- ************** Scintillator walls section **************
 
