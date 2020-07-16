@@ -101,8 +101,13 @@ Source for the mistakes and stupid jokes: William Seligman (WGS) seligman@nevis.
     so assume 5 PTFE sheets dividing the LAr into 6 cells (the number
     in the diagrams in arXiv:1901.03430v3). -->
     
-    <constant name="numberPtfeSheets" value="5" />
-    <constant name="numberActiveCells" value="numberPtfeSheets + 1" />
+    <!-- 16-Jul-2020 WGS: It's not clear from  arXiv:1901.03430v3, but it appears
+    that there are cells delimited in both x and y. -->
+    
+    <constant name="numberPtfeSheetsY" value="5" />
+    <constant name="numberActiveCellsY" value="numberPtfeSheetsY + 1" />
+    <constant name="numberPtfeSheetsX" value="5" />
+    <constant name="numberActiveCellsX" value="numberPtfeSheetsX + 1" />
 
     <!-- 8-May-2020 WGS: How big will the active LAr cell be? I don't know. 
     To make the placement of the sensitive detector cells easier, I'm putting a
@@ -110,13 +115,13 @@ Source for the mistakes and stupid jokes: William Seligman (WGS) seligman@nevis.
     isn't realistic, but you have to start somewhere. -->
 
     <constant name="activeCellXSize" value="lArTPCXSize - 4.0" />
-    <constant name="activeCellYSize" value="(lArTPCYSize - numberPtfeSheets*ptfeThickness) / numberActiveCells" />
+    <constant name="activeCellYSize" value="(lArTPCYSize - numberPtfeSheetsY*ptfeThickness) / numberActiveCellsY" />
     <constant name="activeCellZSize" value="lArTPCZSize - 4.0" />
     
     <!-- 8-May-2020 WGS: We're going to place active LAr cells separated by the PTFE 
     sheets in using a loop. -->
-    <variable name="activeCellIndex" value="0" />
-    <variable name="ptfeIndex" value="0" />
+    <variable name="activeCellIndexY" value="0" />
+    <variable name="ptfeIndexY" value="0" />
     
     <!-- 5-May-2020 WGS: How big is a SIPM? I don't know. Make a guess. -->
     <constant name="sipmThickness" value="0.1" />
@@ -763,17 +768,17 @@ Source for the mistakes and stupid jokes: William Seligman (WGS) seligman@nevis.
 
       <!-- 8-May-2020 WGS: For each active cell, we have to place a volume representing that
       cell, the PTFE sheet that separates the cells, and a SIPM. -->
-      <loop for="ptfeIndex" to="numberPtfeSheets - 1" step="1">
+      <loop for="ptfeIndexY" to="numberPtfeSheetsY - 1" step="1">
         <physvol>
             <volumeref ref="volPTFESheet"/>
-            <position name="posPTFESheet" unit="cm" x="0" y="-(lArTPCYSize/2) + activeCellYSize + ptfeYSize/2 + ptfeIndex*(activeCellYSize + ptfeYSize)" z="0"/>
+            <position name="posPTFESheet" unit="cm" x="0" y="-(lArTPCYSize/2) + activeCellYSize + ptfeYSize/2 + ptfeIndexY*(activeCellYSize + ptfeYSize)" z="0"/>
         </physvol>
       </loop>
       
-      <loop for="activeCellIndex" to="numberActiveCells - 1" step="1">
+      <loop for="activeCellIndexY" to="numberActiveCellsY - 1" step="1">
         <physvol>
             <volumeref ref="volTPCActive"/>
-            <position name="posTPCActive" unit="cm" x="0" y="-(lArTPCYSize/2) + activeCellYSize/2 + activeCellIndex*(activeCellYSize + ptfeYSize)" z="0"/>
+            <position name="posTPCActive" unit="cm" x="0" y="-(lArTPCYSize/2) + activeCellYSize/2 + activeCellIndexY*(activeCellYSize + ptfeYSize)" z="0"/>
         </physvol>
 
         <!-- 17-Jul-2020 WGS: Where are the SIPMs? How will they be mounted? I don't know.
@@ -782,7 +787,7 @@ Source for the mistakes and stupid jokes: William Seligman (WGS) seligman@nevis.
         <loop for="indexSIPMsInCell" from="0" to="numberSIPMsInCell - 1" step="1">
             <physvol>
                 <volumeref ref="volSIPM"/>
-                <position name="posSIPM" unit="cm" x="-(activeCellXSize/2) + (sipmXseparation/2) + (indexSIPMsInCell*sipmXseparation)" y="-(lArTPCYSize/2) + activeCellYSize/2 + activeCellIndex*(activeCellYSize + ptfeYSize)" z="(lArTPCZSize/2) - (sipmThickness)/2"/>
+                <position name="posSIPM" unit="cm" x="-(activeCellXSize/2) + (sipmXseparation/2) + (indexSIPMsInCell*sipmXseparation)" y="-(lArTPCYSize/2) + activeCellYSize/2 + activeCellIndexY*(activeCellYSize + ptfeYSize)" z="(lArTPCZSize/2) - (sipmThickness)/2"/>
             </physvol>
         </loop>
         

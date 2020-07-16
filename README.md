@@ -140,8 +140,6 @@ If you're looking for a place to start in accessing the ntuples for analysis, lo
 
     root -l SimpleAnalysis.C
 
-**TODO:** Create an additional ntuple with hits in the scintillator strips. 
-
 ## Making changes
 
 Obviously, you can make any changes you want to GramsG4 for your own use. This section is for when you want to start making change to be added to the official repository. Before you edit files for the first time:
