@@ -773,6 +773,7 @@ Source for the mistakes and stupid jokes: William Seligman (WGS) seligman@nevis.
     <volume name="volCellGroup">
       <materialref ref="LAr"/>
       <solidref ref="CellGroup"/>
+      <auxiliary auxtype="Color" auxvalue="none" />
       <!-- 8-May-2020 WGS: For each active cell, we have to place a volume representing that
       cell, and the PTFE sheet that separates the cells -->
       <loop for="ptfeIndexY" from="0" to="numberPtfeSheetsY - 1" step="1">
