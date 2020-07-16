@@ -95,24 +95,24 @@ Source for the mistakes and stupid jokes: William Seligman (WGS) seligman@nevis.
     in the diagrams in arXiv:1901.03430v3). -->
     
     <!-- 16-Jul-2020 WGS: It's not clear from  arXiv:1901.03430v3, but it appears
-    that there are cells delimited in both x and y. -->
+    that cells are delimited in both x and y. -->
     <constant name="numberPtfeSheetsY" value="5" />
     <constant name="numberActiveCellsY" value="numberPtfeSheetsY + 1" />
     <constant name="numberPtfeSheetsX" value="5" />
     <constant name="numberActiveCellsX" value="numberPtfeSheetsX + 1" />
+   
+    <!-- 5-May-2020 WGS: How thick will the PTFE sheets be? I don't know, so 
+    assume 1mm. For the sheets' z-size, leave some room for the wires and the 
+    cathode plate. -->
+    <constant name="ptfeThickness" value="0.1" />
 
     <!-- 8-May-2020 WGS: How big will the active LAr cell be? I don't know. 
     To make the placement of the sensitive detector cells easier, I'm putting a
     2 cm boundary in x and z, but over the complete y-length of the LArTPC. This
     isn't realistic, but you have to start somewhere. -->
    
-    <!-- 5-May-2020 WGS: How thick will the PTFE sheets be? I don't know, so 
-    assume 1mm. For the sheets' z-size, leave some room for the wires and the 
-    cathode plate. -->
-    <constant name="ptfeThickness" value="0.1" />
-   
     <!-- 16-Jul-2020 WGS: Define the groups of cells we'll place along x. -->
-    <constant name="cellGroupXRegion" value="lArTPCZSize - 4.0" />
+    <constant name="cellGroupXRegion" value="lArTPCXSize - 4.0" />
     <constant name="cellGroupXSize" value="(cellGroupXRegion - numberPtfeSheetsX*ptfeThickness) / numberActiveCellsX" />
     <constant name="cellGroupYSize" value="lArTPCYSize" />
     <constant name="cellGroupZSize" value="lArTPCZSize - 4.0" />
