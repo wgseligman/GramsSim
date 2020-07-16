@@ -89,13 +89,6 @@ Source for the mistakes and stupid jokes: William Seligman (WGS) seligman@nevis.
     <constant name="cathodeXSize" value="lArTPCXSize" />
     <constant name="cathodeYSize" value="lArTPCYSize" />
     <constant name="cathodeZSize" value="cathodeThickness" />
-   
-    <!-- 5-May-2020 WGS: How thick will the PTFE sheets be? I don't know, so 
-    assume 1mm. I assume the sheets will be mounted on the x-sides of the TPC. -->
-    <constant name="ptfeThickness" value="0.1" />
-    <constant name="ptfeXSize" value="lArTPCXSize" />
-    <constant name="ptfeYSize" value="ptfeThickness" />
-    <constant name="ptfeZSize" value="lArTPCZSize - 1.0" />
     
     <!-- 5-May-2020 WGS: How many active cells will there be? I don't know, 
     so assume 5 PTFE sheets dividing the LAr into 6 cells (the number
@@ -103,7 +96,6 @@ Source for the mistakes and stupid jokes: William Seligman (WGS) seligman@nevis.
     
     <!-- 16-Jul-2020 WGS: It's not clear from  arXiv:1901.03430v3, but it appears
     that there are cells delimited in both x and y. -->
-    
     <constant name="numberPtfeSheetsY" value="5" />
     <constant name="numberActiveCellsY" value="numberPtfeSheetsY + 1" />
     <constant name="numberPtfeSheetsX" value="5" />
@@ -113,13 +105,38 @@ Source for the mistakes and stupid jokes: William Seligman (WGS) seligman@nevis.
     To make the placement of the sensitive detector cells easier, I'm putting a
     2 cm boundary in x and z, but over the complete y-length of the LArTPC. This
     isn't realistic, but you have to start somewhere. -->
+   
+    <!-- 5-May-2020 WGS: How thick will the PTFE sheets be? I don't know, so 
+    assume 1mm. For the sheets' z-size, leave some room for the wires and the 
+    cathode plate. -->
+    <constant name="ptfeThickness" value="0.1" />
+   
+    <!-- 16-Jul-2020 WGS: Define the groups of cells we'll place along x. -->
+    <constant name="cellGroupXRegion" value="lArTPCZSize - 4.0" />
+    <constant name="cellGroupXSize" value="(cellGroupXRegion - numberPtfeSheetsX*ptfeThickness) / numberActiveCellsX" />
+    <constant name="cellGroupYSize" value="lArTPCYSize" />
+    <constant name="cellGroupZSize" value="lArTPCZSize - 4.0" />
 
-    <constant name="activeCellXSize" value="lArTPCXSize - 4.0" />
-    <constant name="activeCellYSize" value="(lArTPCYSize - numberPtfeSheetsY*ptfeThickness) / numberActiveCellsY" />
-    <constant name="activeCellZSize" value="lArTPCZSize - 4.0" />
+    <!-- 16-Jul-2020 WGS: The PTFE sheets that separate the cell groups along x. -->
+    <constant name="ptfeGroupXSize" value="ptfeThickness" />
+    <constant name="ptfeGroupYSize" value="cellGroupYSize" />
+    <constant name="ptfeGroupZSize" value="cellGroupZSize" />
     
-    <!-- 8-May-2020 WGS: We're going to place active LAr cells separated by the PTFE 
-    sheets in using a loop. -->
+    <!-- 16-Jul-2020 WGS: Within a cell group we'll place the cells. -->
+    <constant name="activeCellXSize" value="cellGroupXSize" />
+    <constant name="activeCellYSize" value="(cellGroupYSize - numberPtfeSheetsY*ptfeThickness) / numberActiveCellsY" />
+    <constant name="activeCellZSize" value="cellGroupZSize" />
+    
+    <!-- 16-Jul-2020 WGS: The PTFE sheets that separate the cells along y. -->
+    <constant name="ptfeXSize" value="cellGroupXSize" />
+    <constant name="ptfeYSize" value="ptfeThickness" />
+    <constant name="ptfeZSize" value="cellGroupZSize" />
+   
+    <!-- 16-Jul-2020 WGS: First we're going to place the cell groups along x within
+    the LArTPC. Then we're going to place the active cells within a cell group
+    along y. -->
+    <variable name="activeCellIndexX" value="0" />
+    <variable name="ptfeIndexX" value="0" />
     <variable name="activeCellIndexY" value="0" />
     <variable name="ptfeIndexY" value="0" />
     
@@ -609,7 +626,9 @@ Source for the mistakes and stupid jokes: William Seligman (WGS) seligman@nevis.
 
     <box lunit="cm" name="CathodePlate" x="cathodeXSize" y="cathodeYSize" z="cathodeZSize" />
     <box lunit="cm" name="TPCWirePlane" x="wirePlaneXSize" y="wirePlaneYSize" z="wirePlaneZSize" />
+    <box lunit="cm" name="PTFEGroupSheet" x="ptfeGroupXSize" y="ptfeGroupYSize" z="ptfeGroupZSize" />
     <box lunit="cm" name="PTFESheet" x="ptfeXSize" y="ptfeYSize" z="ptfeZSize" />
+    <box lunit="cm" name="CellGroup" x="cellGroupXSize" y="cellGroupYSize" z="cellGroupZSize" />
     <box lunit="cm" name="ActiveCell" x="activeCellXSize" y="activeCellYSize" z="activeCellZSize" />
     <box lunit="cm" name="SIPM" x="sipmXSize" y="sipmYSize" z="sipmZSize" />
   
@@ -724,6 +743,12 @@ Source for the mistakes and stupid jokes: William Seligman (WGS) seligman@nevis.
       <auxiliary auxtype="Color" auxvalue="red" />
     </volume>
 
+    <volume name="volPTFEGroupSheet">
+      <materialref ref="PTFE"/>
+      <solidref ref="PTFEGroupSheet"/>
+      <auxiliary auxtype="Color" auxvalue="yellow" />
+    </volume>
+
     <volume name="volPTFESheet">
       <materialref ref="PTFE"/>
       <solidref ref="PTFESheet"/>
@@ -742,6 +767,27 @@ Source for the mistakes and stupid jokes: William Seligman (WGS) seligman@nevis.
       <materialref ref="STEEL_STAINLESS_Fe7Cr2Ni"/>
       <solidref ref="CathodePlate"/>
       <auxiliary auxtype="Color" auxvalue="red" />
+    </volume>
+    
+    <!-- The group of active TPC cells along y. -->
+    <volume name="volCellGroup">
+      <materialref ref="LAr"/>
+      <solidref ref="CellGroup"/>
+      <!-- 8-May-2020 WGS: For each active cell, we have to place a volume representing that
+      cell, and the PTFE sheet that separates the cells -->
+      <loop for="ptfeIndexY" from="0" to="numberPtfeSheetsY - 1" step="1">
+        <physvol>
+            <volumeref ref="volPTFESheet"/>
+            <position name="posPTFESheet" unit="cm" x="0" y="-(cellGroupYSize/2) + activeCellYSize + ptfeYSize/2 + ptfeIndexY*(activeCellYSize + ptfeYSize)" z="0"/>
+        </physvol>
+      </loop>
+      
+      <loop for="activeCellIndexY" from="0" to="numberActiveCellsY - 1" step="1">
+        <physvol>
+            <volumeref ref="volTPCActive"/>
+            <position name="posTPCActive" unit="cm" x="0" y="-(cellGroupYSize/2) + activeCellYSize/2 + activeCellIndexY*(activeCellYSize + ptfeYSize)" z="0"/>
+        </physvol>
+       </loop>   
     </volume>
 
     <!-- LArTPC definition -->
@@ -766,31 +812,31 @@ Source for the mistakes and stupid jokes: William Seligman (WGS) seligman@nevis.
         <position name="posYplane" unit="cm" x="0" y="0" z="(lArTPCZSize/2) - (wirePlaneThickness*3/2) - sipmThickness"/>
       </physvol>
 
-      <!-- 8-May-2020 WGS: For each active cell, we have to place a volume representing that
-      cell, the PTFE sheet that separates the cells, and a SIPM. -->
-      <loop for="ptfeIndexY" to="numberPtfeSheetsY - 1" step="1">
+      <!-- 16-Jul-2020 WGS: Place cell groups along x. -->
+      <loop for="ptfeIndexX" from="0" to="numberPtfeSheetsX - 1" step="1">
         <physvol>
-            <volumeref ref="volPTFESheet"/>
-            <position name="posPTFESheet" unit="cm" x="0" y="-(lArTPCYSize/2) + activeCellYSize + ptfeYSize/2 + ptfeIndexY*(activeCellYSize + ptfeYSize)" z="0"/>
+            <volumeref ref="volPTFEGroupSheet"/>
+            <position name="posPTFEGroupSheet" unit="cm" x="-(cellGroupXRegion/2) + cellGroupXSize + ptfeGroupXSize/2 + ptfeIndexX*(cellGroupXSize + ptfeGroupXSize)" y="0" z="0"/>
         </physvol>
       </loop>
       
-      <loop for="activeCellIndexY" to="numberActiveCellsY - 1" step="1">
+      <loop for="activeCellIndexX" from="0" to="numberActiveCellsX - 1" step="1">
         <physvol>
-            <volumeref ref="volTPCActive"/>
-            <position name="posTPCActive" unit="cm" x="0" y="-(lArTPCYSize/2) + activeCellYSize/2 + activeCellIndexY*(activeCellYSize + ptfeYSize)" z="0"/>
+            <volumeref ref="volCellGroup"/>
+            <position name="posCellGroup" unit="cm" x="-(cellGroupXRegion/2) + cellGroupXSize/2 + activeCellIndexX*(cellGroupXSize + ptfeGroupXSize)" y="0" z="0"/>
         </physvol>
+      </loop>
 
-        <!-- 17-Jul-2020 WGS: Where are the SIPMs? How will they be mounted? I don't know.
-        For now, let them magically float just above the wire planes, and let the
-        positions be identical relative to each cell. -->
-        <loop for="indexSIPMsInCell" from="0" to="numberSIPMsInCell - 1" step="1">
+      <!-- 17-Jul-2020 WGS: Where are the SIPMs? How will they be mounted? I don't know.
+      For now, let them magically float just above the wire planes, and let the
+      positions be identical relative to each cell. -->
+      <loop for="activeCellIndexY" from="0" to="numberActiveCellsY - 1" step="1">
+        <loop for="activeCellIndexX" from="0" to="numberActiveCellsX - 1" step="1">
             <physvol>
                 <volumeref ref="volSIPM"/>
-                <position name="posSIPM" unit="cm" x="-(activeCellXSize/2) + (sipmXseparation/2) + (indexSIPMsInCell*sipmXseparation)" y="-(lArTPCYSize/2) + activeCellYSize/2 + activeCellIndexY*(activeCellYSize + ptfeYSize)" z="(lArTPCZSize/2) - (sipmThickness)/2"/>
+                <position name="posSIPM" unit="cm" x="-(cellGroupXRegion/2) + cellGroupXSize/2 + activeCellIndexX*(cellGroupXSize + ptfeGroupXSize)" y="-(cellGroupYSize/2) + activeCellYSize/2 + activeCellIndexY*(activeCellYSize + ptfeYSize)" z="(lArTPCZSize/2) - (sipmThickness)/2"/>
             </physvol>
         </loop>
-        
       </loop>
 
       <auxiliary auxtype="Color" auxvalue="magenta" />
