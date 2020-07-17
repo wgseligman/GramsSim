@@ -96,9 +96,9 @@ Source for the mistakes and stupid jokes: William Seligman (WGS) seligman@nevis.
     
     <!-- 16-Jul-2020 WGS: It's not clear from  arXiv:1901.03430v3, but it appears
     that cells are delimited in both x and y. -->
-    <constant name="numberPtfeSheetsY" value="5" />
+    <constant name="numberPtfeSheetsY" value="13" />
     <constant name="numberActiveCellsY" value="numberPtfeSheetsY + 1" />
-    <constant name="numberPtfeSheetsX" value="5" />
+    <constant name="numberPtfeSheetsX" value="13" />
     <constant name="numberActiveCellsX" value="numberPtfeSheetsX + 1" />
    
     <!-- 5-May-2020 WGS: How thick will the PTFE sheets be? I don't know, so 
