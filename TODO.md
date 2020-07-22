@@ -1,6 +1,9 @@
 # TODO 
 
-As of 16-Jul-2020:
+As of 21-Jul-2020:
+
+- Generate energy spectra according to histogram.
+- Couple that with isotropic direction of incoming particles, uniformly smeared across detector.
 
 - Multi-threaded execution
    - Understand the effects of multiple threads on ROOT outputs (probably need to upgrade to Geant4 10.6).
