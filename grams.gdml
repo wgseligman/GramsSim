@@ -26,11 +26,11 @@ Source for the mistakes and stupid jokes: William Seligman (WGS) seligman@nevis.
     <!-- 5-May-2020 WGS: Everything will eventually get placed into a large
     world volume. Typically you want a volume that's big enough to contain 
     everything you're modeling, plus some space to both inject incoming
-    particles and track outgong particles from the detector simulation. -->
+    particles and track outgoing particles from the detector simulation. -->
     
-    <quantity name="worldVolumeXSize" type="length" value="400" unit="cm" />
-    <quantity name="worldVolumeYSize" type="length" value="400" unit="cm" />
-    <quantity name="worldVolumeZSize" type="length" value="500" unit="cm" />
+    <quantity name="worldVolumeXSize" type="length" value="600" unit="cm" />
+    <quantity name="worldVolumeYSize" type="length" value="600" unit="cm" />
+    <quantity name="worldVolumeZSize" type="length" value="600" unit="cm" />
     
     <!-- 5-May-2020 WGS: All length units are cm. Many of the dimensions
     used below are 'constant' or 'variable' so they can be used in calculations. -->
