@@ -16,6 +16,7 @@
 #include "G4RunManager.hh"
 #include "G4Event.hh"
 #include "G4SDManager.hh"
+#include "G4Threading.hh"
 
 namespace gramsg4 {
 
@@ -62,7 +63,8 @@ namespace gramsg4 {
 
     auto openFile = analysisManager->OpenFile(filename);
     if ( ! openFile )
-      G4cerr << "WriteNtuplesAction::BeginOfRunAction() - "
+      G4cerr << "File " << __FILE__ << " Line " << __LINE__ << " " << G4endl 
+	     << "WriteNtuplesAction::BeginOfRunAction() - "
 	     << " could not open file '" << filename
 	     << "' for output" << G4endl;
 
@@ -95,7 +97,7 @@ namespace gramsg4 {
     m_TrackNTID = analysisManager->CreateNtuple("TrackInfo", "MC truth G4Track information");
     if (m_debug) 
       G4cout << "WriteNtuplesAction::() - "
-	     << "ntuple id of 'LArHits' = " << m_TrackNTID << G4endl;
+	     << "ntuple id of 'TrackInfo' = " << m_TrackNTID << G4endl;
 
     // Reminder: G4's units are MeV, mm, ns
     analysisManager->CreateNtupleIColumn("Run");            // id 0         
@@ -123,6 +125,66 @@ namespace gramsg4 {
 	       << G4endl;
     analysisManager->FinishNtuple();
 
+    // Yet another ntuple: This contains the options used to run this
+    // program. Why do this? Isn't there an options.xml file that
+    // tells us which options were used? Not necessarily. For one
+    // thing, the user may have overridden options using the command
+    // line; this ntuple will record any such changes. Also, I find
+    // that often in an analysis I keep many files created by many
+    // jobs with many versions. If we store the exact options used to
+    // generate a file, we have a better chance of recreating results.
+
+    // For multi-threaded applications, this may result in multiple
+    // copies of this ntuple written to the output. Or it might write
+    // a copy to each file if ntuple merging is turned off
+    // above. We'll see!
+    m_optionsNTID = analysisManager->CreateNtuple("Options", "Options used for this program");
+    if (m_debug) 
+      G4cout << "WriteNtuplesAction::() - "
+	     << "ntuple id of 'Options' = " << m_optionsNTID << G4endl;
+
+    analysisManager->CreateNtupleSColumn("OptionName");     // id 0
+    analysisManager->CreateNtupleSColumn("OptionValue");    // id 1
+    analysisManager->CreateNtupleSColumn("OptionType");     // id 2
+    analysisManager->CreateNtupleSColumn("OptionBrief");    // id 3
+    analysisManager->CreateNtupleSColumn("OptionDesc");     // id 4
+
+    if (m_debug) 
+	G4cout << "WriteNtuplesAction::BeginOfRunAction() - "
+	       << "finish Options n-tuple"
+	       << G4endl;
+    analysisManager->FinishNtuple();
+
+    // In multi-threaded running, ntuples exist in worker threads, but
+    // not in the main thread. If we try to fill the ntuple in the
+    // master thread, we get lots of annoying (but harmless) error
+    // messages. The following test makes sure we only fill the ntuple
+    // if there are no threads (SEQUENTIAL_ID), or for a single worker
+    // thread (WORKER_ID = 0) in a multi-threaded application.
+
+    auto threadID = G4Threading::G4GetThreadId();
+    if ( threadID == G4Threading::SEQUENTIAL_ID  ||  
+	 threadID == G4Threading::WORKER_ID ) {
+
+      // Write the options to the ntuple.
+      auto numOptions = options->NumberOfOptions();
+      if (m_debug) 
+	G4cout << "WriteNtuplesAction::BeginOfRunAction() - "
+	       << "number of options = " << numOptions
+	       << G4endl;
+      for ( size_t i = 0; i != numOptions; ++i ) {
+	if (m_debug) 
+	  G4cout << "WriteNtuplesAction::BeginOfRunAction() - "
+		 << "filling for option number = " << i
+		 << G4endl;
+	analysisManager->FillNtupleSColumn(m_optionsNTID, 0, options->GetOptionName(i));
+	analysisManager->FillNtupleSColumn(m_optionsNTID, 1, options->GetOptionValue(i));
+	analysisManager->FillNtupleSColumn(m_optionsNTID, 2, options->GetOptionType(i));
+	analysisManager->FillNtupleSColumn(m_optionsNTID, 3, options->GetOptionBrief(i));
+	analysisManager->FillNtupleSColumn(m_optionsNTID, 4, options->GetOptionDescription(i));
+	analysisManager->AddNtupleRow(m_optionsNTID);  
+      }
+    } // if not masterRM
   }
 
   //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -130,7 +192,7 @@ namespace gramsg4 {
   void WriteNtuplesAction::EndOfRunAction(const G4Run*) {
     auto analysisManager = G4AnalysisManager::Instance();
 
-    // Save the n-tuple.
+    // Save the n-tuples.
 
     if (m_debug)
       G4cout << "WriteNtuplesAction::EndOfRunAction - "

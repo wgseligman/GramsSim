@@ -5,6 +5,7 @@
 #include <exception>
 #include <string>
 #include <iostream>
+#include <sstream>
 #include <iomanip>
 #include <cstdlib>
 
@@ -479,6 +480,66 @@ namespace util {
     std::cerr << std::right << std::endl;
     std::cerr << "See " << m_xmlFile << " for details." << std::endl;
     std::cerr << std::endl;
+  }
+
+
+  // The "getters" to access individual options in the order they're
+  // stored in the map. Note that everything is returned as a
+  // std::string.
+
+  size_t Options::NumberOfOptions() const { 
+    return m_options.size(); 
+  }
+
+  std::string Options::GetOptionName( size_t i ) const {
+    auto j = m_options.cbegin(); 
+    std::advance(j,i); 
+    return (*j).first; 
+  }
+
+  std::string Options::GetOptionValue( size_t i ) const {
+    auto j = m_options.cbegin(); 
+    std::advance(j,i); 
+    return (*j).second.value; 
+  }
+
+  std::string Options::GetOptionType( size_t i ) const {
+    auto j = m_options.cbegin(); 
+    std::advance(j,i); 
+    auto type =  (*j).second.type;
+ 
+   switch (type) {
+     case e_string:
+      return "string";
+      break;
+    case e_double:
+      return "double";
+      break;
+    case e_integer:
+      return "integer";
+      break;
+    case e_boolean:
+      return "boolean";
+      break;
+    default:
+      return "";
+    }
+  }
+
+  std::string Options::GetOptionBrief( size_t i ) const {
+    auto j = m_options.cbegin(); 
+    std::advance(j,i); 
+    // We store "brief" as a char, which requires a bit of care to
+    // convert to std::string. The simplest way is to use the
+    // std::string(n,c), which creates a string of n copies of char c.
+    std::string brief( 1, (*j).second.brief );
+    return brief;
+  }
+
+  std::string Options::GetOptionDescription( size_t i ) const {
+    auto j = m_options.cbegin(); 
+    std::advance(j,i); 
+    return (*j).second.desc; 
   }
 
 

@@ -61,7 +61,6 @@ namespace g4util {
     virtual void PreTrackingAction (const G4Track*) {};
     virtual void PostTrackingAction(const G4Track*) {};
     virtual void SteppingAction(const G4Step*) {};
-
   };
 
 } // namespace g4util
