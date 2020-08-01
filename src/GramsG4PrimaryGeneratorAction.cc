@@ -9,11 +9,12 @@
 #include "Options.h"
 
 #include "G4Event.hh"
-#include "G4ParticleGun.hh"
+#include "G4GeneralParticleSource.hh"
 #include "G4ParticleTable.hh"
 #include "G4ParticleDefinition.hh"
 #include "G4SystemOfUnits.hh"
 #include "G4ThreeVector.hh"
+#include "G4ParticleMomentum.hh"
 #include "Randomize.hh"
 
 namespace gramsg4 {
@@ -22,10 +23,11 @@ namespace gramsg4 {
 
   PrimaryGeneratorAction::PrimaryGeneratorAction()
     : G4VUserPrimaryGeneratorAction()
-    , fParticleGun(0)
+    , fParticleSource(0)
   {
-    G4int n_particle = 1;
-    fParticleGun = new G4ParticleGun(n_particle);
+    fParticleSource = new G4GeneralParticleSource();
+    // Just in case: we only want to generate one particle at a time.
+    fParticleSource->SetNumberOfParticles(1);
 
     G4ParticleTable* particleTable = G4ParticleTable::GetParticleTable();
 
@@ -33,20 +35,9 @@ namespace gramsg4 {
     switch ( gramsg4::RunMode::GetInstance()->GetRunMode() ) 
       {
       case batchMode:
+      case uiMode:
 	// Do nothing. The particle type and energy will
 	// come from the macrofile.
-	break;
-
-      case uiMode:
-	// Start with a "pretty" default particle, but let
-	// the user override the choice with the uimacrofile
-	// or interactive "/gun" commands.
-	fParticleGun->SetParticleDefinition(particleTable->FindParticle("gamma"));
-	fParticleGun->SetParticleEnergy(1.0*MeV);
-	m_position = G4ThreeVector(5.0*cm, 5.0*cm, 200*cm);
-	m_momentum = G4ThreeVector(0,0,-1);
-	fParticleGun->SetParticlePosition(m_position);
-	fParticleGun->SetParticleMomentumDirection(m_momentum);
 	break;
 
       case commandMode:
@@ -57,11 +48,11 @@ namespace gramsg4 {
 	options->GetOption("pdgcode",pdgCode);
 	// I'm skipping the error checking here; what if the
 	// user puts in a non-existent code?
-	fParticleGun->SetParticleDefinition(particleTable->FindParticle(pdgCode));
+	fParticleSource->SetParticleDefinition(particleTable->FindParticle(pdgCode));
 
 	G4double energy;
 	options->GetOption("energy",energy);
-	fParticleGun->SetParticleEnergy(energy*MeV);
+	fParticleSource->GetCurrentSource()->GetEneDist()->SetMonoEnergy(1.0*MeV);
       }
   }
 
@@ -69,7 +60,7 @@ namespace gramsg4 {
 
   PrimaryGeneratorAction::~PrimaryGeneratorAction()
   {
-    delete fParticleGun;
+    delete fParticleSource;
   }
 
   //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -101,9 +92,9 @@ namespace gramsg4 {
 	m_position = G4ThreeVector((G4UniformRand()-0.5) * 15.0*cm,
 				   (G4UniformRand()-0.5) * 15.0*cm,
 				   200*cm);
-	m_momentum = G4ThreeVector(0,0,-1);
-	fParticleGun->SetParticlePosition(m_position);
-	fParticleGun->SetParticleMomentumDirection(m_momentum);
+	m_momentum = G4ParticleMomentum(0,0,-1);
+	fParticleSource->SetParticlePosition(m_position);
+	fParticleSource->GetCurrentSource()->GetAngDist()->SetParticleMomentumDirection(m_momentum);
       }      
 
     auto options = util::Options::GetInstance();
@@ -111,7 +102,7 @@ namespace gramsg4 {
     options->GetOption("debug",debug);
 
     // This can be a mis-leading debug mode, since there isn't any
-    // easy way to get at the ParticleGun parameters if the user
+    // easy way to get at the ParticleSource parameters if the user
     // sets them via the command file or UI. 
     if (debug  &&  ( runMode == uiMode  ||  runMode == commandMode )) {
       std::cout << "GramsG4PrimaryGeneratorAction::GeneratePrimaries: "
@@ -126,7 +117,7 @@ namespace gramsg4 {
 		<< std::endl;
     }
 
-    fParticleGun->GeneratePrimaryVertex(anEvent);
+    fParticleSource->GeneratePrimaryVertex(anEvent);
   }
 
 } // namespace gramsg4

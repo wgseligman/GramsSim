@@ -19,7 +19,7 @@
 #include "globals.hh"
 
 class G4Event;
-class G4ParticleGun;
+class G4GeneralParticleSource;
 
 /// Primary generator action; uses a "particle gun" to insert
 /// particles into the detector geometry.
@@ -37,7 +37,7 @@ namespace gramsg4 {
   
   private:
   
-    G4ParticleGun* fParticleGun;
+    G4GeneralParticleSource* fParticleSource;
     G4ThreeVector m_position;
     G4ThreeVector m_momentum;
   };
