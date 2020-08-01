@@ -99,6 +99,12 @@ namespace gramsg4 {
       G4cout << "WriteNtuplesAction::() - "
 	     << "ntuple id of 'TrackInfo' = " << m_TrackNTID << G4endl;
 
+    // Note that this track info ntuple is inefficient. We're storing
+    // the beginning and end of each track in every entry. If we were
+    // being careful, we'd remember that the end of one track is the
+    // start of the next one. But let's worry about efficiency when we
+    // start running out of simulation disk space. 
+
     // Reminder: G4's units are MeV, mm, ns
     analysisManager->CreateNtupleIColumn("Run");            // id 0         
     analysisManager->CreateNtupleIColumn("Event");          // id 1
@@ -133,11 +139,6 @@ namespace gramsg4 {
     // that often in an analysis I keep many files created by many
     // jobs with many versions. If we store the exact options used to
     // generate a file, we have a better chance of recreating results.
-
-    // For multi-threaded applications, this may result in multiple
-    // copies of this ntuple written to the output. Or it might write
-    // a copy to each file if ntuple merging is turned off
-    // above. We'll see!
     m_optionsNTID = analysisManager->CreateNtuple("Options", "Options used for this program");
     if (m_debug) 
       G4cout << "WriteNtuplesAction::() - "
@@ -184,7 +185,7 @@ namespace gramsg4 {
 	analysisManager->FillNtupleSColumn(m_optionsNTID, 4, options->GetOptionDescription(i));
 	analysisManager->AddNtupleRow(m_optionsNTID);  
       }
-    } // if not masterRM
+    } // if sequential or worker thread
   }
 
   //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -212,10 +213,13 @@ namespace gramsg4 {
   //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
   void WriteNtuplesAction::EndOfEventAction(const G4Event* a_event) {
+
+    auto analysisManager = G4AnalysisManager::Instance();
+
     // Get hits collections IDs (only once)
     if ( m_LArHitCollectionID == -1 ) {
-      // Make sure the following name agrees with that in
-      // GramsG4DetectorConstruction.cc
+      // Make sure the following collection ID name agrees with that
+      // in GramsG4DetectorConstruction.cc
       m_LArHitCollectionID
 	= G4SDManager::GetSDMpointer()->GetCollectionID("LArHits");
     }
@@ -233,7 +237,6 @@ namespace gramsg4 {
 	G4cout << "WriteNtuplesAction::EndOfEventAction - "
 	       << "Filling n-tuple ID=" << m_LArNTID << G4endl;
 
-      auto analysisManager = G4AnalysisManager::Instance();
       analysisManager->FillNtupleIColumn(m_LArNTID, 0, G4RunManager::GetRunManager()->GetCurrentRun()->GetRunID() );
       analysisManager->FillNtupleIColumn(m_LArNTID, 1, a_event->GetEventID() );
       analysisManager->FillNtupleIColumn(m_LArNTID, 2, larHit->GetTrackID() );
@@ -301,7 +304,7 @@ namespace gramsg4 {
 
   LArHitsCollection* 
   WriteNtuplesAction::GetHitsCollection(G4int hcID,
-				     const G4Event* event) const
+					const G4Event* event) const
   {
     // Fetch the appropriate collection of LArHits from the current
     // event.
