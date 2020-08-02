@@ -23,6 +23,8 @@
 
 # Shoot along Z direction downwards from above
 /gps/pos/centre 0.5 0.5 200 cm
+
+# This means "run Geant4 and generate 20 events"
 /run/beamOn 20
 
 # Turn off detailed track information. 
