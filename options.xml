@@ -33,16 +33,16 @@
         desc="write parsed GDML to this file" />    
 
     <!-- If you want to use gramsg4 in batch mode, this is the
-    file of Geant4 commands to be executed. If UI is on, this file is not
-    run automatically. Take a look at run.mac for some ideas. -->
-    <option name="macrofile" short="m" value="mac/run.mac" type="string" 
-        desc="G4 command batch file"/>
+    file of Geant4 commands to be executed. If UI is on, this parameter
+    is ignored. Take a look at the mac/ directory for some ideas. -->
+    <option name="macrofile" short="m" value="mac/batch.mac" type="string" 
+        desc="G4 macro file"/>
 
     <!-- If this flag is turned on, gramsg4 will start in an
     interactive graphical mode. It will then execute the contents
-    of the Geant4 command file specified by option 'uimacrofile' -->
+    of the Geant4 macro file specified by option 'uimacrofile' -->
     <option name="ui" value="false" type="boolean" desc="start UI session"/>
-    <option name="uimacrofile" value="mac/vis.mac" type="string" desc="G4 command file for UI"/>
+    <option name="uimacrofile" value="mac/vis.mac" type="string" desc="G4 macro file for UI"/>
 
     <!-- The name of the output file. The G4 Analysis Manager will automatically
     append '.root' to this name.-->

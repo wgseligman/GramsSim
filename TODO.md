@@ -1,6 +1,6 @@
 # TODO 
 
-As of 21-Jul-2020:
+As of 02-Aug-2020:
 
 - Generate energy spectra according to histogram.
 - Couple that with isotropic direction of incoming particles, uniformly smeared across detector.
@@ -15,10 +15,6 @@ As of 21-Jul-2020:
 
 - Improve SimpleAnalysis.C
    - Perhaps a concrete example of turning the LAr hits to an image format for ML studies.
-
-- Improve control of particle gun
-   - More options from command line and `options.xml`?
-   - Create an external parser?
 
 - UI display
    - Does OpenGL support display of hit/track information on mouse hover?
