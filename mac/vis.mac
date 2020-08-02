@@ -84,12 +84,14 @@
 /gps/ene/type Mono
 /gps/ene/mono 1 MeV
 
-# Where the particle starts. We're aiming the particle a little off
-# from the x-y center of the detector so we don't aim directly at a
-# PTFE sheet.
-/gps/pos/centre 0.5 0.5 200 cm
+# For this example, we want to shoot the gammas in the z-direction
+# from a 1.4m x 1.4m square above the detector.
 
-# Where the particle is pointed at. Recall that z=0 is at the
-# induction plane of the TPC.
-/gps/ang/type focused
-/gps/ang/focuspoint 0.5 0.5 -100 cm
+/gps/pos/type Plane
+/gps/pos/shape Square
+/gps/pos/centre 0 0 2 m
+/gps/pos/halfx 0.7 m
+/gps/pos/halfy 0.7 m
+
+# We want the particle to be aimed in the negative z-direction. 
+/gps/direction 0 0 -1

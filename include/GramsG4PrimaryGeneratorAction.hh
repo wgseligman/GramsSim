@@ -1,22 +1,14 @@
 /// \file GramsG4/include/GramsG4PrimaryGeneratorAction.hh
 /// \brief Definition of the GramsG4PrimaryGeneratorAction class
 ///
-///  This generator can run in these modes:
-///  - Batch mode: The user has supplied commands in a G4 macro file.
-///    Assume all generator parameters are set by that file.
-///  - UI mode: Similar to batch mode, but set some default parameters
-///    so the user can see pretty pictures without thinking much about it.
-///  - Command-line mode: Take the generator parameters from the command
-///    line. 
-///
+/// Use G4GeneralPrimarySource to generate events. This means that all
+/// the control of event generation comes from the Geant4 macro file
+/// executed by the main routine.
 
 #ifndef _GramsG4PRIMARYGENERATORACTION_H_
 #define _GramsG4PRIMARYGENERATORACTION_H_
 
 #include "G4VUserPrimaryGeneratorAction.hh"
-
-#include "G4ThreeVector.hh"
-#include "globals.hh"
 
 class G4Event;
 class G4GeneralParticleSource;
@@ -38,8 +30,6 @@ namespace gramsg4 {
   private:
   
     G4GeneralParticleSource* fParticleSource;
-    G4ThreeVector m_position;
-    G4ThreeVector m_momentum;
   };
 
 } // namespace gramsg4
