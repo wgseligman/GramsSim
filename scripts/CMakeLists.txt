@@ -1,6 +1,7 @@
 # Install example Geant4 macro files
 set(root_scripts
 		SimpleAnalysis.C
+		Hist2Text.C
 )
 
 foreach(_script ${root_scripts})

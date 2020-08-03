@@ -14,14 +14,19 @@ See README.md in the parent directory for more information.
 
 `run.mac` - shoots 20 1-MeV gammas along the z-axis, y-axis, and x-axis.
 
+`batch.mac` - shoots 1000 1-MeV gamma along the z-axis.
+
+`sky.mac` - shoots 1000 gammas from an imaginary sphere surrounding
+the detector (the 'sky') focused on the center of the TPC. The energy
+spectrum comes from a histogram (see scripts/Hist2Text.C).
+
 `vis.mac` - setup for interactive display. Particles are aimed along
 the negative z-direction randomly across the top face of the inner
 detector.
 
 `vis-sphere.mac` - another interactive display. The particles are
 generated on the surface of an imaginary sphere surrounding the
-detector (the 'sky') and are focused on the center of the TPC.
+detector (the 'sky') and are focused on the center of the TPC. The
+energy spectrum comes from a histogram (see scripts/Hist2Text.C).
 
 `debug-geom.mac` - run Geant4's geometry validation (takes a long time!)
-
-`batch.mac` - shoots 1000 1-MeV gamma along the z-axis.

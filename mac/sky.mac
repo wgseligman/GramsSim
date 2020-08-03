@@ -1,0 +1,32 @@
+###################################################
+# Batch running of event simulating
+# isotropic gammas from the sky.
+###################################################
+
+# The particles: gammas using the energy spectrum in
+# energyflux.txt. See scripts/Hist2Text.C for how to convert a ROOT
+# histogram into Geant4's simple histogram text format.
+
+/gps/particle gamma 
+/gps/ene/type Arb
+/gps/hist/type arb
+/gps/hist/file energyflux.txt
+/gps/hist/inter Lin
+
+# Put the detector in the middle of a sphere, to simulate isotropic
+# radiation from the sky. Recall that z=0 is located at the induction
+# plane, so we have to adjust things a bit to focus the particles
+# from the sphere on the center (or centre!) of the detector. 
+
+/gps/pos/type Surface
+/gps/pos/shape Sphere
+/gps/pos/radius 3 m
+/gps/pos/centre 0 0 -0.1 m
+
+/gps/ang/type focused
+/gps/ang/focuspoint 0 0 -0.1 m
+
+# This means "run Geant4 and generate 1000 events"
+/run/beamOn 1000
+
+exit

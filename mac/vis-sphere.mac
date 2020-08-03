@@ -79,10 +79,15 @@
 # GPS (General Particle Source) commands can be overridden from within
 # the display.
 
-# The particle: 1 MeV monoenergetic gamma
-/gps/particle gamma
-/gps/ene/type Mono
-/gps/ene/mono 1 MeV
+# The particles: gammas using the energy spectrum in
+# energyflux.txt. See scripts/Hist2Text.C for how to convert a ROOT
+# histogram into Geant4's simple histogram text format.
+
+/gps/particle gamma 
+/gps/ene/type Arb
+/gps/hist/type arb
+/gps/hist/file energyflux.txt
+/gps/hist/inter Lin
 
 # Put the detector in the middle of sphere, to simulate isotropic
 # radiation from the sky. Recall that z=0 is located at the induction
@@ -96,3 +101,6 @@
 
 /gps/ang/type focused
 /gps/ang/focuspoint 0 0 -0.1 m
+
+# See detailed gps information
+/gps/verbose 2
