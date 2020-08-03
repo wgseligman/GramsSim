@@ -1074,7 +1074,7 @@ Source for the mistakes and stupid jokes: William Seligman (WGS) seligman@nevis.
    <!-- End of Outer detector definition -->
    
     <volume name="volWorld">
-      <materialref ref="Air"/>
+      <materialref ref="Vacuum"/>
       <solidref ref="World"/>
       <physvol>
         <volumeref ref="volOuterDetector"/>
