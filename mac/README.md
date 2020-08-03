@@ -29,4 +29,9 @@ generated on the surface of an imaginary sphere surrounding the
 detector (the 'sky') and are focused on the center of the TPC. The
 energy spectrum comes from a histogram (see scripts/Hist2Text.C).
 
+`outline.mac` - just shows an outline of the detector, and is colored
+so that it's more suitable for inclusion in talks. Give this one some
+extra time to load, since it's turning off the visibility for a number
+of volumes.
+
 `debug-geom.mac` - run Geant4's geometry validation (takes a long time!)

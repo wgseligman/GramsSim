@@ -5,6 +5,7 @@ set(g4_macros
 		run.mac
 		vis.mac
 		vis-sphere.mac
+		outline.mac
 		debug-geom.mac
 )
 
