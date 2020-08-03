@@ -12,9 +12,15 @@ To run an interactive job with, e.g., mac/vis.mac
 
 See README.md in the parent directory for more information. 
 
-`run.mac` - shoots 1-MeV gammas along the z-axis, y-axis, and x-axis.
+`run.mac` - shoots 20 1-MeV gammas along the z-axis, y-axis, and x-axis.
 
-`vis.mac` - setup for interactive display. 
+`vis.mac` - setup for interactive display. Particles are aimed along
+the negative z-direction randomly across the top face of the inner
+detector.
+
+`vis-sphere.mac` - another interactive display. The particles are
+generated on the surface of an imaginary sphere surrounding the
+detector (the 'sky') and are focused on the center of the TPC.
 
 `debug-geom.mac` - run Geant4's geometry validation (takes a long time!)
 

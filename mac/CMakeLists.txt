@@ -1,7 +1,9 @@
 # Install example Geant4 macro files
 set(g4_macros 
+		batch.mac
 		run.mac
 		vis.mac
+		vis-sphere.mac
 		debug-geom.mac
 )
 
