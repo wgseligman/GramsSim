@@ -145,13 +145,13 @@ If you don't know how to browse an ROOT ntuple, I suggest this [ROOT tutorial](h
 
 *Note:* If you run the program with multiple threads (the `--nthreads` option), the events in the ntuples will *not* be ascending numeric order. The G4Track IDs will be in the order that Geant4 processes them, which is *not* in ascending numeric order even if you don't run with multiple threads. Also note that it's possible for an event to leave no energy deposits in the active TPC volume. 
 
-If you're looking for a place to start in accessing the ntuples for analysis, look at `SimpleAnalysis.C` which was copied to your build/work directory. To run it:
+If you're looking for a place to start in accessing the ntuples for analysis, look at `SimpleAnalysis.C` in the `scripts` directory which was copied to your build/work directory. To run it:
 
-    root -l SimpleAnalysis.C
+    root -l scripts/SimpleAnalysis.C
 
 ## Making changes
 
-Obviously, you can make any changes you want to GramsG4 for your own use. This section is for when you want to start making change to be added to the official repository. Before you edit files for the first time:
+Obviously, you can make any changes you want to GramsG4 for your own use. This section is for when you want to start making changes to be added to the official repository. Before you edit files for the first time:
 
     cd $GGDIR/GramsG4
     git flow init 
