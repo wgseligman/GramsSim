@@ -122,6 +122,9 @@ file and edit it:
     # edit '/run/beamOn 1000' to '/run/beamOn 2000'
     ./gramsg4 --macrofile my_test.mac
 ```
+
+Of particular interest is the file `mac/sky.mac`, which shows how to an energy spectrum from a user-supplied histogram with positions given uniformly by a sphere surrounding the detector. 
+
 For more on the gps commands, see the *References* section near the end of this document. 
 
 ### Program outputs

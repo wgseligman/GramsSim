@@ -1,8 +1,6 @@
 # TODO 
 
-As of 02-Aug-2020:
-
-- Generate energy spectra according to histogram.
+As of 03-Aug-2020:
 
 - Multi-threaded execution
    - Understand the effects of multiple threads on ROOT outputs (probably need to upgrade to Geant4 10.6).
