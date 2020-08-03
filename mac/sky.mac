@@ -10,7 +10,7 @@
 /gps/particle gamma 
 /gps/ene/type Arb
 /gps/hist/type arb
-/gps/hist/file energyflux.txt
+/gps/hist/file scripts/energyflux.txt
 /gps/hist/inter Lin
 
 # Put the detector in the middle of a sphere, to simulate isotropic

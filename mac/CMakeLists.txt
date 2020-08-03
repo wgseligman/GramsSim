@@ -1,6 +1,7 @@
 # Install example Geant4 macro files
 set(g4_macros 
 		batch.mac
+		sky.mac
 		run.mac
 		vis.mac
 		vis-sphere.mac
