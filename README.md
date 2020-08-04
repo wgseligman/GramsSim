@@ -131,7 +131,7 @@ For more on the gps commands, see the *References* section near the end of this 
 
 These are likely to change rapidly as the software improves. This is the state of program outputs as of 31-Jul-2020.
 
-The `gramsg4` program produces only one ROOT output file containing multiple ntuples. The default name of the output file is `gramsg4.root`. This can be changde via a job option (see *Program Options* below); e.g.,
+The `gramsg4` program produces only one ROOT output file containing multiple ntuples. The default name of the output file is `gramsg4.root`. This can be changed via a job option (see *Program Options* below); e.g.,
 
     ./gramsg4 -o myStudy
 
