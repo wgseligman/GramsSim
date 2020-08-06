@@ -555,7 +555,7 @@ spared the funny backticks and hashtags and whatnot), do a web search on
 the Linux cluster systems have [pandoc](https://pandoc.org/) installed.
 You can view a plain text version of this document with:
 
-    pandoc README.md -t text | less
+    pandoc README.md -t plain | less
 
 You can type `man pandoc` to learn more formatting options. For example,
 if you want to format this into PDF:
