@@ -8,7 +8,6 @@
 
 // For processing command-line and XML file options.
 #include "Options.h" // in util/
-#include "GramsG4RunMode.hh"
 
 // There are three mandatory classes needed for any Geant4 application
 // to work. One is the detector geometry:
@@ -120,25 +119,6 @@ int main(int argc,char **argv)
     options->PrintOptions();
     PrintAvailablePhysics();
   }
-
-  // Determine the run mode of this application.
-  // Default is take the run parameters from the command line. 
-  gramsg4::RunMode::GetInstance()->SetRunMode(gramsg4::commandMode);
-
-  G4bool runUI(false);
-  options->GetOption("ui",runUI);
-   
-  G4String macroFile, uiMacroFile;
-  options->GetOption("macrofile",macroFile);
-  if (! runUI  &&  macroFile.size() > 0)   // batch mode  
-    gramsg4::RunMode::GetInstance()->SetRunMode(gramsg4::batchMode);
-  else {
-    if ( runUI ) {
-      result = options->GetOption("uimacrofile",uiMacroFile);
-      if ( result && uiMacroFile.size() > 0 )
-	gramsg4::RunMode::GetInstance()->SetRunMode(gramsg4::uiMode);
-    } // uimacrofile defined
-  } // runUI
   
   // Set up the Geant4 Run Manager. 
 #ifdef G4MULTITHREADED
@@ -313,34 +293,27 @@ int main(int argc,char **argv)
    
   const G4String command("/control/execute ");
 
-  switch (gramsg4::RunMode::GetInstance()->GetRunMode())
-    {
-    case gramsg4::batchMode:
-      UImanager->ApplyCommand(command+macroFile);
-      break;
-    case gramsg4::uiMode:
-      {
-	G4UIExecutive* ui = new G4UIExecutive(argc, argv);
-	UImanager->ApplyCommand(command+uiMacroFile);
-	ui->SessionStart();
-	delete ui;
-      }
-      break;
-    case gramsg4::commandMode:
-      // If we get here, there are no macro files for input.
-      // Take the run parameters from the options XML file.
-      if (verbose) {
-	UImanager->ApplyCommand("/tracking/verbose 1");
-	UImanager->ApplyCommand("/control/verbose 1");
-	UImanager->ApplyCommand("/run/verbose 2");	  
-      } // verbose
-      G4int nevents;
-      options->GetOption("nevents",nevents);
-      if (nevents > 0) {
-	auto nstring = std::to_string(nevents);
-	UImanager->ApplyCommand("/run/beamOn " + nstring); 
-      } // nevents > 0
-    }
+  // Which macro file will we execute? If the user specified the UI
+  // mode, then use the uimacrofile parameter. Otherwise use the
+  // macrofile parameter. (This is to make it easier to switch between
+  // batch mode and UI mode for testing.)
+
+  G4bool uiMode(false);
+  options->GetOption("ui",uiMode);
+  G4String macroFile;
+  if (uiMode) 
+    options->GetOption("uimacrofile",macroFile);
+  else
+    options->GetOption("macrofile",macroFile);
+
+  if (uiMode) {
+    G4UIExecutive* ui = new G4UIExecutive(argc, argv);
+    UImanager->ApplyCommand(command+macroFile);
+    ui->SessionStart();
+    delete ui;
+  }
+  else
+    UImanager->ApplyCommand(command+macroFile);
 
   // Clean-up
   delete visManager;

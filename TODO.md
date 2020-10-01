@@ -1,6 +1,6 @@
 # TODO 
 
-As of 09-Jul-2020:
+As of 03-Aug-2020:
 
 - Multi-threaded execution
    - Understand the effects of multiple threads on ROOT outputs (probably need to upgrade to Geant4 10.6).
@@ -8,13 +8,10 @@ As of 09-Jul-2020:
 
 - Scintillator hits
    - Requires a two-way map of strip geometry to (x,y,z).
+   - Create an additional ntuple with hits in the scintillator strips. 
 
 - Improve SimpleAnalysis.C
    - Perhaps a concrete example of turning the LAr hits to an image format for ML studies.
-
-- Improve control of particle gun
-   - More options from command line and `options.xml`?
-   - Create an external parser?
 
 - UI display
    - Does OpenGL support display of hit/track information on mouse hover?

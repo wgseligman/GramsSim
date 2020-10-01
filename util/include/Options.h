@@ -6,8 +6,6 @@
 #ifndef Options_h
 #define Options_h 1
 
-#include "G4String.hh"
-#include "G4Types.hh"
 #include <map>
 #include <string>
 
@@ -38,12 +36,23 @@ namespace util {
     bool GetOption(const std::string name, bool& value) const;
     bool GetOption(const std::string name, std::string& value) const;
 
-    // Display all the options as a tab;e.
+    /// Display all the options as a tab;e.
     void PrintOptions() const;
 
-    // Display all the options as a help message.
+    /// Display all the options as a help message.
     void PrintHelp() const;
-    
+
+    /// Provide a way to access the "i-th" option stored by this
+    /// class. Note that these routines are very inefficient (map
+    /// iterators are not random-access) so don't use them inside
+    /// frequently-executed loops and such.
+    size_t NumberOfOptions() const;
+    std::string GetOptionName( size_t i ) const;
+    std::string GetOptionValue( size_t i ) const;
+    std::string GetOptionType( size_t i ) const;
+    std::string GetOptionBrief( size_t i ) const;
+    std::string GetOptionDescription( size_t i ) const;
+
   protected:
     /// Standard null constructor for a singleton class.
     Options() {}
@@ -57,7 +66,7 @@ namespace util {
       std::string desc;    ///< Optional description for --help
     };
 
-    std::map<G4String,m_option_attributes> m_options; ///< User options map
+    std::map<std::string,m_option_attributes> m_options; ///< User options map
 
     // Parse the contents of the XML file... once we've
     // determined the name of that file. 

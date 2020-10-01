@@ -59,7 +59,7 @@ target_link_libraries(gramsg4 ${Geant4_LIBRARIES} )
 # build GramsG4. This is so that we can run the executable directly because it
 # relies on these scripts being in the current working directory.
 #
-set(GramsG4_SCRIPTS grams.gdml vis.mac run.mac debug-geom.mac options.xml SimpleAnalysis.C)
+set(GramsG4_SCRIPTS grams.gdml options.xml)
 
 foreach(_script ${GramsG4_SCRIPTS})
   configure_file(
@@ -70,6 +70,8 @@ foreach(_script ${GramsG4_SCRIPTS})
 endforeach()
 
 add_subdirectory(GDMLSchema)
+add_subdirectory(mac)
+add_subdirectory(scripts)
 
 #----------------------------------------------------------------------------
 # Add program to the project targets

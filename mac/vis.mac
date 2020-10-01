@@ -73,3 +73,28 @@
 /vis/viewer/set/projection orthogonal
 /vis/viewer/zoomTo 1.48517
 /vis/viewer/scaleTo 1 1 1
+
+# 01-Aug-2020 WGS: Set the initial particle parameters for the UI
+# display.  This is so we display something mildly interesting. These
+# GPS (General Particle Source) commands can be overridden from within
+# the display.
+
+# The particle: 1 MeV monoenergetic gamma
+/gps/particle gamma
+/gps/ene/type Mono
+/gps/ene/mono 1 MeV
+
+# For this example, we want to shoot the gammas in the z-direction
+# from a 1.4m x 1.4m square above the detector.
+
+/gps/pos/type Plane
+/gps/pos/shape Square
+/gps/pos/centre 0 0 2 m
+/gps/pos/halfx 0.7 m
+/gps/pos/halfy 0.7 m
+
+# We want the particle to be aimed in the negative z-direction. 
+/gps/direction 0 0 -1
+
+# See detailed gps information.
+/gps/verbose 2

@@ -47,6 +47,7 @@ namespace gramsg4 {
     G4int m_LArNTID;
     G4int m_TrackNTID;
     G4int m_ScintNTID;
+    G4int m_optionsNTID;
 
     // Save the debugging state.
     G4bool m_debug;

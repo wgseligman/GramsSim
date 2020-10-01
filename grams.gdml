@@ -26,18 +26,18 @@ Source for the mistakes and stupid jokes: William Seligman (WGS) seligman@nevis.
     <!-- 5-May-2020 WGS: Everything will eventually get placed into a large
     world volume. Typically you want a volume that's big enough to contain 
     everything you're modeling, plus some space to both inject incoming
-    particles and track outgong particles from the detector simulation. -->
+    particles and track outgoing particles from the detector simulation. -->
     
-    <quantity name="worldVolumeXSize" type="length" value="250" unit="cm" />
-    <quantity name="worldVolumeYSize" type="length" value="400" unit="cm" />
-    <quantity name="worldVolumeZSize" type="length" value="500" unit="cm" />
+    <quantity name="worldVolumeXSize" type="length" value="600" unit="cm" />
+    <quantity name="worldVolumeYSize" type="length" value="600" unit="cm" />
+    <quantity name="worldVolumeZSize" type="length" value="600" unit="cm" />
     
     <!-- 5-May-2020 WGS: All length units are cm. Many of the dimensions
     used below are 'constant' or 'variable' so they can be used in calculations. -->
 
     <!-- ************** LArTPC section ************** -->
     
-    <constant name="lArTPCXSize" value="20" />
+    <constant name="lArTPCXSize" value="140" />
     <constant name="lArTPCYSize" value="140" />
     <constant name="lArTPCZSize" value="20" />
 
@@ -48,9 +48,9 @@ Source for the mistakes and stupid jokes: William Seligman (WGS) seligman@nevis.
     <constant name="cryostatYSize" value="lArTPCYSize + 2*cryostatThickness" />
     <constant name="cryostatZSize" value="lArTPCZSize + 2*cryostatThickness" />
 
-    <!-- 5-May-2020 WGS: For the x-y wires, use the wire spacing from the paper (0.2mm) 
-    and radius from MicroBooNE.-->
-    <constant name="wireSpacing" value="0.02" />
+    <!-- 5-May-2020 WGS: For the x-y wires, use the wire spacing from the GRAMS
+    collaboration meeting (2mm) and radius from MicroBooNE.-->
+    <constant name="wireSpacing" value="0.2" />
     <constant name="wireRadius" value="0.0075" />
     <constant name="lengthXWire" value="lArTPCXSize" />
     <constant name="lengthYWire" value="lArTPCYSize" />
@@ -89,40 +89,69 @@ Source for the mistakes and stupid jokes: William Seligman (WGS) seligman@nevis.
     <constant name="cathodeXSize" value="lArTPCXSize" />
     <constant name="cathodeYSize" value="lArTPCYSize" />
     <constant name="cathodeZSize" value="cathodeThickness" />
-   
-    <!-- 5-May-2020 WGS: How thick will the PTFE sheets be? I don't know, so 
-    assume 1mm. I assume the sheets will be mounted on the x-sides of the TPC. -->
-    <constant name="ptfeThickness" value="0.1" />
-    <constant name="ptfeXSize" value="lArTPCXSize" />
-    <constant name="ptfeYSize" value="ptfeThickness" />
-    <constant name="ptfeZSize" value="lArTPCZSize - 1.0" />
     
-    <!-- 5-May-2020 WGS: How many active regions will there be? I don't know, 
-    so assume 5 PTFE sheets dividing the LAr into 6 regions (the number
+    <!-- 5-May-2020 WGS: How many active cells will there be? I don't know, 
+    so assume 5 PTFE sheets dividing the LAr into 6 cells (the number
     in the diagrams in arXiv:1901.03430v3). -->
     
-    <constant name="numberPtfeSheets" value="5" />
-    <constant name="numberActiveRegions" value="numberPtfeSheets + 1" />
+    <!-- 16-Jul-2020 WGS: It's not clear from  arXiv:1901.03430v3, but it appears
+    that cells are delimited in both x and y. -->
+    <constant name="numberPtfeSheetsY" value="13" />
+    <constant name="numberActiveCellsY" value="numberPtfeSheetsY + 1" />
+    <constant name="numberPtfeSheetsX" value="13" />
+    <constant name="numberActiveCellsX" value="numberPtfeSheetsX + 1" />
+   
+    <!-- 5-May-2020 WGS: How thick will the PTFE sheets be? I don't know, so 
+    assume 1mm. For the sheets' z-size, leave some room for the wires and the 
+    cathode plate. -->
+    <constant name="ptfeThickness" value="0.1" />
 
-    <!-- 8-May-2020 WGS: How big will the active LAr region be? I don't know. 
-    To make the placement of the sensitive detector regions easier, I'm putting a
+    <!-- 8-May-2020 WGS: How big will the active LAr cell be? I don't know. 
+    To make the placement of the sensitive detector cells easier, I'm putting a
     2 cm boundary in x and z, but over the complete y-length of the LArTPC. This
     isn't realistic, but you have to start somewhere. -->
+   
+    <!-- 16-Jul-2020 WGS: Define the groups of cells we'll place along x. -->
+    <constant name="cellGroupXRegion" value="lArTPCXSize - 4.0" />
+    <constant name="cellGroupXSize" value="(cellGroupXRegion - numberPtfeSheetsX*ptfeThickness) / numberActiveCellsX" />
+    <constant name="cellGroupYSize" value="lArTPCYSize" />
+    <constant name="cellGroupZSize" value="lArTPCZSize - 4.0" />
 
-    <constant name="activeRegionXSize" value="lArTPCXSize - 4.0" />
-    <constant name="activeRegionYSize" value="(lArTPCYSize - numberPtfeSheets*ptfeThickness) / numberActiveRegions" />
-    <constant name="activeRegionZSize" value="lArTPCZSize - 4.0" />
+    <!-- 16-Jul-2020 WGS: The PTFE sheets that separate the cell groups along x. -->
+    <constant name="ptfeGroupXSize" value="ptfeThickness" />
+    <constant name="ptfeGroupYSize" value="cellGroupYSize" />
+    <constant name="ptfeGroupZSize" value="cellGroupZSize" />
     
-    <!-- 8-May-2020 WGS: We're going to place active LAr regions separated by the PTFE 
-    sheets in using a loop. -->
-    <variable name="activeRegionIndex" value="0" />
-    <variable name="ptfeIndex" value="0" />
+    <!-- 16-Jul-2020 WGS: Within a cell group we'll place the cells. -->
+    <constant name="activeCellXSize" value="cellGroupXSize" />
+    <constant name="activeCellYSize" value="(cellGroupYSize - numberPtfeSheetsY*ptfeThickness) / numberActiveCellsY" />
+    <constant name="activeCellZSize" value="cellGroupZSize" />
+    
+    <!-- 16-Jul-2020 WGS: The PTFE sheets that separate the cells along y. -->
+    <constant name="ptfeXSize" value="cellGroupXSize" />
+    <constant name="ptfeYSize" value="ptfeThickness" />
+    <constant name="ptfeZSize" value="cellGroupZSize" />
+   
+    <!-- 16-Jul-2020 WGS: First we're going to place the cell groups along x within
+    the LArTPC. Then we're going to place the active cells within a cell group
+    along y. -->
+    <variable name="activeCellIndexX" value="0" />
+    <variable name="ptfeIndexX" value="0" />
+    <variable name="activeCellIndexY" value="0" />
+    <variable name="ptfeIndexY" value="0" />
     
     <!-- 5-May-2020 WGS: How big is a SIPM? I don't know. Make a guess. -->
     <constant name="sipmThickness" value="0.1" />
     <constant name="sipmXSize" value="1.0" />
     <constant name="sipmYSize" value="1.0" />
     <constant name="sipmZSize" value="sipmThickness" />
+    <!-- 17-Jul-2020 WGS: How many SIPMs within each cell? What will their
+    arrangement be? I don't know. Start with evenly spacing the SIPMs within
+    each cell evenly and identicially. (This will become more complex if we
+    explore "honeycomb" patterns.) -->
+    <constant name="numberSIPMsInCell" value="6" />
+    <variable name="indexSIPMsInCell" value="0" />
+    <constant name="sipmXseparation" value="activeCellXSize/numberSIPMsInCell" />
 
     <!-- ************** Scintillator walls section **************
 
@@ -138,7 +167,7 @@ Source for the mistakes and stupid jokes: William Seligman (WGS) seligman@nevis.
     are slightly different. 
     -->
     
-    <constant name="outerVolumeXSize" value="200" />
+    <constant name="outerVolumeXSize" value="350" />
     <constant name="outerVolumeYSize" value="350" />
     <constant name="outerVolumeZSize" value="200" />
 
@@ -150,19 +179,20 @@ Source for the mistakes and stupid jokes: William Seligman (WGS) seligman@nevis.
     <constant name="scintillatorThickness" value="1.0" />
     <constant name="scintillatorWidth"     value="2.0" />
     
+    <!-- 15-Jun-2020 WGS: Each wall contains a single layer of strips (in an
+    earlier version of this file, each wall had two layers of strips criss-crossing
+    each other). Assume the direction of the strips is such that strips will be
+    as short as possible, since (again by assumption) shorter strips are easier to
+    make than longer ones. 
+    -->
+    
     <constant name="lengthOuterZwallXstrips" value="outerVolumeXSize" />
-    <constant name="lengthOuterZwallYstrips" value="outerVolumeYSize" />
-    <constant name="lengthOuterYwallXstrips" value="(outerVolumeXSize - 4*scintillatorThickness)" />
-    <constant name="lengthOuterYwallZstrips" value="(outerVolumeZSize - 4*scintillatorThickness)" />
-    <constant name="lengthOuterXwallZstrips" value="(outerVolumeZSize - 4*scintillatorThickness)" />
-    <constant name="lengthOuterXwallYstrips" value="outerVolumeYSize" />
+    <constant name="lengthOuterYwallXstrips" value="(outerVolumeXSize - 2*scintillatorThickness)" />
+    <constant name="lengthOuterXwallZstrips" value="(outerVolumeZSize - 2*scintillatorThickness)" />
     
     <constant name="numberOuterZwallXstrips" value="outerVolumeYSize / scintillatorWidth" />
-    <constant name="numberOuterZwallYstrips" value="outerVolumeXSize / scintillatorWidth" />
-    <constant name="numberOuterYwallXstrips" value="(outerVolumeZSize - 4*scintillatorThickness) / scintillatorWidth" />
-    <constant name="numberOuterYwallZstrips" value="(outerVolumeXSize - 4*scintillatorThickness) / scintillatorWidth" />
-    <constant name="numberOuterXwallZstrips" value="(outerVolumeYSize - 4*scintillatorThickness) / scintillatorWidth" />
-    <constant name="numberOuterXwallYstrips" value="(outerVolumeZSize - 4*scintillatorThickness) / scintillatorWidth" />
+    <constant name="numberOuterYwallXstrips" value="(outerVolumeZSize - 2*scintillatorThickness) / scintillatorWidth" />
+    <constant name="numberOuterXwallZstrips" value="(outerVolumeYSize - 2*scintillatorThickness) / scintillatorWidth" />
 
     <!-- 7-May-2020 WGS: Define "walls" in which to place the scintillator strips. This extra
     layer of geometry will make things easier in the long run; e.g., for placing the strips
@@ -170,44 +200,35 @@ Source for the mistakes and stupid jokes: William Seligman (WGS) seligman@nevis.
 
     <constant name="outerZwallXSize" value="outerVolumeXSize" />
     <constant name="outerZwallYSize" value="outerVolumeYSize" />
-    <constant name="outerZwallZSize" value="2*scintillatorThickness" />
+    <constant name="outerZwallZSize" value="scintillatorThickness" />
 
-    <constant name="outerYwallXSize" value="outerVolumeXSize - 4*scintillatorThickness" />
-    <constant name="outerYwallYSize" value="2*scintillatorThickness" />
-    <constant name="outerYwallZSize" value="outerVolumeZSize - 4*scintillatorThickness" />
+    <constant name="outerYwallXSize" value="outerVolumeXSize - 2*scintillatorThickness" />
+    <constant name="outerYwallYSize" value="scintillatorThickness" />
+    <constant name="outerYwallZSize" value="outerVolumeZSize - 2*scintillatorThickness" />
 
-    <constant name="outerXwallXSize" value="2*scintillatorThickness" />
+    <constant name="outerXwallXSize" value="scintillatorThickness" />
     <constant name="outerXwallYSize" value="outerVolumeYSize" />
-    <constant name="outerXwallZSize" value="outerVolumeZSize - 4*scintillatorThickness" />
+    <constant name="outerXwallZSize" value="outerVolumeZSize - 2*scintillatorThickness" />
 
     <!-- 7-May-2020 WGS: Create variables for loop statements
     when we place the scintillator strips in the walls; see the <structure> section. -->
     
     <variable name="indexOuterZwallXstrips" value="0" />
-    <variable name="indexOuterZwallYstrips" value="0" />
     <variable name="indexOuterYwallXstrips" value="0" />
-    <variable name="indexOuterYwallZstrips" value="0" />
     <variable name="indexOuterXwallZstrips" value="0" />
-    <variable name="indexOuterXwallYstrips" value="0" />
 
 
-    <constant name="innerVolumeXSize" value="30" />
+    <constant name="innerVolumeXSize" value="150" />
     <constant name="innerVolumeYSize" value="150" />
     <constant name="innerVolumeZSize" value="30" />
 
     <constant name="lengthInnerZwallXstrips" value="innerVolumeXSize" />
-    <constant name="lengthInnerZwallYstrips" value="innerVolumeYSize" />
-    <constant name="lengthInnerYwallXstrips" value="(innerVolumeXSize - 4*scintillatorThickness)" />
-    <constant name="lengthInnerYwallZstrips" value="(innerVolumeZSize - 4*scintillatorThickness)" />
-    <constant name="lengthInnerXwallZstrips" value="(innerVolumeZSize - 4*scintillatorThickness)" />
-    <constant name="lengthInnerXwallYstrips" value="innerVolumeYSize" />
+    <constant name="lengthInnerYwallXstrips" value="(innerVolumeXSize - 2*scintillatorThickness)" />
+    <constant name="lengthInnerXwallZstrips" value="(innerVolumeZSize - 2*scintillatorThickness)" />
     
     <constant name="numberInnerZwallXstrips" value="innerVolumeYSize / scintillatorWidth" />
-    <constant name="numberInnerZwallYstrips" value="innerVolumeXSize / scintillatorWidth" />
-    <constant name="numberInnerYwallXstrips" value="(innerVolumeZSize - 4*scintillatorThickness) / scintillatorWidth" />
-    <constant name="numberInnerYwallZstrips" value="(innerVolumeXSize - 4*scintillatorThickness) / scintillatorWidth" />
-    <constant name="numberInnerXwallZstrips" value="(innerVolumeYSize - 4*scintillatorThickness) / scintillatorWidth" />
-    <constant name="numberInnerXwallYstrips" value="(innerVolumeZSize - 4*scintillatorThickness) / scintillatorWidth" />
+    <constant name="numberInnerYwallXstrips" value="(innerVolumeZSize - 2*scintillatorThickness) / scintillatorWidth" />
+    <constant name="numberInnerXwallZstrips" value="(innerVolumeYSize - 2*scintillatorThickness) / scintillatorWidth" />
  
     <!-- 7-May-2020 WGS: Define "walls" in which to place the scintillator strips. This extra
     layer of geometry will make things easier in the long run; e.g., for placing the strips
@@ -215,25 +236,22 @@ Source for the mistakes and stupid jokes: William Seligman (WGS) seligman@nevis.
 
     <constant name="InnerZwallXSize" value="innerVolumeXSize" />
     <constant name="InnerZwallYSize" value="innerVolumeYSize" />
-    <constant name="InnerZwallZSize" value="2*scintillatorThickness" />
+    <constant name="InnerZwallZSize" value="scintillatorThickness" />
 
-    <constant name="InnerYwallXSize" value="innerVolumeXSize - 4*scintillatorThickness" />
-    <constant name="InnerYwallYSize" value="2*scintillatorThickness" />
-    <constant name="InnerYwallZSize" value="innerVolumeZSize - 4*scintillatorThickness" />
+    <constant name="InnerYwallXSize" value="innerVolumeXSize - 2*scintillatorThickness" />
+    <constant name="InnerYwallYSize" value="scintillatorThickness" />
+    <constant name="InnerYwallZSize" value="innerVolumeZSize - 2*scintillatorThickness" />
 
-    <constant name="InnerXwallXSize" value="2*scintillatorThickness" />
+    <constant name="InnerXwallXSize" value="scintillatorThickness" />
     <constant name="InnerXwallYSize" value="innerVolumeYSize" />
-    <constant name="InnerXwallZSize" value="innerVolumeZSize - 4*scintillatorThickness" />
+    <constant name="InnerXwallZSize" value="innerVolumeZSize - 2*scintillatorThickness" />
 
     <!-- 7-May-2020 WGS: Create variables for loop statements
     when we place the scintillator strips in the walls; see the <structure> section. -->
 
     <variable name="indexInnerZwallXstrips" value="0" />
-    <variable name="indexInnerZwallYstrips" value="0" />
     <variable name="indexInnerYwallXstrips" value="0" />
-    <variable name="indexInnerYwallZstrips" value="0" />
     <variable name="indexInnerXwallZstrips" value="0" />
-    <variable name="indexInnerXwallYstrips" value="0" />
     
     <!-- 8-May-2020 WGS: The above walls are defined for the positive axes (x,y,z)>0.
     Assume the negative-axis walls are the mirror images of the positive ones,
@@ -254,7 +272,7 @@ Source for the mistakes and stupid jokes: William Seligman (WGS) seligman@nevis.
     defines the z=0 axis. -->
     
     <!-- 15-May-2020 WGS: It took me 5 days to realize that, with z=0 set to the x-wires,
-    all of the TPC active region have z<0. The purpose of LArSoft's definition of having
+    all of the TPC active cell have z<0. The purpose of LArSoft's definition of having
     the induction plane be at an axis=0 is to avoid negative numbers! Leave this
     for now, and let the collaboration decide an appropriate coordinate system. -->
     <constant name="outerDetectorOffsetInWorld" value ="-(lArTPCZSize/2) + (wirePlaneThickness/2) - innerDetectorOffsetInOuter" />
@@ -608,21 +626,20 @@ Source for the mistakes and stupid jokes: William Seligman (WGS) seligman@nevis.
 
     <box lunit="cm" name="CathodePlate" x="cathodeXSize" y="cathodeYSize" z="cathodeZSize" />
     <box lunit="cm" name="TPCWirePlane" x="wirePlaneXSize" y="wirePlaneYSize" z="wirePlaneZSize" />
+    <box lunit="cm" name="PTFEGroupSheet" x="ptfeGroupXSize" y="ptfeGroupYSize" z="ptfeGroupZSize" />
     <box lunit="cm" name="PTFESheet" x="ptfeXSize" y="ptfeYSize" z="ptfeZSize" />
-    <box lunit="cm" name="ActiveRegion" x="activeRegionXSize" y="activeRegionYSize" z="activeRegionZSize" />
+    <box lunit="cm" name="CellGroup" x="cellGroupXSize" y="cellGroupYSize" z="cellGroupZSize" />
+    <box lunit="cm" name="ActiveCell" x="activeCellXSize" y="activeCellYSize" z="activeCellZSize" />
     <box lunit="cm" name="SIPM" x="sipmXSize" y="sipmYSize" z="sipmZSize" />
   
     <box lunit="cm" name="World" x="worldVolumeXSize" y="worldVolumeYSize" z="worldVolumeZSize"/>
     <box lunit="cm" name="OuterDetector" x="outerVolumeXSize" y="outerVolumeYSize" z="outerVolumeZSize"/>
     
     <box lunit="cm" name="OuterZwallXstrip" x="lengthOuterZwallXstrips" y="scintillatorWidth" z="scintillatorThickness"/>
-    <box lunit="cm" name="OuterZwallYstrip" x="scintillatorWidth" y="lengthOuterZwallYstrips" z="scintillatorThickness"/>
  
     <box lunit="cm" name="OuterYwallXstrip" x="lengthOuterYwallXstrips" y="scintillatorThickness" z="scintillatorWidth"/>
-    <box lunit="cm" name="OuterYwallZstrip" x="scintillatorWidth" y="scintillatorThickness" z="lengthOuterYwallZstrips"/>
   
     <box lunit="cm" name="OuterXwallZstrip" x="scintillatorThickness" y="scintillatorWidth" z="lengthOuterXwallZstrips"/>
-    <box lunit="cm" name="OuterXwallYstrip" x="scintillatorThickness" y="lengthOuterXwallYstrips" z="scintillatorWidth"/>
 
     <box lunit="cm" name="OuterXwall" x="outerXwallXSize" y="outerXwallYSize" z="outerXwallZSize"/>
     <box lunit="cm" name="OuterYwall" x="outerYwallXSize" y="outerYwallYSize" z="outerYwallZSize"/>
@@ -631,13 +648,10 @@ Source for the mistakes and stupid jokes: William Seligman (WGS) seligman@nevis.
     <box lunit="cm" name="InnerDetector" x="innerVolumeXSize" y="innerVolumeYSize" z="innerVolumeZSize"/>
     
     <box lunit="cm" name="InnerZwallXstrip" x="lengthInnerZwallXstrips" y="scintillatorWidth" z="scintillatorThickness"/>
-    <box lunit="cm" name="InnerZwallYstrip" x="scintillatorWidth" y="lengthInnerZwallYstrips" z="scintillatorThickness"/>
  
     <box lunit="cm" name="InnerYwallXstrip" x="lengthInnerYwallXstrips" y="scintillatorThickness" z="scintillatorWidth"/>
-    <box lunit="cm" name="InnerYwallZstrip" x="scintillatorWidth" y="scintillatorThickness" z="lengthInnerYwallZstrips"/>
   
     <box lunit="cm" name="InnerXwallZstrip" x="scintillatorThickness" y="scintillatorWidth" z="lengthInnerXwallZstrips"/>
-    <box lunit="cm" name="InnerXwallYstrip" x="scintillatorThickness" y="lengthInnerXwallYstrips" z="scintillatorWidth"/>
 
     <box lunit="cm" name="InnerXwall" x="InnerXwallXSize" y="InnerXwallYSize" z="InnerXwallZSize"/>
     <box lunit="cm" name="InnerYwall" x="InnerYwallXSize" y="InnerYwallYSize" z="InnerYwallZSize"/>
@@ -723,10 +737,16 @@ Source for the mistakes and stupid jokes: William Seligman (WGS) seligman@nevis.
 
     <volume name="volTPCActive">
       <materialref ref="LAr"/>
-      <solidref ref="ActiveRegion"/>
+      <solidref ref="ActiveCell"/>
       <auxiliary auxtype="SensDet" auxvalue="LArSensitiveDetector" />
       <auxiliary auxtype="StepLimit" auxvalue="0.02"/>
       <auxiliary auxtype="Color" auxvalue="red" />
+    </volume>
+
+    <volume name="volPTFEGroupSheet">
+      <materialref ref="PTFE"/>
+      <solidref ref="PTFEGroupSheet"/>
+      <auxiliary auxtype="Color" auxvalue="yellow" />
     </volume>
 
     <volume name="volPTFESheet">
@@ -748,6 +768,28 @@ Source for the mistakes and stupid jokes: William Seligman (WGS) seligman@nevis.
       <solidref ref="CathodePlate"/>
       <auxiliary auxtype="Color" auxvalue="red" />
     </volume>
+    
+    <!-- The group of active TPC cells along y. -->
+    <volume name="volCellGroup">
+      <materialref ref="LAr"/>
+      <solidref ref="CellGroup"/>
+      <auxiliary auxtype="Color" auxvalue="none" />
+      <!-- 8-May-2020 WGS: For each active cell, we have to place a volume representing that
+      cell, and the PTFE sheet that separates the cells -->
+      <loop for="ptfeIndexY" from="0" to="numberPtfeSheetsY - 1" step="1">
+        <physvol>
+            <volumeref ref="volPTFESheet"/>
+            <position name="posPTFESheet" unit="cm" x="0" y="-(cellGroupYSize/2) + activeCellYSize + ptfeYSize/2 + ptfeIndexY*(activeCellYSize + ptfeYSize)" z="0"/>
+        </physvol>
+      </loop>
+      
+      <loop for="activeCellIndexY" from="0" to="numberActiveCellsY - 1" step="1">
+        <physvol>
+            <volumeref ref="volTPCActive"/>
+            <position name="posTPCActive" unit="cm" x="0" y="-(cellGroupYSize/2) + activeCellYSize/2 + activeCellIndexY*(activeCellYSize + ptfeYSize)" z="0"/>
+        </physvol>
+       </loop>   
+    </volume>
 
     <!-- LArTPC definition -->
     <volume name="volTPC">
@@ -760,37 +802,42 @@ Source for the mistakes and stupid jokes: William Seligman (WGS) seligman@nevis.
         <position name="posCathod" unit="cm" x="0" y="0" z="-(lArTPCZSize/2) + 2*cathodeThickness" />
       </physvol>
       
-      <!-- 8-May-2020 WGS: Where will the wire planes be? I don't know. Make a guess. -->
+      <!-- 08-May-2020 WGS: Where will the wire planes be? I don't know. Make a guess. -->
+      <!-- 15-Jul-2020 WGS: Leave just enough room for SIPMs above the wire planes. -->
       <physvol>
         <volumeref ref="volTPCXPlane"/>
-        <position name="posXplane" unit="cm" x="0" y="0" z="(lArTPCZSize/2) - (wirePlaneThickness/2)" />
+        <position name="posXplane" unit="cm" x="0" y="0" z="(lArTPCZSize/2) - (wirePlaneThickness/2) - sipmThickness" />
       </physvol>
       <physvol>
         <volumeref ref="volTPCYPlane"/>
-        <position name="posYplane" unit="cm" x="0" y="0" z="(lArTPCZSize/2) - (wirePlaneThickness*3/2)"/>
+        <position name="posYplane" unit="cm" x="0" y="0" z="(lArTPCZSize/2) - (wirePlaneThickness*3/2) - sipmThickness"/>
       </physvol>
 
-      <!-- 8-May-2020 WGS: For each active region, we have to place a volume representing that
-      region, the PTFE sheet that separates the regions, and a SIPM. -->
-      <loop for="ptfeIndex" to="numberPtfeSheets - 1" step="1">
+      <!-- 16-Jul-2020 WGS: Place cell groups along x. -->
+      <loop for="ptfeIndexX" from="0" to="numberPtfeSheetsX - 1" step="1">
         <physvol>
-            <volumeref ref="volPTFESheet"/>
-            <position name="posPTFESheet" unit="cm" x="0" y="-(lArTPCYSize/2) + activeRegionYSize + ptfeYSize/2 + ptfeIndex*(activeRegionYSize + ptfeYSize)" z="0"/>
+            <volumeref ref="volPTFEGroupSheet"/>
+            <position name="posPTFEGroupSheet" unit="cm" x="-(cellGroupXRegion/2) + cellGroupXSize + ptfeGroupXSize/2 + ptfeIndexX*(cellGroupXSize + ptfeGroupXSize)" y="0" z="0"/>
         </physvol>
       </loop>
       
-      <loop for="activeRegionIndex" to="numberActiveRegions - 1" step="1">
+      <loop for="activeCellIndexX" from="0" to="numberActiveCellsX - 1" step="1">
         <physvol>
-            <volumeref ref="volTPCActive"/>
-            <position name="posTPCActive" unit="cm" x="0" y="-(lArTPCYSize/2) + activeRegionYSize/2 + activeRegionIndex*(activeRegionYSize + ptfeYSize)" z="0"/>
+            <volumeref ref="volCellGroup"/>
+            <position name="posCellGroup" unit="cm" x="-(cellGroupXRegion/2) + cellGroupXSize/2 + activeCellIndexX*(cellGroupXSize + ptfeGroupXSize)" y="0" z="0"/>
         </physvol>
-        <!-- 8-May-2020 WGS: Where are the SIPMs? How will they be mounted? I don't know.
-        For now, let them magically float 2cm above the bottom of the TPC, outside the
-        active TPC region. -->
-        <physvol>
-            <volumeref ref="volSIPM"/>
-            <position name="posSIPM" unit="cm" x="0" y="-(lArTPCYSize/2) + activeRegionYSize/2 + activeRegionIndex*(activeRegionYSize + ptfeYSize)" z="-(lArTPCZSize/2) + 2"/>
-        </physvol>
+      </loop>
+
+      <!-- 17-Jul-2020 WGS: Where are the SIPMs? How will they be mounted? I don't know.
+      For now, let them magically float just above the wire planes, and let the
+      positions be identical relative to each cell. -->
+      <loop for="activeCellIndexY" from="0" to="numberActiveCellsY - 1" step="1">
+        <loop for="activeCellIndexX" from="0" to="numberActiveCellsX - 1" step="1">
+            <physvol>
+                <volumeref ref="volSIPM"/>
+                <position name="posSIPM" unit="cm" x="-(cellGroupXRegion/2) + cellGroupXSize/2 + activeCellIndexX*(cellGroupXSize + ptfeGroupXSize)" y="-(cellGroupYSize/2) + activeCellYSize/2 + activeCellIndexY*(activeCellYSize + ptfeYSize)" z="(lArTPCZSize/2) - (sipmThickness)/2"/>
+            </physvol>
+        </loop>
       </loop>
 
       <auxiliary auxtype="Color" auxvalue="magenta" />
@@ -818,13 +865,6 @@ Source for the mistakes and stupid jokes: William Seligman (WGS) seligman@nevis.
       <auxiliary auxtype="Color" auxvalue="none" />
     </volume>
 
-    <volume name="volInnerZwallYstrip">
-      <materialref ref="Polystyrene"/>
-      <solidref ref="InnerZwallYstrip"/>
-      <auxiliary auxtype="SensDet" auxvalue="ScintillatorSD" />
-      <auxiliary auxtype="Color" auxvalue="none" />
-    </volume>
-
     <volume name="volInnerYwallXstrip">
       <materialref ref="Polystyrene"/>
       <solidref ref="InnerYwallXstrip"/>
@@ -832,23 +872,9 @@ Source for the mistakes and stupid jokes: William Seligman (WGS) seligman@nevis.
       <auxiliary auxtype="Color" auxvalue="none" />
     </volume>
 
-    <volume name="volInnerYwallZstrip">
-      <materialref ref="Polystyrene"/>
-      <solidref ref="InnerYwallZstrip"/>
-      <auxiliary auxtype="SensDet" auxvalue="ScintillatorSD" />
-      <auxiliary auxtype="Color" auxvalue="none" />
-    </volume>
-
     <volume name="volInnerXwallZstrip">
       <materialref ref="Polystyrene"/>
       <solidref ref="InnerXwallZstrip"/>
-      <auxiliary auxtype="SensDet" auxvalue="ScintillatorSD" />
-      <auxiliary auxtype="Color" auxvalue="none" />
-    </volume>
-
-    <volume name="volInnerXwallYstrip">
-      <materialref ref="Polystyrene"/>
-      <solidref ref="InnerXwallYstrip"/>
       <auxiliary auxtype="SensDet" auxvalue="ScintillatorSD" />
       <auxiliary auxtype="Color" auxvalue="none" />
     </volume>
@@ -862,13 +888,7 @@ Source for the mistakes and stupid jokes: William Seligman (WGS) seligman@nevis.
       <loop for="indexInnerZwallXstrips" to="numberInnerZwallXstrips - 1" step="1">
         <physvol>
             <volumeref ref="volInnerZwallXstrip"/>
-            <position name="posInnerZwallXstrip" unit="cm" x="0" y="-InnerZwallYSize/2 + scintillatorWidth/2 + indexInnerZwallXstrips*scintillatorWidth" z="scintillatorThickness/2"/>
-        </physvol>
-      </loop>
-      <loop for="indexInnerZwallYstrips" to="numberInnerZwallYstrips - 1" step="1">
-        <physvol>
-            <volumeref ref="volInnerZwallYstrip"/>
-            <position name="posInnerZwallYstrip" unit="cm" x="-InnerZwallXSize/2 + scintillatorWidth/2 + indexInnerZwallYstrips*scintillatorWidth" y="0" z="-scintillatorThickness/2"/>
+            <position name="posInnerZwallXstrip" unit="cm" x="0" y="-InnerZwallYSize/2 + scintillatorWidth/2 + indexInnerZwallXstrips*scintillatorWidth" z="0"/>
         </physvol>
       </loop>
       <auxiliary auxtype="Color" auxvalue="cyan" />
@@ -880,15 +900,9 @@ Source for the mistakes and stupid jokes: William Seligman (WGS) seligman@nevis.
       <loop for="indexInnerYwallXstrips" to="numberInnerYwallXstrips - 1" step="1">
         <physvol>
             <volumeref ref="volInnerYwallXstrip"/>
-            <position name="posInnerYwallXstrip" unit="cm" x="0" y="scintillatorThickness/2" z="-InnerYwallZSize/2 + scintillatorWidth/2 + indexInnerYwallXstrips*scintillatorWidth"/>
+            <position name="posInnerYwallXstrip" unit="cm" x="0" y="0" z="-InnerYwallZSize/2 + scintillatorWidth/2 + indexInnerYwallXstrips*scintillatorWidth"/>
         </physvol>
       </loop>
-      <loop for="indexInnerYwallZstrips" to="numberInnerYwallZstrips - 1" step="1">
-        <physvol>
-            <volumeref ref="volInnerYwallZstrip"/>
-            <position name="posInnerYwallZstrip" unit="cm" x="-InnerYwallXSize/2 + scintillatorWidth/2 + indexInnerYwallZstrips*scintillatorWidth" y="-scintillatorThickness/2" z="0"/>
-        </physvol>
-     </loop>
       <auxiliary auxtype="Color" auxvalue="cyan" />
     </volume>
          
@@ -898,15 +912,9 @@ Source for the mistakes and stupid jokes: William Seligman (WGS) seligman@nevis.
       <loop for="indexInnerXwallZstrips" to="numberInnerXwallZstrips - 1" step="1">
         <physvol>
             <volumeref ref="volInnerXwallZstrip"/>
-            <position name="posInnerXwallZstrip" unit="cm" x="scintillatorThickness/2" y="-InnerXwallYSize/2 + scintillatorWidth/2 + indexInnerXwallZstrips*scintillatorWidth" z="0"/>
+            <position name="posInnerXwallZstrip" unit="cm" x="0" y="-InnerXwallYSize/2 + scintillatorWidth/2 + indexInnerXwallZstrips*scintillatorWidth" z="0"/>
         </physvol>
       </loop>
-      <loop for="indexInnerXwallYstrips" to="numberInnerXwallYstrips - 1" step="1">
-        <physvol>
-            <volumeref ref="volInnerXwallYstrip"/>
-            <position name="posInnerXwallYstrip" unit="cm" x="-scintillatorThickness/2" y="0" z="-InnerXwallZSize/2 + scintillatorWidth/2 + indexInnerXwallYstrips*scintillatorWidth"/>
-        </physvol>
-     </loop>
       <auxiliary auxtype="Color" auxvalue="cyan" />
     </volume>
 
@@ -967,13 +975,6 @@ Source for the mistakes and stupid jokes: William Seligman (WGS) seligman@nevis.
       <auxiliary auxtype="Color" auxvalue="none" />
     </volume>
 
-    <volume name="volOuterZwallYstrip">
-      <materialref ref="Polystyrene"/>
-      <solidref ref="OuterZwallYstrip"/>
-      <auxiliary auxtype="SensDet" auxvalue="ScintillatorSD" />
-      <auxiliary auxtype="Color" auxvalue="none" />
-    </volume>
-
     <volume name="volOuterYwallXstrip">
       <materialref ref="Polystyrene"/>
       <solidref ref="OuterYwallXstrip"/>
@@ -981,23 +982,9 @@ Source for the mistakes and stupid jokes: William Seligman (WGS) seligman@nevis.
       <auxiliary auxtype="Color" auxvalue="none" />
     </volume>
 
-    <volume name="volOuterYwallZstrip">
-      <materialref ref="Polystyrene"/>
-      <solidref ref="OuterYwallZstrip"/>
-      <auxiliary auxtype="SensDet" auxvalue="ScintillatorSD" />
-      <auxiliary auxtype="Color" auxvalue="none" />
-    </volume>
-
     <volume name="volOuterXwallZstrip">
       <materialref ref="Polystyrene"/>
       <solidref ref="OuterXwallZstrip"/>
-      <auxiliary auxtype="SensDet" auxvalue="ScintillatorSD" />
-      <auxiliary auxtype="Color" auxvalue="none" />
-    </volume>
-
-    <volume name="volOuterXwallYstrip">
-      <materialref ref="Polystyrene"/>
-      <solidref ref="OuterXwallYstrip"/>
       <auxiliary auxtype="SensDet" auxvalue="ScintillatorSD" />
       <auxiliary auxtype="Color" auxvalue="none" />
     </volume>
@@ -1011,13 +998,7 @@ Source for the mistakes and stupid jokes: William Seligman (WGS) seligman@nevis.
       <loop for="indexOuterZwallXstrips" to="numberOuterZwallXstrips - 1" step="1">
         <physvol>
             <volumeref ref="volOuterZwallXstrip"/>
-            <position name="posOuterZwallXstrip" unit="cm" x="0" y="-outerZwallYSize/2 + scintillatorWidth/2 + indexOuterZwallXstrips*scintillatorWidth" z="scintillatorThickness/2"/>
-        </physvol>
-      </loop>
-      <loop for="indexOuterZwallYstrips" to="numberOuterZwallYstrips - 1" step="1">
-        <physvol>
-            <volumeref ref="volOuterZwallYstrip"/>
-            <position name="posOuterZwallYstrip" unit="cm" x="-outerZwallXSize/2 + scintillatorWidth/2 + indexOuterZwallYstrips*scintillatorWidth" y="0" z="-scintillatorThickness/2"/>
+            <position name="posOuterZwallXstrip" unit="cm" x="0" y="-outerZwallYSize/2 + scintillatorWidth/2 + indexOuterZwallXstrips*scintillatorWidth" z="0"/>
         </physvol>
       </loop>
       <auxiliary auxtype="Color" auxvalue="cyan" />
@@ -1029,15 +1010,9 @@ Source for the mistakes and stupid jokes: William Seligman (WGS) seligman@nevis.
       <loop for="indexOuterYwallXstrips" to="numberOuterYwallXstrips - 1" step="1">
         <physvol>
             <volumeref ref="volOuterYwallXstrip"/>
-            <position name="posOuterYwallXstrip" unit="cm" x="0" y="scintillatorThickness/2" z="-outerYwallZSize/2 + scintillatorWidth/2 + indexOuterYwallXstrips*scintillatorWidth"/>
+            <position name="posOuterYwallXstrip" unit="cm" x="0" y="0" z="-outerYwallZSize/2 + scintillatorWidth/2 + indexOuterYwallXstrips*scintillatorWidth"/>
         </physvol>
       </loop>
-      <loop for="indexOuterYwallZstrips" to="numberOuterYwallZstrips - 1" step="1">
-        <physvol>
-            <volumeref ref="volOuterYwallZstrip"/>
-            <position name="posOuterYwallZstrip" unit="cm" x="-outerYwallXSize/2 + scintillatorWidth/2 + indexOuterYwallZstrips*scintillatorWidth" y="-scintillatorThickness/2" z="0"/>
-        </physvol>
-     </loop>
      <auxiliary auxtype="Color" auxvalue="cyan" />
     </volume>
          
@@ -1047,15 +1022,9 @@ Source for the mistakes and stupid jokes: William Seligman (WGS) seligman@nevis.
       <loop for="indexOuterXwallZstrips" to="numberOuterXwallZstrips - 1" step="1">
         <physvol>
             <volumeref ref="volOuterXwallZstrip"/>
-            <position name="posOuterXwallZstrip" unit="cm" x="scintillatorThickness/2" y="-outerXwallYSize/2 + scintillatorWidth/2 + indexOuterXwallZstrips*scintillatorWidth" z="0"/>
+            <position name="posOuterXwallZstrip" unit="cm" x="0" y="-outerXwallYSize/2 + scintillatorWidth/2 + indexOuterXwallZstrips*scintillatorWidth" z="0"/>
         </physvol>
       </loop>
-      <loop for="indexOuterXwallYstrips" to="numberOuterXwallYstrips - 1" step="1">
-        <physvol>
-            <volumeref ref="volOuterXwallYstrip"/>
-            <position name="posOuterXwallYstrip" unit="cm" x="-scintillatorThickness/2" y="0" z="-outerXwallZSize/2 + scintillatorWidth/2 + indexOuterXwallYstrips*scintillatorWidth"/>
-        </physvol>
-     </loop>
      <auxiliary auxtype="Color" auxvalue="cyan" />
     </volume>
 
@@ -1105,7 +1074,7 @@ Source for the mistakes and stupid jokes: William Seligman (WGS) seligman@nevis.
    <!-- End of Outer detector definition -->
    
     <volume name="volWorld">
-      <materialref ref="Air"/>
+      <materialref ref="Vacuum"/>
       <solidref ref="World"/>
       <physvol>
         <volumeref ref="volOuterDetector"/>

@@ -26,7 +26,8 @@ namespace gramsg4 {
 
   void ActionInitialization::BuildForMaster() const
   {
-    // This routine is only called for a multi-threaded application.
+    // This routine is only called for a multi-threaded
+    // application.
     SetUserAction(new g4util::RunAction( m_userAction ));
   }
 

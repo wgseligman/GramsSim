@@ -1,0 +1,22 @@
+###################################################
+# Batch running of events  
+###################################################
+
+# For GRAMS, let's look at monoenergetic 1MeV photons
+/gps/particle gamma
+/gps/ene/type Mono
+/gps/ene/mono 1 MeV
+
+# Aim a little off from the center of the detector (so we don't aim
+# precisely at a PTFE sheet). (Remember that z=0 is set at the
+# location of the induction plane.)  
+/gps/ang/type focused
+/gps/ang/focuspoint 0.5 0.5 -100 cm
+
+# Shoot along Z direction downwards from above
+/gps/pos/centre 0.5 0.5 200 cm
+
+# This means "run Geant4 and generate 1000 events"
+/run/beamOn 1000
+
+exit
