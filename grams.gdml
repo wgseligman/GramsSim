@@ -713,7 +713,7 @@ Source for the mistakes and stupid jokes: William Seligman (WGS) seligman@nevis.
       <materialref ref="LAr"/>
       <solidref ref="TPCWirePlane"/>
       <loop for="xWireLoopIndex" to="numberXWires - 1" step="1">
-        <physvol>
+        <physvol copynumber="xWireLoopIndex">
             <volumeref ref="volTPCXWire"/>
             <position name="posXwire" unit="cm" x="0" y="(-((numberXWires - 1) / 2) + xWireLoopIndex)*wireSpacing" z="0"/>
             <rotationref ref="rPlus90AboutY"/>
@@ -726,7 +726,7 @@ Source for the mistakes and stupid jokes: William Seligman (WGS) seligman@nevis.
       <materialref ref="LAr"/>
       <solidref ref="TPCWirePlane"/>
       <loop for="yWireLoopIndex" to="numberYWires - 1" step="1">
-        <physvol>
+        <physvol copynumber="yWireLoopIndex">
             <volumeref ref="volTPCYWire"/>
             <position name="posYwire" unit="cm" x="(-((numberYWires - 1) / 2) + yWireLoopIndex)*wireSpacing" y="0" z="0"/>
             <rotationref ref="rPlus90AboutX"/>
@@ -777,14 +777,14 @@ Source for the mistakes and stupid jokes: William Seligman (WGS) seligman@nevis.
       <!-- 8-May-2020 WGS: For each active cell, we have to place a volume representing that
       cell, and the PTFE sheet that separates the cells -->
       <loop for="ptfeIndexY" from="0" to="numberPtfeSheetsY - 1" step="1">
-        <physvol>
+        <physvol copynumber="ptfeIndexY">
             <volumeref ref="volPTFESheet"/>
             <position name="posPTFESheet" unit="cm" x="0" y="-(cellGroupYSize/2) + activeCellYSize + ptfeYSize/2 + ptfeIndexY*(activeCellYSize + ptfeYSize)" z="0"/>
         </physvol>
       </loop>
       
       <loop for="activeCellIndexY" from="0" to="numberActiveCellsY - 1" step="1">
-        <physvol>
+        <physvol copynumber="activeCellIndexY">
             <volumeref ref="volTPCActive"/>
             <position name="posTPCActive" unit="cm" x="0" y="-(cellGroupYSize/2) + activeCellYSize/2 + activeCellIndexY*(activeCellYSize + ptfeYSize)" z="0"/>
         </physvol>
@@ -815,14 +815,14 @@ Source for the mistakes and stupid jokes: William Seligman (WGS) seligman@nevis.
 
       <!-- 16-Jul-2020 WGS: Place cell groups along x. -->
       <loop for="ptfeIndexX" from="0" to="numberPtfeSheetsX - 1" step="1">
-        <physvol>
+        <physvol copynumber="ptfeIndexX">
             <volumeref ref="volPTFEGroupSheet"/>
             <position name="posPTFEGroupSheet" unit="cm" x="-(cellGroupXRegion/2) + cellGroupXSize + ptfeGroupXSize/2 + ptfeIndexX*(cellGroupXSize + ptfeGroupXSize)" y="0" z="0"/>
         </physvol>
       </loop>
       
       <loop for="activeCellIndexX" from="0" to="numberActiveCellsX - 1" step="1">
-        <physvol>
+        <physvol copynumber="activeCellIndexX">
             <volumeref ref="volCellGroup"/>
             <position name="posCellGroup" unit="cm" x="-(cellGroupXRegion/2) + cellGroupXSize/2 + activeCellIndexX*(cellGroupXSize + ptfeGroupXSize)" y="0" z="0"/>
         </physvol>
@@ -833,7 +833,7 @@ Source for the mistakes and stupid jokes: William Seligman (WGS) seligman@nevis.
       positions be identical relative to each cell. -->
       <loop for="activeCellIndexY" from="0" to="numberActiveCellsY - 1" step="1">
         <loop for="activeCellIndexX" from="0" to="numberActiveCellsX - 1" step="1">
-            <physvol>
+            <physvol copynumber="activeCellIndexY * 100 + activeCellIndexX">
                 <volumeref ref="volSIPM"/>
                 <position name="posSIPM" unit="cm" x="-(cellGroupXRegion/2) + cellGroupXSize/2 + activeCellIndexX*(cellGroupXSize + ptfeGroupXSize)" y="-(cellGroupYSize/2) + activeCellYSize/2 + activeCellIndexY*(activeCellYSize + ptfeYSize)" z="(lArTPCZSize/2) - (sipmThickness)/2"/>
             </physvol>
@@ -886,7 +886,7 @@ Source for the mistakes and stupid jokes: William Seligman (WGS) seligman@nevis.
       <materialref ref="Air"/>
       <solidref ref="InnerZwall"/>
       <loop for="indexInnerZwallXstrips" to="numberInnerZwallXstrips - 1" step="1">
-        <physvol>
+        <physvol copynumber="indexInnerZwallXstrips">
             <volumeref ref="volInnerZwallXstrip"/>
             <position name="posInnerZwallXstrip" unit="cm" x="0" y="-InnerZwallYSize/2 + scintillatorWidth/2 + indexInnerZwallXstrips*scintillatorWidth" z="0"/>
         </physvol>
@@ -898,7 +898,7 @@ Source for the mistakes and stupid jokes: William Seligman (WGS) seligman@nevis.
       <materialref ref="Air"/>
       <solidref ref="InnerYwall"/>
       <loop for="indexInnerYwallXstrips" to="numberInnerYwallXstrips - 1" step="1">
-        <physvol>
+        <physvol copynumber="indexInnerYwallXstrips">
             <volumeref ref="volInnerYwallXstrip"/>
             <position name="posInnerYwallXstrip" unit="cm" x="0" y="0" z="-InnerYwallZSize/2 + scintillatorWidth/2 + indexInnerYwallXstrips*scintillatorWidth"/>
         </physvol>
@@ -910,7 +910,7 @@ Source for the mistakes and stupid jokes: William Seligman (WGS) seligman@nevis.
       <materialref ref="Air"/>
       <solidref ref="InnerXwall"/>
       <loop for="indexInnerXwallZstrips" to="numberInnerXwallZstrips - 1" step="1">
-        <physvol>
+        <physvol copynumber="indexInnerXwallZstrips">
             <volumeref ref="volInnerXwallZstrip"/>
             <position name="posInnerXwallZstrip" unit="cm" x="0" y="-InnerXwallYSize/2 + scintillatorWidth/2 + indexInnerXwallZstrips*scintillatorWidth" z="0"/>
         </physvol>
@@ -996,7 +996,7 @@ Source for the mistakes and stupid jokes: William Seligman (WGS) seligman@nevis.
       <materialref ref="Air"/>
       <solidref ref="OuterZwall"/>
       <loop for="indexOuterZwallXstrips" to="numberOuterZwallXstrips - 1" step="1">
-        <physvol>
+        <physvol copynumber="indexOuterZwallXstrips">
             <volumeref ref="volOuterZwallXstrip"/>
             <position name="posOuterZwallXstrip" unit="cm" x="0" y="-outerZwallYSize/2 + scintillatorWidth/2 + indexOuterZwallXstrips*scintillatorWidth" z="0"/>
         </physvol>
@@ -1008,7 +1008,7 @@ Source for the mistakes and stupid jokes: William Seligman (WGS) seligman@nevis.
       <materialref ref="Air"/>
       <solidref ref="OuterYwall"/>
       <loop for="indexOuterYwallXstrips" to="numberOuterYwallXstrips - 1" step="1">
-        <physvol>
+        <physvol copynumber="indexOuterYwallXstrips">
             <volumeref ref="volOuterYwallXstrip"/>
             <position name="posOuterYwallXstrip" unit="cm" x="0" y="0" z="-outerYwallZSize/2 + scintillatorWidth/2 + indexOuterYwallXstrips*scintillatorWidth"/>
         </physvol>
@@ -1020,7 +1020,7 @@ Source for the mistakes and stupid jokes: William Seligman (WGS) seligman@nevis.
       <materialref ref="Air"/>
       <solidref ref="OuterXwall"/>
       <loop for="indexOuterXwallZstrips" to="numberOuterXwallZstrips - 1" step="1">
-        <physvol>
+        <physvol copynumber="indexOuterXwallZstrips">
             <volumeref ref="volOuterXwallZstrip"/>
             <position name="posOuterXwallZstrip" unit="cm" x="0" y="-outerXwallYSize/2 + scintillatorWidth/2 + indexOuterXwallZstrips*scintillatorWidth" z="0"/>
         </physvol>
