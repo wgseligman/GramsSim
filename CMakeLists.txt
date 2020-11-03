@@ -84,3 +84,8 @@ add_custom_target(GramsG4 DEPENDS gramsg4)
 #
 install(TARGETS gramsg4 DESTINATION bin)
 
+# Add any custom C++ compiler flags. First, define our own variable(s)
+# with any relevant flags.
+SET(GCC_COVERAGE_COMPILE_FLAGS "-std=c++17")
+# Append the options to CMake's official variable(s).
+SET(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} ${GCC_COVERAGE_COMPILE_FLAGS}")
