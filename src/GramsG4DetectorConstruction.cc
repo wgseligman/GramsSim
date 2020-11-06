@@ -14,8 +14,9 @@
 #include "G4String.hh"
 #include "G4ios.hh"
 
-#include <stdio.h>
-#include <memory> // std::unique_ptr()
+//#include <cstdio> // for std::remove
+//#include <sys/stat.h> // for stat()
+//#include <memory> // std::unique_ptr()
 
 namespace gramsg4 {
 
@@ -192,21 +193,12 @@ namespace gramsg4 {
       } // for each volume 
 
     // Write out the parsed GDML geometry if the user supplied a GDML
-    // output file name. .
+    // output file name.
     G4String gdmlOutput;
     options->GetOption("gdmlout",gdmlOutput);
-    if (! gdmlOutput.empty() ) {
-      // For some reason (possibly to prevent overwriting the GDML input
-      // file), G4GDMLParser will halt the program if gdmlOutput already
-      // exists. Since that's annoying if you're making repeated runs,
-      // delete any previous file with the same name.
-      G4cout << "Deleting any previous " << gdmlOutput << G4endl;
-      remove( gdmlOutput );
-
-      G4cout << "Writing geometry to " << gdmlOutput << G4endl;
-      fGDMLparser.SetRegionExport(true);
-      fGDMLparser.Write(gdmlOutput, G4TransportationManager::GetTransportationManager()
-			->GetNavigatorForTracking()->GetWorldVolume()->GetLogicalVolume());
+    if ( ! gdmlOutput.empty() ) {
+      G4cout << "Writing geometry to '" << gdmlOutput << "'" << G4endl;
+      fGDMLparser.Write(gdmlOutput, fGDMLparser.GetWorldVolume());
     } // write gdml
   }
 
