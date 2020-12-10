@@ -511,7 +511,7 @@ GramsG4/include/MySpecialPhysList.hh
 GramsG4/include/MySpecialPhysList.icc
 ```
 
-These second two files are unaltered from the Geant4 extensibleFactory
+These last two files are unaltered from the Geant4 extensibleFactory
 example. As it stands, they just implement the QBBC physics list without
 any changes.
 
