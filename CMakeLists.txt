@@ -33,6 +33,9 @@ include_directories(${ROOT_INCLUDE_DIRS})
 #
 include(${Geant4_USE_FILE})
 
+# HEPMC3
+include(cmake/HepMC.cmake)
+
 #----------------------------------------------------------------------------
 # Locate sources and headers for this project
 #
