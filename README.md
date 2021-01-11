@@ -32,13 +32,13 @@ and skip to the next section. Otherwise, read on.
 
 You will need recent versions of:
 
-   - [Cmake](https://cmake.org/) (at least version 3.4, perhaps higher)
+   - [Cmake](https://cmake.org/) (verified to work with version 3.14)
    - [ROOT](https://root.cern.ch/) (verified to work with ROOT 6.16 and higher)
-   - [Geant4](http://geant4.web.cern.ch/) (verified to work with Geant4 10.5.0 and higher)
+   - [Geant4](http://geant4.web.cern.ch/) (verified to work with Geant4 10.7 and higher)
    
 You will also need the development libraries for:
 
-   - [GNU C++](https://gcc.gnu.org/) (version 6.2 or higher, though the compilation might work with [clang](https://clang.llvm.org/))
+   - [GNU C++](https://gcc.gnu.org/) (version 6.2 or higher, though the compilation might work with [clang](https://clang.llvm.org/); requires c++17 or higher)
    - [Xerces-C](https://xerces.apache.org/xerces-c/)
    - [OpenGL](https://www.opengl.org/)
    - [QT4](https://www.qt.io/)

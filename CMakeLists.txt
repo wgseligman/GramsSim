@@ -1,7 +1,13 @@
 #----------------------------------------------------------------------------
 # Setup the project
-cmake_minimum_required(VERSION 2.6 FATAL_ERROR)
+cmake_minimum_required(VERSION 2.8 FATAL_ERROR)
 project(GramsG4)
+
+# Add source dir as a place for CMake modules
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/cmake/Modules)
+
+# Include any special macros
+include(macros)
 
 #----------------------------------------------------------------------------
 # Find Geant4 package, activating all available Vis drivers by default
@@ -16,24 +22,15 @@ else()
 endif()
 
 #----------------------------------------------------------------------------
-# Find ROOT
-
-# You need to tell CMake where to find the ROOT installation. This can be done in a number of ways:
-#   - ROOT built with classic configure/make use the provided $ROOTSYS/etc/cmake/FindROOT.cmake
-#   - ROOT built with CMake. Add in CMAKE_PREFIX_PATH the installation prefix for ROOT
-list(APPEND CMAKE_PREFIX_PATH $ENV{ROOTSYS})
-
-#---Locate the ROOT package and defines a number of variables (e.g. ROOT_INCLUDE_DIRS)
-find_package(ROOT REQUIRED COMPONENTS RIO)
-
-include_directories(${ROOT_INCLUDE_DIRS})
+# Set up ROOT
+include(cmake/ROOT.cmake)
 
 #----------------------------------------------------------------------------
 # Setup Geant4 include directories and compile definitions
 #
 include(${Geant4_USE_FILE})
 
-# HEPMC3
+# Set up HEPMC3
 include(cmake/HepMC.cmake)
 
 #----------------------------------------------------------------------------
@@ -87,8 +84,7 @@ add_custom_target(GramsG4 DEPENDS gramsg4)
 #
 install(TARGETS gramsg4 DESTINATION bin)
 
-# Add any custom C++ compiler flags. First, define our own variable(s)
-# with any relevant flags.
-SET(GCC_COVERAGE_COMPILE_FLAGS "-std=c++17")
-# Append the options to CMake's official variable(s).
-SET(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} ${GCC_COVERAGE_COMPILE_FLAGS}")
+# Set the compiler to the c++17 standard.  If I was more sophisticated
+# with CMake scripting, I'd set this to something like "set this to
+# c++17 or higher if our packages support it".  
+set(CMAKE_CXX_STANDARD 17)
