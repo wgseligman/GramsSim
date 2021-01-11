@@ -35,6 +35,7 @@ You will need recent versions of:
    - [Cmake](https://cmake.org/) (verified to work with version 3.14)
    - [ROOT](https://root.cern.ch/) (verified to work with ROOT 6.16 and higher)
    - [Geant4](http://geant4.web.cern.ch/) (verified to work with Geant4 10.7 and higher)
+   - [HepMC3](https://gitlab.cern.ch/hepmc/HepMC3) (optional but recommended)
    
 You will also need the development libraries for:
 
@@ -42,12 +43,33 @@ You will also need the development libraries for:
    - [Xerces-C](https://xerces.apache.org/xerces-c/)
    - [OpenGL](https://www.opengl.org/)
    - [QT4](https://www.qt.io/)
-   
-On RHEL-derived Linux distributions (e.g., Scientific Linux, CentOS) you can install these development packages with:
 
+Here are example commands to install these packages for RHEL-derived
+Linux distributions (e.g., Scientific Linux, CentOS). The
+[EPEL](https://fedoraproject.org/wiki/EPEL) install is for CentOS 7
+and its cousins; visit the EPEL web site for other releases.
+
+    sudo yum install https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
+    sudo yum install root HepMC3-devel HepMC3-rootIO-devel
     sudo yum install gcc-c++ glibc-devel \
        freeglut-devel xerces-c-devel \
        qt-devel mesa-libGLw-devel
+
+Note:
+
+   - The default version of CMake for CentOS 7 is 2.8. You may have to
+     install a later of version of CMake on your system.
+
+   - There are few packages distributions that include Geant4 at
+     present (Jan-2021); one exception is
+     [MacPorts](https://www.macports.org/) but that's probably not
+     useful for code development. You will have to
+     [download](https://geant4.web.cern.ch/support/download) and
+     compile/install Geant4 on your own.
+
+   - If you determine the installation commands needed for
+     Debian-style distributions (including Ubuntu), please let
+     wgseligman know so he can update this documentation.
  
 ### Prepare your local computer 
    
