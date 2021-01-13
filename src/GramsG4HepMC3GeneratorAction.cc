@@ -9,6 +9,8 @@
 #include "GramsG4HepMC3GeneratorAction.hh"
 
 #include "G4Event.hh"
+#include "G4TransportationManager.hh"
+#include "G4VPhysicalVolume.hh"
 #include "G4Exception.hh"
 #include "G4String.hh"
 
@@ -167,9 +169,10 @@ namespace gramsg4 {
   void HepMC3GeneratorAction::HepMC2G4( const HepMC3::GenEvent* a_hepmc, G4Event* a_event )
   {
     // Note that Geant4 and CLHEP use MeV/mm/ns. Make sure that
-    // whatever program produces these events uses the same units.
-    // Even so, make some attempt to adjust units; this assume that
-    // the creating program specified the units for the HepMC3 event.
+    // whatever program generates these primary events uses the same
+    // units.  Even so, make some attempt to adjust units; this
+    // assumes that the creating program specified the units for the
+    // HepMC3 event.
 
     auto pscale = 1.0;
     if ( a_hepmc->length_unit() == HepMC3::Units::CM )
@@ -178,19 +181,42 @@ namespace gramsg4 {
     if ( a_hepmc->momentum_unit() == HepMC3::Units::GEV )
       escale = 1000.;
 
+    // Set up a G4 world-volume test.
+    G4Navigator* navigator = G4TransportationManager::GetTransportationManager()
+      -> GetNavigatorForTracking();
+    G4VPhysicalVolume* world = navigator->GetWorldVolume();
+    G4VSolid* worldSolid = world->GetLogicalVolume()->GetSolid();
+ 
+    // For each vertex in the event:
     for (auto vertex: a_hepmc->vertices()) {
 
       auto position = vertex->position();
+      G4ThreeVector xyz(position.x() * pscale, 
+			position.y() * pscale, 
+			position.z() * pscale );
 
-      auto g4vertex
-	= new G4PrimaryVertex(position.x() * pscale, 
-			      position.y() * pscale, 
-			      position.z() * pscale, 
-			      position.t() );
+      // If the vertex is outside the Geant4 world volume, G4 will
+      // crash spectacularly. Let's put in an explicit test to keep
+      // the simulation going.
+      auto isInside = worldSolid->Inside(xyz);
+      if ( isInside != kInside ) {
+	  G4ExceptionDescription description;
+	  description << "File " << __FILE__ << " Line " << __LINE__ << " " << G4endl
+		      << " Event number from '" << m_inputFile 
+		      << "' = " << a_hepmc->event_number() 
+		      << "; Geant4 event ID = " << a_event->GetEventID() << G4endl
+		      << "vertex (" << xyz.x() << "," << xyz.y() << "," << xyz.z()
+		      << ") is outside of the World Volume; vertex skipped.";
+	  G4Exception("gramsg4::HepMC3GeneratorAction::HepMC2G4","invalid vertex",
+		      JustWarning, description);
+      }
+
+      auto g4vertex = new G4PrimaryVertex( xyz, position.t() );
       a_event->AddPrimaryVertex(g4vertex);
 
       // For the purposes of Geant4, we're only interested in the
-      // outgoing particles from this primary event.
+      // outgoing particles from this primary event. For each outgoing
+      // particle in this vertex:
       for (auto particle: vertex->particles_out()) {
 
 	auto pdgCode = particle->pid();
@@ -208,11 +234,35 @@ namespace gramsg4 {
 	if ( !g4particle->GetParticleDefinition() ) {
 	  G4ExceptionDescription description;
 	  description << "File " << __FILE__ << " Line " << __LINE__ << " " << G4endl
+		      << " Event number from '" << m_inputFile 
+		      << "' = " << a_hepmc->event_number() 
+		      << "; Geant4 event ID = " << a_event->GetEventID() << G4endl
 		      << "could not interpret PDG code '"
 		      << pdgCode << "'; particle skipped";
 	  G4Exception("gramsg4::HepMC3GeneratorAction::HepMC2G4","invalid PDG code",
 		      JustWarning, description);
+
+	  delete g4particle;
+	  continue;
 	}
+
+	// Polarization in HepMC3 is not stored in a dedicated
+	// variable, but assigned an "attribute".
+	auto theta = particle->attribute<HepMC3::DoubleAttribute>("theta");
+	auto phi   = particle->attribute<HepMC3::DoubleAttribute>("phi");
+	// If these pointers are not null, then fetch the value and
+	// assign it to the particle's polarization.
+	if (theta && phi) {
+	  G4ThreeVector polarization;
+	  polarization.setMag(1.0);
+	  polarization.setTheta( theta->value() );
+	  polarization.setPhi  ( phi->value() );
+	  g4particle->SetPolarization( polarization );
+	}
+
+	// Note: Weights in HepMC3 are stored as a vector of values.
+	// It's not clear that there's a general way to interpret
+	// this, so leave weights alone for now.
 
 	// Despite the name, this method adds a new G4PrimaryParticle
 	// to a G4PrimaryVertex.
