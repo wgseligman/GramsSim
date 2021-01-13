@@ -1,3 +1,6 @@
+# 12-Jan-2021 WGS: Any lines which reference HepMC3 were copied
+# from the BDSim Project, by the University of London. 
+
 #----------------------------------------------------------------------------
 # Setup the project
 cmake_minimum_required(VERSION 2.8 FATAL_ERROR)
@@ -8,6 +11,13 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/cmake/Mod
 
 # Include any special macros
 include(macros)
+
+#----------------------------------------------------------------------------
+# Set up ROOT
+include(cmake/ROOT.cmake)
+
+# Set up HEPMC3
+include(cmake/HepMC.cmake)
 
 #----------------------------------------------------------------------------
 # Find Geant4 package, activating all available Vis drivers by default
@@ -22,16 +32,20 @@ else()
 endif()
 
 #----------------------------------------------------------------------------
-# Set up ROOT
-include(cmake/ROOT.cmake)
-
-#----------------------------------------------------------------------------
 # Setup Geant4 include directories and compile definitions
 #
 include(${Geant4_USE_FILE})
 
-# Set up HEPMC3
-include(cmake/HepMC.cmake)
+# 11-Jan-2021 WGS: Again, copied from BDSim.
+# rpath for libraries to work from installation correctly
+set(CMAKE_BUILD_RPATH   "${ROOT_LIBRARY_DIR}")
+if (USE_HEPMC3)
+  set(CMAKE_INSTALL_RPATH "${ROOT_LIBRARY_DIR};${HEPMC3_ROOT_DIR}/lib;${Geant4_LIBRARY_DIR};${CMAKE_INSTALL_PREFIX}/lib")
+  message(STATUS "rpath = ${CMAKE_INSTALL_RPATH}")
+else()
+  set(CMAKE_INSTALL_RPATH "${ROOT_LIBRARY_DIR};${Geant4_LIBRARY_DIR};${CMAKE_INSTALL_PREFIX}/lib")
+  message(STATUS "rpath = ${CMAKE_INSTALL_RPATH}")
+endif()
 
 #----------------------------------------------------------------------------
 # Locate sources and headers for this project
@@ -49,10 +63,15 @@ file(GLOB headers ${PROJECT_SOURCE_DIR}/include/*.hh
                   ${PROJECT_SOURCE_DIR}/g4util/include/*.h)
 
 #----------------------------------------------------------------------------
-# Add the executable, and link it to the Geant4 libraries
+# Add the executable, and link it to the libraries
 #
 add_executable(gramsg4 gramsg4.cc ${sources} ${headers})
+target_link_libraries(gramsg4 ${HEPMC3_LIBRARIES} )
+target_link_libraries(gramsg4 ${ROOT_LIBRARIES} )
 target_link_libraries(gramsg4 ${Geant4_LIBRARIES} )
+#message(STATUS "Geant4_LIBRARIES = ${Geant4_LIBRARIES}")
+#message(STATUS "ROOT_LIBRARIES = ${ROOT_LIBRARIES}")
+#message(STATUS "HEPMC3_LIBRARIES = ${HEPMC3_LIBRARIES}")
 
 #----------------------------------------------------------------------------
 # Copy all scripts to the build directory, i.e. the directory in which we

@@ -26,7 +26,7 @@ Once this is done, you can download a copy of the GramsG4 repository:
 
 If you're working on a system of the [Nevis Linux cluster](https://twiki.nevis.columbia.edu/twiki/bin/view/Main/LinuxCluster), type
 
-    module load cmake root geant4
+    module load cmake root geant4 hepmc3
 
 and skip to the next section. Otherwise, read on.
 
@@ -59,6 +59,11 @@ Note:
 
    - The default version of CMake for CentOS 7 is 2.8. You may have to
      install a later of version of CMake on your system.
+
+   - It's important that ROOT, HepMC3, and Geant4 all be compiled with
+     the same version of the C++ compiler (or at least one that
+     supports C++11 and above). The "native compiler" of CentOS 7 does
+     _not_ have this property.
 
    - There are few packages distributions that include Geant4 at
      present (Jan-2021); one exception is

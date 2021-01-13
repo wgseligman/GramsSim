@@ -2,7 +2,9 @@
 /// \brief Implementation of the GramsG4ActionInitialization class
 
 #include "GramsG4ActionInitialization.hh"
-#include "GramsG4PrimaryGeneratorAction.hh"
+#include "GramsG4GPSGeneratorAction.hh"
+#include "GramsG4HepMC3GeneratorAction.hh"
+#include "Options.h" // in util
 #include "UserAction.h" // in g4util/
 #include "RunAction.h" // in g4util/
 #include "EventAction.h" // in g4util/
@@ -40,9 +42,19 @@ namespace gramsg4 {
     // multi-threaded application. Here's where you have to start
     // thinking about thread-safety.
 
-    // Define the event generator.
-    SetUserAction(new gramsg4::PrimaryGeneratorAction);
-
+    // Define the event generator. Check if the user has specified an
+    // input file of previously-generated primary events.
+    auto options = util::Options::GetInstance();
+    G4String inputFile;
+    auto success = options->GetOption("inputgen",inputFile);
+    if ( !success || inputFile.empty() )
+      // There is no input file of generated events, so let the GPS 
+      // commands in the macro file control event generation.
+      SetUserAction(new gramsg4::GPSGeneratorAction);
+    else
+      // Read the input file of generated events with HepMC3.
+      SetUserAction(new gramsg4::HepMC3GeneratorAction(inputFile));
+  
     // Define the links between Geant4's user-action classes and the
     // UserAction's classes.
     SetUserAction(new g4util::RunAction(m_userAction));
