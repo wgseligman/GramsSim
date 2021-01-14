@@ -7,6 +7,7 @@ set(g4_macros
 		vis-sphere.mac
 		outline.mac
 		debug-geom.mac
+		hepmc3.mac
 )
 
 foreach(_g4macro ${g4_macros})

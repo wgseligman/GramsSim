@@ -4,6 +4,8 @@ set(root_scripts
 		Hist2Text.C
 		sillyEnergyFlux.root
 		energyflux.txt
+		hepmc-convert.cc
+		hepmc-grams-example.cc
 		)
 
 foreach(_script ${root_scripts})
