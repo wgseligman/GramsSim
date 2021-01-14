@@ -12,7 +12,7 @@
  *  simple) that it isn't even automatically compiled by CMake; the
  *  compilation command is:
  *
- *  g++ hepmc-grams-example.cc `HepMC3-config --cflags --libs` -o hepmc-grams-example
+ *  g++ hepmc-grams-example.cc `root-config --cflags --libs` `HepMC3-config --cflags --libs --rootIO` -o hepmc-grams-example
  *
  */
  
@@ -21,7 +21,7 @@
 #include "HepMC3/GenVertex.h"
 #include "HepMC3/GenParticle.h"
 #include "HepMC3/Writer.h"
-#include "HepMC3/WriterAscii.h"
+#include "HepMC3/WriterRoot.h"
 #include "HepMC3/FourVector.h"
 
 #include <cstring>
@@ -32,9 +32,9 @@
 int main() {
 
   // Fixed output file name. 
-  std::string outputFile("example.hepmc3");
+  std::string outputFile("example.root");
 
-  auto writer = new HepMC3::WriterAscii(outputFile);
+  auto writer = new HepMC3::WriterRoot(outputFile);
 
   // In this example, there's only one particle for each vertex.
   typedef std::pair < HepMC3::GenVertexPtr, HepMC3::GenParticlePtr > event_type;
@@ -83,26 +83,27 @@ int main() {
 
       // Use Geant4 units for this example. 
       HepMC3::GenEvent event(HepMC3::Units::MEV,HepMC3::Units::MM);
-
-      // If we had more than one outgoing particle, we'd call this
-      // once per particle.
-      vertex->add_particle_out( particle );
-
-      // Similarly, if we had more than one vertex in this event we'd
-      // call this once per vertex.
-      event.add_vertex( vertex );
       
       // Assign an event number. You don't have to do this, but then
       // each event has an ID of zero.
       event.set_event_number( i );
 
+      // If we had more than one vertex in this event we'd call this
+      // once per vertex.
+      event.add_vertex( vertex );
+
+      // If we had more than one outgoing particle, we'd call this
+      // once per particle.
+      vertex->add_particle_out( particle );
+
       // This is how you handle polarization. Of course, since we're
       // boring, we'll set it to zero. (In general, you can add
-      // arbitrary attributes any event, vertex, or particle. See
+      // arbitrary attributes to any event, vertex, or particle. See
       // HepMC3/Attributes.h for the different types available. Also
       // note that you can only add attributes to a vertex or a
       // particle _after_ you've added it to the event.)
 
+      // Do this for one particular event, let's say ID = 2. 
       if ( i == 2 ) {
 	double theta = 0.0;
 	particle->add_attribute("theta",std::make_shared<HepMC3::DoubleAttribute>(theta));

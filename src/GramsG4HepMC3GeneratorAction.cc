@@ -13,7 +13,7 @@
 #include "G4VPhysicalVolume.hh"
 #include "G4Exception.hh"
 #include "G4String.hh"
-
+ 
 #include "HepMC3/Attribute.h"
 #include "HepMC3/GenEvent.h"
 #include "HepMC3/GenVertex.h"
@@ -264,8 +264,8 @@ namespace gramsg4 {
 	// It's not clear that there's a general way to interpret
 	// this, so leave weights alone for now.
 
-	// Despite the name, this method adds a new G4PrimaryParticle
-	// to a G4PrimaryVertex.
+	// Despite the name, this method adds (not sets) a new
+	// G4PrimaryParticle to a G4PrimaryVertex.
 	g4vertex->SetPrimary( g4particle );
 
       } // for each outgoing particle
