@@ -27,6 +27,7 @@
 #include <cstring>
 #include <iostream>
 #include <vector>
+#include <cmath>
 
 /** Main program */
 int main() {
@@ -62,11 +63,11 @@ int main() {
 
   //                       px   py   pz   e     pdgid status
   auto p1 = std::make_shared<HepMC3::GenParticle>
-    ( HepMC3::FourVector( 0.0, 0.0, 1.0, 1.0  ),  22,  1 );
+    ( HepMC3::FourVector( 0.0, 0.0, -1.0, 1.0  ),  22,  1 );
   auto p2 = std::make_shared<HepMC3::GenParticle>
-    ( HepMC3::FourVector( 0.0, 0.0, 1.0, 1.0  ),  22,  1 );
+    ( HepMC3::FourVector( 0.0, 0.0, -1.0, 1.0  ),  22,  1 );
   auto p3 = std::make_shared<HepMC3::GenParticle>
-    ( HepMC3::FourVector( 0.0, 0.0, 1.0, 1.0  ),  22,  1 );
+    ( HepMC3::FourVector( 0.0, 0.0, -1.0, 1.0  ),  22,  1 );
   auto p4 = std::make_shared<HepMC3::GenParticle>
     ( HepMC3::FourVector( 0.0, 0.0, 1.0, 1875.), -1000010020,  1 );
 
@@ -104,16 +105,16 @@ int main() {
 	( HepMC3::FourVector( 0.0, 0.0, 0.0, 0.0), 0,  0 );
       vertex->add_particle_in( p0 );
       
-      // This is how you handle polarization. Of course, since we're
-      // boring, we'll set it to zero. (In general, you can add
+      // This is how you handle polarization.  In general, you can add
       // arbitrary attributes to any event, vertex, or particle. See
       // HepMC3/Attributes.h for the different types available. Also
       // note that you can only add attributes to a vertex or a
-      // particle _after_ you've added it to the event.)
+      // particle _after_ you've added it to the event.
 
-      // Do this for one particular event, let's say ID = 2. 
+      // Do this for one particular event, let's say ID = 2. We'll set
+      // the polarization to be along the y-axis.
       if ( i == 2 ) {
-	double theta = 0.0;
+	double theta = M_PI / 2.0;
 	particle->add_attribute("theta",std::make_shared<HepMC3::DoubleAttribute>(theta));
 	double phi = 0.0;
 	particle->add_attribute("phi",std::make_shared<HepMC3::DoubleAttribute>(phi)); 
