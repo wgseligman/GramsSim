@@ -96,6 +96,14 @@ int main() {
       // once per particle.
       vertex->add_particle_out( particle );
 
+      // Unless you include an incoming particle, the HepMC3 package
+      // will have trouble reading HepMC3 events. This is a "dummy"
+      // incoming particle; PDG code 0 is a "geantino", a massless
+      // uncharged particle that doesn't do anything.
+      auto p0 = std::make_shared<HepMC3::GenParticle>
+	( HepMC3::FourVector( 0.0, 0.0, 0.0, 0.0), 0,  0 );
+      vertex->add_particle_in( p0 );
+      
       // This is how you handle polarization. Of course, since we're
       // boring, we'll set it to zero. (In general, you can add
       // arbitrary attributes to any event, vertex, or particle. See

@@ -13,6 +13,8 @@
 #include "G4VPhysicalVolume.hh"
 #include "G4Exception.hh"
 #include "G4String.hh"
+
+#include "Options.h" // in util/
  
 #include "HepMC3/Attribute.h"
 #include "HepMC3/GenEvent.h"
@@ -87,6 +89,16 @@ namespace gramsg4 {
     }
     
     extension.toLower();
+
+    auto options = util::Options::GetInstance();
+    G4bool debug;
+    options->GetOption("debug",debug);
+    if ( debug ) {
+      G4cout << "GramsG4HepMC3GeneratorAction::OpenFile - "
+	     << "extension='" << extension << "'" 
+	     << G4endl;
+    }
+
     if ( extension == "hepmc2" ) 
       m_reader = new HepMC3::ReaderAsciiHepMC2(m_inputFile);
     else if ( extension == "hepmc3" )
@@ -168,6 +180,10 @@ namespace gramsg4 {
 
   void HepMC3GeneratorAction::HepMC2G4( const HepMC3::GenEvent* a_hepmc, G4Event* a_event )
   {
+    auto options = util::Options::GetInstance();
+    G4bool debug;
+    options->GetOption("debug",debug);
+
     // Note that Geant4 and CLHEP use MeV/mm/ns. Make sure that
     // whatever program generates these primary events uses the same
     // units.  Even so, make some attempt to adjust units; this
@@ -187,6 +203,15 @@ namespace gramsg4 {
     G4VPhysicalVolume* world = navigator->GetWorldVolume();
     G4VSolid* worldSolid = world->GetLogicalVolume()->GetSolid();
  
+    if ( debug ) {
+      G4cout << "GramsG4HepMC3GeneratorAction::HepMC2G4 - " 
+	     << " Event number from '" << m_inputFile 
+	     << "' = " << a_hepmc->event_number() 
+	     << "; Geant4 event ID = " << a_event->GetEventID() << G4endl
+	     << " Number of vertices = " << (a_hepmc->vertices()).size()
+	     << G4endl;
+    }
+
     // For each vertex in the event:
     for (auto vertex: a_hepmc->vertices()) {
 
@@ -194,6 +219,12 @@ namespace gramsg4 {
       G4ThreeVector xyz(position.x() * pscale, 
 			position.y() * pscale, 
 			position.z() * pscale );
+ 
+      if ( debug ) {
+	G4cout << "GramsG4HepMC3GeneratorAction::HepMC2G4 - "
+	       << "vertex (" << xyz.x() << "," << xyz.y() << "," << xyz.z()
+	       << ")" << G4endl;
+      }
 
       // If the vertex is outside the Geant4 world volume, G4 will
       // crash spectacularly. Let's put in an explicit test to keep
@@ -210,9 +241,22 @@ namespace gramsg4 {
 	  G4Exception("gramsg4::HepMC3GeneratorAction::HepMC2G4","invalid vertex",
 		      JustWarning, description);
       }
+ 
+      if ( debug ) {
+	G4cout << "GramsG4HepMC3GeneratorAction::HepMC2G4 - "
+	       << "adding vertex" 
+	       << G4endl;
+      }
 
       auto g4vertex = new G4PrimaryVertex( xyz, position.t() );
       a_event->AddPrimaryVertex(g4vertex);
+ 
+    if ( debug ) {
+      G4cout << "GramsG4HepMC3GeneratorAction::HepMC2G4 - " 
+	     << "   Number of particles in this vertex = " 
+	     << (a_hepmc->particles()).size()
+	     << G4endl;
+    }
 
       // For the purposes of Geant4, we're only interested in the
       // outgoing particles from this primary event. For each outgoing
@@ -228,6 +272,16 @@ namespace gramsg4 {
 				  momentum.py() * escale,
 				  momentum.pz() * escale,
 				  momentum.e () * escale );
+ 
+	if ( debug ) {
+	  G4cout << "GramsG4HepMC3GeneratorAction::HepMC2G4 - "
+		 << "   PDG ID = " << pdgCode
+		 << " momentum = (" 
+		 << momentum.px() << "," 
+		 << momentum.py() << "," 
+		 << momentum.pz()
+		 << ")" << G4endl;
+	}
 
 	// It's not likely, but what if the user supplied a PDG code
 	// that Geant4 does not recognize?
@@ -263,6 +317,12 @@ namespace gramsg4 {
 	// Note: Weights in HepMC3 are stored as a vector of values.
 	// It's not clear that there's a general way to interpret
 	// this, so leave weights alone for now.
+
+	if ( debug ) {
+	  G4cout << "GramsG4HepMC3GeneratorAction::HepMC2G4 - "
+		 << "   Adding particle" 
+		 << G4endl;
+	}
 
 	// Despite the name, this method adds (not sets) a new
 	// G4PrimaryParticle to a G4PrimaryVertex.
