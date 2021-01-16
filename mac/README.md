@@ -35,3 +35,10 @@ extra time to load, since it's turning off the visibility for a number
 of volumes.
 
 `debug-geom.mac` - run Geant4's geometry validation (takes a long time!)
+
+`hepmc3.mac` - how to run the simulation using an input file of
+generated events.
+
+`vis-hepmc3.mac` - run the simulation with both an input events file
+and visualization.
+

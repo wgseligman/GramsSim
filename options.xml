@@ -28,12 +28,13 @@
 
     <!-- If not blank, write a parsed version of the GDML input file.
     This can be used as input to ROOT, since ROOT doesn't accept the
-    GDML <loop> tags. -->
+    GDML <loop> tags. Note that prior to Geant4.10.7, a G4 application
+    (like gramsg4) will crash if it tries to out to a GDML file 
+    that already exists. -->
     <option name="gdmlout" value="" type="string" 
         desc="write parsed GDML to this file" />    
 
-    <!-- If you want to use gramsg4 in batch mode, this is the
-    file of Geant4 commands to be executed. If UI is on, this parameter
+    <!-- The file of Geant4 commands to be executed. If UI is on, this parameter
     is ignored. Take a look at the mac/ directory for some ideas. -->
     <option name="macrofile" short="m" value="mac/batch.mac" type="string" 
         desc="G4 macro file"/>
@@ -43,6 +44,27 @@
     of the Geant4 macro file specified by option 'uimacrofile' -->
     <option name="ui" value="false" type="boolean" desc="start UI session"/>
     <option name="uimacrofile" value="mac/vis.mac" type="string" desc="G4 macro file for UI"/>
+
+    <!-- The name of an input file containing events from some external
+    event generator.. If this option is present, this file will override
+    any particle-generation commands in the macrofile. The file must be in
+    HepMC3 format (https://gitlab.cern.ch/hepmc/HepMC3). The internal format
+    of the file is determined from its extension (the part after the final "."):
+
+    .hepmc2 = HepMC2 text format
+    .hepmc3 = HepMC3 text format
+    .hep    = HEPEVT text format (https://cdcvs.fnal.gov/redmine/projects/minos-sim/wiki/HEPEVT_files)
+    .root   = HepMC3 ROOT format
+    .treeroot = HepMC3 TTree ROOT format
+    .lhef     = LHEF format (arXiv:hep-ph/0609017)
+
+    Some of these formats do not provide a way to specify the (x,y,z,t) vertex
+    of an event (e.g., HEPEVT, LHEF). In those cases the vertex of the event will be
+    [TODO: Fill in an appropriate action.]
+
+    See README.md for a more detailed description.
+    -->
+    <option name="inputgen" short="i" value="" type="string" desc="input generator events"/>
 
     <!-- The name of the output file. The G4 Analysis Manager will automatically
     append '.root' to this name.-->

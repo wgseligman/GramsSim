@@ -2,7 +2,39 @@
 
 If you want a formatted (or easier-to-read) version of this file, scroll to the bottom.
 
-**GramsG4** is a simulation of the detector for the [GRAMS](https://express.northeastern.edu/grams/) experiment (Gamma-Ray and AntiMatter Survey). It is based on [Geant4](http://geant4.web.cern.ch/), a general-purpose particle-physics detector simulation configured for this experiment. For more on GRAMS, see the [initial paper](https://inspirehep.net/literature/1713393). 
+## Table of Contents
+
+- [GramsG4](#gramsg4)
+  * [Introduction](#introduction)
+  * [Installing GramsG4](#installing-gramsg4)
+    + [Working with github](#working-with-github)
+    + [Prerequisites](#prerequisites)
+      - [Notes](#notes-)
+    + [Prepare your local computer](#prepare-your-local-computer)
+  * [Running GramsG4](#running-gramsg4)
+    + [Controlling the particle source](#controlling-the-particle-source)
+    + [Events from an external generator](#events-from-an-external-generator)
+      - [Notes](#notes--1)
+    + [Program outputs](#program-outputs)
+  * [Making changes](#making-changes)
+    + [Work files](#work-files)
+    + [Development "flow"](#development--flow-)
+  * [Detector geometry](#detector-geometry)
+  * [Program options](#program-options)
+    + [Options XML file - details](#options-xml-file---details)
+    + [Programming new options](#programming-new-options)
+  * [Physics lists and how to extend them](#physics-lists-and-how-to-extend-them)
+    + [Using the available physics lists](#using-the-available-physics-lists)
+    + [Custom physics lists](#custom-physics-lists)
+  * [References](#references)
+  * [Credits](#credits)
+  * [Viewing a Markdown document](#viewing-a-markdown-document)
+
+<small><i><a href='http://ecotrust-canada.github.io/markdown-toc/'>Table of contents generated with markdown-toc</a></i></small>
+
+## Introduction
+
+**GramsG4** is a simulation of the detector for the [GRAMS](https://express.northeastern.edu/grams/) experiment (Gamma-Ray and AntiMatter Survey). It is based on [Geant4](http://geant4.web.cern.ch/), a general-purpose particle-physics detector simulation. For more on GRAMS, see the [initial paper](https://inspirehep.net/literature/1713393). 
 
 ## Installing GramsG4
     
@@ -26,28 +58,57 @@ Once this is done, you can download a copy of the GramsG4 repository:
 
 If you're working on a system of the [Nevis Linux cluster](https://twiki.nevis.columbia.edu/twiki/bin/view/Main/LinuxCluster), type
 
-    module load cmake root geant4
+    module load cmake root geant4 hepmc3
 
 and skip to the next section. Otherwise, read on.
 
 You will need recent versions of:
 
-   - [Cmake](https://cmake.org/) (at least version 3.4, perhaps higher)
+   - [Cmake](https://cmake.org/) (verified to work with version 3.14)
    - [ROOT](https://root.cern.ch/) (verified to work with ROOT 6.16 and higher)
-   - [Geant4](http://geant4.web.cern.ch/) (verified to work with Geant4 10.5.0 and higher)
+   - [Geant4](http://geant4.web.cern.ch/) (verified to work with Geant4 10.7 and higher)
+   - [HepMC3](https://gitlab.cern.ch/hepmc/HepMC3) (optional but recommended)
    
 You will also need the development libraries for:
 
-   - [GNU C++](https://gcc.gnu.org/) (version 6.2 or higher, though the compilation might work with [clang](https://clang.llvm.org/))
+   - [GNU C++](https://gcc.gnu.org/) (version 6.2 or higher, though the compilation might work with [clang](https://clang.llvm.org/); requires c++17 or higher)
    - [Xerces-C](https://xerces.apache.org/xerces-c/)
    - [OpenGL](https://www.opengl.org/)
    - [QT4](https://www.qt.io/)
-   
-On RHEL-derived Linux distributions (e.g., Scientific Linux, CentOS) you can install these development packages with:
 
+Here are example commands to install these packages for RHEL-derived
+Linux distributions (e.g., Scientific Linux, CentOS). The
+[EPEL](https://fedoraproject.org/wiki/EPEL) install is for CentOS 7
+and its cousins; visit the EPEL web site for other releases.
+
+    sudo yum install https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
+    sudo yum install root HepMC3-devel HepMC3-rootIO-devel
     sudo yum install gcc-c++ glibc-devel \
        freeglut-devel xerces-c-devel \
        qt-devel mesa-libGLw-devel
+
+#### Notes
+
+   - The default version of CMake for CentOS 7 is 2.8. You may have to
+     install a later of version of CMake on your system.
+
+   - It's important that ROOT, HepMC3, and Geant4 all be compiled with
+     the same version of the C++ compiler (or at least one that
+     supports C++11 and above). The "native compiler" of CentOS 7 does
+     _not_ have this property. This may mean that the CentOS 7 versions of 
+     ROOT and HepMC3 will not be sufficient and you'll have to compile
+     them from source as well. 
+
+   - There are few packages distributions that include Geant4 at
+     present (Jan-2021); one exception is
+     [MacPorts](https://www.macports.org/) but that's probably not
+     useful for code development. You will have to
+     [download](https://geant4.web.cern.ch/support/download) and
+     compile/install Geant4 on your own.
+
+   - If you determine the installation commands needed for
+     Debian-style distributions (including Ubuntu), please let
+     wgseligman know so he can update this documentation.
  
 ### Prepare your local computer 
    
@@ -69,9 +130,9 @@ of this command in one of your shell startup files:
 
 To build/compile:
 
-    # Set up ROOT and Geant4 as appropriate for your system
+    # Set up the tools as appropriate for your system
     # For example, at Nevis type
-    module load cmake root geant4
+    module load cmake root geant4 hepmc3
     
     # Create a separate build/work directory. This directory should
     # not be the GramsG4 directory or a sub-directory of it.
@@ -113,7 +174,7 @@ display defined in mac/vis.mac:
     ./gramsg4 --ui --uimacrofile mac/vis.mac
 ``` 
 
-If you want to change the primary particle type, energy, distribution, or number of events generated by the simulation, you *must* use a 
+If you want to change the primary particle type, energy, distribution, or number of events generated by the simulation, edit a 
 G4 macro file. For example, if you want to generate 2000 events, you can copy an existing
 file and edit it:
 ```
@@ -126,6 +187,38 @@ file and edit it:
 Of particular interest is the file `mac/sky.mac`, which shows how to generate an energy spectrum from a user-supplied histogram with positions given uniformly by a sphere surrounding the detector. 
 
 For more on the gps commands, see the *References* section near the end of this document. 
+
+### Events from an external generator
+
+The GPS commands may not be sufficient. For example, you may want to generate the primary particles from an initial nuclear interaction (*n-<span style="text-decoration:overline">n</span>*
+oscillations are one such case), or a shower of particles from a cosmic-ray simulation. 
+
+GramsG4 can read files of events in [HepMC3](https://gitlab.cern.ch/hepmc/HepMC3) format. A typical command to run the simulation with an input file would be:
+
+    ./gramsg4 --macrofile mac/hepmc3.mac --inputgen scripts/example.hepmc3
+
+Note that HepMC3 can also read files in older formats. The format of the file is assumed to match the file's extension (the part after the final period ".") as follows:
+
+<table>
+<tr><th>Extension</th><th>Format</th></tr>
+<tr><td>.hepmc3</td><td>HepMC3 ASCII</td></tr>
+<tr><td>.hepmc2</td><td>HepMC2 ASCII</td></tr>
+<tr><td>.hpe</td><td><a href="https://cdcvs.fnal.gov/redmine/projects/minos-sim/wiki/HEPEVT_files">HEPEVT</a> (ASCII)</td></tr>
+<tr><td>.root</td><td>HepMC3 ROOT</td></tr>
+<tr><td>.treeroot</td><td>HepMC3 ROOT TTree</td></tr>
+<tr><td>.lhef</td><td><a href="http://home.thep.lu.se/~leif/LHEF/LHEF_8h_source.html">Les Houches Event File</a></td></tr>
+</table>
+
+If you want to write HepMC3 files, there are a couple of simple examples in the `scripts/` directory. More detailed examples can be found in the `examples/` directory within the HepMC3 distribution. 
+
+#### Notes
+
+   - The number of events generated by GramsG4 is determined by the `/run/beamOn` command in the input `.mac` file; there's an example in `mac/hepmc3.mac`. If the number of events in the `beamOn` command exceeds the number of events in the HepMC3 file, GramsG4 will "rewind" the file and read it from the beginning. 
+   
+   - When creating the event->vertex->particles structure for an HepMC3 `GenEvent` object, there must be at least one incoming particle to the vertex even though GramsG4 will only process the outgoing particles. The program `script/hepmc3-grams-example.cc` demonstrates a work-around. 
+   
+   - Of the above formats, `.hepmc3` files are closest to human-readable; `.treeroot` files are the easiest to browse using ROOT. 
+
 
 ### Program outputs
 
@@ -175,7 +268,7 @@ When you want to start on a new task:
     git flow feature start $USER_MyMagnificentFeatureName
 
 The '$USER_' means that your feature name should begin with your 
-account name. That way you know who is doing what. 
+account name. That way you know who is doing what. `MyMagnificentFeatureName` can be anything that identifies your task. 
 
 To "bookmark" changes you've made to your copy of the `$GGDIR/GramsG4` directory:
 
@@ -244,7 +337,7 @@ When you've made your changes and wish to "bookmark" them:
 
 *Because I am lazy, I usually do something like this:*
 
-    (cd ../GramsG4; git commit -a -m)
+    (cd ../GramsG4; git commit -a)
     
 *and use the up-arrow key to re-invoke that command after each development milestone.*
 
@@ -511,7 +604,7 @@ GramsG4/include/MySpecialPhysList.hh
 GramsG4/include/MySpecialPhysList.icc
 ```
 
-These second two files are unaltered from the Geant4 extensibleFactory
+These last two files are unaltered from the Geant4 extensibleFactory
 example. As it stands, they just implement the QBBC physics list without
 any changes.
 
@@ -541,6 +634,16 @@ Geant4 General Particle Source:
    - [Documentation](http://geant4-userdoc.web.cern.ch/geant4-userdoc/UsersGuides/ForApplicationDeveloper/html/GettingStarted/generalParticleSource.html)
    - [Examples](http://hurel.hanyang.ac.kr/Geant4/Geant4_GPS/reat.space.qinetiq.com/gps/examples/examples.html)
    - [Concepts](https://www.google.com/url?sa=t&rct=j&q=&esrc=s&source=web&cd=&cad=rja&uact=8&ved=2ahUKEwiY15u9wP3qAhXFJt8KHQk7C1gQFjADegQIBRAB&url=https%3A%2F%2Findico.in2p3.fr%2Fevent%2F443%2Fcontributions%2F30793%2Fattachments%2F24858%2F30632%2FGSantin_Geant4_Annecy2008_GPS_v11.ppt&usg=AOvVaw0yJS5FTzA2-btA1ag7XCX9) (Microsoft Powerpoint document)
+
+## Credits
+
+   - Portions of the HepMC3 input code were inspired by the Beam Delivery Simulation (BDSIM), Copyright &copy; Royal Holloway, University of London 2001-2020. 
+   
+   - That code in turn, is a combination of code from: 
+
+      - the HepMC3 examples in the `share/doc/HepMC3/examples` directory, in particular the contents of the `BasicExamples` and `ConvertExample` directories;
+      
+      - the code in the Geant4 `examples/extended/eventgenerator/HepMC/HepMCEx01` directory. 
 
 ## Viewing a Markdown document
 
