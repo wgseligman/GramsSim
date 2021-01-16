@@ -34,7 +34,7 @@ If you want a formatted (or easier-to-read) version of this file, scroll to the 
 
 ## Introduction
 
-**GramsG4** is a simulation of the detector for the [GRAMS](https://express.northeastern.edu/grams/) experiment (Gamma-Ray and AntiMatter Survey). It is based on [Geant4](http://geant4.web.cern.ch/), a general-purpose particle-physics detector simulation configured for this experiment. For more on GRAMS, see the [initial paper](https://inspirehep.net/literature/1713393). 
+**GramsG4** is a simulation of the detector for the [GRAMS](https://express.northeastern.edu/grams/) experiment (Gamma-Ray and AntiMatter Survey). It is based on [Geant4](http://geant4.web.cern.ch/), a general-purpose particle-physics detector simulation. For more on GRAMS, see the [initial paper](https://inspirehep.net/literature/1713393). 
 
 ## Installing GramsG4
     
