@@ -268,7 +268,7 @@ When you want to start on a new task:
     git flow feature start $USER_MyMagnificentFeatureName
 
 The '$USER_' means that your feature name should begin with your 
-account name. That way you know who is doing what. 
+account name. That way you know who is doing what. `MyMagnificentFeatureName` can be anything that identifies your task. 
 
 To "bookmark" changes you've made to your copy of the `$GGDIR/GramsG4` directory:
 
