@@ -53,6 +53,7 @@ Once this is done, you can download a copy of the GramsG4 repository:
     cd GramsG4
     git fetch
     git checkout develop
+    cd ..
 
 ### Prerequisites
 
@@ -125,7 +126,8 @@ directory in your area. You may want to include a suitably modified version
 of this command in one of your shell startup files:
 
     # $GGDIR is the directory that contains GramsG4, not GramsG4 itself.
-    cd ..
+    # If you've followed these instructions from the beginning, this will
+    # be the directory you're in now ($PWD = "print working directory")
     export GGDIR=$PWD
 
 To build/compile:
@@ -135,12 +137,13 @@ To build/compile:
     module load cmake root geant4 hepmc3
     
     # Create a separate build/work directory. This directory should
-    # not be the GramsG4 directory or a sub-directory of it.
+    # not be the GramsG4 directory or a sub-directory of it. This
+    # only has to be done once. 
     cd $GGDIR
     mkdir GramsG4-work
-    cd GramsG4-work
     
     # Build
+    cd GramsG4-work
     cmake $GGDIR/GramsG4
     make
 
