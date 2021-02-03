@@ -1,12 +1,11 @@
-# Install example Geant4 macro files
-set(root_scripts
-		SimpleAnalysis.C
-		Hist2Text.C
-		sillyEnergyFlux.root
-		energyflux.txt
-		hepmc-convert.cc
-		hepmc-grams-example.cc
-		)
+# Install example Geant4 ROOT scripts and conversion code
+
+file(GLOB root_scripts RELATIVE ${PROJECT_SOURCE_DIR}/scripts CONFIGURE_DEPENDS 
+	  *.C 
+	  *.cc 
+	  *.txt 
+	  *.md 
+	  *.root)
 
 foreach(_script ${root_scripts})
   configure_file(
