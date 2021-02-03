@@ -8,11 +8,8 @@
  *  @brief Create example events.
  *
  *  An extremely simple example of creating events for HepMC3 and
- *  GramsG4 testing. It's so simple (or perhaps the programmer is so
- *  simple) that it isn't even automatically compiled by CMake; the
- *  compilation command is:
- *
- *  g++ hepmc-grams-example.cc `root-config --cflags --libs` `HepMC3-config --cflags --libs --rootIO` -o hepmc-grams-example
+ *  GramsG4 testing. See README.md in this directory for more
+ *  information.
  *
  */
  
@@ -76,7 +73,7 @@ int main() {
   events.push_back( event_type(v3, p3) );
   events.push_back( event_type(v4, p4) );
 
-  for ( auto i = 0; i < events.size(); ++i )
+  for ( size_t i = 0; i < events.size(); ++i )
     {
       auto vp = events[i];
       auto vertex = vp.first;

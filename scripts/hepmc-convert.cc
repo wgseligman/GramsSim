@@ -7,12 +7,8 @@
  *  @example hepmc-convert.cc
  *  @brief Convert between HepMC3 file format.
  *
- *  This is a simple HepMC3 file converter. It's so simple
- *  (or perhaps the programmer is so simple) that it isn't
- *  even automatically compiled by CMake; the compilation
- *  command is:
- *
- *  g++ hepmc-convert.cc `root-config --cflags --libs` `HepMC3-config --cflags --libs --rootIO` -o hepmc-convert
+ *  This is a simple HepMC3 file converter. See the README.md in this
+ *  directory for more information.
  *
  */
  

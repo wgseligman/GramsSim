@@ -19,15 +19,12 @@ ${HepMC3_ROOT_DIR}/share/doc/HepMC3/examples are better illustrations,
 but they don't necessarily produce outputs that are useful for
 GramsG4.
 
-These programs aren't included in the CMake compilation process,
-mainly because the programmer (William Seligman) isn't facile enough
-with CMake to add them to CMakeLists.txt. To compile the programs:
+The compiled programs are put into the bin/ sub-directory of your
+GramsG4 working/build directory. To execute them, you'll want 
+something like:
 
-    prog=[program name]
-    g++ ${prog}.cc \
-       `root-config --cflags --libs` \
-       `HepMC3-config --cflags --libs --rootIO` \
-       -o ${prog}
+    # Go to your GramsG4 build directory
+    ./bin/hepmc-grams-example
 
 The two programs are:
 
