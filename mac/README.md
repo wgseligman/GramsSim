@@ -20,6 +20,12 @@ See README.md in the parent directory for more information.
 the detector (the 'sky') focused on the center of the TPC. The energy
 spectrum comes from a histogram (see scripts/Hist2Text.C).
 
+`crab.mac` - a crude approximation of gammas from the Crab Nebula
+directed at the top of the GRAMS detector.
+
+`crab-45.mac` - a crude approximation of gammas from the Crab Nebula
+directed at the top of the GRAMS detector at 45-degree angle.
+
 `vis.mac` - setup for interactive display. Particles are aimed along
 the negative z-direction randomly across the top face of the inner
 detector.
