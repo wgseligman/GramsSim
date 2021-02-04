@@ -15,7 +15,9 @@ As of 03-Aug-2020:
 
 - UI display
    - Does OpenGL support display of hit/track information on mouse hover?
+   - Can we add some kind of axis labels?
    
-- Improve ROOT outputs
+- ROOT 
    - Ntuples will only go so far. 
    - Some form of structured TTrees would be better for MC truth information. 
+   - Can ROOT read the Geant4 GDML file directly?
