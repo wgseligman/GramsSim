@@ -1,6 +1,6 @@
 # TODO 
 
-As of 03-Aug-2020:
+As of 06-Feb-2021:
 
 - Multi-threaded execution
    - Understand the effects of multiple threads on ROOT outputs (probably need to upgrade to Geant4 10.6).
