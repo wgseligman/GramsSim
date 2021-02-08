@@ -48,7 +48,9 @@
 /vis/modeling/trajectories/drawByCharge-0/default/setStepPtsSize 2
 # (if too many tracks cause core dump => /tracking/storeTrajectory 0)
 #
-# Draw hits at end of event:
+# Draw hits at end of event.
+# For GRAMS, leave this off. The hits are so close together within
+# the small Compton scatters that all you see is a mess.
 #/vis/scene/add/hits
 #
 # To draw only gammas:

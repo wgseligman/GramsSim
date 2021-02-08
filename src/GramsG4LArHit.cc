@@ -72,15 +72,19 @@ namespace gramsg4 {
 
   //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
+
+  // This is standard routine for drawing hits in the visualizer.
+  // You'll find almost identical code in chapter 8.5.6 of the 
+  // Geant4 Applications Guide. 
   void LArHit::Draw()
   {
     G4VVisManager* pVVisManager = G4VVisManager::GetConcreteInstance();
     if(pVVisManager)
       {
 	G4Circle circle(m_position);
-	circle.SetScreenSize(4.);
+	circle.SetScreenSize(4.0);
 	circle.SetFillStyle(G4Circle::filled);
-	G4Colour colour(1.,0.,0.);
+	G4Colour colour(1.,0.,0.); // red
 	G4VisAttributes attribs(colour);
 	circle.SetVisAttributes(attribs);
 	pVVisManager->Draw(circle);
