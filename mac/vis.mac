@@ -34,6 +34,11 @@
 # For GRAMS, offset the axis by y-2.5 m so the axes are
 # visible outside of the detector. 
 /vis/scene/add/axes 0 -2.5 0 1 m
+# Add an axis label.
+/vis/set/textColour white
+#                   x   y    z  units size x-offset y-offset text
+/vis/scene/add/text 0 -2.5 -0.15   m   9    0        0       displaced det
+/vis/scene/add/text 0 -2.5 -0.25   m   9    0        0       coord y->y-2.5 m
 #
 # Draw smooth trajectories at end of event, showing trajectory points
 # as markers 2 pixels wide:
@@ -74,7 +79,7 @@
 #/vis/viewer/set/viewpointVector 0.800418 0.536096 0.268201
 /vis/viewer/set/upVector 0 0 1
 /vis/viewer/set/projection orthogonal
-/vis/viewer/zoomTo 1.48517
+/vis/viewer/zoomTo 1.75696
 /vis/viewer/scaleTo 1 1 1
 
 # 01-Aug-2020 WGS: Set the initial particle parameters for the UI
