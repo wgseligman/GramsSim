@@ -16,8 +16,13 @@ As of 06-Feb-2021:
 - UI display
    - Does OpenGL support display of hit/track information on mouse hover?
    - Can we add some kind of axis labels?
+      - Answer: Yes. The G4 macro command is "/vis/scene/add/axes 0 -2.5 0 1 m".
+        See mac/vis.mac for details.
    
 - ROOT 
    - Ntuples will only go so far. 
    - Some form of structured TTrees would be better for MC truth information. 
+
+
    - Can ROOT read the Geant4 GDML file directly?
+      - Answer: As of ROOT 6.20, the answer is no. It must be parsed with --gdmlout first.
