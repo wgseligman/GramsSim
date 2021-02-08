@@ -30,8 +30,10 @@
 # Specify style (surface or wireframe):
 #/vis/viewer/set/style wireframe
 #
-# Draw coordinate axes:
-#/vis/scene/add/axes 0 0 0 1 m
+# Draw coordinate axes,
+# For GRAMS, offset the axis by y-2.5 m so the axes are
+# visible outside of the detector. 
+/vis/scene/add/axes 0 -2.5 0 1 m
 #
 # Draw smooth trajectories at end of event, showing trajectory points
 # as markers 2 pixels wide:
@@ -68,7 +70,8 @@
 #/vis/viewer/flush
 #
 # 11-May-2020 WGS: Let the view match the coordinate system of GRAMS
-/vis/viewer/set/viewpointVector 0.92455 -0.358368 -0.129536
+/vis/viewer/set/viewpointVector 0.92455 0.358368 0.129536
+#/vis/viewer/set/viewpointVector 0.800418 0.536096 0.268201
 /vis/viewer/set/upVector 0 0 1
 /vis/viewer/set/projection orthogonal
 /vis/viewer/zoomTo 1.48517
