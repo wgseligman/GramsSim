@@ -99,11 +99,13 @@ namespace gramsg4 {
       G4cout << "WriteNtuplesAction::() - "
 	     << "ntuple id of 'TrackInfo' = " << m_TrackNTID << G4endl;
 
-    // Note that this track info ntuple is inefficient. We're storing
-    // the beginning and end of each track in every entry. If we were
-    // being careful, we'd remember that the end of one track is the
-    // start of the next one. But let's worry about efficiency when we
-    // start running out of simulation disk space. 
+
+    // For tracking information, we're going to try to record the
+    // trajectory of the track as it passes through the detector. A
+    // trajectory is a set of two 4-vectors: (x,y,z,t) and
+    // (px,py,pz,E). The Geant4 analysis manager won't let us store
+    // 4-vectors directly, so store each components of these 4-vectors
+    // in a separate std::vector.
 
     // Reminder: G4's units are MeV, mm, ns
     analysisManager->CreateNtupleIColumn("Run");            // id 0         
@@ -112,18 +114,16 @@ namespace gramsg4 {
     analysisManager->CreateNtupleIColumn("ParentID");       // id 3
     analysisManager->CreateNtupleIColumn("PDGCode");        // id 4
     analysisManager->CreateNtupleSColumn("ProcessName");    // id 5
-    analysisManager->CreateNtupleDColumn("tStart");         // id 6
-    analysisManager->CreateNtupleDColumn("xStart");         // id 7
-    analysisManager->CreateNtupleDColumn("yStart");         // id 8
-    analysisManager->CreateNtupleDColumn("zStart");         // id 9
-    analysisManager->CreateNtupleDColumn("EStart");         // id 10
-    analysisManager->CreateNtupleSColumn("VolNameStart");   // id 11
-    analysisManager->CreateNtupleDColumn("tEnd");           // id 12
-    analysisManager->CreateNtupleDColumn("xEnd");           // id 13
-    analysisManager->CreateNtupleDColumn("yEnd");           // id 14
-    analysisManager->CreateNtupleDColumn("zEnd");           // id 15
-    analysisManager->CreateNtupleDColumn("EEnd");           // id 16
-    analysisManager->CreateNtupleSColumn("VolNameEnd");     // id 17
+    analysisManager->CreateNtupleDColumn("t", m_time);      // id 6
+    analysisManager->CreateNtupleDColumn("x", m_xpos);      // id 7
+    analysisManager->CreateNtupleDColumn("y", m_ypos);      // id 8
+    analysisManager->CreateNtupleDColumn("z", m_zpos);      // id 9
+    analysisManager->CreateNtupleDColumn("Etot", m_energy); // id 10
+    analysisManager->CreateNtupleDColumn("px", m_xmom);     // id 11
+    analysisManager->CreateNtupleDColumn("py", m_ymom);     // id 12
+    analysisManager->CreateNtupleDColumn("pz", m_zmom);     // id 13
+    analysisManager->CreateNtupleSColumn("VolNameStart");   // id 14
+    analysisManager->CreateNtupleSColumn("VolNameEnd");     // id 15
 
     if (m_debug) 
 	G4cout << "WriteNtuplesAction::BeginOfRunAction() - "
@@ -261,6 +261,8 @@ namespace gramsg4 {
       G4cout << "WriteNtuplesAction::PreTrackingAction - Filling n-tuple ID = " 
 	     << m_TrackNTID << G4endl;
 
+    ClearTrajectory();
+
     // Get the creator process. For primary particles the G4VProcess
     // object won't be created.
     auto process = a_track->GetCreatorProcess();
@@ -276,24 +278,21 @@ namespace gramsg4 {
     analysisManager->FillNtupleIColumn(m_TrackNTID, 3, a_track->GetParentID() );
     analysisManager->FillNtupleIColumn(m_TrackNTID, 4, a_track->GetParticleDefinition()->GetPDGEncoding() );
     analysisManager->FillNtupleSColumn(m_TrackNTID, 5, processName );
-    analysisManager->FillNtupleDColumn(m_TrackNTID, 6, a_track->GetGlobalTime() );
-    analysisManager->FillNtupleDColumn(m_TrackNTID, 7, a_track->GetPosition().x() );
-    analysisManager->FillNtupleDColumn(m_TrackNTID, 8, a_track->GetPosition().y() );
-    analysisManager->FillNtupleDColumn(m_TrackNTID, 9, a_track->GetPosition().z() );
-    analysisManager->FillNtupleDColumn(m_TrackNTID,10, a_track->GetTotalEnergy() );
-    analysisManager->FillNtupleSColumn(m_TrackNTID,11, a_track->GetVolume()->GetName() );
+    analysisManager->FillNtupleSColumn(m_TrackNTID,14, a_track->GetVolume()->GetName() );
+
+    // Record the starting four-vectors for this track's trajectory.
+    AddTrajectoryPoint( a_track );
 }
 
   void WriteNtuplesAction::PostTrackingAction(const G4Track* a_track) {
 
     // Fill in the rest of the n-tuple values for the end of the track.
     auto analysisManager = G4AnalysisManager::Instance();
-    analysisManager->FillNtupleDColumn(m_TrackNTID,12, a_track->GetGlobalTime() );
-    analysisManager->FillNtupleDColumn(m_TrackNTID,13, a_track->GetPosition().x() );
-    analysisManager->FillNtupleDColumn(m_TrackNTID,14, a_track->GetPosition().y() );
-    analysisManager->FillNtupleDColumn(m_TrackNTID,15, a_track->GetPosition().z() );
-    analysisManager->FillNtupleDColumn(m_TrackNTID,16, a_track->GetTotalEnergy() );
-    analysisManager->FillNtupleSColumn(m_TrackNTID,17, a_track->GetVolume()->GetName() );
+
+    // We don't have to explictly "fill" the columns that were defined
+    // by std::vectors. The G4 Analysis Manager has stored their
+    // addresses and will take care of that for us.
+    analysisManager->FillNtupleSColumn(m_TrackNTID,15, a_track->GetVolume()->GetName() );
 
     if (m_debug) 
       G4cout << "WriteNtuplesAction::PostTrackingAction - Adding row" << G4endl;
@@ -321,5 +320,81 @@ namespace gramsg4 {
     
     return hitsCollection;
   }    
+
+
+  // Trajectory routines.
+
+  // At each step, check if we should add a trajector point.
+  void WriteNtuplesAction::SteppingAction(const G4Step* a_step)
+  {
+    // Get the track this step is in.
+    const G4Track* track = a_step->GetTrack();
+
+    // If a particle is neutral, then each step marks a potential
+    // change in trajectory and should have a trajectory point added.
+
+    // However, if a particle is charged, then its step (at least in
+    // the LAr) is limited; see GramsG4DetectorConstruction. We don't
+    // want to save each tiny step as a trajectory point unless the
+    // particle's direction changes.
+
+    auto particle = track->GetParticleDefinition();
+    auto charge = particle->GetPDGCharge();
+
+    if ( charge != 0.0 ) {
+      // Is the momentum direction identical to that of the last
+      // trajectory point?
+      auto currentMomentumDirection = track->GetMomentumDirection();
+
+      G4ThreeVector lastMomentum( m_xmom.back(), m_ymom.back(), m_zmom.back() );
+      auto lastMomentumDirection = lastMomentum.unit();
+
+      // Strictly speaking, what we want to test is if the current
+      // momentum direction is equal to the last momentum
+      // direction. However, testing for equality with floating-point
+      // numbers is tricky on computer systems. Instead, let's check
+      // if the different between their components is small.
+
+      const G4double small = 1.e-4;
+      if ( std::abs( currentMomentumDirection.x() - lastMomentumDirection.x() ) < small
+	   &&
+	   std::abs( currentMomentumDirection.y() - lastMomentumDirection.y() ) < small
+	   &&
+	   std::abs( currentMomentumDirection.z() - lastMomentumDirection.z() ) < small )
+	return;
+    }
+
+    AddTrajectoryPoint(track);
+  }
+
+  void WriteNtuplesAction::ClearTrajectory() {
+    // Clear all the trajectory vectors. 
+    m_time.clear();
+    m_xpos.clear();
+    m_ypos.clear();
+    m_zpos.clear();
+    m_energy.clear();
+    m_xmom.clear();
+    m_ymom.clear();
+    m_zmom.clear();
+  }
+
+  size_t WriteNtuplesAction::AddTrajectoryPoint( const G4Track* a_track )
+  {
+    // Add the components of our two 4-vectors (t,x,y,z) (E,px,py,pz)
+    // to the individual std::vectors.
+    m_time.push_back( a_track->GetGlobalTime() );
+    m_xpos.push_back( a_track->GetPosition().x() );
+    m_ypos.push_back( a_track->GetPosition().y() );
+    m_zpos.push_back( a_track->GetPosition().z() );
+    m_energy.push_back( a_track->GetTotalEnergy() );
+    m_xmom.push_back( a_track->GetMomentum().x() );
+    m_ymom.push_back( a_track->GetMomentum().y() );
+    m_zmom.push_back( a_track->GetMomentum().z() );
+
+    // All the std::vectors should be the same size, so pick one and
+    // return its size.
+    return m_time.size();
+  }
 
 } // namespace gramsg4
