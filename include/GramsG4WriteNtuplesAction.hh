@@ -11,6 +11,8 @@
 #include "GramsG4LArHit.hh"
 #include "UserAction.h" // in g4util/
 
+#include <vector>
+
 class G4Run;
 class G4Event;
 
@@ -32,6 +34,7 @@ namespace gramsg4 {
     virtual void EndOfEventAction(const G4Event*);
     virtual void PreTrackingAction (const G4Track*);
     virtual void PostTrackingAction(const G4Track*);
+    virtual void SteppingAction(const G4Step*);
 
   private:
 
@@ -51,6 +54,35 @@ namespace gramsg4 {
 
     // Save the debugging state.
     G4bool m_debug;
+
+    // Trajectory fields and methods. Eventually all of the following
+    // will probably be some sort of separate Trajectory
+    // class. However, as long as we're still using the Geant4
+    // Analysis Manager to write our ntuples, let's at least
+    // "encapsulate" the trajectory information as best we can.
+
+    // Remove all trajectory information.
+    void ClearTrajectory();
+
+    // Add the current track's trajectory information; e.g.,
+    // (t,x,y,z), (E,px,py,pz). Return the number of trajectory points
+    // we've recorded so far.
+    size_t AddTrajectoryPoint( const G4Track* );
+
+    // Create trajectory information for each track. In this case, a
+    // trajectory will be set of (t,x,y,z) and (E,px,py,pz)
+    // points. The Geant4 analysis manager won't let us store
+    // 4-vectors in an ntuple, much less a vector of four-vectors,
+    // so we have to maintain a separate std::vector for each
+    // component of the 4-vectors.
+    std::vector<G4double> m_time;
+    std::vector<G4double> m_xpos;
+    std::vector<G4double> m_ypos;
+    std::vector<G4double> m_zpos;
+    std::vector<G4double> m_energy;
+    std::vector<G4double> m_xmom;
+    std::vector<G4double> m_ymom;
+    std::vector<G4double> m_zmom;
   };
 
 } // namespace gramsg4
