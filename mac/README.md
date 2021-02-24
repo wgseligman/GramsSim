@@ -40,7 +40,7 @@ so that it's more suitable for inclusion in talks. Give this one some
 extra time to load, since it's turning off the visibility for a number
 of volumes.
 
-`vis-mensu.mac` - a fancy demonstration of how to switch commands via
+`vis-menus.mac` - a fancy demonstration of how to switch commands via
 menus at the top of the G4 visualizer. This macro file invokes the
 `draw-axes.mac`, `angle-view.mac`, `{x,y,z}-views.mac`,
 `energy-*.mac`, and `plane-*.mac` sub-files from within its menu.
