@@ -43,7 +43,7 @@ of volumes.
 `vis-menus.mac` - a fancy demonstration of how to switch commands via
 menus at the top of the G4 visualizer. This macro file invokes the
 `draw-axes.mac`, `angle-view.mac`, `{x,y,z}-views.mac`,
-`energy-*.mac`, and `plane-*.mac` sub-files from within its menu.
+`energy-*.mac`, and `plane-*.mac` sub-files from within its menus.
 
 `debug-geom.mac` - run Geant4's geometry validation (takes a long time!)
 
