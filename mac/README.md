@@ -40,11 +40,10 @@ so that it's more suitable for inclusion in talks. Give this one some
 extra time to load, since it's turning off the visibility for a number
 of volumes.
 
-`switch-views.mac` - a fancy demonstration of how to switch
-visualization parameters via menu at the top of the G4
-visualizer. This macro file invokes the `draw-axes.mac`,
-`angle-view.mac`, `{x,y,z}-views.mac` "sub-files" from within its
-menu.
+`vis-menus.mac` - a fancy demonstration of how to switch commands via
+menus at the top of the G4 visualizer. This macro file invokes the
+`draw-axes.mac`, `angle-view.mac`, `{x,y,z}-views.mac`,
+`energy-*.mac`, and `plane-*.mac` sub-files from within its menus.
 
 `debug-geom.mac` - run Geant4's geometry validation (takes a long time!)
 

@@ -1,6 +1,6 @@
 # This is an example of how to use the "addMenu" and
-# "addButton" commands to switch between multiple 
-# views in the Geant4 visualizer. 
+# "addButton" commands to issue commands within the
+# Geant4 visualizer. 
 
 # Because it takes multiple command to successfully switch
 # between views, this macro file requires some external
@@ -94,23 +94,22 @@
 # GPS (General Particle Source) commands can be overridden from within
 # the display.
 
-# The particle: Crab Nebula power-law spectrum
-/gps/particle gamma
-/gps/ene/type Pow 
-/gps/ene/min 1 MeV
-/gps/ene/max 10 MeV
-/gps/ene/alpha -2.17
+# Initially, Crab Nebula power-law spectrum
+/control/execute mac/energy-crab.mac
 
-/gps/pos/type Plane
-/gps/pos/shape Square
-/gps/pos/centre 2 0 2 m
-/gps/pos/halfx 0.7 m
-/gps/pos/halfy 0.7 m
+# Initially, from above. 
+/control/execute mac/plane-vertical.mac
 
-# Now rotate the Plane source to a 45-degree angle in x-z,
-# still oriented to face the detector. 
-/gps/ang/rot1 0.707 0 -0.707
-/gps/direction -0.707 0 -0.707
+/gui/addMenu source Source
+/gui/addButton source "Direction: Vertical" "/control/execute mac/plane-vertical.mac"
+/gui/addButton source "Direction: 45 degrees" "/control/execute mac/plane-45.mac"
+/gui/addButton source "Energy: Crab Nebula power-law" "/control/execute mac/energy-crab.mac"
+/gui/addButton source "Energy: 0.25 MeV gamma" "/control/execute mac/energy-mono-0.25MeV.mac"
+/gui/addButton source "Energy: 0.5 MeV gamma" "/control/execute mac/energy-mono-0.5MeV.mac"
+/gui/addButton source "Energy: 1 MeV gamma" "/control/execute mac/energy-mono-1MeV.mac"
+/gui/addButton source "Energy: 2 MeV gamma" "/control/execute mac/energy-mono-2MeV.mac"
+/gui/addButton source "Energy: 4 MeV gamma" "/control/execute mac/energy-mono-4MeV.mac"
+/gui/addButton source "Energy: 8 MeV gamma" "/control/execute mac/energy-mono-8MeV.mac"
 
 # Show what's going on
 /gps/verbose 1

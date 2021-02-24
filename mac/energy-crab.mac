@@ -1,0 +1,6 @@
+# photons with a Crab Nebula power-law spectrum
+/gps/particle gamma
+/gps/ene/type Pow 
+/gps/ene/min 1 MeV
+/gps/ene/max 10 MeV
+/gps/ene/alpha -2.17
