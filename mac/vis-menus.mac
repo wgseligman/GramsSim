@@ -74,16 +74,12 @@
 #/vis/viewer/flush
 #
 # 11-May-2020 WGS: Let the view match the coordinate system of GRAMS
-/vis/viewer/set/viewpointVector 0.92455 -0.358368 -0.129536
-/vis/viewer/set/targetPoint 0 0 -10 cm 
-/vis/viewer/set/upVector 0 0 1
-/vis/viewer/set/projection orthogonal
-/vis/viewer/zoomTo 1.48517
-/vis/viewer/scaleTo 1 1 1
+/control/execute mac/wide-view.mac
 
 # 23-Feb-2020 WGS: A menu to quickly switch views
 /gui/addMenu views Views
 /gui/addButton views "Draw Axes" "/control/execute mac/draw-axes.mac"
+/gui/addButton views "Wide view" "/control/execute mac/wide-view.mac"
 /gui/addButton views "Angle" "/control/execute mac/angle-view.mac"
 /gui/addButton views "X-view" "/control/execute mac/x-view.mac"
 /gui/addButton views "Y-view" "/control/execute mac/y-view.mac"

@@ -746,13 +746,13 @@ Source for the mistakes and stupid jokes: William Seligman (WGS) seligman@nevis.
     <volume name="volPTFEGroupSheet">
       <materialref ref="PTFE"/>
       <solidref ref="PTFEGroupSheet"/>
-      <auxiliary auxtype="Color" auxvalue="yellow" />
+      <auxiliary auxtype="Color" auxvalue="none" />
     </volume>
 
     <volume name="volPTFESheet">
       <materialref ref="PTFE"/>
       <solidref ref="PTFESheet"/>
-      <auxiliary auxtype="Color" auxvalue="yellow" />
+      <auxiliary auxtype="Color" auxvalue="none" />
     </volume>
 
     <!-- 8-May-2020 WGS: As a first approximation, let's assume that
