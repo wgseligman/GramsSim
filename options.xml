@@ -43,7 +43,7 @@
     interactive graphical mode. It will then execute the contents
     of the Geant4 macro file specified by option 'uimacrofile' -->
     <option name="ui" value="false" type="boolean" desc="start UI session"/>
-    <option name="uimacrofile" value="mac/vis.mac" type="string" desc="G4 macro file for UI"/>
+    <option name="uimacrofile" value="mac/vis-menus.mac" type="string" desc="G4 macro file for UI"/>
 
     <!-- The name of an input file containing events from some external
     event generator.. If this option is present, this file will override
