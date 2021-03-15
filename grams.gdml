@@ -48,8 +48,14 @@ With all that said, here is the Identifier scheme as of 10-Mar-2021:
 
 An Identifier is an integer of the form TZZYYXX where
 
-T: 0 for LAr TPC
-   1 for Scintillator strips
+T: 1 for LAr TPC
+   2 for Scintillator strips
+   3 for inside one of the sheets that optically separate cells
+   4 for the wires
+   5 for the SIPMs
+   6 for the cathode plate
+   7 for any bits of LAr not covered by the above
+   8 for the cryostat walls
     
 ZZ: 
 
@@ -89,10 +95,20 @@ YYXX:
     For the scintillator strips, this is the index of the scintillator
     strips within its wall (considering YYXX as a four-digit number).
 
-    
-Examples: 0000309 is in the LArTPC, the 4th cell along y, the 10th cell
-along x. 1120005 is in the low-y outer scintillator wall, the 6th strip
+For  now, there are no individual identifiers for the wires or the
+separators. 
+
+Examples: 1000309 is in the LArTPC, the 4th cell along y, the 10th cell
+along x. 2120005 is in the low-y outer scintillator wall, the 6th strip
 along that wall.  
+
+Note that we want avoid a potential Identifier (copynumber) of zero, because
+that is the default Geant4 will assign to a volume if we don't supply
+a copynumber attribute; e.g., the volume is not sensitive. 
+
+I only assigned Identifiers for detector elements that are sensitive, that are 
+embedded in the LAr but are not instrumented, or that might be a signficant
+source of interactions (e.g., the cryostat walls.)
 
 -->
 
@@ -809,7 +825,7 @@ along that wall.
       <materialref ref="LAr"/>
       <solidref ref="TPCWirePlane"/>
       <loop for="xWireLoopIndex" to="numberXWires - 1" step="1">
-        <physvol copynumber="xWireLoopIndex">
+        <physvol copynumber="4000000">
             <volumeref ref="volTPCXWire"/>
             <position name="posXwire" unit="cm" x="0" y="(-((numberXWires - 1) / 2) + xWireLoopIndex)*wireSpacing" z="0"/>
             <rotationref ref="rPlus90AboutY"/>
@@ -822,7 +838,7 @@ along that wall.
       <materialref ref="LAr"/>
       <solidref ref="TPCWirePlane"/>
       <loop for="yWireLoopIndex" to="numberYWires - 1" step="1">
-        <physvol copynumber="yWireLoopIndex">
+        <physvol copynumber="4000000">
             <volumeref ref="volTPCYWire"/>
             <position name="posYwire" unit="cm" x="(-((numberYWires - 1) / 2) + yWireLoopIndex)*wireSpacing" y="0" z="0"/>
             <rotationref ref="rPlus90AboutX"/>
@@ -864,28 +880,6 @@ along that wall.
       <solidref ref="CathodePlate"/>
       <auxiliary auxtype="Color" auxvalue="red" />
     </volume>
-    
-    <!-- The group of active TPC cells along y. -->
-    <volume name="volCellGroup">
-      <materialref ref="LAr"/>
-      <solidref ref="CellGroup"/>
-      <auxiliary auxtype="Color" auxvalue="none" />
-      <!-- 8-May-2020 WGS: For each active cell, we have to place a volume representing that
-      cell, and the seperator sheet that separates the cells -->
-      <loop for="sepIndexY" from="0" to="numberSepSheetsY - 1" step="1">
-        <physvol copynumber="sepIndexY">
-            <volumeref ref="volSeperatorSheet"/>
-            <position name="posSeperatorSheet" unit="cm" x="0" y="-(cellGroupYSize/2) + activeCellYSize + sepYSize/2 + sepIndexY*(activeCellYSize + sepYSize)" z="0"/>
-        </physvol>
-      </loop> <!-- over y-sheets -->
-      
-      <loop for="activeCellIndexY" from="0" to="numberActiveCellsY - 1" step="1">
-        <physvol copynumber="zlayerIndex*10000 + activeCellIndexY*100">
-            <volumeref ref="volTPCActive"/>
-            <position name="posTPCActive" unit="cm" x="0" y="-(cellGroupYSize/2) + activeCellYSize/2 + activeCellIndexY*(activeCellYSize + sepYSize)" z="0"/>
-        </physvol>
-       </loop> <!-- over y-cells -->  
-    </volume>
 
     <!-- LArTPC definition -->
     <volume name="volTPC">
@@ -893,7 +887,7 @@ along that wall.
       <solidref ref="TPC"/>
       
       <!-- 8-May-2020 WGS: Where will the cathode plate be? I don't know. Make a guess. -->
-      <physvol>
+      <physvol copynumber="6000000">
         <volumeref ref="volCathodePlate"/>
         <position name="posCathod" unit="cm" x="0" y="0" z="-(lArTPCZSize/2) + 2*cathodeThickness" />
       </physvol>
@@ -908,22 +902,40 @@ along that wall.
         <volumeref ref="volTPCYPlane"/>
         <position name="posYplane" unit="cm" x="0" y="0" z="(lArTPCZSize/2) - (wirePlaneThickness*3/2) - sipmThickness"/>
       </physvol>
-
-      <!-- 16-Jul-2020 WGS: Place cell groups along x. -->
       
       <!-- Place the separator sheets that go along the entire y-length of the TPC area. -->
       <loop for="sepIndexX" from="0" to="numberSepSheetsX - 1" step="1">
-        <physvol copynumber="sepIndexX">
+        <physvol copynumber="3000000">
             <volumeref ref="volSeperatorGroupSheet"/>
             <position name="posSeperatorGroupSheet" unit="cm" x="-(cellGroupXRegion/2) + cellGroupXSize + sepGroupXSize/2 + sepIndexX*(cellGroupXSize + sepGroupXSize)" y="0" z="0"/>
         </physvol>
       </loop> <!-- over sheets in x -->
-      
+
+      <!-- 15-Mar-2021 WGS: Place TPC cells in x and y. -->
+
       <loop for="activeCellIndexX" from="0" to="numberActiveCellsX - 1" step="1">
-        <physvol copynumber="zlayerIndex*10000 + activeCellIndexX">
-            <volumeref ref="volCellGroup"/>
-            <position name="posCellGroup" unit="cm" x="-(cellGroupXRegion/2) + cellGroupXSize/2 + activeCellIndexX*(cellGroupXSize + sepGroupXSize)" y="0" z="0"/>
-        </physvol>
+
+      <!-- 8-May-2020 WGS: For each active cell, we have to place a volume representing that
+      cell, and the seperator sheet that separates the cells. This gets a bit tricky, since
+      the arrangement is cell / sheet / cell / sheet ... cell / sheet / cell; that is,
+      there's one fewer sheet along along x than there are cells.  -->
+      
+        <!-- First, place the separator sheets that go along x. -->
+        <loop for="sepIndexY" from="0" to="numberSepSheetsY - 1" step="1">
+          <physvol copynumber="3000000">
+              <volumeref ref="volSeperatorSheet"/>
+              <position name="posSeperatorSheet" unit="cm" x="-(cellGroupXRegion/2) + cellGroupXSize/2 + activeCellIndexX*(cellGroupXSize + sepGroupXSize)" y="-(cellGroupYSize/2) + activeCellYSize + sepYSize/2 + sepIndexY*(activeCellYSize + sepYSize)" z="0"/>
+          </physvol>
+        </loop> <!-- over y-sheets -->
+      
+        <!--  Now place the active TPC cells -->
+        <loop for="activeCellIndexY" from="0" to="numberActiveCellsY - 1" step="1">
+          <physvol copynumber="1000000 + zlayerIndex*10000 + activeCellIndexY*100 + activeCellIndexX">
+              <volumeref ref="volTPCActive"/>
+              <position name="posTPCActive" unit="cm" x="-(cellGroupXRegion/2) + cellGroupXSize/2 + activeCellIndexX*(cellGroupXSize + sepGroupXSize)" y="-(cellGroupYSize/2) + activeCellYSize/2 + activeCellIndexY*(activeCellYSize + sepYSize)" z="0"/>
+          </physvol>
+        </loop> <!-- over y-cells -->  
+
       </loop> <!-- over x-cells -->
 
       <!-- 17-Jul-2020 WGS: Where are the SIPMs? How will they be mounted? I don't know.
@@ -931,7 +943,7 @@ along that wall.
       positions be identical relative to each cell. -->
       <loop for="activeCellIndexY" from="0" to="numberActiveCellsY - 1" step="1">
         <loop for="activeCellIndexX" from="0" to="numberActiveCellsX - 1" step="1">
-            <physvol copynumber="activeCellIndexY * 100 + activeCellIndexX">
+            <physvol copynumber="5000000>
                 <volumeref ref="volSIPM"/>
                 <position name="posSIPM" unit="cm" x="-(cellGroupXRegion/2) + cellGroupXSize/2 + activeCellIndexX*(cellGroupXSize + sepGroupXSize)" y="-(cellGroupYSize/2) + activeCellYSize/2 + activeCellIndexY*(activeCellYSize + sepYSize)" z="(lArTPCZSize/2) - (sipmThickness)/2"/>
             </physvol>
@@ -947,7 +959,7 @@ along that wall.
     <volume name="volCryostat">
       <materialref ref="STEEL_STAINLESS_Fe7Cr2Ni"/>
       <solidref ref="Cryostat"/>
-      <physvol>
+      <physvol copynumber="7000000">
         <volumeref ref="volTPC" />
         <positionref ref="posCenter" />
       </physvol>     
@@ -989,7 +1001,7 @@ along that wall.
       <materialref ref="Air"/>
       <solidref ref="InnerZwall"/>
       <loop for="indexInnerZwallXstrips" to="numberInnerZwallXstrips - 1" step="1">
-        <physvol copynumber="1050000 + indexInnerZwallXstrips">
+        <physvol copynumber="2050000 + indexInnerZwallXstrips">
             <volumeref ref="volInnerZwallXstrip"/>
             <position name="InnerHighZwallXstrip" unit="cm" x="0" y="-InnerZwallYSize/2 + scintillatorWidth/2 + indexInnerZwallXstrips*scintillatorWidth" z="0"/>
         </physvol>
@@ -1001,7 +1013,7 @@ along that wall.
       <materialref ref="Air"/>
       <solidref ref="InnerYwall"/>
       <loop for="indexInnerYwallXstrips" to="numberInnerYwallXstrips - 1" step="1">
-        <physvol copynumber="1030000 + indexInnerYwallXstrips">
+        <physvol copynumber="2030000 + indexInnerYwallXstrips">
             <volumeref ref="volInnerYwallXstrip"/>
             <position name="InnerHighYwallXstrip" unit="cm" x="0" y="0" z="-InnerYwallZSize/2 + scintillatorWidth/2 + indexInnerYwallXstrips*scintillatorWidth"/>
         </physvol>
@@ -1013,7 +1025,7 @@ along that wall.
       <materialref ref="Air"/>
       <solidref ref="InnerXwall"/>
       <loop for="indexInnerXwallZstrips" to="numberInnerXwallZstrips - 1" step="1">
-        <physvol copynumber="1010000 + indexInnerXwallZstrips">
+        <physvol copynumber="2010000 + indexInnerXwallZstrips">
             <volumeref ref="volInnerXwallZstrip"/>
             <position name="InnerHighXwallZstrip" unit="cm" x="0" y="-InnerXwallYSize/2 + scintillatorWidth/2 + indexInnerXwallZstrips*scintillatorWidth" z="0"/>
         </physvol>
@@ -1025,7 +1037,7 @@ along that wall.
       <materialref ref="Air"/>
       <solidref ref="InnerZwall"/>
       <loop for="indexInnerZwallXstrips" to="numberInnerZwallXstrips - 1" step="1">
-        <physvol copynumber="1040000 + indexInnerZwallXstrips">
+        <physvol copynumber="2040000 + indexInnerZwallXstrips">
             <volumeref ref="volInnerZwallXstrip"/>
             <position name="InnerLowZwallXstrip" unit="cm" x="0" y="-InnerZwallYSize/2 + scintillatorWidth/2 + indexInnerZwallXstrips*scintillatorWidth" z="0"/>
         </physvol>
@@ -1037,7 +1049,7 @@ along that wall.
       <materialref ref="Air"/>
       <solidref ref="InnerYwall"/>
       <loop for="indexInnerYwallXstrips" to="numberInnerYwallXstrips - 1" step="1">
-        <physvol copynumber="1020000 + indexInnerYwallXstrips">
+        <physvol copynumber="2020000 + indexInnerYwallXstrips">
             <volumeref ref="volInnerYwallXstrip"/>
             <position name="InnerLowYwallXstrip" unit="cm" x="0" y="0" z="-InnerYwallZSize/2 + scintillatorWidth/2 + indexInnerYwallXstrips*scintillatorWidth"/>
         </physvol>
@@ -1049,7 +1061,7 @@ along that wall.
       <materialref ref="Air"/>
       <solidref ref="InnerXwall"/>
       <loop for="indexInnerXwallZstrips" to="numberInnerXwallZstrips - 1" step="1">
-        <physvol copynumber="1000000 + indexInnerXwallZstrips">
+        <physvol copynumber="2000000 + indexInnerXwallZstrips">
             <volumeref ref="volInnerXwallZstrip"/>
             <position name="InnerLowXwallZstrip" unit="cm" x="0" y="-InnerXwallYSize/2 + scintillatorWidth/2 + indexInnerXwallZstrips*scintillatorWidth" z="0"/>
         </physvol>
@@ -1090,7 +1102,7 @@ along that wall.
       </physvol>
 
       <!-- 10-May-2020 WGS: The cryostat -->
-      <physvol>
+      <physvol copynumber="8000000">
         <volumeref ref="volCryostat" />
         <positionref ref="posCenter" />
       </physvol>
@@ -1137,7 +1149,7 @@ along that wall.
       <materialref ref="Air"/>
       <solidref ref="OuterZwall"/>
       <loop for="indexOuterZwallXstrips" to="numberOuterZwallXstrips - 1" step="1">
-        <physvol copynumber="1150000 + indexOuterZwallXstrips">
+        <physvol copynumber="2150000 + indexOuterZwallXstrips">
             <volumeref ref="volOuterZwallXstrip"/>
             <position name="OuterHighZwallXstrip" unit="cm" x="0" y="-outerZwallYSize/2 + scintillatorWidth/2 + indexOuterZwallXstrips*scintillatorWidth" z="0"/>
         </physvol>
@@ -1149,7 +1161,7 @@ along that wall.
       <materialref ref="Air"/>
       <solidref ref="OuterYwall"/>
       <loop for="indexOuterYwallXstrips" to="numberOuterYwallXstrips - 1" step="1">
-        <physvol copynumber="1130000 + indexOuterYwallXstrips">
+        <physvol copynumber="2130000 + indexOuterYwallXstrips">
             <volumeref ref="volOuterYwallXstrip"/>
             <position name="OuterHighYwallXstrip" unit="cm" x="0" y="0" z="-outerYwallZSize/2 + scintillatorWidth/2 + indexOuterYwallXstrips*scintillatorWidth"/>
         </physvol>
@@ -1161,7 +1173,7 @@ along that wall.
       <materialref ref="Air"/>
       <solidref ref="OuterXwall"/>
       <loop for="indexOuterXwallZstrips" to="numberOuterXwallZstrips - 1" step="1">
-        <physvol copynumber="1110000 + indexOuterXwallZstrips">
+        <physvol copynumber="2110000 + indexOuterXwallZstrips">
             <volumeref ref="volOuterXwallZstrip"/>
             <position name="OuterHighXwallZstrip" unit="cm" x="0" y="-outerXwallYSize/2 + scintillatorWidth/2 + indexOuterXwallZstrips*scintillatorWidth" z="0"/>
         </physvol>
@@ -1173,7 +1185,7 @@ along that wall.
       <materialref ref="Air"/>
       <solidref ref="OuterZwall"/>
       <loop for="indexOuterZwallXstrips" to="numberOuterZwallXstrips - 1" step="1">
-        <physvol copynumber="1140000 + indexOuterZwallXstrips">
+        <physvol copynumber="2140000 + indexOuterZwallXstrips">
             <volumeref ref="volOuterZwallXstrip"/>
             <position name="OuterLowZwallXstrip" unit="cm" x="0" y="-outerZwallYSize/2 + scintillatorWidth/2 + indexOuterZwallXstrips*scintillatorWidth" z="0"/>
         </physvol>
@@ -1185,7 +1197,7 @@ along that wall.
       <materialref ref="Air"/>
       <solidref ref="OuterYwall"/>
       <loop for="indexOuterYwallXstrips" to="numberOuterYwallXstrips - 1" step="1">
-        <physvol copynumber="1120000 + indexOuterYwallXstrips">
+        <physvol copynumber="2120000 + indexOuterYwallXstrips">
             <volumeref ref="volOuterYwallXstrip"/>
             <position name="OuterLowYwallXstrip" unit="cm" x="0" y="0" z="-outerYwallZSize/2 + scintillatorWidth/2 + indexOuterYwallXstrips*scintillatorWidth"/>
         </physvol>
@@ -1197,7 +1209,7 @@ along that wall.
       <materialref ref="Air"/>
       <solidref ref="OuterXwall"/>
       <loop for="indexOuterXwallZstrips" to="numberOuterXwallZstrips - 1" step="1">
-        <physvol copynumber="1100000 + indexOuterXwallZstrips">
+        <physvol copynumber="2100000 + indexOuterXwallZstrips">
             <volumeref ref="volOuterXwallZstrip"/>
             <position name="OuterLowXwallZstrip" unit="cm" x="0" y="-outerXwallYSize/2 + scintillatorWidth/2 + indexOuterXwallZstrips*scintillatorWidth" z="0"/>
         </physvol>
