@@ -943,7 +943,7 @@ source of interactions (e.g., the cryostat walls.)
       positions be identical relative to each cell. -->
       <loop for="activeCellIndexY" from="0" to="numberActiveCellsY - 1" step="1">
         <loop for="activeCellIndexX" from="0" to="numberActiveCellsX - 1" step="1">
-            <physvol copynumber="5000000>
+            <physvol copynumber="5000000">
                 <volumeref ref="volSIPM"/>
                 <position name="posSIPM" unit="cm" x="-(cellGroupXRegion/2) + cellGroupXSize/2 + activeCellIndexX*(cellGroupXSize + sepGroupXSize)" y="-(cellGroupYSize/2) + activeCellYSize/2 + activeCellIndexY*(activeCellYSize + sepYSize)" z="(lArTPCZSize/2) - (sipmThickness)/2"/>
             </physvol>
