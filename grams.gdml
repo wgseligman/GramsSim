@@ -858,13 +858,13 @@ source of interactions (e.g., the cryostat walls.)
     <volume name="volSeperatorGroupSheet">
       <materialref ref="PTFE"/>
       <solidref ref="SeperatorGroupSheet"/>
-      <auxiliary auxtype="Color" auxvalue="none" />
+      <auxiliary auxtype="Color" auxvalue="yellow" />
     </volume>
 
     <volume name="volSeperatorSheet">
       <materialref ref="PTFE"/>
       <solidref ref="SeperatorSheet"/>
-      <auxiliary auxtype="Color" auxvalue="none" />
+      <auxiliary auxtype="Color" auxvalue="yellow" />
     </volume>
 
     <!-- 8-May-2020 WGS: As a first approximation, let's assume that
@@ -930,7 +930,7 @@ source of interactions (e.g., the cryostat walls.)
       
         <!--  Now place the active TPC cells -->
         <loop for="activeCellIndexY" from="0" to="numberActiveCellsY - 1" step="1">
-          <physvol copynumber="1000000">
+          <physvol copynumber="1000000 + (zlayerIndex*10000)">
 <!--          <physvol copynumber="1000000 + (zlayerIndex*10000) + (activeCellIndexY*100) + activeCellIndexX"> -->
               <volumeref ref="volTPCActive"/>
               <position name="posTPCActive" unit="cm" x="-(cellGroupXRegion/2) + cellGroupXSize/2 + activeCellIndexX*(cellGroupXSize + sepGroupXSize)" y="-(cellGroupYSize/2) + activeCellYSize/2 + activeCellIndexY*(activeCellYSize + sepYSize)" z="0"/>
