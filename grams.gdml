@@ -15,7 +15,100 @@ a potential joke. Do NOT treat it as a black box whose contents cannot
 be changed!
 
 Source for all the serious stuff: the GRAMS paper arXiv:1901.03430v3
-Source for the mistakes and stupid jokes: William Seligman (WGS) seligman@nevis.columbia.edu
+Source for the mistakes and stupid jokes: William Seligman (WGS) <seligman>
+of <nevis.columbia.edu>
+
+10-Mar-2021 WGS:
+
+What is an Identifier?
+
+This is a concept: Assign each sensitive element in the detector with a unique
+ID of some sort. I'm using the word "Identifier" to describe this idea, because
+that's the term that ATLAS uses. 
+
+Geant4 can assign ID numbers to physical volumes using a "copy number". In 
+GDML, this parameter is assigned to be non-zero via the copynumber attribute. 
+So as you go through the statements below, copynumber is equivalent to an
+Identifier. 
+
+The reason I use the term "Identifier" and not just "copy number" is that I
+anticipate this ID will be used outside of Geant4, as we start to write 
+additional programs to analyze the results of the simulation. 
+
+Also note that my assignments are _not_ meant to be permanent. In particular,
+as the data-acquisition system is being developed, it's likely that we'd want
+to change the Identifiers to match the assignments of the DAQ hardware.
+
+Within Geant4 and potentially other programs, there is a separate class
+to encapsulate the contents of the Identifier: utils::GramsG4Identifier.
+If the following scheme is changed, then both this GDML file and
+GramsG4Identifier have to be revised with the new assignments. 
+
+With all that said, here is the Identifier scheme as of 10-Mar-2021:
+
+An Identifier is an integer of the form TZZYYXX where
+
+T: 1 for LAr TPC
+   2 for Scintillator strips
+   3 for inside one of the sheets that optically separate cells
+   4 for the wires
+   5 for the SIPMs
+   6 for the cathode plate
+   7 for any bits of LAr not covered by the above
+   8 for the cryostat walls
+    
+ZZ: 
+
+    For LAr TPC, this is the index of the z-layer of the cells
+    within the TPC, starting with 0, increasing with increasing z.
+    (As of Mar-2021, there's only a single layer of cells in the TPC.)
+
+    For the scintillator strips, this refers to the walls of the outer
+    and inner scintillator detectors:
+    
+    0 = inner scintillator low x
+    1 = inner scintillator high x 
+    2 = inner scintillator low y
+    3 = inner scintillator high y 
+    4 = inner scintillator low z
+    5 = inner scintillator high z 
+
+    10 = outer scintillator low x
+    11 = outer scintillator high x 
+    12 = outer scintillator low y
+    13 = outer scintillator high y 
+    14 = outer scintillator low z
+    15 = outer scintillator high z 
+    
+YY:
+
+    For the LAr TPC, this is the index of the cell in y, starting at 0,
+    increasing along the y-axis.
+    
+XX:
+
+    For the LAr TPC, this is the index of the cell in x, starting at 0,
+    increasing along the x-axis.
+    
+YYXX:
+   
+    For the scintillator strips, this is the index of the scintillator
+    strips within its wall (considering YYXX as a four-digit number).
+
+For  now, there are no individual identifiers for the wires or the
+separators. 
+
+Examples: 1000309 is in the LArTPC, the 4th cell along y, the 10th cell
+along x. 2120005 is in the low-y outer scintillator wall, the 6th strip
+along that wall.  
+
+Note that we want avoid a potential Identifier (copynumber) of zero, because
+that is the default Geant4 will assign to a volume if we don't supply
+a copynumber attribute; e.g., the volume is not sensitive. 
+
+I only assigned Identifiers for detector elements that are sensitive, that are 
+embedded in the LAr but are not instrumented, or that might be a signficant
+source of interactions (e.g., the cryostat walls.)
 
 -->
 
@@ -43,7 +136,9 @@ Source for the mistakes and stupid jokes: William Seligman (WGS) seligman@nevis.
 
     <!-- 5-May-2020 WGS: For all I know the cryostat will be made of insulating foam.
     With no other information, I'm assuming a steel cryostat of 1cm thickness. -->
-    <constant name="cryostatThickness" value="1.0" />
+    <!-- 10-Mar-2021 WGS: Following a suggestion by GK, reduce the cryostat thickness
+    to 0.5cm -->
+    <constant name="cryostatThickness" value="0.5" />
     <constant name="cryostatXSize" value="lArTPCXSize + 2*cryostatThickness" />
     <constant name="cryostatYSize" value="lArTPCYSize + 2*cryostatThickness" />
     <constant name="cryostatZSize" value="lArTPCZSize + 2*cryostatThickness" />
@@ -91,20 +186,30 @@ Source for the mistakes and stupid jokes: William Seligman (WGS) seligman@nevis.
     <constant name="cathodeZSize" value="cathodeThickness" />
     
     <!-- 5-May-2020 WGS: How many active cells will there be? I don't know, 
-    so assume 5 PTFE sheets dividing the LAr into 6 cells (the number
+    so assume 5 seperator sheets dividing the LAr into 6 cells (the number
     in the diagrams in arXiv:1901.03430v3). -->
     
     <!-- 16-Jul-2020 WGS: It's not clear from  arXiv:1901.03430v3, but it appears
     that cells are delimited in both x and y. -->
-    <constant name="numberPtfeSheetsY" value="13" />
-    <constant name="numberActiveCellsY" value="numberPtfeSheetsY + 1" />
-    <constant name="numberPtfeSheetsX" value="13" />
-    <constant name="numberActiveCellsX" value="numberPtfeSheetsX + 1" />
+    
+    <!-- 15-Mar-2021 WGS: I should have noted this before: Late last year,
+    the group decided to decrease the cells size to 10cmx10cm, which means
+    there are presently 14 cells in both x and y. -->
+    
+    <!-- 15-Mar-2021 WGS: It's also not clear whether the material that 
+    separates the cells optically will be PTFE or something else. For
+    now, leave the material to be PTFE but call them "Separator sheets"
+    instead of PTFE sheets so that swapping the material will be easier. -->
+    
+    <constant name="numberActiveCellsY" value="14" />
+    <constant name="numberSepSheetsY" value="numberActiveCellsY - 1" />
+    <constant name="numberActiveCellsX" value="14" />
+    <constant name="numberSepSheetsX" value="numberActiveCellsX - 1" />
    
-    <!-- 5-May-2020 WGS: How thick will the PTFE sheets be? I don't know, so 
+    <!-- 5-May-2020 WGS: How thick will the seperator sheets be? I don't know, so 
     assume 1mm. For the sheets' z-size, leave some room for the wires and the 
     cathode plate. -->
-    <constant name="ptfeThickness" value="0.1" />
+    <constant name="sepThickness" value="0.1" />
 
     <!-- 8-May-2020 WGS: How big will the active LAr cell be? I don't know. 
     To make the placement of the sensitive detector cells easier, I'm putting a
@@ -113,32 +218,39 @@ Source for the mistakes and stupid jokes: William Seligman (WGS) seligman@nevis.
    
     <!-- 16-Jul-2020 WGS: Define the groups of cells we'll place along x. -->
     <constant name="cellGroupXRegion" value="lArTPCXSize - 4.0" />
-    <constant name="cellGroupXSize" value="(cellGroupXRegion - numberPtfeSheetsX*ptfeThickness) / numberActiveCellsX" />
+    <constant name="cellGroupXSize" value="(cellGroupXRegion - numberSepSheetsX*sepThickness) / numberActiveCellsX" />
     <constant name="cellGroupYSize" value="lArTPCYSize" />
     <constant name="cellGroupZSize" value="lArTPCZSize - 4.0" />
 
-    <!-- 16-Jul-2020 WGS: The PTFE sheets that separate the cell groups along x. -->
-    <constant name="ptfeGroupXSize" value="ptfeThickness" />
-    <constant name="ptfeGroupYSize" value="cellGroupYSize" />
-    <constant name="ptfeGroupZSize" value="cellGroupZSize" />
+    <!-- 16-Jul-2020 WGS: The sheets that separate the cell groups along x. -->
+    <constant name="sepGroupXSize" value="sepThickness" />
+    <constant name="sepGroupYSize" value="cellGroupYSize" />
+    <constant name="sepGroupZSize" value="cellGroupZSize" />
     
     <!-- 16-Jul-2020 WGS: Within a cell group we'll place the cells. -->
     <constant name="activeCellXSize" value="cellGroupXSize" />
-    <constant name="activeCellYSize" value="(cellGroupYSize - numberPtfeSheetsY*ptfeThickness) / numberActiveCellsY" />
+    <constant name="activeCellYSize" value="(cellGroupYSize - numberSepSheetsY*sepThickness) / numberActiveCellsY" />
     <constant name="activeCellZSize" value="cellGroupZSize" />
     
-    <!-- 16-Jul-2020 WGS: The PTFE sheets that separate the cells along y. -->
-    <constant name="ptfeXSize" value="cellGroupXSize" />
-    <constant name="ptfeYSize" value="ptfeThickness" />
-    <constant name="ptfeZSize" value="cellGroupZSize" />
+    <!-- 16-Jul-2020 WGS: The sheets that separate the cells along y. -->
+    <constant name="sepXSize" value="cellGroupXSize" />
+    <constant name="sepYSize" value="sepThickness" />
+    <constant name="sepZSize" value="cellGroupZSize" />
    
     <!-- 16-Jul-2020 WGS: First we're going to place the cell groups along x within
     the LArTPC. Then we're going to place the active cells within a cell group
     along y. -->
     <variable name="activeCellIndexX" value="0" />
-    <variable name="ptfeIndexX" value="0" />
+    <variable name="sepIndexX" value="0" />
     <variable name="activeCellIndexY" value="0" />
-    <variable name="ptfeIndexY" value="0" />
+    <variable name="sepIndexY" value="0" />
+    
+    <!-- 10-Mar-2021 WGS: As of now, there's just a single z-layer of cells
+    within the TPC. But it's possible that we'll have to need more. Most of the
+    statements below ignore the possibility of multiple z-layers, but since I'm
+    putting in the Identifier code now, I'll include a zLayerIndex which,
+    for now, is always 000. -->
+    <variable name="zLayerIndex" value="0" />
     
     <!-- 5-May-2020 WGS: How big is a SIPM? I don't know. Make a guess. -->
     <constant name="sipmThickness" value="0.1" />
@@ -626,8 +738,8 @@ Source for the mistakes and stupid jokes: William Seligman (WGS) seligman@nevis.
 
     <box lunit="cm" name="CathodePlate" x="cathodeXSize" y="cathodeYSize" z="cathodeZSize" />
     <box lunit="cm" name="TPCWirePlane" x="wirePlaneXSize" y="wirePlaneYSize" z="wirePlaneZSize" />
-    <box lunit="cm" name="PTFEGroupSheet" x="ptfeGroupXSize" y="ptfeGroupYSize" z="ptfeGroupZSize" />
-    <box lunit="cm" name="PTFESheet" x="ptfeXSize" y="ptfeYSize" z="ptfeZSize" />
+    <box lunit="cm" name="SeperatorGroupSheet" x="sepGroupXSize" y="sepGroupYSize" z="sepGroupZSize" />
+    <box lunit="cm" name="SeperatorSheet" x="sepXSize" y="sepYSize" z="sepZSize" />
     <box lunit="cm" name="CellGroup" x="cellGroupXSize" y="cellGroupYSize" z="cellGroupZSize" />
     <box lunit="cm" name="ActiveCell" x="activeCellXSize" y="activeCellYSize" z="activeCellZSize" />
     <box lunit="cm" name="SIPM" x="sipmXSize" y="sipmYSize" z="sipmZSize" />
@@ -664,7 +776,7 @@ Source for the mistakes and stupid jokes: William Seligman (WGS) seligman@nevis.
   <!-- 13-May-2020 WGS: The following tag will associate a Geant4 sensitive detector named
   "LArSD" (for example) to a given volume. Note that this does not create the code for "LArSD" 
   out of nowhere (don't get confused with options.xml!); you have to write the code for any
-  sensitive detectors and definie them to Geant4's SDManager.
+  sensitive detectors and define them to Geant4's SDManager.
   
   <auxiliary auxtype="SensDet" auxvalue="LArSD" />
   -->
@@ -713,7 +825,7 @@ Source for the mistakes and stupid jokes: William Seligman (WGS) seligman@nevis.
       <materialref ref="LAr"/>
       <solidref ref="TPCWirePlane"/>
       <loop for="xWireLoopIndex" to="numberXWires - 1" step="1">
-        <physvol copynumber="xWireLoopIndex">
+        <physvol copynumber="4000000">
             <volumeref ref="volTPCXWire"/>
             <position name="posXwire" unit="cm" x="0" y="(-((numberXWires - 1) / 2) + xWireLoopIndex)*wireSpacing" z="0"/>
             <rotationref ref="rPlus90AboutY"/>
@@ -726,7 +838,7 @@ Source for the mistakes and stupid jokes: William Seligman (WGS) seligman@nevis.
       <materialref ref="LAr"/>
       <solidref ref="TPCWirePlane"/>
       <loop for="yWireLoopIndex" to="numberYWires - 1" step="1">
-        <physvol copynumber="yWireLoopIndex">
+        <physvol copynumber="4000000">
             <volumeref ref="volTPCYWire"/>
             <position name="posYwire" unit="cm" x="(-((numberYWires - 1) / 2) + yWireLoopIndex)*wireSpacing" y="0" z="0"/>
             <rotationref ref="rPlus90AboutX"/>
@@ -743,15 +855,15 @@ Source for the mistakes and stupid jokes: William Seligman (WGS) seligman@nevis.
       <auxiliary auxtype="Color" auxvalue="red" />
     </volume>
 
-    <volume name="volPTFEGroupSheet">
+    <volume name="volSeperatorGroupSheet">
       <materialref ref="PTFE"/>
-      <solidref ref="PTFEGroupSheet"/>
+      <solidref ref="SeperatorGroupSheet"/>
       <auxiliary auxtype="Color" auxvalue="none" />
     </volume>
 
-    <volume name="volPTFESheet">
+    <volume name="volSeperatorSheet">
       <materialref ref="PTFE"/>
-      <solidref ref="PTFESheet"/>
+      <solidref ref="SeperatorSheet"/>
       <auxiliary auxtype="Color" auxvalue="none" />
     </volume>
 
@@ -768,28 +880,6 @@ Source for the mistakes and stupid jokes: William Seligman (WGS) seligman@nevis.
       <solidref ref="CathodePlate"/>
       <auxiliary auxtype="Color" auxvalue="red" />
     </volume>
-    
-    <!-- The group of active TPC cells along y. -->
-    <volume name="volCellGroup">
-      <materialref ref="LAr"/>
-      <solidref ref="CellGroup"/>
-      <auxiliary auxtype="Color" auxvalue="none" />
-      <!-- 8-May-2020 WGS: For each active cell, we have to place a volume representing that
-      cell, and the PTFE sheet that separates the cells -->
-      <loop for="ptfeIndexY" from="0" to="numberPtfeSheetsY - 1" step="1">
-        <physvol copynumber="ptfeIndexY">
-            <volumeref ref="volPTFESheet"/>
-            <position name="posPTFESheet" unit="cm" x="0" y="-(cellGroupYSize/2) + activeCellYSize + ptfeYSize/2 + ptfeIndexY*(activeCellYSize + ptfeYSize)" z="0"/>
-        </physvol>
-      </loop>
-      
-      <loop for="activeCellIndexY" from="0" to="numberActiveCellsY - 1" step="1">
-        <physvol copynumber="activeCellIndexY">
-            <volumeref ref="volTPCActive"/>
-            <position name="posTPCActive" unit="cm" x="0" y="-(cellGroupYSize/2) + activeCellYSize/2 + activeCellIndexY*(activeCellYSize + ptfeYSize)" z="0"/>
-        </physvol>
-       </loop>   
-    </volume>
 
     <!-- LArTPC definition -->
     <volume name="volTPC">
@@ -797,7 +887,7 @@ Source for the mistakes and stupid jokes: William Seligman (WGS) seligman@nevis.
       <solidref ref="TPC"/>
       
       <!-- 8-May-2020 WGS: Where will the cathode plate be? I don't know. Make a guess. -->
-      <physvol>
+      <physvol copynumber="6000000">
         <volumeref ref="volCathodePlate"/>
         <position name="posCathod" unit="cm" x="0" y="0" z="-(lArTPCZSize/2) + 2*cathodeThickness" />
       </physvol>
@@ -812,33 +902,53 @@ Source for the mistakes and stupid jokes: William Seligman (WGS) seligman@nevis.
         <volumeref ref="volTPCYPlane"/>
         <position name="posYplane" unit="cm" x="0" y="0" z="(lArTPCZSize/2) - (wirePlaneThickness*3/2) - sipmThickness"/>
       </physvol>
-
-      <!-- 16-Jul-2020 WGS: Place cell groups along x. -->
-      <loop for="ptfeIndexX" from="0" to="numberPtfeSheetsX - 1" step="1">
-        <physvol copynumber="ptfeIndexX">
-            <volumeref ref="volPTFEGroupSheet"/>
-            <position name="posPTFEGroupSheet" unit="cm" x="-(cellGroupXRegion/2) + cellGroupXSize + ptfeGroupXSize/2 + ptfeIndexX*(cellGroupXSize + ptfeGroupXSize)" y="0" z="0"/>
-        </physvol>
-      </loop>
       
-      <loop for="activeCellIndexX" from="0" to="numberActiveCellsX - 1" step="1">
-        <physvol copynumber="activeCellIndexX">
-            <volumeref ref="volCellGroup"/>
-            <position name="posCellGroup" unit="cm" x="-(cellGroupXRegion/2) + cellGroupXSize/2 + activeCellIndexX*(cellGroupXSize + ptfeGroupXSize)" y="0" z="0"/>
+      <!-- Place the separator sheets that go along the entire y-length of the TPC area. -->
+      <loop for="sepIndexX" from="0" to="numberSepSheetsX - 1" step="1">
+        <physvol copynumber="3000000">
+            <volumeref ref="volSeperatorGroupSheet"/>
+            <position name="posSeperatorGroupSheet" unit="cm" x="-(cellGroupXRegion/2) + cellGroupXSize + sepGroupXSize/2 + sepIndexX*(cellGroupXSize + sepGroupXSize)" y="0" z="0"/>
         </physvol>
-      </loop>
+      </loop> <!-- over sheets in x -->
+
+      <!-- 15-Mar-2021 WGS: Place TPC cells in x and y. -->
+
+      <loop for="activeCellIndexX" from="0" to="numberActiveCellsX - 1" step="1">
+
+      <!-- 8-May-2020 WGS: For each active cell, we have to place a volume representing that
+      cell, and the seperator sheet that separates the cells. This gets a bit tricky, since
+      the arrangement is cell / sheet / cell / sheet ... cell / sheet / cell; that is,
+      there's one fewer sheet along along x than there are cells.  -->
+      
+        <!-- First, place the separator sheets that go along x. -->
+        <loop for="sepIndexY" from="0" to="numberSepSheetsY - 1" step="1">
+          <physvol copynumber="3000000">
+              <volumeref ref="volSeperatorSheet"/>
+              <position name="posSeperatorSheet" unit="cm" x="-(cellGroupXRegion/2) + cellGroupXSize/2 + activeCellIndexX*(cellGroupXSize + sepGroupXSize)" y="-(cellGroupYSize/2) + activeCellYSize + sepYSize/2 + sepIndexY*(activeCellYSize + sepYSize)" z="0"/>
+          </physvol>
+        </loop> <!-- over y-sheets -->
+      
+        <!--  Now place the active TPC cells -->
+        <loop for="activeCellIndexY" from="0" to="numberActiveCellsY - 1" step="1">
+          <physvol copynumber="1000000 + zlayerIndex*10000 + activeCellIndexY*100 + activeCellIndexX">
+              <volumeref ref="volTPCActive"/>
+              <position name="posTPCActive" unit="cm" x="-(cellGroupXRegion/2) + cellGroupXSize/2 + activeCellIndexX*(cellGroupXSize + sepGroupXSize)" y="-(cellGroupYSize/2) + activeCellYSize/2 + activeCellIndexY*(activeCellYSize + sepYSize)" z="0"/>
+          </physvol>
+        </loop> <!-- over y-cells -->  
+
+      </loop> <!-- over x-cells -->
 
       <!-- 17-Jul-2020 WGS: Where are the SIPMs? How will they be mounted? I don't know.
       For now, let them magically float just above the wire planes, and let the
       positions be identical relative to each cell. -->
       <loop for="activeCellIndexY" from="0" to="numberActiveCellsY - 1" step="1">
         <loop for="activeCellIndexX" from="0" to="numberActiveCellsX - 1" step="1">
-            <physvol copynumber="activeCellIndexY * 100 + activeCellIndexX">
+            <physvol copynumber="5000000>
                 <volumeref ref="volSIPM"/>
-                <position name="posSIPM" unit="cm" x="-(cellGroupXRegion/2) + cellGroupXSize/2 + activeCellIndexX*(cellGroupXSize + ptfeGroupXSize)" y="-(cellGroupYSize/2) + activeCellYSize/2 + activeCellIndexY*(activeCellYSize + ptfeYSize)" z="(lArTPCZSize/2) - (sipmThickness)/2"/>
+                <position name="posSIPM" unit="cm" x="-(cellGroupXRegion/2) + cellGroupXSize/2 + activeCellIndexX*(cellGroupXSize + sepGroupXSize)" y="-(cellGroupYSize/2) + activeCellYSize/2 + activeCellIndexY*(activeCellYSize + sepYSize)" z="(lArTPCZSize/2) - (sipmThickness)/2"/>
             </physvol>
-        </loop>
-      </loop>
+        </loop> <!-- over x-cells -->
+      </loop> <!-- over y-cells -->
 
       <auxiliary auxtype="Color" auxvalue="magenta" />
     </volume>
@@ -849,7 +959,7 @@ Source for the mistakes and stupid jokes: William Seligman (WGS) seligman@nevis.
     <volume name="volCryostat">
       <materialref ref="STEEL_STAINLESS_Fe7Cr2Ni"/>
       <solidref ref="Cryostat"/>
-      <physvol>
+      <physvol copynumber="7000000">
         <volumeref ref="volTPC" />
         <positionref ref="posCenter" />
       </physvol>     
@@ -882,37 +992,78 @@ Source for the mistakes and stupid jokes: William Seligman (WGS) seligman@nevis.
     <!-- 8-May-2020 WGS: In the same way we placed x and y wires in their volumes, place the scintillator 
     strips in the x, y, and z detector walls. -->
     
-    <volume name="volInnerZwall">
+    <!-- 11-Mar-2021 WGS: In an earlier version of this file, I just defined the high-axis volumes
+    (high-x, high-y, high-z) then defined the low-axis volumes by flipping the high-axis ones. I can't
+    do that anymore, because the identifiers for the high-axis volumes are different from the low-axis
+    volumes. -->
+
+    <volume name="volInnerHighZwall">
       <materialref ref="Air"/>
       <solidref ref="InnerZwall"/>
       <loop for="indexInnerZwallXstrips" to="numberInnerZwallXstrips - 1" step="1">
-        <physvol copynumber="indexInnerZwallXstrips">
+        <physvol copynumber="2050000 + indexInnerZwallXstrips">
             <volumeref ref="volInnerZwallXstrip"/>
-            <position name="posInnerZwallXstrip" unit="cm" x="0" y="-InnerZwallYSize/2 + scintillatorWidth/2 + indexInnerZwallXstrips*scintillatorWidth" z="0"/>
+            <position name="InnerHighZwallXstrip" unit="cm" x="0" y="-InnerZwallYSize/2 + scintillatorWidth/2 + indexInnerZwallXstrips*scintillatorWidth" z="0"/>
         </physvol>
       </loop>
       <auxiliary auxtype="Color" auxvalue="cyan" />
     </volume>
         
-    <volume name="volInnerYwall">
+    <volume name="volInnerHighYwall">
       <materialref ref="Air"/>
       <solidref ref="InnerYwall"/>
       <loop for="indexInnerYwallXstrips" to="numberInnerYwallXstrips - 1" step="1">
-        <physvol copynumber="indexInnerYwallXstrips">
+        <physvol copynumber="2030000 + indexInnerYwallXstrips">
             <volumeref ref="volInnerYwallXstrip"/>
-            <position name="posInnerYwallXstrip" unit="cm" x="0" y="0" z="-InnerYwallZSize/2 + scintillatorWidth/2 + indexInnerYwallXstrips*scintillatorWidth"/>
+            <position name="InnerHighYwallXstrip" unit="cm" x="0" y="0" z="-InnerYwallZSize/2 + scintillatorWidth/2 + indexInnerYwallXstrips*scintillatorWidth"/>
         </physvol>
       </loop>
       <auxiliary auxtype="Color" auxvalue="cyan" />
     </volume>
          
-    <volume name="volInnerXwall">
+    <volume name="volInnerHighXwall">
       <materialref ref="Air"/>
       <solidref ref="InnerXwall"/>
       <loop for="indexInnerXwallZstrips" to="numberInnerXwallZstrips - 1" step="1">
-        <physvol copynumber="indexInnerXwallZstrips">
+        <physvol copynumber="2010000 + indexInnerXwallZstrips">
             <volumeref ref="volInnerXwallZstrip"/>
-            <position name="posInnerXwallZstrip" unit="cm" x="0" y="-InnerXwallYSize/2 + scintillatorWidth/2 + indexInnerXwallZstrips*scintillatorWidth" z="0"/>
+            <position name="InnerHighXwallZstrip" unit="cm" x="0" y="-InnerXwallYSize/2 + scintillatorWidth/2 + indexInnerXwallZstrips*scintillatorWidth" z="0"/>
+        </physvol>
+      </loop>
+      <auxiliary auxtype="Color" auxvalue="cyan" />
+    </volume>
+
+    <volume name="volInnerLowZwall">
+      <materialref ref="Air"/>
+      <solidref ref="InnerZwall"/>
+      <loop for="indexInnerZwallXstrips" to="numberInnerZwallXstrips - 1" step="1">
+        <physvol copynumber="2040000 + indexInnerZwallXstrips">
+            <volumeref ref="volInnerZwallXstrip"/>
+            <position name="InnerLowZwallXstrip" unit="cm" x="0" y="-InnerZwallYSize/2 + scintillatorWidth/2 + indexInnerZwallXstrips*scintillatorWidth" z="0"/>
+        </physvol>
+      </loop>
+      <auxiliary auxtype="Color" auxvalue="cyan" />
+    </volume>
+        
+    <volume name="volInnerLowYwall">
+      <materialref ref="Air"/>
+      <solidref ref="InnerYwall"/>
+      <loop for="indexInnerYwallXstrips" to="numberInnerYwallXstrips - 1" step="1">
+        <physvol copynumber="2020000 + indexInnerYwallXstrips">
+            <volumeref ref="volInnerYwallXstrip"/>
+            <position name="InnerLowYwallXstrip" unit="cm" x="0" y="0" z="-InnerYwallZSize/2 + scintillatorWidth/2 + indexInnerYwallXstrips*scintillatorWidth"/>
+        </physvol>
+      </loop>
+      <auxiliary auxtype="Color" auxvalue="cyan" />
+    </volume>
+         
+    <volume name="volInnerLowXwall">
+      <materialref ref="Air"/>
+      <solidref ref="InnerXwall"/>
+      <loop for="indexInnerXwallZstrips" to="numberInnerXwallZstrips - 1" step="1">
+        <physvol copynumber="2000000 + indexInnerXwallZstrips">
+            <volumeref ref="volInnerXwallZstrip"/>
+            <position name="InnerLowXwallZstrip" unit="cm" x="0" y="-InnerXwallYSize/2 + scintillatorWidth/2 + indexInnerXwallZstrips*scintillatorWidth" z="0"/>
         </physvol>
       </loop>
       <auxiliary auxtype="Color" auxvalue="cyan" />
@@ -924,37 +1075,34 @@ Source for the mistakes and stupid jokes: William Seligman (WGS) seligman@nevis.
       
       <!-- 10-May-2020 WGS: Place the positive-axis walls in the detector. -->
       <physvol>
-        <volumeref ref="volInnerZwall" />
-        <position name="posInnerZwall" unit="cm" x="0" y="0" z="(innerVolumeZSize - InnerZwallZSize)/2" />
+        <volumeref ref="volInnerHighZwall" />
+        <position name="posInnerHighZwall" unit="cm" x="0" y="0" z="(innerVolumeZSize - InnerZwallZSize)/2" />
       </physvol>
       <physvol>
-        <volumeref ref="volInnerYwall" />
-        <position name="posInnerYwall" unit="cm" x="0" y="(innerVolumeYSize - InnerYwallYSize)/2" z="0" />
+        <volumeref ref="volInnerHighYwall" />
+        <position name="posInnerHighYwall" unit="cm" x="0" y="(innerVolumeYSize - InnerYwallYSize)/2" z="0" />
       </physvol>
       <physvol>
-        <volumeref ref="volInnerXwall" />
-        <position name="posInnerXwall" unit="cm" x="(innerVolumeXSize - InnerXwallXSize)/2" y="0" z="0" />
+        <volumeref ref="volInnerHighXwall" />
+        <position name="posInnerHighXwall" unit="cm" x="(innerVolumeXSize - InnerXwallXSize)/2" y="0" z="0" />
       </physvol>
       
-      <!-- 10-May-2020 WGS: Place the negative-axis walls in the detector, rotating each wall by 180 degrees. -->
+      <!-- 10-May-2020 WGS: Place the negative-axis walls in the detector. -->
       <physvol>
-        <volumeref ref="volInnerZwall" />
-        <position name="posInnerZwallm" unit="cm" x="0" y="0" z="-(innerVolumeZSize - InnerZwallZSize)/2" />
-        <rotationref ref="rPlus180AboutZ" />
+        <volumeref ref="volInnerLowZwall" />
+        <position name="negInnerZwall" unit="cm" x="0" y="0" z="-(innerVolumeZSize - InnerZwallZSize)/2" />
       </physvol>
       <physvol>
-        <volumeref ref="volInnerYwall" />
-        <position name="posInnerYwallm" unit="cm" x="0" y="-(innerVolumeYSize - InnerYwallYSize)/2" z="0" />
-       <rotationref ref="rPlus180AboutY" />
+        <volumeref ref="volInnerLowYwall" />
+        <position name="negInnerYwall" unit="cm" x="0" y="-(innerVolumeYSize - InnerYwallYSize)/2" z="0" />
       </physvol>
       <physvol>
-        <volumeref ref="volInnerXwall" />
-        <position name="posInnerXwallm" unit="cm" x="-(innerVolumeXSize - InnerXwallXSize)/2" y="0" z="0" />
-        <rotationref ref="rPlus180AboutX" />
+        <volumeref ref="volInnerLowXwall" />
+        <position name="negInnerXwall" unit="cm" x="-(innerVolumeXSize - InnerXwallXSize)/2" y="0" z="0" />
       </physvol>
 
       <!-- 10-May-2020 WGS: The cryostat -->
-      <physvol>
+      <physvol copynumber="8000000">
         <volumeref ref="volCryostat" />
         <positionref ref="posCenter" />
       </physvol>
@@ -990,39 +1138,80 @@ Source for the mistakes and stupid jokes: William Seligman (WGS) seligman@nevis.
     </volume>
     
     <!-- 8-May-2020 WGS: In the same way we placed x and y wires in their volumes, place the scintillator 
-    strips in the x, y, and z detector walls. -->
+    strips in the x, y, and z detector walls.  -->
     
-    <volume name="volOuterZwall">
+    <!-- 11-Mar-2021 WGS: In an earlier version of this file, I just defined the high-axis volumes
+    (high-x, high-y, high-z) then defined the low-axis volumes by flipping the high-axis ones. I can't
+    do that anymore, because the identifiers for the high-axis volumes are different from the low-axis
+    volumes. -->
+    
+    <volume name="volOuterHighZwall">
       <materialref ref="Air"/>
       <solidref ref="OuterZwall"/>
       <loop for="indexOuterZwallXstrips" to="numberOuterZwallXstrips - 1" step="1">
-        <physvol copynumber="indexOuterZwallXstrips">
+        <physvol copynumber="2150000 + indexOuterZwallXstrips">
             <volumeref ref="volOuterZwallXstrip"/>
-            <position name="posOuterZwallXstrip" unit="cm" x="0" y="-outerZwallYSize/2 + scintillatorWidth/2 + indexOuterZwallXstrips*scintillatorWidth" z="0"/>
+            <position name="OuterHighZwallXstrip" unit="cm" x="0" y="-outerZwallYSize/2 + scintillatorWidth/2 + indexOuterZwallXstrips*scintillatorWidth" z="0"/>
         </physvol>
       </loop>
       <auxiliary auxtype="Color" auxvalue="cyan" />
     </volume>
         
-    <volume name="volOuterYwall">
+    <volume name="volOuterHighYwall">
       <materialref ref="Air"/>
       <solidref ref="OuterYwall"/>
       <loop for="indexOuterYwallXstrips" to="numberOuterYwallXstrips - 1" step="1">
-        <physvol copynumber="indexOuterYwallXstrips">
+        <physvol copynumber="2130000 + indexOuterYwallXstrips">
             <volumeref ref="volOuterYwallXstrip"/>
-            <position name="posOuterYwallXstrip" unit="cm" x="0" y="0" z="-outerYwallZSize/2 + scintillatorWidth/2 + indexOuterYwallXstrips*scintillatorWidth"/>
+            <position name="OuterHighYwallXstrip" unit="cm" x="0" y="0" z="-outerYwallZSize/2 + scintillatorWidth/2 + indexOuterYwallXstrips*scintillatorWidth"/>
         </physvol>
       </loop>
      <auxiliary auxtype="Color" auxvalue="cyan" />
     </volume>
          
-    <volume name="volOuterXwall">
+    <volume name="volOuterHighXwall">
       <materialref ref="Air"/>
       <solidref ref="OuterXwall"/>
       <loop for="indexOuterXwallZstrips" to="numberOuterXwallZstrips - 1" step="1">
-        <physvol copynumber="indexOuterXwallZstrips">
+        <physvol copynumber="2110000 + indexOuterXwallZstrips">
             <volumeref ref="volOuterXwallZstrip"/>
-            <position name="posOuterXwallZstrip" unit="cm" x="0" y="-outerXwallYSize/2 + scintillatorWidth/2 + indexOuterXwallZstrips*scintillatorWidth" z="0"/>
+            <position name="OuterHighXwallZstrip" unit="cm" x="0" y="-outerXwallYSize/2 + scintillatorWidth/2 + indexOuterXwallZstrips*scintillatorWidth" z="0"/>
+        </physvol>
+      </loop>
+     <auxiliary auxtype="Color" auxvalue="cyan" />
+    </volume>
+    
+    <volume name="volOuterLowZwall">
+      <materialref ref="Air"/>
+      <solidref ref="OuterZwall"/>
+      <loop for="indexOuterZwallXstrips" to="numberOuterZwallXstrips - 1" step="1">
+        <physvol copynumber="2140000 + indexOuterZwallXstrips">
+            <volumeref ref="volOuterZwallXstrip"/>
+            <position name="OuterLowZwallXstrip" unit="cm" x="0" y="-outerZwallYSize/2 + scintillatorWidth/2 + indexOuterZwallXstrips*scintillatorWidth" z="0"/>
+        </physvol>
+      </loop>
+      <auxiliary auxtype="Color" auxvalue="cyan" />
+    </volume>
+        
+    <volume name="volOuterLowYwall">
+      <materialref ref="Air"/>
+      <solidref ref="OuterYwall"/>
+      <loop for="indexOuterYwallXstrips" to="numberOuterYwallXstrips - 1" step="1">
+        <physvol copynumber="2120000 + indexOuterYwallXstrips">
+            <volumeref ref="volOuterYwallXstrip"/>
+            <position name="OuterLowYwallXstrip" unit="cm" x="0" y="0" z="-outerYwallZSize/2 + scintillatorWidth/2 + indexOuterYwallXstrips*scintillatorWidth"/>
+        </physvol>
+      </loop>
+     <auxiliary auxtype="Color" auxvalue="cyan" />
+    </volume>
+         
+    <volume name="volOuterLowXwall">
+      <materialref ref="Air"/>
+      <solidref ref="OuterXwall"/>
+      <loop for="indexOuterXwallZstrips" to="numberOuterXwallZstrips - 1" step="1">
+        <physvol copynumber="2100000 + indexOuterXwallZstrips">
+            <volumeref ref="volOuterXwallZstrip"/>
+            <position name="OuterLowXwallZstrip" unit="cm" x="0" y="-outerXwallYSize/2 + scintillatorWidth/2 + indexOuterXwallZstrips*scintillatorWidth" z="0"/>
         </physvol>
       </loop>
      <auxiliary auxtype="Color" auxvalue="cyan" />
@@ -1034,33 +1223,30 @@ Source for the mistakes and stupid jokes: William Seligman (WGS) seligman@nevis.
       
       <!-- 10-May-2020 WGS: Place the positive-axis walls in the detector. -->
       <physvol>
-        <volumeref ref="volOuterZwall" />
-        <position name="posOuterZwall" unit="cm" x="0" y="0" z="(outerVolumeZSize - outerZwallZSize)/2" />
+        <volumeref ref="volOuterHighZwall" />
+        <position name="posOuterHighZwall" unit="cm" x="0" y="0" z="(outerVolumeZSize - outerZwallZSize)/2" />
       </physvol>
       <physvol>
-        <volumeref ref="volOuterYwall" />
-        <position name="posOuterYwall" unit="cm" x="0" y="(outerVolumeYSize - outerYwallYSize)/2" z="0" />
+        <volumeref ref="volOuterHighYwall" />
+        <position name="posOuterHighYwall" unit="cm" x="0" y="(outerVolumeYSize - outerYwallYSize)/2" z="0" />
       </physvol>
       <physvol>
-        <volumeref ref="volOuterXwall" />
-        <position name="posOuterXwall" unit="cm" x="(outerVolumeXSize - outerXwallXSize)/2" y="0" z="0" />
+        <volumeref ref="volOuterHighXwall" />
+        <position name="posOuterHighXwall" unit="cm" x="(outerVolumeXSize - outerXwallXSize)/2" y="0" z="0" />
       </physvol>
       
-      <!-- 10-May-2020 WGS: Place the negative-axis walls in the detector, rotating each wall by 180 degrees. -->
+      <!-- 10-May-2020 WGS: Place the negative-axis walls in the detector. -->
       <physvol>
-        <volumeref ref="volOuterZwall" />
-        <position name="posOuterZwallm" unit="cm" x="0" y="0" z="-(outerVolumeZSize - outerZwallZSize)/2" />
-        <rotationref ref="rPlus180AboutZ" />
+        <volumeref ref="volOuterLowZwall" />
+        <position name="negOuterZwall" unit="cm" x="0" y="0" z="-(outerVolumeZSize - outerZwallZSize)/2" />
       </physvol>
       <physvol>
-        <volumeref ref="volOuterYwall" />
-        <position name="posOuterYwallm" unit="cm" x="0" y="-(outerVolumeYSize - outerYwallYSize)/2" z="0" />
-       <rotationref ref="rPlus180AboutY" />
+        <volumeref ref="volOuterLowYwall" />
+        <position name="negOuterYwall" unit="cm" x="0" y="-(outerVolumeYSize - outerYwallYSize)/2" z="0" />
       </physvol>
       <physvol>
-        <volumeref ref="volOuterXwall" />
-        <position name="posOuterXwallm" unit="cm" x="-(outerVolumeXSize - outerXwallXSize)/2" y="0" z="0" />
-        <rotationref ref="rPlus180AboutX" />
+        <volumeref ref="volOuterLowXwall" />
+        <position name="negOuterXwall" unit="cm" x="-(outerVolumeXSize - outerXwallXSize)/2" y="0" z="0" />
       </physvol>
 
        <!-- 10-May-2020 WGS: The place the inner detector -->
