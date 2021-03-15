@@ -930,7 +930,7 @@ source of interactions (e.g., the cryostat walls.)
       
         <!--  Now place the active TPC cells -->
         <loop for="activeCellIndexY" from="0" to="numberActiveCellsY - 1" step="1">
-          <physvol copynumber="1000000 + zlayerIndex*10000 + activeCellIndexY*100 + activeCellIndexX">
+          <physvol copynumber="1000000 + (zlayerIndex*10000) + (activeCellIndexY*100) + activeCellIndexX">
               <volumeref ref="volTPCActive"/>
               <position name="posTPCActive" unit="cm" x="-(cellGroupXRegion/2) + cellGroupXSize/2 + activeCellIndexX*(cellGroupXSize + sepGroupXSize)" y="-(cellGroupYSize/2) + activeCellYSize/2 + activeCellIndexY*(activeCellYSize + sepYSize)" z="0"/>
           </physvol>
