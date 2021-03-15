@@ -108,22 +108,21 @@ namespace gramsg4 {
     // in a separate std::vector.
 
     // Reminder: G4's units are MeV, mm, ns
-    analysisManager->CreateNtupleIColumn("Run");            // id 0         
-    analysisManager->CreateNtupleIColumn("Event");          // id 1
-    analysisManager->CreateNtupleIColumn("TrackID");        // id 2
-    analysisManager->CreateNtupleIColumn("ParentID");       // id 3
-    analysisManager->CreateNtupleIColumn("PDGCode");        // id 4
-    analysisManager->CreateNtupleSColumn("ProcessName");    // id 5
-    analysisManager->CreateNtupleDColumn("t", m_time);      // id 6
-    analysisManager->CreateNtupleDColumn("x", m_xpos);      // id 7
-    analysisManager->CreateNtupleDColumn("y", m_ypos);      // id 8
-    analysisManager->CreateNtupleDColumn("z", m_zpos);      // id 9
-    analysisManager->CreateNtupleDColumn("Etot", m_energy); // id 10
-    analysisManager->CreateNtupleDColumn("px", m_xmom);     // id 11
-    analysisManager->CreateNtupleDColumn("py", m_ymom);     // id 12
-    analysisManager->CreateNtupleDColumn("pz", m_zmom);     // id 13
-    analysisManager->CreateNtupleSColumn("VolNameStart");   // id 14
-    analysisManager->CreateNtupleSColumn("VolNameEnd");     // id 15
+    analysisManager->CreateNtupleIColumn("Run");                      // id 0         
+    analysisManager->CreateNtupleIColumn("Event");                    // id 1
+    analysisManager->CreateNtupleIColumn("TrackID");                  // id 2
+    analysisManager->CreateNtupleIColumn("ParentID");                 // id 3
+    analysisManager->CreateNtupleIColumn("PDGCode");                  // id 4
+    analysisManager->CreateNtupleSColumn("ProcessName");              // id 5
+    analysisManager->CreateNtupleDColumn("t", m_time);                // id 6
+    analysisManager->CreateNtupleDColumn("x", m_xpos);                // id 7
+    analysisManager->CreateNtupleDColumn("y", m_ypos);                // id 8
+    analysisManager->CreateNtupleDColumn("z", m_zpos);                // id 9
+    analysisManager->CreateNtupleDColumn("Etot", m_energy);           // id 10
+    analysisManager->CreateNtupleDColumn("px", m_xmom);               // id 11
+    analysisManager->CreateNtupleDColumn("py", m_ymom);               // id 12
+    analysisManager->CreateNtupleDColumn("pz", m_zmom);               // id 13
+    analysisManager->CreateNtupleIColumn("identifier", m_identifier); // id 14
 
     if (m_debug) 
 	G4cout << "WriteNtuplesAction::BeginOfRunAction() - "
@@ -278,13 +277,19 @@ namespace gramsg4 {
     analysisManager->FillNtupleIColumn(m_TrackNTID, 3, a_track->GetParentID() );
     analysisManager->FillNtupleIColumn(m_TrackNTID, 4, a_track->GetParticleDefinition()->GetPDGEncoding() );
     analysisManager->FillNtupleSColumn(m_TrackNTID, 5, processName );
-    analysisManager->FillNtupleSColumn(m_TrackNTID,14, a_track->GetVolume()->GetName() );
+
+    if (m_debug) 
+      G4cout << "WriteNtuplesAction::PreTrackingAction - "
+	     << "Starting volume TrackID / Name / Identifier = " 
+	     << a_track->GetTrackID() << " "
+	     << a_track->GetVolume()->GetName() << " "
+	     << a_track->GetVolume()->GetCopyNo() << G4endl;
 
     // Record the starting four-vectors for this track's trajectory.
     AddTrajectoryPoint( a_track );
 }
 
-  void WriteNtuplesAction::PostTrackingAction(const G4Track* a_track) {
+  void WriteNtuplesAction::PostTrackingAction(const G4Track*) {
 
     // Fill in the rest of the n-tuple values for the end of the track.
     auto analysisManager = G4AnalysisManager::Instance();
@@ -292,10 +297,10 @@ namespace gramsg4 {
     // We don't have to explictly "fill" the columns that were defined
     // by std::vectors. The G4 Analysis Manager has stored their
     // addresses and will take care of that for us.
-    analysisManager->FillNtupleSColumn(m_TrackNTID,15, a_track->GetVolume()->GetName() );
 
     if (m_debug) 
       G4cout << "WriteNtuplesAction::PostTrackingAction - Adding row" << G4endl;
+
     analysisManager->AddNtupleRow(m_TrackNTID);  
   }
 
@@ -364,6 +369,13 @@ namespace gramsg4 {
 	return;
     }
 
+    if (m_debug) 
+      G4cout << "WriteNtuplesAction::SteppingAction - "
+	     << "Current volume TrackID / Name / Identifier = " 
+	     << track->GetTrackID() << " "
+	     << track->GetVolume()->GetName() << " "
+	     << track->GetVolume()->GetCopyNo() << G4endl;
+
     AddTrajectoryPoint(track);
   }
 
@@ -377,6 +389,7 @@ namespace gramsg4 {
     m_xmom.clear();
     m_ymom.clear();
     m_zmom.clear();
+    m_identifier.clear();
   }
 
   size_t WriteNtuplesAction::AddTrajectoryPoint( const G4Track* a_track )
@@ -391,6 +404,7 @@ namespace gramsg4 {
     m_xmom.push_back( a_track->GetMomentum().x() );
     m_ymom.push_back( a_track->GetMomentum().y() );
     m_zmom.push_back( a_track->GetMomentum().z() );
+    m_identifier.push_back( a_track->GetVolume()->GetCopyNo() );
 
     // All the std::vectors should be the same size, so pick one and
     // return its size.

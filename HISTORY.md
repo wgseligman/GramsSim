@@ -4,6 +4,10 @@ A description of major development milestones. The most recent are at
 the top. For a detailed list of all changes (basically, every time
 someone typed "git commit"), see the output of "git log".
 
+Mar-2021:
+
+   - Added the concept of "Identifiers"; see grams.gdml for a detailed explanation. 
+
 Feb-2021:
 
    - New files in the `mac/` sub-directory show how to add menus to the Geant4 visualizer. 

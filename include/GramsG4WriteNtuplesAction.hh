@@ -75,6 +75,9 @@ namespace gramsg4 {
     // 4-vectors in an ntuple, much less a vector of four-vectors,
     // so we have to maintain a separate std::vector for each
     // component of the 4-vectors.
+
+    // 15-Mar-2021 WGS: Include the Identifier number for the volumes
+    // in the trajectory; see the GDML file's comments for more.
     std::vector<G4double> m_time;
     std::vector<G4double> m_xpos;
     std::vector<G4double> m_ypos;
@@ -83,6 +86,7 @@ namespace gramsg4 {
     std::vector<G4double> m_xmom;
     std::vector<G4double> m_ymom;
     std::vector<G4double> m_zmom;
+    std::vector<int> m_identifier;
   };
 
 } // namespace gramsg4
