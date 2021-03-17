@@ -38,18 +38,22 @@ namespace gramsg4 {
 
   private:
 
-    // Get the collection of hits from the current event.
-    LArHitsCollection* GetHitsCollection(G4int hcID,
-					 const G4Event* event) const;
+    // Get the collection of hits from the current event. Use
+    // templates to avoid having to write this function for each type
+    // of hit collection that we might want to fetch from a G4Event.
+    template <class HC>
+    HC* GetHitsCollection(G4int hcID,
+			  const G4Event* event) const;
 
-    // Hit collection ID number, assigned by Geant4.
+    // Hit collection ID numbers, assigned by Geant4.
     G4int m_LArHitCollectionID;
+    G4int m_ScintillatorHitCollectionID;
 
     // ID numbers for the n-tuples we'll create. Ntuples are
     // automatically assigned IDs in the order we create them.
     G4int m_LArNTID;
-    G4int m_TrackNTID;
     G4int m_ScintNTID;
+    G4int m_TrackNTID;
     G4int m_optionsNTID;
 
     // Save the debugging state.

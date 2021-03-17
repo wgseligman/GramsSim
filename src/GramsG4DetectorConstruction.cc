@@ -155,8 +155,9 @@ namespace gramsg4 {
     // are recognized by this simulation. 
     G4SDManager* SDman = G4SDManager::GetSDMpointer();
     // Make sure the hit collection name (the second argument) agrees
-    // with the name in GramsG4WriteHitsAction.cc
-    SDman->AddNewDetector( new ScintillatorSD("ScintillatorSD") );
+    // with the name in GramsG4WriteHitsAction.cc and the 
+    // auxiliary tag for the volume in the GDML file. .
+    SDman->AddNewDetector( new ScintillatorSD("ScintillatorSD","ScintillatorHits") );
     SDman->AddNewDetector( new LArSensitiveDetector("LArSensitiveDetector","LArHits") );
 
     // Use the <auxiliary/> tages in the GDML file to assign sensitive

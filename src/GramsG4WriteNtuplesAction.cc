@@ -7,6 +7,7 @@
 
 #include "GramsG4WriteNtuplesAction.hh"
 #include "GramsG4LArHit.hh"
+#include "GramsG4ScintillatorHit.hh"
 
 #include "Options.h" // in util/
 #include "UserAction.h" // in g4util/
@@ -23,6 +24,7 @@ namespace gramsg4 {
   WriteNtuplesAction::WriteNtuplesAction()
     : UserAction()
     , m_LArHitCollectionID(-1)
+    , m_ScintillatorHitCollectionID(-1)
   {}
 
   //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -95,6 +97,22 @@ namespace gramsg4 {
     analysisManager->FinishNtuple();
 
     // Create another ntuple.
+    m_ScintNTID = analysisManager->CreateNtuple("ScintillatorHits", "Scintillator energy deposits");
+    // Column IDs are automatically assigned.
+    // Reminder: G4's units are MeV, mm, ns
+    analysisManager->CreateNtupleIColumn("Run");        // id 0         
+    analysisManager->CreateNtupleIColumn("Event");      // id 1
+    analysisManager->CreateNtupleIColumn("TrackID");    // id 2
+    analysisManager->CreateNtupleIColumn("PDGCode");    // id 3
+    analysisManager->CreateNtupleDColumn("energy");     // id 4
+    analysisManager->CreateNtupleDColumn("time");       // id 5
+    analysisManager->CreateNtupleDColumn("xPos");       // id 6
+    analysisManager->CreateNtupleDColumn("yPos");       // id 7
+    analysisManager->CreateNtupleDColumn("zPos");       // id 8
+    analysisManager->CreateNtupleIColumn("identifier"); // id 9
+    analysisManager->FinishNtuple();
+
+    // Create yet another ntuple.
     m_TrackNTID = analysisManager->CreateNtuple("TrackInfo", "MC truth G4Track information");
     if (m_debug) 
       G4cout << "WriteNtuplesAction::() - "
@@ -225,12 +243,13 @@ namespace gramsg4 {
     }
 
     // Get hits collection
-    auto LArHC = GetHitsCollection(m_LArHitCollectionID, a_event);
+    auto LArHC 
+      = GetHitsCollection<LArHitsCollection>(m_LArHitCollectionID, a_event);
 
     G4int entries = LArHC->entries();
     // For each hit in the collection...
     for ( G4int i = 0; i != entries; ++i ) {
-      auto larHit = (*LArHC)[i];
+      auto hit = (*LArHC)[i];
 
       // Fill a row in the n-tuple.
       if (m_debug) 
@@ -239,20 +258,60 @@ namespace gramsg4 {
 
       analysisManager->FillNtupleIColumn(m_LArNTID, 0, G4RunManager::GetRunManager()->GetCurrentRun()->GetRunID() );
       analysisManager->FillNtupleIColumn(m_LArNTID, 1, a_event->GetEventID() );
-      analysisManager->FillNtupleIColumn(m_LArNTID, 2, larHit->GetTrackID() );
-      analysisManager->FillNtupleIColumn(m_LArNTID, 3, larHit->GetPDGCode() );
-      analysisManager->FillNtupleIColumn(m_LArNTID, 4, larHit->GetNumPhotons() );
-      analysisManager->FillNtupleDColumn(m_LArNTID, 5, larHit->GetEnergy() );
-      analysisManager->FillNtupleDColumn(m_LArNTID, 6, larHit->GetTime() );
-      analysisManager->FillNtupleDColumn(m_LArNTID, 7, (larHit->GetPosition()).x() );
-      analysisManager->FillNtupleDColumn(m_LArNTID, 8, (larHit->GetPosition()).y() );
-      analysisManager->FillNtupleDColumn(m_LArNTID, 9, (larHit->GetPosition()).z() );
-      analysisManager->FillNtupleIColumn(m_LArNTID,10, larHit->GetIdentifier() );
+      analysisManager->FillNtupleIColumn(m_LArNTID, 2, hit->GetTrackID() );
+      analysisManager->FillNtupleIColumn(m_LArNTID, 3, hit->GetPDGCode() );
+      analysisManager->FillNtupleIColumn(m_LArNTID, 4, hit->GetNumPhotons() );
+      analysisManager->FillNtupleDColumn(m_LArNTID, 5, hit->GetEnergy() );
+      analysisManager->FillNtupleDColumn(m_LArNTID, 6, hit->GetTime() );
+      analysisManager->FillNtupleDColumn(m_LArNTID, 7, (hit->GetPosition()).x() );
+      analysisManager->FillNtupleDColumn(m_LArNTID, 8, (hit->GetPosition()).y() );
+      analysisManager->FillNtupleDColumn(m_LArNTID, 9, (hit->GetPosition()).z() );
+      analysisManager->FillNtupleIColumn(m_LArNTID,10, hit->GetIdentifier() );
 
       if (m_debug) 
-	G4cout << "WriteNtuplesAction::EndOfEventAction - Adding row" << G4endl;
+	G4cout << "WriteNtuplesAction::EndOfEventAction - Adding LAr row" << G4endl;
       analysisManager->AddNtupleRow(m_LArNTID);  
     } // For each LArHit
+
+    // *
+    // Do the same thing for the Scintillator hits.
+
+    // Get hits collections IDs (only once)
+    if ( m_ScintillatorHitCollectionID == -1 ) {
+      // Make sure the following collection ID name agrees with that
+      // in GramsG4DetectorConstruction.cc
+      m_ScintillatorHitCollectionID
+	= G4SDManager::GetSDMpointer()->GetCollectionID("ScintillatorHits");
+    }
+
+    // Get hits collection
+    auto ScintillatorHC = 
+      GetHitsCollection<ScintillatorHitsCollection>(m_ScintillatorHitCollectionID, a_event);
+
+    entries = ScintillatorHC->entries();
+    // For each hit in the collection...
+    for ( G4int i = 0; i != entries; ++i ) {
+      auto hit = (*ScintillatorHC)[i];
+
+      // Fill a row in the n-tuple.
+      analysisManager->FillNtupleIColumn(m_ScintNTID, 0, G4RunManager::GetRunManager()->GetCurrentRun()->GetRunID() );
+      analysisManager->FillNtupleIColumn(m_ScintNTID, 1, a_event->GetEventID() );
+      analysisManager->FillNtupleIColumn(m_ScintNTID, 2, hit->GetTrackID() );
+      analysisManager->FillNtupleIColumn(m_ScintNTID, 3, hit->GetPDGCode() );
+      analysisManager->FillNtupleDColumn(m_ScintNTID, 4, hit->GetEnergy() );
+      analysisManager->FillNtupleDColumn(m_ScintNTID, 5, hit->GetTime() );
+      analysisManager->FillNtupleDColumn(m_ScintNTID, 6, (hit->GetPosition()).x() );
+      analysisManager->FillNtupleDColumn(m_ScintNTID, 7, (hit->GetPosition()).y() );
+      analysisManager->FillNtupleDColumn(m_ScintNTID, 8, (hit->GetPosition()).z() );
+      analysisManager->FillNtupleIColumn(m_ScintNTID, 9, hit->GetIdentifier() );
+
+      if (m_debug) {
+	G4cout << "WriteNtuplesAction::EndOfEventAction - ScintID=" 
+	       << hit->GetIdentifier() << G4endl;
+      }
+
+      analysisManager->AddNtupleRow(m_ScintNTID);  
+    } // For each ScintillatorHit
   }
 
   //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -308,15 +367,15 @@ namespace gramsg4 {
 
   //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-  LArHitsCollection* 
-  WriteNtuplesAction::GetHitsCollection(G4int hcID,
-					const G4Event* event) const
+  template <class HC>
+  HC* WriteNtuplesAction::GetHitsCollection(G4int hcID,
+					    const G4Event* event) const
   {
-    // Fetch the appropriate collection of LArHits from the current
-    // event.
+    // Fetch the appropriate collection of hits from the
+    // current event.
     
     auto hitsCollection 
-      = static_cast<LArHitsCollection*>(event->GetHCofThisEvent()->GetHC(hcID));
+      = static_cast<HC*>(event->GetHCofThisEvent()->GetHC(hcID));
     
     if ( ! hitsCollection ) {
       G4ExceptionDescription msg;
