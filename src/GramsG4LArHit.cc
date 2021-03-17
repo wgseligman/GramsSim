@@ -47,6 +47,7 @@ namespace gramsg4 {
     m_energy      = right.m_energy;
     m_time        = right.m_time;
     m_position    = right.m_position;
+    m_identifier  = right.m_identifier;
   }
 
   //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -59,6 +60,7 @@ namespace gramsg4 {
     m_energy      = right.m_energy;
     m_time        = right.m_time;
     m_position    = right.m_position;
+    m_identifier  = right.m_identifier;
 
     return *this;
   }
@@ -108,6 +110,8 @@ namespace gramsg4 {
       << std::setw(7) << G4BestUnit(m_time,"Time")
       << " Position="
       << std::setw(7) << G4BestUnit(m_position,"Length")
+      << " Identifier="
+      << m_identifier
       << G4endl;
   }
 

@@ -41,6 +41,7 @@ namespace gramsg4 {
     void SetEnergy     (G4double de)      { m_energy = de; };
     void SetTime       (G4double t)       { m_time = t; };
     void SetPosition   (G4ThreeVector xyz){ m_position = xyz; };
+    void SetIdentifier (G4int identifier ){ m_identifier = identifier; };
   
     // Get methods
     G4int GetTrackID() const          { return m_trackID; };
@@ -49,6 +50,7 @@ namespace gramsg4 {
     G4double GetEnergy() const        { return m_energy; };
     G4double GetTime() const          { return m_time; };
     G4ThreeVector GetPosition() const { return m_position; };
+    G4int GetIdentifier() const       { return m_identifier; };
   
   private:
   
@@ -58,6 +60,7 @@ namespace gramsg4 {
     G4double      m_energy;     ///< units MeV
     G4double      m_time  ;     ///< units ns
     G4ThreeVector m_position;   ///< units mm
+    G4int         m_identifier; ///< cell ID
   };
 
   //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

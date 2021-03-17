@@ -99,6 +99,7 @@ namespace gramsg4 {
     newHit->SetEnergy(edep);
     newHit->SetTime(time);
     newHit->SetPosition(position);
+    newHit->SetIdentifier(aStep->GetTrack()->GetVolume()->GetCopyNo());
 
     m_hitsCollection->insert( newHit );
 

@@ -86,6 +86,7 @@ namespace gramsg4 {
     analysisManager->CreateNtupleDColumn("xPos");       // id 7
     analysisManager->CreateNtupleDColumn("yPos");       // id 8
     analysisManager->CreateNtupleDColumn("zPos");       // id 9
+    analysisManager->CreateNtupleIColumn("identifier"); // id 10
 
     if (m_debug) 
 	G4cout << "WriteNtuplesAction::BeginOfRunAction() - "
@@ -246,6 +247,7 @@ namespace gramsg4 {
       analysisManager->FillNtupleDColumn(m_LArNTID, 7, (larHit->GetPosition()).x() );
       analysisManager->FillNtupleDColumn(m_LArNTID, 8, (larHit->GetPosition()).y() );
       analysisManager->FillNtupleDColumn(m_LArNTID, 9, (larHit->GetPosition()).z() );
+      analysisManager->FillNtupleIColumn(m_LArNTID,10, larHit->GetIdentifier() );
 
       if (m_debug) 
 	G4cout << "WriteNtuplesAction::EndOfEventAction - Adding row" << G4endl;
