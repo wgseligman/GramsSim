@@ -7,6 +7,7 @@ someone typed "git commit"), see the output of "git log".
 Mar-2021:
 
    - Added the concept of "Identifiers"; see grams.gdml for a detailed explanation. 
+   - Include scintillator hits in the output n-tuple.
 
 Feb-2021:
 

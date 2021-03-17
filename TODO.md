@@ -1,14 +1,13 @@
 # TODO 
 
-As of 08-Feb-2021:
+As of 17-Mar-2021:
 
 - Multi-threaded execution
-   - Understand the effects of multiple threads on ROOT outputs (probably need to upgrade to Geant4 10.6).
+   - Understand the effects of multiple threads on ROOT outputs (probably need to upgrade to Geant4 10.6 or higher).
    - Test the saving and restoring of random-number states.
 
 - Scintillator hits
    - Requires a two-way map of strip geometry to (x,y,z).
-   - Create an additional ntuple with hits in the scintillator strips. 
 
 - Improve SimpleAnalysis.C
    - Perhaps a concrete example of turning the LAr hits to an image format for ML studies.

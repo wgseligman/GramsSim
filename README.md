@@ -225,7 +225,7 @@ If you want to write HepMC3 files, there are a couple of simple examples in the 
 
 ### Program outputs
 
-These are likely to change rapidly as the software improves. This is the state of program outputs as of 31-Jul-2020.
+These are likely to change rapidly as the software improves. This is the state of program outputs as of 17-Mar-2021.
 
 The `gramsg4` program produces only one ROOT output file containing multiple ntuples. The default name of the output file is `gramsg4.root`. This can be changed via a job option (see *Program Options* below); e.g.,
 
@@ -234,9 +234,10 @@ The `gramsg4` program produces only one ROOT output file containing multiple ntu
 will write the output to `myStudy.root`.
 
 There are several ntuples in the ROOT file: 
-   - LArHits, which contains energy deposits in the LAr (both ionization energy and optical photons)
-   - TrackInfo, which contains 'truth' information for all the tracks in the simulation. 
-   - Options, which includes the parsed options for the job (options XML file with the user overrides)
+   - LArHits, which contains energy deposits in the LAr (both ionization energy and optical photons);
+   - ScintillatorHits, which contains energy deposits in the inner and outer scintillators in the detector;
+   - TrackInfo, which contains 'truth' information for all the tracks in the simulation;
+   - Options, which includes the parsed options for the job (options XML file with the user overrides).
    
 To understand the structure of the ntuples, either view the contents using ROOT, or look in `$GGDIR/GramsG4/src/GramsG4WriteNtuplesAction.cc`.
 
