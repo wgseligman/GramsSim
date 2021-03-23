@@ -18,6 +18,9 @@ As of 17-Mar-2021:
    - Can ROOT read the Geant4 GDML file directly?
       - Answer: As of ROOT 6.20, the answer is no. It must be parsed with --gdmlout first.
 
+- HepMC3
+   - Understand and fix the HepMC3+ROOT compilation issue. (This is a marginal use case for HepMC3, so we may never fix this.)
+
 ## Resolved issues:
 
 - UI display

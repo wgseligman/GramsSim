@@ -8,6 +8,8 @@ Mar-2021:
 
    - Added the concept of "Identifiers"; see grams.gdml for a detailed explanation. 
    - Include scintillator hits in the output n-tuple.
+   - Updated to use/require latest versions of ROOT (6.22.06) and Geant4 (10.7).
+   - Remove ROOT-based HepMC3 due to a compilation issue. 
 
 Feb-2021:
 

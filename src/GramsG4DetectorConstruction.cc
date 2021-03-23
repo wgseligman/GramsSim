@@ -199,6 +199,9 @@ namespace gramsg4 {
     options->GetOption("gdmlout",gdmlOutput);
     if ( ! gdmlOutput.empty() ) {
       G4cout << "Writing geometry to '" << gdmlOutput << "'" << G4endl;
+      // Added in Geant4.10.7: If the GDML output file already exists,
+      // overwrite it. 
+      fGDMLparser.SetOutputFileOverwrite(true);
       fGDMLparser.Write(gdmlOutput, fGDMLparser.GetWorldVolume());
     } // write gdml
   }
