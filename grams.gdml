@@ -40,9 +40,9 @@ as the data-acquisition system is being developed, it's likely that we'd want
 to change the Identifiers to match the assignments of the DAQ hardware.
 
 Within Geant4 and potentially other programs, if there is a need to "decode"
-the Identifier, that code will be in utils::GramsG4Identifier.
+the Identifier, that code will be in utils::GramsIdentifier.
 If the following scheme is changed, then both this GDML file and
-GramsG4Identifier have to be revised with the new assignments. (If you look for
+GramsIdentifier have to be revised with the new assignments. (If you look for
 that routine and don't find it, it's because it hasn't been written yet
 because no one has needed a decoder until now.)
 
