@@ -207,8 +207,6 @@ Note that HepMC3 can also read files in older formats. The format of the file is
 <tr><td>.hepmc3</td><td>HepMC3 ASCII</td></tr>
 <tr><td>.hepmc2</td><td>HepMC2 ASCII</td></tr>
 <tr><td>.hpe</td><td><a href="https://cdcvs.fnal.gov/redmine/projects/minos-sim/wiki/HEPEVT_files">HEPEVT</a> (ASCII)</td></tr>
-<tr><td>.root</td><td>HepMC3 ROOT</td></tr>
-<tr><td>.treeroot</td><td>HepMC3 ROOT TTree</td></tr>
 <tr><td>.lhef</td><td><a href="http://home.thep.lu.se/~leif/LHEF/LHEF_8h_source.html">Les Houches Event File</a></td></tr>
 </table>
 
