@@ -241,9 +241,11 @@ There are several ntuples in the ROOT file:
    
 To understand the structure of the ntuples, either view the contents using ROOT, or look in `$GGDIR/GramsG4/src/GramsG4WriteNtuplesAction.cc`.
 
+For information about what the term "Identifier" means, see `grams.gdml`. (It's defined there, instead of in this documentation, because it's in `grams.gdml` that Identifiers are defined and assigned.)
+
 If you don't know how to browse an ROOT ntuple, I suggest this [ROOT tutorial](https://www.nevis.columbia.edu/~seligman/root-class/).
 
-*Note:* If you run the program with multiple threads (the `--nthreads` option), the events in the ntuples will *not* be ascending numeric order. The G4Track IDs will be in the order that Geant4 processes them, which is *not* in ascending numeric order even if you don't run with multiple threads. Also note that it's possible for an event to leave no energy deposits in the active TPC volume. 
+*Note:* If you run the program with multiple threads (the `--nthreads` option), the events in the ntuples will *not* be ascending numeric order. The G4Track IDs will be in the order that Geant4 processes them, which is *not* in ascending numeric order even if you don't run with multiple threads. Also note that it's possible for an event to leave no energy deposits in an active TPC volume. 
 
 If you're looking for a place to start in accessing the ntuples for analysis, look at `SimpleAnalysis.C` in the `scripts` directory which was copied to your build/work directory. To run it:
 
