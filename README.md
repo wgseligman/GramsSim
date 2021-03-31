@@ -218,7 +218,7 @@ If you want to write HepMC3 files, there are a couple of simple examples in the 
    
    - When creating the event->vertex->particles structure for an HepMC3 `GenEvent` object, there must be at least one incoming particle to the vertex even though GramsG4 will only process the outgoing particles. The program `script/hepmc3-grams-example.cc` demonstrates a work-around. 
    
-   - Of the above formats, `.hepmc3` files are closest to human-readable; `.treeroot` files are the easiest to browse using ROOT. 
+   - Of the above formats, `.hepmc3` files are closest to human-readable.
 
 
 ### Program outputs
