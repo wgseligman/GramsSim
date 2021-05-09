@@ -188,7 +188,7 @@ source of interactions (e.g., the cryostat walls.)
     <constant name="cathodeZSize" value="cathodeThickness" />
     
     <!-- 5-May-2020 WGS: How many active cells will there be? I don't know, 
-    so assume 5 seperator sheets dividing the LAr into 6 cells (the number
+    so assume 5 separator sheets dividing the LAr into 6 cells (the number
     in the diagrams in arXiv:1901.03430v3). -->
     
     <!-- 16-Jul-2020 WGS: It's not clear from  arXiv:1901.03430v3, but it appears
@@ -208,20 +208,20 @@ source of interactions (e.g., the cryostat walls.)
     <constant name="numberActiveCellsX" value="14" />
     <constant name="numberSepSheetsX" value="numberActiveCellsX - 1" />
    
-    <!-- 5-May-2020 WGS: How thick will the seperator sheets be? I don't know, so 
+    <!-- 5-May-2020 WGS: How thick will the separator sheets be? I don't know, so 
     assume 1mm. For the sheets' z-size, leave some room for the wires and the 
     cathode plate. -->
     <constant name="sepThickness" value="0.1" />
 
-    <!-- 8-May-2020 WGS: How big will the active LAr cell be? I don't know. 
+    <!-- 8-May-2020 WGS: How big will the active LAr volume be? I don't know. 
     To make the placement of the sensitive detector cells easier, I'm putting a
-    2 cm boundary in x and z, but over the complete y-length of the LArTPC. This
+    2 cm boundary in within the boundary of the LArTPC. This
     isn't realistic, but you have to start somewhere. -->
    
     <!-- 16-Jul-2020 WGS: Define the groups of cells we'll place along x. -->
     <constant name="cellGroupXRegion" value="lArTPCXSize - 4.0" />
     <constant name="cellGroupXSize" value="(cellGroupXRegion - numberSepSheetsX*sepThickness) / numberActiveCellsX" />
-    <constant name="cellGroupYSize" value="lArTPCYSize" />
+    <constant name="cellGroupYSize" value="lArTPCYSize - 4.0" />
     <constant name="cellGroupZSize" value="lArTPCZSize - 4.0" />
 
     <!-- 16-Jul-2020 WGS: The sheets that separate the cell groups along x. -->
@@ -242,6 +242,9 @@ source of interactions (e.g., the cryostat walls.)
     <!-- 16-Jul-2020 WGS: First we're going to place the cell groups along x within
     the LArTPC. Then we're going to place the active cells within a cell group
     along y. -->
+    <!-- 10-Mar-2021 WGS: When I defined the Identifiers, I switched the
+    scheme for placing the cells to a nested loop in x and y (and potentially
+    z if we include layers in the future.)  -->
     <variable name="activeCellIndexX" value="0" />
     <variable name="sepIndexX" value="0" />
     <variable name="activeCellIndexY" value="0" />
@@ -262,7 +265,9 @@ source of interactions (e.g., the cryostat walls.)
     <!-- 17-Jul-2020 WGS: How many SIPMs within each cell? What will their
     arrangement be? I don't know. Start with evenly spacing the SIPMs within
     each cell evenly and identicially. (This will become more complex if we
-    explore "honeycomb" patterns.) -->
+    explore "honeycomb" patterns.) The following values are defined here,
+    but the code to implement anything with them must wait until we until
+    we do some optical physics studies. -->
     <constant name="numberSIPMsInCell" value="6" />
     <variable name="indexSIPMsInCell" value="0" />
     <constant name="sipmXseparation" value="activeCellXSize/numberSIPMsInCell" />
@@ -271,11 +276,14 @@ source of interactions (e.g., the cryostat walls.)
 
     "Outer" and "inner" refer to the two main boxes of scintillator in the detector. 
     Think of each box as a pair of x-walls, y-walls, and z-walls. Assume that 
-    opposite walls (e.g., in the plus and minus x-directions) are symmetric;
-    all we need to do is define the walls one side and mirror them on the other side 
-    of the box (see the <structure> section).
+    opposite walls (e.g., in the plus and minus x-directions) are symmetric.
     
-    However, the z-walls and the y-walls are _not_ the same, though they may look
+    10-Mar-2021 WGS: However, the walls are not rotationally symmetric when it
+    comes to the Identifiers. I always want the Identifiers to increase along the
+    positive direction of the coordinate axis (e.g., in a negative z-wall the
+    Identifiers increase with increasing z).
+    
+    Note that the z-walls and the y-walls are _not_ the same, though they may look
     like they have the same dimensions from a distance. Assuming that all the
     scintillator strips will fit together, the lengths of the z-wall and y-wall strips
     are slightly different. 
@@ -370,6 +378,8 @@ source of interactions (e.g., the cryostat walls.)
     <!-- 8-May-2020 WGS: The above walls are defined for the positive axes (x,y,z)>0.
     Assume the negative-axis walls are the mirror images of the positive ones,
     and can be defined in terms of a simple rotations. -->
+    <!-- 10-Mar-2021 WGS: These rotations are now unused, since due to the
+    Identifiers we don't simply rotate the scinillator walls to place them. -->
     <rotation name="rPlus180AboutX" unit="deg" x="180" y="0"    z="0"  />
     <rotation name="rPlus180AboutY" unit="deg" x="0"   y="180"  z="0"  />
     <rotation name="rPlus180AboutZ" unit="deg" x="0"   y="0"    z="180"/>
@@ -386,7 +396,7 @@ source of interactions (e.g., the cryostat walls.)
     defines the z=0 axis. -->
     
     <!-- 15-May-2020 WGS: It took me 5 days to realize that, with z=0 set to the x-wires,
-    all of the TPC active cell have z<0. The purpose of LArSoft's definition of having
+    all of the TPC active cells have z<0. The purpose of LArSoft's definition of having
     the induction plane be at an axis=0 is to avoid negative numbers! Leave this
     for now, and let the collaboration decide an appropriate coordinate system. -->
     <constant name="outerDetectorOffsetInWorld" value ="-(lArTPCZSize/2) + (wirePlaneThickness/2) - innerDetectorOffsetInOuter" />
@@ -740,8 +750,8 @@ source of interactions (e.g., the cryostat walls.)
 
     <box lunit="cm" name="CathodePlate" x="cathodeXSize" y="cathodeYSize" z="cathodeZSize" />
     <box lunit="cm" name="TPCWirePlane" x="wirePlaneXSize" y="wirePlaneYSize" z="wirePlaneZSize" />
-    <box lunit="cm" name="SeperatorGroupSheet" x="sepGroupXSize" y="sepGroupYSize" z="sepGroupZSize" />
-    <box lunit="cm" name="SeperatorSheet" x="sepXSize" y="sepYSize" z="sepZSize" />
+    <box lunit="cm" name="SeparatorGroupSheet" x="sepGroupXSize" y="sepGroupYSize" z="sepGroupZSize" />
+    <box lunit="cm" name="SeparatorSheet" x="sepXSize" y="sepYSize" z="sepZSize" />
     <box lunit="cm" name="CellGroup" x="cellGroupXSize" y="cellGroupYSize" z="cellGroupZSize" />
     <box lunit="cm" name="ActiveCell" x="activeCellXSize" y="activeCellYSize" z="activeCellZSize" />
     <box lunit="cm" name="SIPM" x="sipmXSize" y="sipmYSize" z="sipmZSize" />
@@ -857,15 +867,15 @@ source of interactions (e.g., the cryostat walls.)
       <auxiliary auxtype="Color" auxvalue="red" />
     </volume>
 
-    <volume name="volSeperatorGroupSheet">
+    <volume name="volSeparatorGroupSheet">
       <materialref ref="PTFE"/>
-      <solidref ref="SeperatorGroupSheet"/>
+      <solidref ref="SeparatorGroupSheet"/>
       <auxiliary auxtype="Color" auxvalue="yellow" />
     </volume>
 
-    <volume name="volSeperatorSheet">
+    <volume name="volSeparatorSheet">
       <materialref ref="PTFE"/>
-      <solidref ref="SeperatorSheet"/>
+      <solidref ref="SeparatorSheet"/>
       <auxiliary auxtype="Color" auxvalue="yellow" />
     </volume>
 
@@ -908,8 +918,8 @@ source of interactions (e.g., the cryostat walls.)
       <!-- Place the separator sheets that go along the entire y-length of the TPC area. -->
       <loop for="sepIndexX" from="0" to="numberSepSheetsX - 1" step="1">
         <physvol copynumber="3000000">
-            <volumeref ref="volSeperatorGroupSheet"/>
-            <position name="posSeperatorGroupSheet" unit="cm" x="-(cellGroupXRegion/2) + cellGroupXSize + sepGroupXSize/2 + sepIndexX*(cellGroupXSize + sepGroupXSize)" y="0" z="0"/>
+            <volumeref ref="volSeparatorGroupSheet"/>
+            <position name="posSeparatorGroupSheet" unit="cm" x="-(cellGroupXRegion/2) + cellGroupXSize + sepGroupXSize/2 + sepIndexX*(cellGroupXSize + sepGroupXSize)" y="0" z="0"/>
         </physvol>
       </loop> <!-- over sheets in x -->
 
@@ -918,15 +928,15 @@ source of interactions (e.g., the cryostat walls.)
       <loop for="activeCellIndexX" from="0" to="numberActiveCellsX - 1" step="1">
 
       <!-- 8-May-2020 WGS: For each active cell, we have to place a volume representing that
-      cell, and the seperator sheet that separates the cells. This gets a bit tricky, since
+      cell, and the separator sheet that separates the cells. This gets a bit tricky, since
       the arrangement is cell / sheet / cell / sheet ... cell / sheet / cell; that is,
       there's one fewer sheet along along x than there are cells.  -->
       
         <!-- First, place the separator sheets that go along x. -->
         <loop for="sepIndexY" from="0" to="numberSepSheetsY - 1" step="1">
           <physvol copynumber="3000000">
-              <volumeref ref="volSeperatorSheet"/>
-              <position name="posSeperatorSheet" unit="cm" x="-(cellGroupXRegion/2) + cellGroupXSize/2 + activeCellIndexX*(cellGroupXSize + sepGroupXSize)" y="-(cellGroupYSize/2) + activeCellYSize + sepYSize/2 + sepIndexY*(activeCellYSize + sepYSize)" z="0"/>
+              <volumeref ref="volSeparatorSheet"/>
+              <position name="posSeparatorSheet" unit="cm" x="-(cellGroupXRegion/2) + cellGroupXSize/2 + activeCellIndexX*(cellGroupXSize + sepGroupXSize)" y="-(cellGroupYSize/2) + activeCellYSize + sepYSize/2 + sepIndexY*(activeCellYSize + sepYSize)" z="0"/>
           </physvol>
         </loop> <!-- over y-sheets -->
       
