@@ -1,9 +1,9 @@
 # TODO 
 
-As of 17-Mar-2021:
+As of 22-May-2021:
 
 - Multi-threaded execution
-   - Understand the effects of multiple threads on ROOT outputs (probably need to upgrade to Geant4 10.6 or higher).
+   - gramsg4 crashes if -t is set higher than 1.
    - Test the saving and restoring of random-number states.
 
 - Scintillator hits
