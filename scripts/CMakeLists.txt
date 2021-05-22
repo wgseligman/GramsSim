@@ -2,6 +2,7 @@
 
 file(GLOB root_scripts RELATIVE ${PROJECT_SOURCE_DIR}/scripts CONFIGURE_DEPENDS 
 	  *.C 
+	  *.py 
 	  *.cc 
 	  *.txt 
 	  *.md 

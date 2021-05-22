@@ -6,6 +6,9 @@ inputs and outputs.
 `SimpleAnalysis.C` - a very simple example of how to look at the
 ntuples produced by gramsg4.
 
+`RadialDistance.py` - a more realistic example of how to look at the
+ntuples produced by gramsg4, this time in Python.
+
 `Hist2Text.C` - converts a ROOT histogram into the simple text format
 used by Geant4's General Particle Source system. Any `.root` or `.txt`
 files in this directory are used as example inputs and outputs for
