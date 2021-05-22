@@ -25,15 +25,7 @@ namespace gramsg4 {
     : UserAction()
     , m_LArHitCollectionID(-1)
     , m_ScintillatorHitCollectionID(-1)
-  {
-    // Without this, each execution thread writes its own file, or
-    // perhaps each event will have its own set of ntuples.. It may
-    // turn out that's what we want after all, but let's see. Note
-    // that a consequence of merging files is that the events may not
-    // be in order in the output file if you use multiple threads.
-    auto analysisManager = G4AnalysisManager::Instance();
-    analysisManager->SetNtupleMerging(true);
-  }
+  {}
 
   //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
@@ -47,6 +39,12 @@ namespace gramsg4 {
   void WriteNtuplesAction::BeginOfRunAction(const G4Run*) {
     // Access (maybe create) the G4AnalysisManager.
     auto analysisManager = G4AnalysisManager::Instance();
+    // Without this, each execution thread writes its own file, or
+    // perhaps each event will have its own set of ntuples.. It may
+    // turn out that's what we want after all, but let's see. Note
+    // that a consequence of merging files is that the events may not
+    // be in order in the output file if you use multiple threads.
+    analysisManager->SetNtupleMerging(true);
 
     auto options = util::Options::GetInstance();
     options->GetOption("debug",m_debug);
