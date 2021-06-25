@@ -133,10 +133,10 @@ source of interactions (e.g., the cryostat walls.)
     <!-- ************** LArTPC section ************** -->
     
     <!-- 8-May-2020 WGS: How big will the active LAr volume be? I don't know. 
-    To make the placement of the sensitive detector cells easier, I'm putting a
-    2 cm boundary in within the boundary of the LArTPC. This
+    To make the placement of the sensitive detector cells easier, I'm putting 
+    the same boundary in within the volume of the LArTPC. This
     isn't realistic, but you have to start somewhere. -->
-    <constant name="fidVolGap" value="2" />
+    <constant name="fidVolGap" value="0" />
 
     <constant name="lArTPCXSize" value="140 + 2*fidVolGap" />
     <constant name="lArTPCYSize" value="140 + 2*fidVolGap" />
@@ -390,8 +390,8 @@ source of interactions (e.g., the cryostat walls.)
     of the outer detector. According to the diagram in arXiv:1901.03430v3, this is
     1.5m. We have to adjust a bit to make this the offset of the center of the 
     inner detector from the center of the outer detector. -->
-    <!-- 23-Jun-2021 WGS: 150->136 to offset increased in z-height of LArTPC -->
-    <constant name="innerDetectorOffsetInOuter" value ="(outerVolumeZSize - innerVolumeZSize)/2 - 136" />
+    <!-- 23-Jun-2021 WGS: 150->140 to offset increased in z-height of LArTPC -->
+    <constant name="innerDetectorOffsetInOuter" value ="(outerVolumeZSize - innerVolumeZSize)/2 - (140 - 2*fidVolGap)" />
 
     <!-- 10-May-2020 WGS: This is the offset of the outer detector from the center of
     of the world volume. This is tricky, because (to follow the LArSoft convention,
