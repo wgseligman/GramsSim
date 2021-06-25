@@ -4,6 +4,10 @@ A description of major development milestones. The most recent are at
 the top. For a detailed list of all changes (basically, every time
 someone typed "git commit"), see the output of "git log".
 
+Jun-2021: 
+
+   - Increased the z-depth of the LArTPC to 30cm. 
+
 Mar-2021:
 
    - Added the concept of "Identifiers"; see grams.gdml for a detailed explanation. 
