@@ -132,15 +132,9 @@ source of interactions (e.g., the cryostat walls.)
 
     <!-- ************** LArTPC section ************** -->
     
-    <!-- 8-May-2020 WGS: How big will the active LAr volume be? I don't know. 
-    To make the placement of the sensitive detector cells easier, I'm putting a
-    2 cm boundary in within the boundary of the LArTPC. This
-    isn't realistic, but you have to start somewhere. -->
-    <constant name="fidVolGap" value="2" />
-
-    <constant name="lArTPCXSize" value="140 + 2*fidVolGap" />
-    <constant name="lArTPCYSize" value="140 + 2*fidVolGap" />
-    <constant name="lArTPCZSize" value=" 30 + 2*fidVolGap" />
+    <constant name="lArTPCXSize" value="140" />
+    <constant name="lArTPCYSize" value="140" />
+    <constant name="lArTPCZSize" value="20" />
 
     <!-- 5-May-2020 WGS: For all I know the cryostat will be made of insulating foam.
     With no other information, I'm assuming a steel cryostat of 1cm thickness. -->
@@ -219,12 +213,16 @@ source of interactions (e.g., the cryostat walls.)
     cathode plate. -->
     <constant name="sepThickness" value="0.1" />
 
-    <!-- 16-Jul-2020 WGS: Define the groups of cells we'll place along x. 
-    Allow for additional spacing for a fiducial volume cut. -->
-    <constant name="cellGroupXRegion" value="lArTPCXSize - 2*fidVolGap" />
+    <!-- 8-May-2020 WGS: How big will the active LAr volume be? I don't know. 
+    To make the placement of the sensitive detector cells easier, I'm putting a
+    2 cm boundary in within the boundary of the LArTPC. This
+    isn't realistic, but you have to start somewhere. -->
+   
+    <!-- 16-Jul-2020 WGS: Define the groups of cells we'll place along x. -->
+    <constant name="cellGroupXRegion" value="lArTPCXSize - 4.0" />
     <constant name="cellGroupXSize" value="(cellGroupXRegion - numberSepSheetsX*sepThickness) / numberActiveCellsX" />
-    <constant name="cellGroupYSize" value="lArTPCYSize - 2*fidVolGap" />
-    <constant name="cellGroupZSize" value="lArTPCZSize - 2*fidVolGap" />
+    <constant name="cellGroupYSize" value="lArTPCYSize - 4.0" />
+    <constant name="cellGroupZSize" value="lArTPCZSize - 4.0" />
 
     <!-- 16-Jul-2020 WGS: The sheets that separate the cell groups along x. -->
     <constant name="sepGroupXSize" value="sepThickness" />
@@ -342,9 +340,9 @@ source of interactions (e.g., the cryostat walls.)
     <variable name="indexOuterXwallZstrips" value="0" />
 
 
-    <constant name="innerVolumeXSize" value="150 + 2*fidVolGap" />
-    <constant name="innerVolumeYSize" value="150 + 2*fidVolGap" />
-    <constant name="innerVolumeZSize" value="40 + 2*fidVolGap" />
+    <constant name="innerVolumeXSize" value="150" />
+    <constant name="innerVolumeYSize" value="150" />
+    <constant name="innerVolumeZSize" value="30" />
 
     <constant name="lengthInnerZwallXstrips" value="innerVolumeXSize" />
     <constant name="lengthInnerYwallXstrips" value="(innerVolumeXSize - 2*scintillatorThickness)" />
@@ -390,8 +388,7 @@ source of interactions (e.g., the cryostat walls.)
     of the outer detector. According to the diagram in arXiv:1901.03430v3, this is
     1.5m. We have to adjust a bit to make this the offset of the center of the 
     inner detector from the center of the outer detector. -->
-    <!-- 23-Jun-2021 WGS: 150->136 to offset increased in z-height of LArTPC -->
-    <constant name="innerDetectorOffsetInOuter" value ="(outerVolumeZSize - innerVolumeZSize)/2 - 136" />
+    <constant name="innerDetectorOffsetInOuter" value ="(outerVolumeZSize - innerVolumeZSize)/2 - 150" />
 
     <!-- 10-May-2020 WGS: This is the offset of the outer detector from the center of
     of the world volume. This is tricky, because (to follow the LArSoft convention,
