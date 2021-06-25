@@ -119,7 +119,7 @@ If you are working remotely (e.g., on a laptop), and you want to use
 the interactive display, you may also need to
 install and/or activate both X-Windows and OpenGL for your local
 computer. You can find instructions
-[here](https://www.hoffman2.idre.ucla.edu/access/x11_forwarding/).
+[here](https://twiki.nevis.columbia.edu/twiki/bin/view/Main/X11OnLaptops).
 
 ## Running GramsG4
 
