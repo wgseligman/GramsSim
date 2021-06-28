@@ -76,6 +76,9 @@ namespace gramsg4 {
       G4cout << "WriteNtuplesAction::() - "
 	     << "ntuple id of 'LArHits' = " << m_LArNTID << G4endl;
 
+    // The quantities written are based on
+    // https://github.com/LArSoft/lardataobj/blob/develop/lardataobj/Simulation/SimEnergyDeposit.h
+
     // Column IDs are automatically assigned.
     // Reminder: G4's units are MeV, mm, ns
     analysisManager->CreateNtupleIColumn("Run");        // id 0         

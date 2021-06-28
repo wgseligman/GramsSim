@@ -12,7 +12,8 @@
 
 /// LAr Active TPC hit class
 ///
-/// This is copied from Geant4 B2a, with appropriate changes.
+/// Values stored based on
+/// https://github.com/LArSoft/lardataobj/blob/develop/lardataobj/Simulation/SimEnergyDeposit.h
 
 namespace gramsg4 {
 
