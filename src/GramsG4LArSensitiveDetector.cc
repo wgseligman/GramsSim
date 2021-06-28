@@ -4,6 +4,7 @@
 /// Much of this code was copied from Geant4 example B2a.
 
 #include "GramsG4LArSensitiveDetector.hh"
+#include "GramsG4LArHit.hh"
 #include "Options.h"
 
 #include "G4HCofThisEvent.hh"
@@ -82,24 +83,24 @@ namespace gramsg4 {
 
     auto start = aStep->GetPreStepPoint()->GetPosition();
     auto end   = aStep->GetPostStepPoint()->GetPosition();
-    auto position = ( start + end ) / 2.;
 
     auto tstart = aStep->GetPreStepPoint()->GetGlobalTime();
     auto tend   = aStep->GetPostStepPoint()->GetGlobalTime();
-    auto time = ( tstart + tend ) / 2.;
 
-    LArHit* newHit = new LArHit();
-
-    newHit->SetTrackID(aStep->GetTrack()->GetTrackID());
-    newHit->SetPDGCode(aStep->GetTrack()->
-		       GetDynamicParticle()->
-		       GetParticleDefinition()->
-		       GetPDGEncoding());
-    newHit->SetNumPhotons(photons);
-    newHit->SetEnergy(edep);
-    newHit->SetTime(time);
-    newHit->SetPosition(position);
-    newHit->SetIdentifier(aStep->GetTrack()->GetVolume()->GetCopyNo());
+    LArHit* newHit = new LArHit(
+	aStep->GetTrack()->GetTrackID(),
+	aStep->GetTrack()->
+		GetDynamicParticle()->
+		GetParticleDefinition()->
+		GetPDGEncoding(),
+	photons,
+	edep,
+	tstart,
+	tend,
+	start,
+	end,
+	aStep->GetTrack()->GetVolume()->GetCopyNo()
+				);
 
     m_hitsCollection->insert( newHit );
 
