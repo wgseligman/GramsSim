@@ -60,7 +60,7 @@ namespace gramsg4 {
     void SetEndTime    (G4double t)       { m_endTime = t; };
     void SetStartPosition (G4ThreeVector xyz) { m_startPosition = xyz; };
     void SetEndPosition   (G4ThreeVector xyz) { m_endPosition = xyz; };
-    void SetIdentifier (G4int identifier ){ m_identifier = identifier; };
+    void SetIdentifier (G4int identifier )    { m_identifier = identifier; };
   
     // Get methods
     G4int GetTrackID() const          { return m_trackID; };
@@ -71,8 +71,8 @@ namespace gramsg4 {
     G4double GetEndTime() const       { return m_endTime; };
     G4double GetTime() const          { return (m_startTime + m_endTime)/2.; };
     G4ThreeVector GetStartPosition() const { return m_startPosition; };
-    G4ThreeVector GetEndPosition() const { return m_endPosition; };
-    G4ThreeVector GetPosition() const    { return (m_startPosition + m_endPosition)/2.; };
+    G4ThreeVector GetEndPosition() const   { return m_endPosition; };
+    G4ThreeVector GetPosition() const      { return (m_startPosition + m_endPosition)/2.; };
     G4int GetIdentifier() const       { return m_identifier; };
   
   private:

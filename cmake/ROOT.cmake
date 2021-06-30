@@ -12,22 +12,10 @@ find_package(ROOT 6.0 REQUIRED)
 
 # remove the C++ standard set by ROOT so CMake can handle it correctly for the
 # compiler we find
-removeCXXStandardFlags("${CMAKE_CXX_FLAGS}" CMAKE_CXX_FLAGS)
+###removeCXXStandardFlags("${CMAKE_CXX_FLAGS}" CMAKE_CXX_FLAGS)
 
 # now remove any duplicates we have to keep things tidy
 removeDuplicateSubstring("${CMAKE_CXX_FLAGS}" $CMAKE_CXX_FLAGS)
-
-# ROOT can be compiled with C++17 and therefore BDSIM won't compile if it doesn't have
-# at leat that standard, so we pick apart ROOT stuff to find out and update the standard
-execute_process(COMMAND ${ROOT_CONFIG_EXECUTABLE} --features OUTPUT_VARIABLE ROOT_FEATURES)
-list(REMOVE_DUPLICATES ROOT_FEATURES)
-string(FIND ${ROOT_FEATURES} "cxx17" _CXX17FOUND)
-if (_CXX17FOUND STRGREATER -1)
-  message(STATUS "ROOT compiled with cxx17 feature -> changing to C++17 for BDSIM")
-  set(CMAKE_CXX_STANDARD 17)
-  set(CMAKE_CXX_STANDARD_REQUIRED ON)
-endif()
-
  
 # ROOT doesn't implement the version and subversion number in CMAKE as it should, so
 # the above find package doesn't match the version required. Need to decode version ourselves
