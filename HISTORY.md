@@ -7,6 +7,8 @@ someone typed "git commit"), see the output of "git log".
 Jun-2021: 
 
    - Increased the z-depth of the LArTPC to 30cm. 
+   - Tweaked compilation process; now assumes that ROOT and Geant4 were compiled with the same C++ version (instead of imposing C++17).
+   - Added more examples programs (dEdxExample and HitRestructure).
 
 Mar-2021:
 

@@ -9,6 +9,16 @@ ntuples produced by gramsg4.
 `RadialDistance.py` - a more realistic example of how to look at the
 ntuples produced by gramsg4, this time in Python.
 
+`dEdxExample.cc` - an example of how to link the output ntuples from
+gramsg4 and use those ntuples for a physics calculation. There are
+lots of detailed comments in here, to illustrate how to use features
+of ROOT's RDataFrame.
+
+`HitRestructure.cc` - an example of how to take the LArHits ntuple
+from the gramsg4 output, which has one row per hit, and turn the
+collection of hits for a given run/event/trackID into a single row
+with vectors of hit information.
+
 `Hist2Text.C` - converts a ROOT histogram into the simple text format
 used by Geant4's General Particle Source system. Any `.root` or `.txt`
 files in this directory are used as example inputs and outputs for
@@ -29,7 +39,7 @@ something like:
     # Go to your GramsG4 build directory
     ./bin/hepmc-grams-example
 
-The two programs are:
+The programs are:
 
 `hepmc-grams-example` - Creates a few example events "by hand" and
 write them to a file.
