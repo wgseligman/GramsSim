@@ -66,23 +66,23 @@ namespace gramsg4 {
 
     auto start = aStep->GetPreStepPoint()->GetPosition();
     auto end   = aStep->GetPostStepPoint()->GetPosition();
-    auto position = ( start + end ) / 2.;
 
     auto tstart = aStep->GetPreStepPoint()->GetGlobalTime();
     auto tend   = aStep->GetPostStepPoint()->GetGlobalTime();
-    auto time = ( tstart + tend ) / 2.;
 
-    ScintillatorHit* newHit = new ScintillatorHit();
-
-    newHit->SetTrackID(aStep->GetTrack()->GetTrackID());
-    newHit->SetPDGCode(aStep->GetTrack()->
-		       GetDynamicParticle()->
-		       GetParticleDefinition()->
-		       GetPDGEncoding());
-    newHit->SetEnergy(edep);
-    newHit->SetTime(time);
-    newHit->SetPosition(position);
-    newHit->SetIdentifier(aStep->GetTrack()->GetVolume()->GetCopyNo());
+    ScintillatorHit* newHit = new ScintillatorHit(
+	  aStep->GetTrack()->GetTrackID(),
+	  aStep->GetTrack()->
+	     GetDynamicParticle()->
+	     GetParticleDefinition()->
+	     GetPDGEncoding(),
+	  edep,
+	  tstart,
+	  tend,
+	  start,
+	  end,
+	  aStep->GetTrack()->GetVolume()->GetCopyNo()
+						  );
 
     m_hitsCollection->insert( newHit );
 

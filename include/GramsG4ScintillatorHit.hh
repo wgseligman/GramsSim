@@ -25,8 +25,23 @@ namespace gramsg4 {
   class ScintillatorHit : public G4VHit
   {
   public:
+    // Default constructor
     ScintillatorHit();
+
+    // Constructor with arguments.
+    ScintillatorHit( G4int trackID,
+		     G4int PDG,
+		     G4double energy,
+		     G4double tstart,
+		     G4double tend,
+		     G4ThreeVector start,
+		     G4ThreeVector end,
+		     G4int ident
+		     );
+
+    // Copy constructor
     ScintillatorHit(const ScintillatorHit&);
+    // Destructor
     virtual ~ScintillatorHit();
   
     // operators
@@ -44,26 +59,32 @@ namespace gramsg4 {
     void SetTrackID    (G4int track)      { m_trackID = track; };
     void SetPDGCode    (G4int pdg)        { m_pdgCode = pdg; };
     void SetEnergy     (G4double de)      { m_energy = de; };
-    void SetTime       (G4double t)       { m_time = t; };
-    void SetPosition   (G4ThreeVector xyz){ m_position = xyz; };
+    void SetStartTime  (G4double t)       { m_startTime = t; };
+    void SetEndTime    (G4double t)       { m_endTime = t; };
+    void SetStartPosition (G4ThreeVector xyz) { m_startPosition = xyz; };
+    void SetEndPosition   (G4ThreeVector xyz) { m_endPosition = xyz; };
     void SetIdentifier (G4int identifier ){ m_identifier = identifier; };
   
     // Get methods
     G4int GetTrackID() const          { return m_trackID; };
     G4int GetPDGCode() const          { return m_pdgCode; };
     G4double GetEnergy() const        { return m_energy; };
-    G4double GetTime() const          { return m_time; };
-    G4ThreeVector GetPosition() const { return m_position; };
+    G4double GetStartTime() const     { return m_startTime; };
+    G4double GetEndTime() const       { return m_endTime; };
+    G4ThreeVector GetStartPosition() const { return m_startPosition; };
+    G4ThreeVector GetEndPosition() const   { return m_endPosition; };
     G4int GetIdentifier() const       { return m_identifier; };
   
   private:
   
     G4int         m_trackID; 
     G4int         m_pdgCode;
-    G4double      m_energy;     ///< units MeV
-    G4double      m_time  ;     ///< units ns
-    G4ThreeVector m_position;   ///< units mm
-    G4int         m_identifier; ///< scintillator ID
+    G4double      m_energy;          ///< units MeV
+    G4double      m_startTime  ;     ///< units ns
+    G4double      m_endTime    ;     ///< units ns
+    G4ThreeVector m_startPosition;   ///< units mm
+    G4ThreeVector m_endPosition;     ///< units mm
+    G4int         m_identifier;      ///< scintillator ID
   };
 
   //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

@@ -76,6 +76,9 @@ namespace gramsg4 {
       G4cout << "WriteNtuplesAction::() - "
 	     << "ntuple id of 'LArHits' = " << m_LArNTID << G4endl;
 
+    // The quantities written are based on
+    // https://github.com/LArSoft/lardataobj/blob/develop/lardataobj/Simulation/SimEnergyDeposit.h
+
     // Column IDs are automatically assigned.
     // Reminder: G4's units are MeV, mm, ns
     analysisManager->CreateNtupleIColumn("Run");        // id 0         
@@ -84,11 +87,15 @@ namespace gramsg4 {
     analysisManager->CreateNtupleIColumn("PDGCode");    // id 3
     analysisManager->CreateNtupleIColumn("numPhotons"); // id 4
     analysisManager->CreateNtupleDColumn("energy");     // id 5
-    analysisManager->CreateNtupleDColumn("time");       // id 6
-    analysisManager->CreateNtupleDColumn("xPos");       // id 7
-    analysisManager->CreateNtupleDColumn("yPos");       // id 8
-    analysisManager->CreateNtupleDColumn("zPos");       // id 9
-    analysisManager->CreateNtupleIColumn("identifier"); // id 10
+    analysisManager->CreateNtupleDColumn("tStart");     // id 6
+    analysisManager->CreateNtupleDColumn("xStart");     // id 7
+    analysisManager->CreateNtupleDColumn("yStart");     // id 8
+    analysisManager->CreateNtupleDColumn("zStart");     // id 9
+    analysisManager->CreateNtupleDColumn("tEnd");       // id 10
+    analysisManager->CreateNtupleDColumn("xEnd");       // id 11
+    analysisManager->CreateNtupleDColumn("yEnd");       // id 12
+    analysisManager->CreateNtupleDColumn("zEnd");       // id 13
+    analysisManager->CreateNtupleIColumn("identifier"); // id 14
 
     if (m_debug) 
 	G4cout << "WriteNtuplesAction::BeginOfRunAction() - "
@@ -105,11 +112,15 @@ namespace gramsg4 {
     analysisManager->CreateNtupleIColumn("TrackID");    // id 2
     analysisManager->CreateNtupleIColumn("PDGCode");    // id 3
     analysisManager->CreateNtupleDColumn("energy");     // id 4
-    analysisManager->CreateNtupleDColumn("time");       // id 5
-    analysisManager->CreateNtupleDColumn("xPos");       // id 6
-    analysisManager->CreateNtupleDColumn("yPos");       // id 7
-    analysisManager->CreateNtupleDColumn("zPos");       // id 8
-    analysisManager->CreateNtupleIColumn("identifier"); // id 9
+    analysisManager->CreateNtupleDColumn("tStart");     // id 5
+    analysisManager->CreateNtupleDColumn("xStart");     // id 6
+    analysisManager->CreateNtupleDColumn("yStart");     // id 7
+    analysisManager->CreateNtupleDColumn("zStart");     // id 8
+    analysisManager->CreateNtupleDColumn("tEnd");       // id 9
+    analysisManager->CreateNtupleDColumn("xEnd");       // id 10
+    analysisManager->CreateNtupleDColumn("yEnd");       // id 11
+    analysisManager->CreateNtupleDColumn("zEnd");       // id 12
+    analysisManager->CreateNtupleIColumn("identifier"); // id 13
     analysisManager->FinishNtuple();
 
     // Create yet another ntuple.
@@ -262,18 +273,21 @@ namespace gramsg4 {
       analysisManager->FillNtupleIColumn(m_LArNTID, 3, hit->GetPDGCode() );
       analysisManager->FillNtupleIColumn(m_LArNTID, 4, hit->GetNumPhotons() );
       analysisManager->FillNtupleDColumn(m_LArNTID, 5, hit->GetEnergy() );
-      analysisManager->FillNtupleDColumn(m_LArNTID, 6, hit->GetTime() );
-      analysisManager->FillNtupleDColumn(m_LArNTID, 7, (hit->GetPosition()).x() );
-      analysisManager->FillNtupleDColumn(m_LArNTID, 8, (hit->GetPosition()).y() );
-      analysisManager->FillNtupleDColumn(m_LArNTID, 9, (hit->GetPosition()).z() );
-      analysisManager->FillNtupleIColumn(m_LArNTID,10, hit->GetIdentifier() );
+      analysisManager->FillNtupleDColumn(m_LArNTID, 6, hit->GetStartTime() );
+      analysisManager->FillNtupleDColumn(m_LArNTID, 7, (hit->GetStartPosition()).x() );
+      analysisManager->FillNtupleDColumn(m_LArNTID, 8, (hit->GetStartPosition()).y() );
+      analysisManager->FillNtupleDColumn(m_LArNTID, 9, (hit->GetStartPosition()).z() );
+      analysisManager->FillNtupleDColumn(m_LArNTID,10, hit->GetEndTime() );
+      analysisManager->FillNtupleDColumn(m_LArNTID,11, (hit->GetEndPosition()).x() );
+      analysisManager->FillNtupleDColumn(m_LArNTID,12, (hit->GetEndPosition()).y() );
+      analysisManager->FillNtupleDColumn(m_LArNTID,13, (hit->GetEndPosition()).z() );
+      analysisManager->FillNtupleIColumn(m_LArNTID,14, hit->GetIdentifier() );
 
       if (m_debug) 
 	G4cout << "WriteNtuplesAction::EndOfEventAction - Adding LAr row" << G4endl;
       analysisManager->AddNtupleRow(m_LArNTID);  
     } // For each LArHit
 
-    // *
     // Do the same thing for the Scintillator hits.
 
     // Get hits collections IDs (only once)
@@ -299,11 +313,15 @@ namespace gramsg4 {
       analysisManager->FillNtupleIColumn(m_ScintNTID, 2, hit->GetTrackID() );
       analysisManager->FillNtupleIColumn(m_ScintNTID, 3, hit->GetPDGCode() );
       analysisManager->FillNtupleDColumn(m_ScintNTID, 4, hit->GetEnergy() );
-      analysisManager->FillNtupleDColumn(m_ScintNTID, 5, hit->GetTime() );
-      analysisManager->FillNtupleDColumn(m_ScintNTID, 6, (hit->GetPosition()).x() );
-      analysisManager->FillNtupleDColumn(m_ScintNTID, 7, (hit->GetPosition()).y() );
-      analysisManager->FillNtupleDColumn(m_ScintNTID, 8, (hit->GetPosition()).z() );
-      analysisManager->FillNtupleIColumn(m_ScintNTID, 9, hit->GetIdentifier() );
+      analysisManager->FillNtupleDColumn(m_ScintNTID, 5, hit->GetStartTime() );
+      analysisManager->FillNtupleDColumn(m_ScintNTID, 6, (hit->GetStartPosition()).x() );
+      analysisManager->FillNtupleDColumn(m_ScintNTID, 7, (hit->GetStartPosition()).y() );
+      analysisManager->FillNtupleDColumn(m_ScintNTID, 8, (hit->GetStartPosition()).z() );
+      analysisManager->FillNtupleDColumn(m_ScintNTID, 9, hit->GetEndTime() );
+      analysisManager->FillNtupleDColumn(m_ScintNTID,10, (hit->GetEndPosition()).x() );
+      analysisManager->FillNtupleDColumn(m_ScintNTID,11, (hit->GetEndPosition()).y() );
+      analysisManager->FillNtupleDColumn(m_ScintNTID,12, (hit->GetEndPosition()).z() );
+      analysisManager->FillNtupleIColumn(m_ScintNTID,13, hit->GetIdentifier() );
 
       if (m_debug) {
 	G4cout << "WriteNtuplesAction::EndOfEventAction - ScintID=" 
@@ -390,7 +408,7 @@ namespace gramsg4 {
 
   // Trajectory routines.
 
-  // At each step, check if we should add a trajector point.
+  // At each step, check if we should add a trajectory point.
   void WriteNtuplesAction::SteppingAction(const G4Step* a_step)
   {
     // Get the track this step is in.
