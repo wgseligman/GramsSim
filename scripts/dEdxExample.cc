@@ -13,7 +13,7 @@
 
 // To be even fancier, I'm going to use features of the C++ Standard
 // Template Library (STL). This seems confusing at first, especially
-// if you haven't worked with pointers before. However, C++ are
+// if you haven't worked with pointers before. However, pointers are
 // fundamental concepts in both C++ and STL; if I didn't each you
 // about them here, you'd have to learn them off the street anyway.
 
@@ -29,17 +29,16 @@
 // header file for each ROOT class used in a program.
 #include <ROOT/RDataFrame.hxx>
 #include <ROOT/RVec.hxx>
-#include <TFile.h>
 
 // The C++ includes. These are for C++ language features that,
 // historically, were not part of the C++ base language.
 #include <vector>
 #include <map>
-#include <algorithm>
-#include <algorithm>
-#include <iterator>
 #include <cstring>
 #include <iostream>
+
+// Debug flag.
+static const bool debug = false;
 
 // Every C++ program must have a main routine.
 int main( int argc, char** argv ) {
@@ -53,14 +52,23 @@ int main( int argc, char** argv ) {
   if ( argc > 1 )
     filename = std::string( argv[1] );
 
-  // Turn on multi-threaded processing, to (a) speed up the program, and
-  // (b) prove we can write thread-safe code. Comment out this line to
-  // revert back to standard single-thread execution.
-  ROOT::EnableImplicitMT();
+  // Determine the name of the output file.
+  std::string outputfile("dEdxExample.root");
+  if ( argc > 2 )
+    outputfile = std::string( argv[2] );
 
-  // We'll need this later: Now that we've turned on multi-threading,
-  // how many threads is this program using?
-  auto poolSize = ROOT::GetThreadPoolSize();
+  unsigned int poolSize = 1;
+  // If we're not debugging...
+  if ( ! debug ) {
+    // Turn on multi-threaded processing, to (a) speed up the program, and
+    // (b) prove we can write thread-safe code. Comment out this line to
+    // revert back to standard single-thread execution.
+    ROOT::EnableImplicitMT();
+
+    // We'll need this later: Now that we've turned on multi-threading,
+    // how many threads is this program using?
+    poolSize = ROOT::GetThreadPoolSize();
+  }
 
   // In C++ you can define your own types. Here we define a new type,
   // based on a map; do a web search on "STL map" to learn more about
@@ -93,7 +101,6 @@ int main( int argc, char** argv ) {
   // threads don't try to modify the same trackMap at once. Therefore,
   // create a vector of trackMap_t objects, one for each execution
   // thread.
-
   std::vector< trackMap_t > trackMapThread( poolSize );
 
   // Define a dataframe containing information from the TrackInfo
@@ -101,7 +108,7 @@ int main( int argc, char** argv ) {
   // speed by only reading those columns (branches) in the ntuple that
   // I plan to use in this particular program. To read in all the
   // columns, just omit the list in the curly brackets.
-  ROOT::RDataFrame trackInfo("TrackInfo", filename, 
+  ROOT::RDataFrame trackInfo( "TrackInfo", filename, 
 			     {"Run", "Event", "TrackID", "ProcessName"} );
 
   // Now we're going to get information from the trackInfo dataframe
@@ -166,15 +173,17 @@ int main( int argc, char** argv ) {
 
   // There's one more complication: One of the columns in the ntuple
   // is actually a vector (array). It's ProcessName, which in C++ is a
-  // vector of char. (Bear in mind that a solution like this will be
-  // necessary if a column in an ntuple contains a vector of numbers
-  // as well.) To read a vector with RDataFrame, you have to use a a
-  // special class called ROOT::VecOps::RVec<T>, where T is the type
-  // of data stored in the array.
+  // vector of char. To read a vector with RDataFrame, you have to use
+  // a a special class called ROOT::VecOps::RVec<T>, where T is the
+  // type of data stored in the array.
 
   // Therefore, we have to read in ProcessName as an RVec, and convert
   // it into a string as you see below. It's tedious and involves some
   // STL algorithms that, honestly, I had to look up on the web.
+
+  // (Bear in mind that a solution like this will also be necessary if
+  // a column in an ntuple contains a vector of numbers, like the
+  // trajectory information in TrackInfo.)
 
   // Enough talk, let's do it:
 
@@ -226,7 +235,7 @@ int main( int argc, char** argv ) {
     {
       // Insert the map for that particular thread into our main
       // map. Remember that if a pointer (or iterator) points to
-      // something, putting "*" in front of it gives you that
+      // something, putting "*" in front of the pointer gives you that
       // something. So here, (*i) gives a single trackMap_t object
       // within trackMapThread. "insert" is a method provided by STL
       // to include one map inside another.
@@ -237,21 +246,71 @@ int main( int argc, char** argv ) {
       (*i).clear();
     }
 
-  // For debugging:
-  static const bool debug = true;
   if (debug) {
     // Display the contents of trackMap. Recall that maps are a set of
     // (key,value) pairs, so (*i).first means the key and (*i).second
     // is the value.
     for ( auto i = trackMap.begin(); i != trackMap.end(); ++i ){
       auto key = (*i).first;
-      auto [ run, event, trackID ] = key;
       auto value = (*i).second;
-      std::cout << " run=" << run
-		<< " event=" << event << " trackID=" << trackID
+      // std::get is one way to get a particular value from a std::tuple.
+      std::cout << " run=" << std::get<0>(key)
+		<< " event=" << std::get<1>(key) 
+		<< " trackID=" << std::get<2>(key)
 		<< " process=" << value << std::endl;
-    }
+    } // loop over trackMap
+  } // if debug
+
+  // Despite the barrage of comments, so far this routine consists of
+  // only a dozen-or-so lines of code. At this point we have a
+  // structure, trackMap, that contains a subset of information from
+  // the TrackInfo ntuple.
+
+  // Now comes the real fun: using that information against the
+  // LArHits ntuple. Create a new dataframe for that ntuple.
+  ROOT::RDataFrame larHits( "LArHits", filename );
+
+  // We use trackMap to look up the run/event/trackID for a given LAr
+  // Hit, and (in this example) use it to select only electrons
+  // produced by Compton scattering. Note that again we're using a
+  // lambda expression as an argument to Filter. In this case, the
+  // lambda function is returning a boolean (as required of a filter).
+  auto comptonHits = larHits.Filter(
+    // First argument to Filter: a lambda expression
+    [&trackMap](int run, int event, int trackID)
+      {
+	return trackMap[{run, event, trackID}] == "compt";
+      },
+    // Second argument: The list of columns in LArHits to be passed to
+    // the lambda expression.
+    { "Run", "Event", "TrackID" }
+			 );
+
+  // Now that we have our Compton-induced hits, let's do something
+  // with them. Since the name of this program is dEdxExample, let's
+  // compute dE/dx. 
+
+  // We don't have to bother with lambda expressions here; we're not
+  // modifying or accessing anything outside the scope of the
+  // variables available in the dataframe.
+
+  // Unfortunately, neither C++ nor ROOT includes a simple
+  // expontiation operator; we have to use the "pow" (power) function.
+  // (Physics note: units are those of Geant4; i.e., distances are mm,
+  // energy is MeV, time is ns.)
+  auto dEdx = comptonHits
+    .Define("dx","sqrt(pow(xStart-xEnd,2) + pow(yStart-yEnd,2) + pow(zStart-zEnd,2))")
+    .Define("dEdx","energy / dx");
+
+  if (debug) {
+    // Print out some of the columns for the first 100 hits.
+    auto display = dEdx.Display({"Run","Event","TrackID","tStart","dx","dEdx"},100);
+    display->Print();
   }
 
-} // end of 'main'
+  // Write the modified ntuple to an output file. We can rename the
+  // ntuple if we wish. Note that if multi-threading is turned on, the
+  // order of the rows of in the output ntuple will be unpredictable.
+  dEdx.Snapshot("dEdxNtuple",outputfile);
 
+} // end of 'main'
