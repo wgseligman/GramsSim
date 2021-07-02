@@ -110,7 +110,7 @@ int main( int argc, char** argv ) {
   // basically reading in the entire hits ntuple (at least, those hits
   // that are part of Compton scatters).
 
-  // The vectors that will be writte to the ntuple, one per
+  // The vectors that will be written to the ntuple, one row per
   // run/event/trackID.
   typedef struct hitVectors 
   {
