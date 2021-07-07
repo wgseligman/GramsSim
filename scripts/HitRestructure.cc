@@ -57,8 +57,7 @@ int main( int argc, char** argv ) {
   // threads.
 
   // A container for track information. 
-  typedef std::map< std::tuple< int, int, int >, std::string > trackMap_t;
-  trackMap_t trackMap;
+  std::map< std::tuple< int, int, int >, std::string > trackMap;
 
   // Read the TrackInfo ntuple.
   ROOT::RDataFrame trackInfo( "TrackInfo", filename, 
@@ -106,7 +105,7 @@ int main( int argc, char** argv ) {
   // going to read in all the hit information in the comptonHits
   // dataframe and put it into a map, appending to vectors as we go.
 
-  // Note that is procedure is very memory inefficient; we're
+  // Note that this procedure is very memory inefficient; we're
   // basically reading in the entire hits ntuple (at least, those hits
   // that are part of Compton scatters).
 
@@ -170,7 +169,7 @@ int main( int argc, char** argv ) {
 	hit.identifier.push_back( identifier);
       },
       // The list of all the columns in the ntuple. In theory we don't
-      // have to supply this, since we're looking all the
+      // have to supply this, since we're looking at all the
       // columns. However, what if someone switches the columns
       // around?)
       { "Run", 
@@ -191,14 +190,21 @@ int main( int argc, char** argv ) {
 		      );
 	       
   // At this point, all the information in the comptonHits dataframe
-  // have been loaded into hitMap (probably several megabytes worth).
+  // has been loaded into hitMap (probably several megabytes worth).
 
-  // Create the new output ntuple. This time we have to do it the
-  // old-fashioned way; dataframes aren't really suited for this.
+  // Create the new output ntuple. We could use RDataFrame to create
+  // the output ntuple. However, it would be as roughly complex as the
+  // code below, so we might as well create the output ntuple "by
+  // hand" (aka "the old-fashioned way").
+
   TFile* output = new TFile(outputfile.c_str(), "RECREATE");
   TTree* ntuple = new TTree("comptonNtuple","Energy deposited in compton scattering");
 
-  // Define the variables to be access when writing the branches.
+  // Define the variables to be accessed when writing the
+  // branches. (The name look like the names of the vectors in
+  // hitVectors, which in turn look like the names of the columns in
+  // the LArHits ntuple. Could it be that I copied-and-pasted the
+  // column names, then used editor tricks to create all these lines?)
   int Run;
   int Event;
   int TrackID;

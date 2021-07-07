@@ -73,13 +73,12 @@ int main( int argc, char** argv ) {
   // In C++ you can define your own types. Here we define a new type,
   // based on a map; do a web search on "STL map" to learn more about
   // what a map is. For the purposes of this program, a map is similar
-  // to an python dictionary, in that it contains key:value
-  // pairs. 
+  // to an python dictionary, in that it contains key:value pairs.
 
-  // This map will take a 'tuple' (a C++ construct with a fixed number
-  // of values) consisting of three numbers: run, event, and track
-  // ID. It will map that tuple to a string, which will contain the
-  // process name.
+  // This map will use as a key a 'tuple' (a C++ construct with a
+  // fixed number of values) consisting of three numbers: run, event,
+  // and track ID. It will map that tuple to a string, which will
+  // contain the process name.
   
   // Example: trackMap[{0,3,5}] == "compt" means that run 0, event 3,
   // trackID 5 has a process name of "compt".
@@ -138,7 +137,7 @@ int main( int argc, char** argv ) {
   // want to do. (Note that in other programs, the lists of columns in
   // these two statements may not match. However, the list in the
   // following statement must be a subset of those in the dataframe
-  // defintion.)
+  // definition.)
 
   // So this carefully-structured function, after the slot argument,
   // has to have one argument for each column in that list. Just for a
@@ -167,15 +166,16 @@ int main( int argc, char** argv ) {
 
   // If you put a variable in the [], it means to "capture" that
   // variable from the surrounding program. Here, we're capturing the
-  // _address_ of trackMapThread (the & operator); if we didn't do
-  // that, the entire trackMapThread structure would be copied for
-  // every row in the dataframe instead of just the address.
+  // _address_ of trackMapThread (the & operator):
+  // [&trackMapThread]. If I had put [trackMapThread] (without the &)
+  // the entire trackMapThread structure would be copied for every row
+  // in the dataframe instead of just the address.
 
   // There's one more complication: One of the columns in the ntuple
   // is actually a vector (array). It's ProcessName, which in C++ is a
   // vector of char. To read a vector with RDataFrame, you have to use
-  // a a special class called ROOT::VecOps::RVec<T>, where T is the
-  // type of data stored in the array.
+  // a special class called ROOT::VecOps::RVec<T>, where T is the type
+  // of data stored in the array.
 
   // Therefore, we have to read in ProcessName as an RVec, and convert
   // it into a string as you see below. It's tedious and involves some
@@ -266,7 +266,7 @@ int main( int argc, char** argv ) {
   // structure, trackMap, that contains a subset of information from
   // the TrackInfo ntuple.
 
-  // Now comes the real fun: using that information against the
+  // Now comes the real fun: using that track information against the
   // LArHits ntuple. Create a new dataframe for that ntuple.
   ROOT::RDataFrame larHits( "LArHits", filename );
 
