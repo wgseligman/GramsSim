@@ -1,15 +1,9 @@
 # Install example Geant4 macro files
-set(g4_macros 
-		batch.mac
-		sky.mac
-		run.mac
-		vis.mac
-		vis-sphere.mac
-		outline.mac
-		debug-geom.mac
-		hepmc3.mac
-		vis-hepmc3.mac
-)
+
+file(GLOB g4_macros RELATIVE ${PROJECT_SOURCE_DIR}/mac CONFIGURE_DEPENDS 
+	  *.mac
+	  *.md
+	  )
 
 foreach(_g4macro ${g4_macros})
   configure_file(

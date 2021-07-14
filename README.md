@@ -36,6 +36,8 @@ If you want a formatted (or easier-to-read) version of this file, scroll to the 
 
 **GramsG4** is a simulation of the detector for the [GRAMS](https://express.northeastern.edu/grams/) experiment (Gamma-Ray and AntiMatter Survey). It is based on [Geant4](http://geant4.web.cern.ch/), a general-purpose particle-physics detector simulation. For more on GRAMS, see the [initial paper](https://inspirehep.net/literature/1713393). 
 
+This document assumes that you're familiar with basic UNIX concepts. If you don't know what "`cd ..`" means (for example), please see the [UNIX references](#references) below for some tutorials. 
+
 ## Installing GramsG4
     
 ### Working with github
@@ -53,6 +55,7 @@ Once this is done, you can download a copy of the GramsG4 repository:
     cd GramsG4
     git fetch
     git checkout develop
+    cd ..
 
 ### Prerequisites
 
@@ -71,7 +74,7 @@ You will need recent versions of:
    
 You will also need the development libraries for:
 
-   - [GNU C++](https://gcc.gnu.org/) (version 6.2 or higher, though the compilation might work with [clang](https://clang.llvm.org/); requires c++17 or higher)
+   - [GNU C++](https://gcc.gnu.org/) (version 6.2 or higher, though the compilation might work with [clang](https://clang.llvm.org/); requires c++11 or higher)
    - [Xerces-C](https://xerces.apache.org/xerces-c/)
    - [OpenGL](https://www.opengl.org/)
    - [QT4](https://www.qt.io/)
@@ -79,7 +82,7 @@ You will also need the development libraries for:
 Here are example commands to install these packages for RHEL-derived
 Linux distributions (e.g., Scientific Linux, CentOS). The
 [EPEL](https://fedoraproject.org/wiki/EPEL) install is for CentOS 7
-and its cousins; visit the EPEL web site for other releases.
+and its cousins; visit the [EPEL](https://fedoraproject.org/wiki/EPEL) web site for other releases.
 
     sudo yum install https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
     sudo yum install root HepMC3-devel HepMC3-rootIO-devel
@@ -90,7 +93,7 @@ and its cousins; visit the EPEL web site for other releases.
 #### Notes
 
    - The default version of CMake for CentOS 7 is 2.8. You may have to
-     install a later of version of CMake on your system.
+     download, build, and install a later of version of CMake on your system.
 
    - It's important that ROOT, HepMC3, and Geant4 all be compiled with
      the same version of the C++ compiler (or at least one that
@@ -104,7 +107,7 @@ and its cousins; visit the EPEL web site for other releases.
      [MacPorts](https://www.macports.org/) but that's probably not
      useful for code development. You will have to
      [download](https://geant4.web.cern.ch/support/download) and
-     compile/install Geant4 on your own.
+     build/install Geant4 on your own.
 
    - If you determine the installation commands needed for
      Debian-style distributions (including Ubuntu), please let
@@ -113,10 +116,10 @@ and its cousins; visit the EPEL web site for other releases.
 ### Prepare your local computer 
    
 If you are working remotely (e.g., on a laptop), and you want to use
-the interactive display, you will also need to
+the interactive display, you may also need to
 install and/or activate both X-Windows and OpenGL for your local
 computer. You can find instructions
-[here](https://www.hoffman2.idre.ucla.edu/access/x11_forwarding/).
+[here](https://twiki.nevis.columbia.edu/twiki/bin/view/Main/X11OnLaptops).
 
 ## Running GramsG4
 
@@ -125,7 +128,8 @@ directory in your area. You may want to include a suitably modified version
 of this command in one of your shell startup files:
 
     # $GGDIR is the directory that contains GramsG4, not GramsG4 itself.
-    cd ..
+    # If you've followed these instructions from the beginning, this will
+    # be the directory you're in now ($PWD = "print working directory")
     export GGDIR=$PWD
 
 To build/compile:
@@ -135,12 +139,13 @@ To build/compile:
     module load cmake root geant4 hepmc3
     
     # Create a separate build/work directory. This directory should
-    # not be the GramsG4 directory or a sub-directory of it.
+    # not be the GramsG4 directory or a sub-directory of it. This
+    # only has to be done once. 
     cd $GGDIR
     mkdir GramsG4-work
-    cd GramsG4-work
     
     # Build
+    cd GramsG4-work
     cmake $GGDIR/GramsG4
     make
 
@@ -186,7 +191,7 @@ file and edit it:
 
 Of particular interest is the file `mac/sky.mac`, which shows how to generate an energy spectrum from a user-supplied histogram with positions given uniformly by a sphere surrounding the detector. 
 
-For more on the gps commands, see the *References* section near the end of this document. 
+For more on the gps commands, see the [References](#references) section near the end of this document. 
 
 ### Events from an external generator
 
@@ -204,8 +209,6 @@ Note that HepMC3 can also read files in older formats. The format of the file is
 <tr><td>.hepmc3</td><td>HepMC3 ASCII</td></tr>
 <tr><td>.hepmc2</td><td>HepMC2 ASCII</td></tr>
 <tr><td>.hpe</td><td><a href="https://cdcvs.fnal.gov/redmine/projects/minos-sim/wiki/HEPEVT_files">HEPEVT</a> (ASCII)</td></tr>
-<tr><td>.root</td><td>HepMC3 ROOT</td></tr>
-<tr><td>.treeroot</td><td>HepMC3 ROOT TTree</td></tr>
 <tr><td>.lhef</td><td><a href="http://home.thep.lu.se/~leif/LHEF/LHEF_8h_source.html">Les Houches Event File</a></td></tr>
 </table>
 
@@ -217,12 +220,12 @@ If you want to write HepMC3 files, there are a couple of simple examples in the 
    
    - When creating the event->vertex->particles structure for an HepMC3 `GenEvent` object, there must be at least one incoming particle to the vertex even though GramsG4 will only process the outgoing particles. The program `script/hepmc3-grams-example.cc` demonstrates a work-around. 
    
-   - Of the above formats, `.hepmc3` files are closest to human-readable; `.treeroot` files are the easiest to browse using ROOT. 
+   - Of the above formats, `.hepmc3` files are closest to human-readable.
 
 
 ### Program outputs
 
-These are likely to change rapidly as the software improves. This is the state of program outputs as of 31-Jul-2020.
+These are likely to change rapidly as the software improves. This is the state of program outputs as of 17-Mar-2021.
 
 The `gramsg4` program produces only one ROOT output file containing multiple ntuples. The default name of the output file is `gramsg4.root`. This can be changed via a job option (see *Program Options* below); e.g.,
 
@@ -231,15 +234,18 @@ The `gramsg4` program produces only one ROOT output file containing multiple ntu
 will write the output to `myStudy.root`.
 
 There are several ntuples in the ROOT file: 
-   - LArHits, which contains energy deposits in the LAr (both ionization energy and optical photons)
-   - TrackInfo, which contains 'truth' information for all the tracks in the simulation. 
-   - Options, which includes the parsed options for the job (options XML file with the user overrides)
+   - `LArHits`, which contains energy deposits in the LAr (both ionization energy and optical photons);
+   - `ScintillatorHits`, which contains energy deposits in the inner and outer scintillators in the detector;
+   - `TrackInfo`, which contains 'truth' information for all the tracks in the simulation;
+   - `Options`, which includes the parsed options for the job (options XML file with the user overrides).
    
 To understand the structure of the ntuples, either view the contents using ROOT, or look in `$GGDIR/GramsG4/src/GramsG4WriteNtuplesAction.cc`.
 
+For information about what the term "Identifier" means, see `grams.gdml`. (It's explained there, instead of in this documentation, because it's in `grams.gdml` that Identifiers are defined and assigned.)
+
 If you don't know how to browse an ROOT ntuple, I suggest this [ROOT tutorial](https://www.nevis.columbia.edu/~seligman/root-class/).
 
-*Note:* If you run the program with multiple threads (the `--nthreads` option), the events in the ntuples will *not* be ascending numeric order. The G4Track IDs will be in the order that Geant4 processes them, which is *not* in ascending numeric order even if you don't run with multiple threads. Also note that it's possible for an event to leave no energy deposits in the active TPC volume. 
+*Note:* If you run the program with multiple threads (the `--nthreads` option), the events in the ntuples will *not* be ascending numeric order. The G4Track IDs will be in the order that Geant4 processes them, which is *not* in ascending numeric order even if you don't run with multiple threads. Also note that it's possible for an event to leave no energy deposits in an active TPC volume. 
 
 If you're looking for a place to start in accessing the ntuples for analysis, look at `SimpleAnalysis.C` in the `scripts` directory which was copied to your build/work directory. To run it:
 
@@ -348,11 +354,8 @@ it is written in the geometry-definition language [GDML](http://lcgapp.cern.ch/p
 
 If you want to make changes to the detector geometry (including the colors used for
 the `--ui` interactive display), edit `grams.gdml`. If you're having trouble 
-understanding the contents of the file:
-
-   - Read the comments within the file.
-   - Refer to the [GDML manual](http://lcgapp.cern.ch/project/simu/framework/GDML/doc/GDMLmanual.pdf).
-   - Refer to the [Geant4 Applications Guide](http://geant4-userdoc.web.cern.ch/geant4-userdoc/UsersGuides/ForApplicationDeveloper/html/), especially the [geometry section](http://geant4-userdoc.web.cern.ch/geant4-userdoc/UsersGuides/ForApplicationDeveloper/html/Detector/Geometry/geometry.html) which explains the difference between solids, logical volumes, and physical volumes. 
+understanding the contents of the file, start by reading the comments within the file.
+There's more about GDML in the [References](#references) section below. 
 
 ## Program options
 
@@ -409,7 +412,7 @@ However, the contents of this file _define_ those command-line options. For exam
   <option name="energyCut" value="12.5" type="double" desc="muon energy cut [MeV]"/>
 ```
 
-means that you can set energyCut by either editing the XML file, or by using the
+means that you can set `energyCut` by either editing the XML file, or by using the
 option on the command line; e.g.:
 
     ./gramsg4 --energyCut 15.6
@@ -457,7 +460,7 @@ Be careful not to overuse the short options, since they can make the
 command harder to understand. 
 
 If you duplicate the short character between different options the behavior is
-unpredictable. However, case is signficant; e.g., you can do this:
+unpredictable. However, case is significant; e.g., you can do this:
 
 ```
   <option name="energyMin" short="e" value="12.5" type="double" desc="min pion energy [MeV]"/>
@@ -618,6 +621,10 @@ This will show you many places to get started!
 
 ## References
 
+Understanding UNIX:
+   - [UNIXhelp](http://deslab.mit.edu/UNIXhelp/)
+   - [UNIX is a Four Letter Word](https://t-a-y-l-o-r.com/unix/)
+
 Version control system:
    - git: <https://git-scm.com/doc> 
    - git flow: <http://danielkummer.github.io/git-flow-cheatsheet/>
@@ -629,6 +636,11 @@ Some git tips from other collaborations:
 Toolkits:
    - [Geant4 Manual](http://geant4.web.cern.ch/geant4/UserDocumentation/UsersGuides/ForApplicationDeveloper/html/)
    - [ROOT Tutorial](https://www.nevis.columbia.edu/~seligman/root-class/)
+
+GDML detector geometry description
+   - [GDML manual](http://lcgapp.cern.ch/project/simu/framework/GDML/doc/GDMLmanual.pdf)
+   - [Geant4 Applications Guide](http://geant4-userdoc.web.cern.ch/geant4-userdoc/UsersGuides/ForApplicationDeveloper/html/), especially the [geometry section](http://geant4-userdoc.web.cern.ch/geant4-userdoc/UsersGuides/ForApplicationDeveloper/html/Detector/Geometry/geometry.html) which explains the difference between solids, logical volumes, and physical volumes. 
+
 
 Geant4 General Particle Source:
    - [Documentation](http://geant4-userdoc.web.cern.ch/geant4-userdoc/UsersGuides/ForApplicationDeveloper/html/GettingStarted/generalParticleSource.html)

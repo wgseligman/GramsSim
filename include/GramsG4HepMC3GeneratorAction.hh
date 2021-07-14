@@ -9,7 +9,8 @@
 #define _GramsG4HEPMC3GENERATORACTION_H_
 
 #include "G4VUserPrimaryGeneratorAction.hh"
-#include "G4String.hh"
+
+#include <string> 
 
 // Forward declarations
 class G4Event;
@@ -24,7 +25,7 @@ namespace gramsg4 {
   {
   public:
   
-    HepMC3GeneratorAction(const G4String& inputFile);
+    HepMC3GeneratorAction(const std::string& inputFile);
     ~HepMC3GeneratorAction();
   
     virtual void GeneratePrimaries(G4Event* anEvent);
@@ -44,7 +45,7 @@ namespace gramsg4 {
   private:
 
     // The input file of generated events.
-    G4String m_inputFile;
+    std::string m_inputFile;
 
     // The HepMC3 module to read events. The choice of module
     // is based on the input file name extension (the part 

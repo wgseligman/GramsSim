@@ -6,13 +6,19 @@
 // 
 // ... those portions, in turn, came from Geant4 example HepMCEx01. 
 
+// 23-Mar-2021 WGS: In upgrading to ROOT 6.22.06, somehow a compilation
+// issue has come up between ROOT and HepMC3. Re-compiling both ROOT and
+// HepMC3 with fresh build and install directories does not solve the
+// problem. Since ROOT I/O with HepMC3 is a marginal use case anyway,
+// comment out the ROOT-based HepMC3 code until or unless we're motivated
+// to resolve the problem. 
+
 #include "GramsG4HepMC3GeneratorAction.hh"
 
 #include "G4Event.hh"
 #include "G4TransportationManager.hh"
 #include "G4VPhysicalVolume.hh"
 #include "G4Exception.hh"
-#include "G4String.hh"
 
 #include "Options.h" // in util/
  
@@ -24,15 +30,16 @@
 #include "HepMC3/ReaderAsciiHepMC2.h"
 #include "HepMC3/ReaderHEPEVT.h"
 #include "HepMC3/ReaderLHEF.h"
-#include "HepMC3/ReaderRoot.h"
-#include "HepMC3/ReaderRootTree.h"
- 
+//#include "HepMC3/ReaderRoot.h"
+//#include "HepMC3/ReaderRootTree.h"
+
+#include <string> 
 
 namespace gramsg4 {
 
   //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-  HepMC3GeneratorAction::HepMC3GeneratorAction(const G4String& a_inputGen)
+  HepMC3GeneratorAction::HepMC3GeneratorAction(const std::string& a_inputGen)
     : G4VUserPrimaryGeneratorAction()
     , m_inputFile(a_inputGen)
     , m_reader(nullptr)
@@ -105,10 +112,12 @@ namespace gramsg4 {
       m_reader = new HepMC3::ReaderAscii(m_inputFile);
     else if ( extension == "hpe" )
       m_reader = new HepMC3::ReaderHEPEVT(m_inputFile);
+    /*
     else if ( extension == "root" )
       m_reader = new HepMC3::ReaderRoot(m_inputFile);
     else if ( extension == "treeroot" )
       m_reader = new HepMC3::ReaderRootTree(m_inputFile);
+    */
     else if ( extension == "lhef" )
       m_reader = new HepMC3::ReaderLHEF(m_inputFile);
     else {

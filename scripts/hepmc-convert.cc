@@ -7,14 +7,17 @@
  *  @example hepmc-convert.cc
  *  @brief Convert between HepMC3 file format.
  *
- *  This is a simple HepMC3 file converter. It's so simple
- *  (or perhaps the programmer is so simple) that it isn't
- *  even automatically compiled by CMake; the compilation
- *  command is:
- *
- *  g++ hepmc-convert.cc `root-config --cflags --libs` `HepMC3-config --cflags --libs --rootIO` -o hepmc-convert
+ *  This is a simple HepMC3 file converter. See the README.md in this
+ *  directory for more information.
  *
  */
+//
+// 23-Mar-2021 WGS: In upgrading to ROOT 6.22.06, somehow a compilation
+// issue has come up between ROOT and HepMC3. Re-compiling both ROOT and
+// HepMC3 with fresh build and install directories does not solve the
+// problem. Since ROOT I/O with HepMC3 is a marginal use case anyway,
+// comment out the ROOT-based HepMC3 code until or unless we're motivated
+// to resolve the problem. 
  
 #include "HepMC3/Attribute.h"
 #include "HepMC3/GenEvent.h"
@@ -24,14 +27,14 @@
 #include "HepMC3/ReaderAsciiHepMC2.h"
 #include "HepMC3/ReaderHEPEVT.h"
 #include "HepMC3/ReaderLHEF.h"
-#include "HepMC3/ReaderRoot.h"
-#include "HepMC3/ReaderRootTree.h"
+//#include "HepMC3/ReaderRoot.h"
+//#include "HepMC3/ReaderRootTree.h"
 #include "HepMC3/Writer.h"
 #include "HepMC3/WriterAscii.h"
 #include "HepMC3/WriterAsciiHepMC2.h"
 #include "HepMC3/WriterHEPEVT.h"
-#include "HepMC3/WriterRoot.h"
-#include "HepMC3/WriterRootTree.h"
+//#include "HepMC3/WriterRoot.h"
+//#include "HepMC3/WriterRootTree.h"
 
 #include <cstring>
 #include <iostream>
@@ -75,10 +78,12 @@ int main(int argc, char **argv) {
     reader = new HepMC3::ReaderAscii(inputFile);
   else if ( extension == "hpe" )
     reader = new HepMC3::ReaderHEPEVT(inputFile);
+  /*
   else if ( extension == "root" )
     reader = new HepMC3::ReaderRoot(inputFile);
   else if ( extension == "treeroot" )
     reader = new HepMC3::ReaderRootTree(inputFile);
+  */
   else if ( extension == "lhef" )
     reader = new HepMC3::ReaderLHEF(inputFile);
   else {
@@ -119,10 +124,12 @@ int main(int argc, char **argv) {
     writer = new HepMC3::WriterAscii(outputFile);
   else if ( extension == "hpe" )
     writer = new HepMC3::WriterHEPEVT(outputFile);
+  /*
   else if ( extension == "root" )
     writer = new HepMC3::WriterRoot(outputFile);
   else if ( extension == "treeroot" )
     writer = new HepMC3::WriterRootTree(outputFile);
+  */
   else {
     std::cerr 
       << "Did not recognize extension '"

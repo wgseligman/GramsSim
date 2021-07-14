@@ -36,7 +36,7 @@ namespace util {
     bool GetOption(const std::string name, bool& value) const;
     bool GetOption(const std::string name, std::string& value) const;
 
-    /// Display all the options as a tab;e.
+    /// Display all the options as a table.
     void PrintOptions() const;
 
     /// Display all the options as a help message.

@@ -3,7 +3,7 @@
 
 #----------------------------------------------------------------------------
 # Setup the project
-cmake_minimum_required(VERSION 2.8 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.6 FATAL_ERROR)
 project(GramsG4)
 
 # Add source dir as a place for CMake modules
@@ -78,7 +78,7 @@ target_link_libraries(gramsg4 ${Geant4_LIBRARIES} )
 # build GramsG4. This is so that we can run the executable directly because it
 # relies on these scripts being in the current working directory.
 #
-set(GramsG4_SCRIPTS grams.gdml options.xml)
+set(GramsG4_SCRIPTS grams.gdml options.xml README.md)
 
 foreach(_script ${GramsG4_SCRIPTS})
   configure_file(
@@ -88,6 +88,7 @@ foreach(_script ${GramsG4_SCRIPTS})
     )
 endforeach()
 
+# Copy the aux work files. 
 add_subdirectory(GDMLSchema)
 add_subdirectory(mac)
 add_subdirectory(scripts)
@@ -102,8 +103,3 @@ add_custom_target(GramsG4 DEPENDS gramsg4)
 # Install the executable to 'bin' directory under CMAKE_INSTALL_PREFIX
 #
 install(TARGETS gramsg4 DESTINATION bin)
-
-# Set the compiler to the c++17 standard.  If I was more sophisticated
-# with CMake scripting, I'd set this to something like "set this to
-# c++17 or higher if our packages support it".  
-set(CMAKE_CXX_STANDARD 17)

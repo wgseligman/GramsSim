@@ -1,0 +1,5 @@
+
+# The particle: 0.5 MeV monoenergetic gamma
+/gps/particle gamma
+/gps/ene/type Mono
+/gps/ene/mono 0.5 MeV

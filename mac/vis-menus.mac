@@ -1,3 +1,12 @@
+# This is an example of how to use the "addMenu" and
+# "addButton" commands to issue commands within the
+# Geant4 visualizer. 
+
+# Because it takes multiple command to successfully switch
+# between views, this macro file requires some external
+# files to function. See the addButton commands below 
+# for a list of those files.
+
 # Use this open statement to create an OpenGL view:
 /vis/open OGL 600x600-0+0
 #
@@ -29,16 +38,6 @@
 #
 # Specify style (surface or wireframe):
 #/vis/viewer/set/style wireframe
-#
-# Draw coordinate axes.
-# For GRAMS, offset the axis by y-2.5 m so the axes are
-# visible outside of the detector. 
-/vis/scene/add/axes 0 -2.5 0 1 m
-# Add an axis label.
-/vis/set/textColour white
-#                   x   y    z  units size x-offset y-offset text
-/vis/scene/add/text 0 -2.5 -0.15   m   9    0        0       displaced det
-/vis/scene/add/text 0 -2.5 -0.25   m   9    0        0       coord y->y-2.5 m
 #
 # Draw smooth trajectories at end of event, showing trajectory points
 # as markers 2 pixels wide:
@@ -75,39 +74,39 @@
 #/vis/viewer/flush
 #
 # 11-May-2020 WGS: Let the view match the coordinate system of GRAMS
-/vis/viewer/set/viewpointVector 0.92455 -0.358368 -0.129536
-/vis/viewer/set/upVector 0 0 1
-/vis/viewer/set/projection orthogonal
-/vis/viewer/zoomTo 1.48517
-/vis/viewer/scaleTo 1 1 1
+/control/execute mac/wide-view.mac
+
+# 23-Feb-2020 WGS: A menu to quickly switch views
+/gui/addMenu views Views
+/gui/addButton views "Draw Axes" "/control/execute mac/draw-axes.mac"
+/gui/addButton views "Wide view" "/control/execute mac/wide-view.mac"
+/gui/addButton views "Angle" "/control/execute mac/angle-view.mac"
+/gui/addButton views "X-view" "/control/execute mac/x-view.mac"
+/gui/addButton views "Y-view" "/control/execute mac/y-view.mac"
+/gui/addButton views "Z-view" "/control/execute mac/z-view.mac"
 
 # 01-Aug-2020 WGS: Set the initial particle parameters for the UI
 # display.  This is so we display something mildly interesting. These
 # GPS (General Particle Source) commands can be overridden from within
 # the display.
 
-# The particles: gammas using the energy spectrum in
-# energyflux.txt. See scripts/Hist2Text.C for how to convert a ROOT
-# histogram into Geant4's simple histogram text format.
+# Initially, Crab Nebula power-law spectrum
+/control/execute mac/energy-crab.mac
 
-/gps/particle gamma 
-/gps/ene/type Arb
-/gps/hist/type arb
-/gps/hist/file scripts/energyflux.txt
-/gps/hist/inter Lin
+# Initially, from above. 
+/control/execute mac/plane-vertical.mac
 
-# Put the detector in the middle of sphere, to simulate isotropic
-# radiation from the sky. Recall that z=0 is located at the induction
-# plane, so we have to adjust things a bit to focus the particles
-# from the sphere on the center (or centre!) of the detector. 
+/gui/addMenu source Source
+/gui/addButton source "Direction: Vertical" "/control/execute mac/plane-vertical.mac"
+/gui/addButton source "Direction: 45 degrees" "/control/execute mac/plane-45.mac"
+/gui/addButton source "Energy: Crab Nebula power-law" "/control/execute mac/energy-crab.mac"
+/gui/addButton source "Energy: 0.25 MeV gamma" "/control/execute mac/energy-mono-0.25MeV.mac"
+/gui/addButton source "Energy: 0.5 MeV gamma" "/control/execute mac/energy-mono-0.5MeV.mac"
+/gui/addButton source "Energy: 1 MeV gamma" "/control/execute mac/energy-mono-1MeV.mac"
+/gui/addButton source "Energy: 2 MeV gamma" "/control/execute mac/energy-mono-2MeV.mac"
+/gui/addButton source "Energy: 4 MeV gamma" "/control/execute mac/energy-mono-4MeV.mac"
+/gui/addButton source "Energy: 8 MeV gamma" "/control/execute mac/energy-mono-8MeV.mac"
 
-/gps/pos/type Surface
-/gps/pos/shape Sphere
-/gps/pos/radius 3 m
-/gps/pos/centre 0 0 -0.1 m
+# Show what's going on
+/gps/verbose 1
 
-/gps/ang/type focused
-/gps/ang/focuspoint 0 0 -0.1 m
-
-# See detailed gps information
-/gps/verbose 2

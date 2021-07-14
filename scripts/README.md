@@ -6,6 +6,19 @@ inputs and outputs.
 `SimpleAnalysis.C` - a very simple example of how to look at the
 ntuples produced by gramsg4.
 
+`RadialDistance.py` - a more realistic example of how to look at the
+ntuples produced by gramsg4, this time in Python.
+
+`dEdxExample.cc` - an example of how to link the output ntuples from
+gramsg4 and use those ntuples for a physics calculation. There are
+lots of detailed comments in here, to illustrate how to use features
+of ROOT's RDataFrame.
+
+`HitRestructure.cc` - an example of how to take the LArHits ntuple
+from the gramsg4 output, which has one row per hit, and turn the
+collection of hits for a given run/event/trackID into a single row
+with vectors of hit information.
+
 `Hist2Text.C` - converts a ROOT histogram into the simple text format
 used by Geant4's General Particle Source system. Any `.root` or `.txt`
 files in this directory are used as example inputs and outputs for
@@ -19,17 +32,14 @@ ${HepMC3_ROOT_DIR}/share/doc/HepMC3/examples are better illustrations,
 but they don't necessarily produce outputs that are useful for
 GramsG4.
 
-These programs aren't included in the CMake compilation process,
-mainly because the programmer (William Seligman) isn't facile enough
-with CMake to add them to CMakeLists.txt. To compile the programs:
+The compiled programs are put into the bin/ sub-directory of your
+GramsG4 working/build directory. To execute them, you'll want 
+something like:
 
-    prog=[program name]
-    g++ ${prog}.cc \
-       `root-config --cflags --libs` \
-       `HepMC3-config --cflags --libs --rootIO` \
-       -o ${prog}
+    # Go to your GramsG4 build directory
+    ./bin/hepmc-grams-example
 
-The two programs are:
+The programs are:
 
 `hepmc-grams-example` - Creates a few example events "by hand" and
 write them to a file.

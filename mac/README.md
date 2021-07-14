@@ -20,6 +20,12 @@ See README.md in the parent directory for more information.
 the detector (the 'sky') focused on the center of the TPC. The energy
 spectrum comes from a histogram (see scripts/Hist2Text.C).
 
+`crab.mac` - a crude approximation of gammas from the Crab Nebula
+directed at the top of the GRAMS detector.
+
+`crab-45.mac` - a crude approximation of gammas from the Crab Nebula
+directed at the top of the GRAMS detector at 45-degree angle.
+
 `vis.mac` - setup for interactive display. Particles are aimed along
 the negative z-direction randomly across the top face of the inner
 detector.
@@ -33,6 +39,11 @@ energy spectrum comes from a histogram (see scripts/Hist2Text.C).
 so that it's more suitable for inclusion in talks. Give this one some
 extra time to load, since it's turning off the visibility for a number
 of volumes.
+
+`vis-menus.mac` - a fancy demonstration of how to switch commands via
+menus at the top of the G4 visualizer. This macro file invokes the
+`draw-axes.mac`, `angle-view.mac`, `{x,y,z}-views.mac`,
+`energy-*.mac`, and `plane-*.mac` sub-files from within its menus.
 
 `debug-geom.mac` - run Geant4's geometry validation (takes a long time!)
 

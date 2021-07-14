@@ -1,0 +1,34 @@
+###################################################
+# An extremely crude simulation of MeV-level
+# photons coming from the Crab Nebula (M1)
+# directing from directly above the GRAMS
+# detector.
+###################################################
+
+# verbosity
+/tracking/verbose 0
+/control/verbose 1
+/run/verbose 2
+
+# 
+# From Naomi Tsuji, the power-law spectrum of the Crab Nebula. 
+/gps/particle gamma
+/gps/ene/type Pow 
+/gps/ene/min 1 MeV
+/gps/ene/max 10 MeV
+/gps/ene/alpha -2.17
+
+# Generate particles in a plane above the surface of the detector.
+/gps/pos/type Plane
+/gps/pos/shape Square
+/gps/pos/centre 0 0 2 m
+/gps/pos/halfx 0.7 m
+/gps/pos/halfy 0.7 m
+
+# We want the particle to be aimed in the negative z-direction. 
+/gps/direction 0 0 -1
+
+# This means "run Geant4 and generate 1000 events"
+/run/beamOn 1000
+
+exit
