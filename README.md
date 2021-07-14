@@ -622,8 +622,8 @@ This will show you many places to get started!
 ## References
 
 Understanding UNIX:
-   - [UNIXhelp](http://deslab.mit.edu/UNIXhelp/)
-   - [UNIX is a Four Letter Word](https://t-a-y-l-o-r.com/unix/)
+   - [UNIX tutorial for beginners](http://www.ee.surrey.ac.uk/Teaching/Unix/)
+   - [Learn UNIX](https://www.tutorialspoint.com/unix/index.htm)
 
 Version control system:
    - git: <https://git-scm.com/doc> 
