@@ -4,11 +4,15 @@ A description of major development milestones. The most recent are at
 the top. For a detailed list of all changes (basically, every time
 someone typed "git commit"), see the output of "git log".
 
+Jul-2021:
+
+   - Fixed issue with compiled ROOT-based HepMC3. (It required making sure that ROOT, HepMC3, and Geant4 were all compiled with the same version of the GCC compiler.)
+
 Jun-2021: 
 
    - Increased the z-depth of the LArTPC to 30cm. 
    - Tweaked compilation process; now assumes that ROOT and Geant4 were compiled with the same C++ version (instead of imposing C++17).
-   - Added more examples programs (dEdxExample and HitRestructure).
+   - Added more example programs (dEdxExample and HitRestructure).
 
 Mar-2021:
 
