@@ -202,7 +202,7 @@ GramsG4 can read files of events in [HepMC3](https://gitlab.cern.ch/hepmc/HepMC3
 
     ./gramsg4 --macrofile mac/hepmc3.mac --inputgen scripts/example.hepmc3
 
-Note that HepMC3 can also read files in older formats. The format of the file is assumed to match the file's extension (the part after the final period ".") as follows:
+Note that HepMC3 can also read files in various formats. The format of the file is assumed to match the file's extension (the part after the final period ".") as follows:
 
 <table>
 <tr><th>Extension</th><th>Format</th></tr>
@@ -210,6 +210,8 @@ Note that HepMC3 can also read files in older formats. The format of the file is
 <tr><td>.hepmc2</td><td>HepMC2 ASCII</td></tr>
 <tr><td>.hpe</td><td><a href="https://cdcvs.fnal.gov/redmine/projects/minos-sim/wiki/HEPEVT_files">HEPEVT</a> (ASCII)</td></tr>
 <tr><td>.lhef</td><td><a href="http://home.thep.lu.se/~leif/LHEF/LHEF_8h_source.html">Les Houches Event File</a></td></tr>
+<tr><td>.root</td><td>HepMC3 ROOT</td></tr>
+<tr><td>.treeroot</td><td>HepMC3 ROOT TTree</td></tr>
 </table>
 
 If you want to write HepMC3 files, there are a couple of simple examples in the `scripts/` directory. More detailed examples can be found in the `examples/` directory within the HepMC3 distribution. 
