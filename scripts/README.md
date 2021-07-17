@@ -42,7 +42,7 @@ something like:
 The programs are:
 
 `hepmc-grams-example` - Creates a few example events "by hand" and
-write them to a file.
+writes them to a file.
 
 `hepmc-convert` - Converts one HepMC3-format file to another HepMC3
 format. See the main README.md file for a list of available formats
