@@ -144,6 +144,7 @@ agree with a single tag-block within the XML file; as noted above we use
 `gramsg4` here as an example. 
 ```
 #include "Options.h"
+#include <iostream> 
 // ...
 
 int main( int argc, char** argv ) {
@@ -156,10 +157,12 @@ int main( int argc, char** argv ) {
     auto result = options->ParseOptions(argc, argv, "gramsg4");
 
     // Abort if we couldn't parse the job options.
-    if (result) G4cout << "ParseOptions succeeded" << G4endl;
+    if (result) std::cout << "ParseOptions succeeded" << std::endl;
     else {
         std::cerr << "ABORT: File " << __FILE__ << " Line " << __LINE__ << " " 
-                << std::endl << "Aborting job due to failure to parse options";
+                << std::endl 
+                << "Aborting job due to failure to parse options"
+                << std::endl;
         exit(EXIT_FAILURE);
     }
 }
@@ -181,6 +184,7 @@ in the options XML File:
 
 ```  
   #include "Options.h" 
+  #include <iostream> 
   // ...
   auto options = util::Options::GetInstance();
   double myCut;
@@ -190,7 +194,9 @@ in the options XML File:
   }
   else {
     std::cerr << "File " << __FILE__ << " Line " << __LINE__ << " " 
-           << std::endl << "There is no floating-point option defined for 'energyCut'";
+           << std::endl 
+           << "There is no floating-point option defined for 'energyCut'"
+           << std::endl;
   }
 
 ```
