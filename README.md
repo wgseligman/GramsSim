@@ -490,10 +490,10 @@ You need the programming to do something with that option.
 Within the code, you can access the value of a given option:
 
 ```
-  #include "Options.h"
+  #include "Options.h" 
   // ...
   std::string optionValue; /* ... or int or double or bool ... */
-  auto success = GramsG4Options::GetInstance()->GetOption("option-name",optionValue);
+  auto success = util::Options::GetInstance()->GetOption("option-name",optionValue);
   if (success) { ... do whatever with optionValue ... }
   else { there is no option with name "option-name" that is of the type of optionValue }
 ```  
@@ -501,9 +501,9 @@ Within the code, you can access the value of a given option:
 For example:
 
 ```  
-  #include "Options.h"
+  #include "Options.h" 
   // ...
-  auto options = GramsG4Options::GetInstance();
+  auto options = util::Options::GetInstance();
   G4double myCut;
   auto success = options->GetOption("energyCut",myCut);
   if (success) { 
