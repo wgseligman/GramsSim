@@ -368,6 +368,8 @@ next couple of sections. Otherwise, skip to physics lists below.
 
 ### Options XML file - details
 
+*See `util/README.md` for more information.*
+
 What you'll first notice that is that within the global `<parameters>` tag there are
 at least two sections. It looks something like this:
 
