@@ -10,7 +10,7 @@
 
 // The program reads an ntuple that was created by
 // HitRestructre.cc. It appends a column to that dataframe that
-// contains the dE/dx for hit in that ntuple row.
+// contains the dE/dx for each hit.
 
 // We're going to use the ROOT::RDataFrame class to read and write the ntuple.
 
@@ -64,7 +64,7 @@ double dEdx(double xStart,
   static const double small = 1.e-20;
   if ( dx < small ) return 0.;
 
-  // Calculation dE/dx.
+  // Calculate dE/dx.
   return energy/dx;
 }
 
@@ -74,7 +74,7 @@ double dEdx(double xStart,
 // values. However, we're working with an ntuple with columns that
 // contain entire vectors, not just single values. Therefore, we need
 // another function that accepts vectors as arguments and applies the
-// above function to every entry in the vector.
+// above function to every element in the vector.
 
 // Complication: When reading in vectors using RDataFrame, you have to
 // use RVec. This will be fixed in a future version of ROOT (6.26+),
