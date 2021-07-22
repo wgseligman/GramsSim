@@ -1,7 +1,8 @@
 # GramsG4 scripts
 
 This directory contains utility scripts to help work with GramsG4
-inputs and outputs.
+inputs and outputs. Some of the programs are provided solely to teach
+programming concepts for folks new to handling ntuples and dataframes.
 
 `SimpleAnalysis.C` - a very simple example of how to look at the
 ntuples produced by gramsg4.
@@ -18,6 +19,10 @@ of ROOT's RDataFrame.
 from the gramsg4 output, which has one row per hit, and turn the
 collection of hits for a given run/event/trackID into a single row
 with vectors of hit information.
+
+`RestructuredEdx.cc` - an example of how to read in an ntuple with
+columns that contains vectors (eg., the output of HitRestructure) and
+append a new column that also contains a vector.
 
 `Hist2Text.C` - converts a ROOT histogram into the simple text format
 used by Geant4's General Particle Source system. Any `.root` or `.txt`
