@@ -165,11 +165,10 @@ int main( int argc, char** argv ) {
   // .Define methods.
 
   // I'm doing something different with .Define than in my other
-  // programs: Instead of a lambda function, instead I'm supplying the
-  // name of a function that I've previously defined above. Due to the
-  // way RDataFrame works, the arguments to that function will be
-  // whatever columns I supply as a list as the third argument to
-  // .Define.
+  // programs: Instead of a lambda function, I'm supplying the name of
+  // a function that I've previously defined above. Due to the way
+  // RDataFrame works, the arguments to that function will be whatever
+  // columns I supply in a list as the third argument to .Define.
 
   // All these names don't have to be the same (the names I used in
   // the physics calculation, the names I used in the vector
