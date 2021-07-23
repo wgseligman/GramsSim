@@ -6,6 +6,7 @@ someone typed "git commit"), see the output of "git log".
 
 Jul-2021:
 
+   - Added another example program, RestrucredEdx.
    - Fixed issue with compiled ROOT-based HepMC3. (It required making sure that ROOT, HepMC3, and Geant4 were all compiled with the same version of the GCC compiler.)
 
 Jun-2021: 
