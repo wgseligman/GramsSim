@@ -47,8 +47,8 @@ Anatomy of <option> tag:
    short - optional one-character abbreviation for
            a short command-line option
            
-   value - the number/text/bool used by the program;
-           can be overriden on the command line
+   value - the number/text/bool passed to the program;
+           can be overridden on the command line
 
    type  - string/bool/integer/double
    
@@ -57,13 +57,14 @@ Anatomy of <option> tag:
 ```
 
 Note that the options in this XML file can be overridden by command-line options.
-However, the contents of this file _define_ those command-line options. For example:
+However, the contents of this file _define_ those command-line options. For example, assume 
+this line appears in the XML file:
 
 ```  
   <option name="energyCut" value="12.5" type="double" desc="muon energy cut [MeV]"/>
 ```
 
-means that you can set `energyCut` by either editing the XML file, or by using the
+This means that you can set `energyCut` by either editing the XML file, or by using the
 option on the command line; e.g.:
 
     ./gramsg4 --energyCut 15.6
@@ -75,7 +76,7 @@ current directory. You can override this on the command line; e.g.:
 
 If you're going to use that format, the XML file name must be the
 first argument. You can also supply the XML file name via the
---options option, e.g.:
+`--options` option, e.g.:
 
     ./gramsg4 --options myWorkDirectory/myOptions.xml
 
@@ -172,7 +173,9 @@ After that one-time initialization in your main routine, you can access the valu
 
 ```
   #include "Options.h" 
+  
   // ...
+  
   std::string optionValue; /* ... or int or double or bool ... */
   auto success = util::Options::GetInstance()->GetOption("option-name",optionValue);
   if (success) { ... do whatever with optionValue ... }
@@ -186,7 +189,9 @@ in the options XML File:
   #include "Options.h" 
   #include <iostream> 
   // ...
+  // Save the pointer to the Options object.
   auto options = util::Options::GetInstance();
+  // ...
   double myCut;
   auto success = options->GetOption("energyCut",myCut);
   if (success) { 
@@ -205,7 +210,7 @@ in the options XML File:
 
 The method `util::Options::PrintHelp()` can be used to implement the `-h` and `--help` options for your program:
 ```
-// Check for help message.
+  // Check for help message.
   bool help;
   options->GetOption("help",help);
   if (help) {
