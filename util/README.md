@@ -251,5 +251,69 @@ See options.xml for details.
 
 ```
 
+### Other `Options` methods.
 
+#### Displaying a table of all the options
 
+`util::Options::PrintOptions()` will print all the options and their values as a text table. 
+This is handy for debugging. In the caste of `gramsg4`, the `PrintHelp()` method is called
+if the `--verbose` or `-v` option is turned on:
+
+In the code:
+
+```
+  bool verbose;
+  options->GetOption("verbose",verbose);
+  if (verbose) {
+    // Display all program options and physics lists.
+    options->PrintOptions();
+    PrintAvailablePhysics();
+  }
+
+```
+
+On 28-Jul-2021, the output from `./gramsg4 -v` included:
+
+```
+20 options:
+Option            short  value                            type       desc                
+------            -----  -----                            ----       ----                
+debug               d    false                            bool       
+gdmlfile            g    grams.gdml                       string     input GDML detector desc
+gdmlout                                                   string     write parsed GDML to this file
+help                h    false                            bool       show help then exit
+inputgen            i                                     string     input generator events
+larstepsize              0.020000                         double     LAr TPC step size
+macrofile           m    mac/batch.mac                    string     G4 macro file
+noscint                  false                            bool       turn off scintillation
+nthreads            t    0                                integer    number of threads
+options                  options.xml                      string     XML file of options
+outputfile          o    gramsg4                          string     output file
+physicslist         p    FTFP_BERT_LIV+OPTICAL+STEPLIMIT  string     physics list
+rngdir                                                    string     rng save/restore directory
+rngperevent              0                                integer    rng save per event
+rngrestorefile                                            string     restore rng from file
+rngseed             s    -1                               integer    random number seed
+showphysicslists    l    false                            bool       show physics lists then exit
+ui                       false                            bool       start UI session
+uimacrofile              mac/vis-menus.mac                string     G4 macro file for UI
+verbose             v    true                             bool       display details
+```
+
+#### Going through options one-by-one
+
+There are times when it's useful to "iterate" through the internal table of all available options;
+for example, to save the options in an ntuple for later reference. The following methods are available:
+
+```
+    /// Provide a way to access the "i-th" option stored by this
+    /// class. Note that these routines are very inefficient (map
+    /// iterators are not random-access) so don't use them inside
+    /// frequently-executed loops and such.
+    size_t NumberOfOptions() const;
+    std::string GetOptionName( size_t i ) const;
+    std::string GetOptionValue( size_t i ) const;
+    std::string GetOptionType( size_t i ) const;
+    std::string GetOptionBrief( size_t i ) const;
+    std::string GetOptionDescription( size_t i ) const;
+```
