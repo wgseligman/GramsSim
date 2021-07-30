@@ -18,9 +18,23 @@
 #include "G4Event.hh"
 #include "G4SDManager.hh"
 #include "G4Threading.hh"
+#include "G4AutoLock.hh"
 
 namespace gramsg4 {
 
+  // In a multi-threaded application, there's an issue: std::vector
+  // operations are not thread-safe. Vectors can reallocate their
+  // memory, and we get into trouble when two or more vectors try to
+  // reallocate memory at once.
+
+  // To get around this, use G4's locking mechanism (which is
+  // basically a wrapper around the standard C++ mutex). See
+  // $G4INSTALL/include/G4AutoLock.hh for details.
+  static G4Mutex aMutex;
+
+  //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+
+  // Default constructor. 
   WriteNtuplesAction::WriteNtuplesAction()
     : UserAction()
     , m_LArHitCollectionID(-1)
@@ -29,6 +43,7 @@ namespace gramsg4 {
 
   //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
+  // Destructor.
   WriteNtuplesAction::~WriteNtuplesAction() {}
 
   //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -39,8 +54,9 @@ namespace gramsg4 {
   void WriteNtuplesAction::BeginOfRunAction(const G4Run*) {
     // Access (maybe create) the G4AnalysisManager.
     auto analysisManager = G4AnalysisManager::Instance();
+
     // Without this, each execution thread writes its own file, or
-    // perhaps each event will have its own set of ntuples.. It may
+    // perhaps each event will have its own set of ntuples. It may
     // turn out that's what we want after all, but let's see. Note
     // that a consequence of merging files is that the events may not
     // be in order in the output file if you use multiple threads.
@@ -161,13 +177,18 @@ namespace gramsg4 {
     analysisManager->FinishNtuple();
 
     // Yet another ntuple: This contains the options used to run this
-    // program. Why do this? Isn't there an options.xml file that
-    // tells us which options were used? Not necessarily. For one
-    // thing, the user may have overridden options using the command
-    // line; this ntuple will record any such changes. Also, I find
-    // that often in an analysis I keep many files created by many
-    // jobs with many versions. If we store the exact options used to
-    // generate a file, we have a better chance of recreating results.
+    // program. 
+
+    // Why do this? Isn't there an options.xml file that tells us
+    // which options were used? Not necessarily. For one thing, the
+    // user may have overridden options using the command line; this
+    // ntuple will record any such changes.
+
+    // Also, I find that often in an analysis I keep many files
+    // created by many jobs with many versions. If we store the exact
+    // options used to generate a file, we have a better chance of
+    // recreating results.
+
     m_optionsNTID = analysisManager->CreateNtuple("Options", "Options used for this program");
     if (m_debug) 
       G4cout << "WriteNtuplesAction::() - "
@@ -190,11 +211,11 @@ namespace gramsg4 {
     // master thread, we get lots of annoying (but harmless) error
     // messages. The following test makes sure we only fill the ntuple
     // if there are no threads (SEQUENTIAL_ID), or for a single worker
-    // thread (WORKER_ID = 0) in a multi-threaded application.
+    // thread (ID == 0) in a multi-threaded application.
 
     auto threadID = G4Threading::G4GetThreadId();
     if ( threadID == G4Threading::SEQUENTIAL_ID  ||  
-	 threadID == G4Threading::WORKER_ID ) {
+	 threadID == 0 ) {
 
       // Write the options to the ntuple.
       auto numOptions = options->NumberOfOptions();
@@ -380,7 +401,14 @@ namespace gramsg4 {
     if (m_debug) 
       G4cout << "WriteNtuplesAction::PostTrackingAction - Adding row" << G4endl;
 
-    analysisManager->AddNtupleRow(m_TrackNTID);  
+    // It appears that the analysis manager has a problem writing
+    // vectors in a multi-threaded environment. Within the scope of
+    // the braces, G4AutoLock will make sure only a single thread can
+    // execute this block of code.
+    {
+      G4AutoLock lock(&aMutex);
+      analysisManager->AddNtupleRow(m_TrackNTID);  
+    }
   }
 
   //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -459,6 +487,11 @@ namespace gramsg4 {
   }
 
   void WriteNtuplesAction::ClearTrajectory() {
+    // There's a small chance that std::vector::clear might cause a
+    // memory reallocation, so lock the following code so only one
+    // thread can execute it.
+    G4AutoLock lock(aMutex);
+
     // Clear all the trajectory vectors. 
     m_time.clear();
     m_xpos.clear();
@@ -471,8 +504,11 @@ namespace gramsg4 {
     m_identifier.clear();
   }
 
-  size_t WriteNtuplesAction::AddTrajectoryPoint( const G4Track* a_track )
+  void WriteNtuplesAction::AddTrajectoryPoint( const G4Track* a_track )
   {
+    // Lock the following code so only one thread can execute it.
+    G4AutoLock lock(aMutex);
+
     // Add the components of our two 4-vectors (t,x,y,z) (E,px,py,pz)
     // to the individual std::vectors.
     m_time.push_back( a_track->GetGlobalTime() );
@@ -484,10 +520,6 @@ namespace gramsg4 {
     m_ymom.push_back( a_track->GetMomentum().y() );
     m_zmom.push_back( a_track->GetMomentum().z() );
     m_identifier.push_back( a_track->GetVolume()->GetCopyNo() );
-
-    // All the std::vectors should be the same size, so pick one and
-    // return its size.
-    return m_time.size();
   }
 
 } // namespace gramsg4

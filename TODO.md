@@ -3,11 +3,10 @@
 As of 22-May-2021:
 
 - Multi-threaded execution
-   - gramsg4 crashes if -t is set higher than 1.
    - Test the saving and restoring of random-number states.
 
 - Scintillator hits
-   - Requires a two-way map of strip geometry to (x,y,z).
+   - It would be handy to provide a two-way map of strip geometry to (x,y,z).
 
 - Improve SimpleAnalysis.C
    - Perhaps a concrete example of turning the LAr hits to an image format for ML studies.
@@ -19,6 +18,8 @@ As of 22-May-2021:
       - Answer: As of ROOT 6.20, the answer is no. It must be parsed with --gdmlout first.
 
 ## Resolved issues:
+
+- Multi-threaded execution no longer causes the program to crash. 
 
 - UI display
    - Does OpenGL support display of hit/track information on mouse hover?

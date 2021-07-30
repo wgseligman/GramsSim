@@ -69,9 +69,8 @@ namespace gramsg4 {
     void ClearTrajectory();
 
     // Add the current track's trajectory information; e.g.,
-    // (t,x,y,z), (E,px,py,pz). Return the number of trajectory points
-    // we've recorded so far.
-    size_t AddTrajectoryPoint( const G4Track* );
+    // (t,x,y,z), (E,px,py,pz).
+    void AddTrajectoryPoint( const G4Track* );
 
     // Create trajectory information for each track. In this case, a
     // trajectory will be set of (t,x,y,z) and (E,px,py,pz)
