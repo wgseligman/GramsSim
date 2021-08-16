@@ -53,7 +53,6 @@ writes them to a file.
 format. See the main README.md file for a list of available formats
 and other notes.
 
-`example.hepmc3` - an file of a few events in HepMC3 format. It was
-created with a combination of `hepmc-grams-example` (to generate a
-`.root` file) and `hepmc-convert` (to convert it to a `.hepmc3` file).
+`example.hepmc3` - a file of a few events in HepMC3 format.
+
 

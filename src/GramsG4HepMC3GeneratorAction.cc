@@ -23,8 +23,10 @@
 #include "HepMC3/ReaderAsciiHepMC2.h"
 #include "HepMC3/ReaderHEPEVT.h"
 #include "HepMC3/ReaderLHEF.h"
+#ifdef HEPMC3_ROOTIO
 #include "HepMC3/ReaderRoot.h"
 #include "HepMC3/ReaderRootTree.h"
+#endif
 
 #include <string> 
 
@@ -105,12 +107,14 @@ namespace gramsg4 {
       m_reader = new HepMC3::ReaderAscii(m_inputFile);
     else if ( extension == "hpe" )
       m_reader = new HepMC3::ReaderHEPEVT(m_inputFile);
+    else if ( extension == "lhef" )
+      m_reader = new HepMC3::ReaderLHEF(m_inputFile);
+#ifdef HEPMC3_ROOTIO
     else if ( extension == "root" )
       m_reader = new HepMC3::ReaderRoot(m_inputFile);
     else if ( extension == "treeroot" )
       m_reader = new HepMC3::ReaderRootTree(m_inputFile);
-    else if ( extension == "lhef" )
-      m_reader = new HepMC3::ReaderLHEF(m_inputFile);
+#endif
     else {
       G4ExceptionDescription description;
       description << "File " << __FILE__ << " Line " << __LINE__ << " " << std::endl

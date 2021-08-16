@@ -18,17 +18,7 @@ if (USE_HEPMC3)
   include_directories(SYSTEM "${HEPMC3_INCLUDE_DIR}")
   add_definitions(-DUSE_HEPMC3)
 
-  # check if USE_HEPMC3_ROOTIO has been set by the user on initial run
-  if (USE_HEPMC3_ROOTIO)
-    find_package(HepMC3 REQUIRED COMPONENTS HepMC3 HepMC3fio HepMC3rootIO HITS HepMC3_DIR)
-    if (HEPMC3_ROOTIO_LIB STREQUAL "HEPMC3_ROOTIO_LIB-NOTFOUND")
-      message(FATAL_ERROR "HepMC3 not compiled with ROOT IO support")
-    else()
-      add_definitions(-DUSE_HEPMC3_ROOTIO)
-    endif()
-  endif()
-
-  # generally check if it's available after the general package search
+  # generally check if HepMC3 ROOTIO is available after the general package search
   # hepmc3 doesn't provide any great way of detecting components here
   if (DEFINED HEPMC3_ROOTIO_LIB)
     if (NOT HEPMC3_ROOTIO_LIB STREQUAL "HEPMC3_ROOTIO_LIB-NOTFOUND")

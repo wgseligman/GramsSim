@@ -20,14 +20,16 @@
 #include "HepMC3/ReaderAsciiHepMC2.h"
 #include "HepMC3/ReaderHEPEVT.h"
 #include "HepMC3/ReaderLHEF.h"
-#include "HepMC3/ReaderRoot.h"
-#include "HepMC3/ReaderRootTree.h"
 #include "HepMC3/Writer.h"
 #include "HepMC3/WriterAscii.h"
 #include "HepMC3/WriterAsciiHepMC2.h"
 #include "HepMC3/WriterHEPEVT.h"
+#ifdef HEPMC3_ROOTIO
+#include "HepMC3/ReaderRoot.h"
+#include "HepMC3/ReaderRootTree.h"
 #include "HepMC3/WriterRoot.h"
 #include "HepMC3/WriterRootTree.h"
+#endif
 
 #include <cstring>
 #include <iostream>
@@ -71,12 +73,14 @@ int main(int argc, char **argv) {
     reader = new HepMC3::ReaderAscii(inputFile);
   else if ( extension == "hpe" )
     reader = new HepMC3::ReaderHEPEVT(inputFile);
+  else if ( extension == "lhef" )
+    reader = new HepMC3::ReaderLHEF(inputFile);
+#ifdef HEPMC3_ROOTIO
   else if ( extension == "root" )
     reader = new HepMC3::ReaderRoot(inputFile);
   else if ( extension == "treeroot" )
     reader = new HepMC3::ReaderRootTree(inputFile);
-  else if ( extension == "lhef" )
-    reader = new HepMC3::ReaderLHEF(inputFile);
+#endif
   else {
     std::cerr 
       << "Did not recognize extension '"
@@ -115,10 +119,12 @@ int main(int argc, char **argv) {
     writer = new HepMC3::WriterAscii(outputFile);
   else if ( extension == "hpe" )
     writer = new HepMC3::WriterHEPEVT(outputFile);
+#ifdef HEPMC3_ROOTIO
   else if ( extension == "root" )
     writer = new HepMC3::WriterRoot(outputFile);
   else if ( extension == "treeroot" )
     writer = new HepMC3::WriterRootTree(outputFile);
+#endif
   else {
     std::cerr 
       << "Did not recognize extension '"
