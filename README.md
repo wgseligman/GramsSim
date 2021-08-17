@@ -86,7 +86,7 @@ xerces-c, OpenGL, and QT4; the CentOS 7 development packages were sufficient:
     sudo yum install freeglut-devel xerces-c-devel \
        qt-devel mesa-libGLw-devel
 
-#### CemtOS packages
+#### CentOS packages
 
 You can try to fulfill these requirements using RPM packages for RHEL-derived
 Linux distributions (e.g., Scientific Linux, CentOS). The
