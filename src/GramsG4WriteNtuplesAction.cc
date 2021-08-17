@@ -3,7 +3,7 @@
 
 /// This is a user-action class that writes out the event hits and
 /// truth information. At present, the output takes the form of basic
-/// (and inefficient) ROOT n-tuples.
+/// ROOT n-tuples.
 
 #include "GramsG4WriteNtuplesAction.hh"
 #include "GramsG4LArHit.hh"
@@ -30,7 +30,7 @@ namespace gramsg4 {
   // To get around this, use G4's locking mechanism (which is
   // basically a wrapper around the standard C++ mutex). See
   // $G4INSTALL/include/G4AutoLock.hh for details.
-  static G4Mutex aMutex;
+  static G4Mutex myMutex;
 
   //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
@@ -55,13 +55,6 @@ namespace gramsg4 {
     // Access (maybe create) the G4AnalysisManager.
     auto analysisManager = G4AnalysisManager::Instance();
 
-    // Without this, each execution thread writes its own file, or
-    // perhaps each event will have its own set of ntuples. It may
-    // turn out that's what we want after all, but let's see. Note
-    // that a consequence of merging files is that the events may not
-    // be in order in the output file if you use multiple threads.
-    analysisManager->SetNtupleMerging(true);
-
     auto options = util::Options::GetInstance();
     options->GetOption("debug",m_debug);
 
@@ -69,6 +62,13 @@ namespace gramsg4 {
     options->GetOption("verbose",verbose);
     if (verbose)
       analysisManager->SetVerboseLevel(1);
+
+    // Without this, each execution thread writes its own file, or
+    // perhaps each event will have its own set of ntuples. It may
+    // turn out that's what we want after all, but let's see. Note
+    // that a consequence of merging files is that the events may not
+    // be in order in the output file if you use multiple threads.
+    analysisManager->SetNtupleMerging(true);
 
     // Open the output file.
     G4String filename;
@@ -207,8 +207,8 @@ namespace gramsg4 {
     analysisManager->FinishNtuple();
 
     // In multi-threaded running, ntuples exist in worker threads, but
-    // not in the main thread. If we try to fill the ntuple in the
-    // master thread, we get lots of annoying (but harmless) error
+    // not in the main thread. If we try to fill the options ntuple in
+    // the master thread, we get lots of annoying (but harmless) error
     // messages. The following test makes sure we only fill the ntuple
     // if there are no threads (SEQUENTIAL_ID), or for a single worker
     // thread (ID == 0) in a multi-threaded application.
@@ -266,7 +266,7 @@ namespace gramsg4 {
 
     auto analysisManager = G4AnalysisManager::Instance();
 
-    // Get hits collections IDs (only once)
+    // Get hit collection ID (only once)
     if ( m_LArHitCollectionID == -1 ) {
       // Make sure the following collection ID name agrees with that
       // in GramsG4DetectorConstruction.cc
@@ -274,7 +274,7 @@ namespace gramsg4 {
 	= G4SDManager::GetSDMpointer()->GetCollectionID("LArHits");
     }
 
-    // Get hits collection
+    // Get collection of hits
     auto LArHC 
       = GetHitsCollection<LArHitsCollection>(m_LArHitCollectionID, a_event);
 
@@ -311,7 +311,7 @@ namespace gramsg4 {
 
     // Do the same thing for the Scintillator hits.
 
-    // Get hits collections IDs (only once)
+    // Get hit collection ID (only once)
     if ( m_ScintillatorHitCollectionID == -1 ) {
       // Make sure the following collection ID name agrees with that
       // in GramsG4DetectorConstruction.cc
@@ -406,7 +406,7 @@ namespace gramsg4 {
     // the braces, G4AutoLock will make sure only a single thread can
     // execute this block of code.
     {
-      G4AutoLock lock(&aMutex);
+      G4AutoLock lock(&myMutex);
       analysisManager->AddNtupleRow(m_TrackNTID);  
     }
   }
@@ -467,7 +467,7 @@ namespace gramsg4 {
       // numbers is tricky on computer systems. Instead, let's check
       // if the different between their components is small.
 
-      const G4double small = 1.e-4;
+      static const G4double small = 1.e-4;
       if ( std::abs( currentMomentumDirection.x() - lastMomentumDirection.x() ) < small
 	   &&
 	   std::abs( currentMomentumDirection.y() - lastMomentumDirection.y() ) < small
@@ -490,7 +490,7 @@ namespace gramsg4 {
     // There's a small chance that std::vector::clear might cause a
     // memory reallocation, so lock the following code so only one
     // thread can execute it.
-    G4AutoLock lock(aMutex);
+    G4AutoLock lock(myMutex);
 
     // Clear all the trajectory vectors. 
     m_time.clear();
@@ -507,7 +507,7 @@ namespace gramsg4 {
   void WriteNtuplesAction::AddTrajectoryPoint( const G4Track* a_track )
   {
     // Lock the following code so only one thread can execute it.
-    G4AutoLock lock(aMutex);
+    G4AutoLock lock(myMutex);
 
     // Add the components of our two 4-vectors (t,x,y,z) (E,px,py,pz)
     // to the individual std::vectors.
