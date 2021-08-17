@@ -67,51 +67,76 @@ and skip to the next section. Otherwise, read on.
 
 You will need recent versions of:
 
-   - [Cmake](https://cmake.org/) (verified to work with version 3.14)
+   - [Cmake](https://cmake.org/) (verified to work with version 3.14 and higher)
    - [ROOT](https://root.cern.ch/) (verified to work with ROOT 6.16 and higher)
    - [Geant4](http://geant4.web.cern.ch/) (verified to work with Geant4 10.7 and higher)
-   - [HepMC3](https://gitlab.cern.ch/hepmc/HepMC3) (optional but recommended)
+   - [HepMC3](https://gitlab.cern.ch/hepmc/HepMC3) 
    
 You will also need the development libraries for:
 
-   - [GNU C++](https://gcc.gnu.org/) (version 6.2 or higher, though the compilation might work with [clang](https://clang.llvm.org/); requires c++11 or higher)
+   - [GNU C++](https://gcc.gnu.org/) (version 6.2 or higher, though the compilation might work with [clang](https://clang.llvm.org/); requires C++11 or higher)
    - [Xerces-C](https://xerces.apache.org/xerces-c/)
    - [OpenGL](https://www.opengl.org/)
    - [QT4](https://www.qt.io/)
 
-Here are example commands to install these packages for RHEL-derived
+At Nevis, the approach that fully worked was to install recent versions of C++, cmake,
+ROOT, Geant4, and HepMC3 by compiling them from source. There was no need to recompile 
+xerces-c, OpenGL, and QT4; the CentOS 7 development packages were sufficient:
+
+    sudo yum install freeglut-devel xerces-c-devel \
+       qt-devel mesa-libGLw-devel
+
+#### CemtOS packages
+
+You can try to fulfill these requirements using RPM packages for RHEL-derived
 Linux distributions (e.g., Scientific Linux, CentOS). The
 [EPEL](https://fedoraproject.org/wiki/EPEL) install is for CentOS 7
 and its cousins; visit the [EPEL](https://fedoraproject.org/wiki/EPEL) web site for other releases.
 
     sudo yum install https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
-    sudo yum install root HepMC3-devel HepMC3-rootIO-devel
-    sudo yum install gcc-c++ glibc-devel \
-       freeglut-devel xerces-c-devel \
-       qt-devel mesa-libGLw-devel
+    sudo yum install root HepMC3-devel HepMC3-rootIO-devel 
+    sudo yum install gcc-c++ glibc-devel
+       
+There are problems with this approach:
 
-#### Notes
-
-   - The default version of CMake for CentOS 7 is 2.8. You may have to
+   - The default version of CMake for CentOS 7 is 2.8. You will have to
      download, build, and install a later of version of CMake on your system.
 
-   - It's important that ROOT, HepMC3, and Geant4 all be compiled with
-     the same version of the C++ compiler (or at least one that
-     supports C++11 and above). The "native compiler" of CentOS 7 does
-     _not_ have this property. This may mean that the CentOS 7 versions of 
-     ROOT and HepMC3 will not be sufficient and you'll have to compile
-     them from source as well. 
-
-   - There are few packages distributions that include Geant4 at
-     present (Jan-2021); one exception is
-     [MacPorts](https://www.macports.org/) but that's probably not
-     useful for code development. You will have to
+   - You will still have to
      [download](https://geant4.web.cern.ch/support/download) and
      build/install Geant4 on your own.
 
-   - If you determine the installation commands needed for
-     Debian-style distributions (including Ubuntu), please let
-     wgseligman know so he can update this documentation.
+   - It's important that ROOT, HepMC3, and Geant4 all be compiled with
+     the same version of the C++ compiler that
+     supports C++11 and above. The "native compiler" of CentOS 7 is GCC 4.8.5
+     which does _not_ support C++11. 
+
+#### conda
+
+Another approach is to use [conda](https://docs.conda.io/en/latest/). This *mostly* works,
+though it does not include ROOT I/O in HepMC3 and there are some issues with the Geant4
+OpenGL display. 
+
+On RHEL-derived systems, this is the one-time setup:
+
+     # Install conda
+     sudo yum -y install conda
+     
+     # Add the conda-forge repository
+     conda config --add channels conda-forge
+     conda config --set channel_priority strict
+
+     # Create a conda environment. The name "grams-devel" is arbitrary.
+     conda create -y --name grams-devel gcc_linux-64 cmake root geant4 hepmc3
+
+Afterwards, the following must be executed once per login session:
+
+     # Activate the environment to modify $PATH and other variables.
+     conda activate grams-devel
+
+(If you determine the installation commands needed for
+Debian-style distributions (including Ubuntu), please let
+wgseligman know so he can update this documentation.)
  
 ### Prepare your local computer 
    
