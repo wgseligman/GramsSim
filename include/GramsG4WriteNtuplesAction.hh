@@ -81,14 +81,17 @@ namespace gramsg4 {
 
     // 15-Mar-2021 WGS: Include the Identifier number for the volumes
     // in the trajectory; see the GDML file's comments for more.
+
+    // 18-Aug-2021 WGS: Save some disk space by only using single
+    // precision to save some values.
     std::vector<G4double> m_time;
-    std::vector<G4double> m_xpos;
-    std::vector<G4double> m_ypos;
-    std::vector<G4double> m_zpos;
+    std::vector<G4float> m_xpos;
+    std::vector<G4float> m_ypos;
+    std::vector<G4float> m_zpos;
     std::vector<G4double> m_energy;
-    std::vector<G4double> m_xmom;
-    std::vector<G4double> m_ymom;
-    std::vector<G4double> m_zmom;
+    std::vector<G4float> m_xmom;
+    std::vector<G4float> m_ymom;
+    std::vector<G4float> m_zmom;
     std::vector<int> m_identifier;
   };
 

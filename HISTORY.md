@@ -7,6 +7,7 @@ someone typed "git commit"), see the output of "git log".
 Aug-2021:
 
    - Some HepMC3 packages don't provide the option for compiling HepMC3 with ROOT I/O enabled; for example, you can't turn on ROOTIO in the conda HepMC3 package. To allow for this, GramsG4 was revised so it will compile without errors if HepMC3 ROOTIO is not present. 
+   - Same some disk space by storing position variables (x,y,z) as single-precision instead of double-precision. 
 
 Jul-2021:
 

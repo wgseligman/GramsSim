@@ -104,13 +104,13 @@ namespace gramsg4 {
     analysisManager->CreateNtupleIColumn("numPhotons"); // id 4
     analysisManager->CreateNtupleDColumn("energy");     // id 5
     analysisManager->CreateNtupleDColumn("tStart");     // id 6
-    analysisManager->CreateNtupleDColumn("xStart");     // id 7
-    analysisManager->CreateNtupleDColumn("yStart");     // id 8
-    analysisManager->CreateNtupleDColumn("zStart");     // id 9
+    analysisManager->CreateNtupleFColumn("xStart");     // id 7
+    analysisManager->CreateNtupleFColumn("yStart");     // id 8
+    analysisManager->CreateNtupleFColumn("zStart");     // id 9
     analysisManager->CreateNtupleDColumn("tEnd");       // id 10
-    analysisManager->CreateNtupleDColumn("xEnd");       // id 11
-    analysisManager->CreateNtupleDColumn("yEnd");       // id 12
-    analysisManager->CreateNtupleDColumn("zEnd");       // id 13
+    analysisManager->CreateNtupleFColumn("xEnd");       // id 11
+    analysisManager->CreateNtupleFColumn("yEnd");       // id 12
+    analysisManager->CreateNtupleFColumn("zEnd");       // id 13
     analysisManager->CreateNtupleIColumn("identifier"); // id 14
 
     if (m_debug) 
@@ -129,13 +129,13 @@ namespace gramsg4 {
     analysisManager->CreateNtupleIColumn("PDGCode");    // id 3
     analysisManager->CreateNtupleDColumn("energy");     // id 4
     analysisManager->CreateNtupleDColumn("tStart");     // id 5
-    analysisManager->CreateNtupleDColumn("xStart");     // id 6
-    analysisManager->CreateNtupleDColumn("yStart");     // id 7
-    analysisManager->CreateNtupleDColumn("zStart");     // id 8
+    analysisManager->CreateNtupleFColumn("xStart");     // id 6
+    analysisManager->CreateNtupleFColumn("yStart");     // id 7
+    analysisManager->CreateNtupleFColumn("zStart");     // id 8
     analysisManager->CreateNtupleDColumn("tEnd");       // id 9
-    analysisManager->CreateNtupleDColumn("xEnd");       // id 10
-    analysisManager->CreateNtupleDColumn("yEnd");       // id 11
-    analysisManager->CreateNtupleDColumn("zEnd");       // id 12
+    analysisManager->CreateNtupleFColumn("xEnd");       // id 10
+    analysisManager->CreateNtupleFColumn("yEnd");       // id 11
+    analysisManager->CreateNtupleFColumn("zEnd");       // id 12
     analysisManager->CreateNtupleIColumn("identifier"); // id 13
     analysisManager->FinishNtuple();
 
@@ -161,13 +161,13 @@ namespace gramsg4 {
     analysisManager->CreateNtupleIColumn("PDGCode");                  // id 4
     analysisManager->CreateNtupleSColumn("ProcessName");              // id 5
     analysisManager->CreateNtupleDColumn("t", m_time);                // id 6
-    analysisManager->CreateNtupleDColumn("x", m_xpos);                // id 7
-    analysisManager->CreateNtupleDColumn("y", m_ypos);                // id 8
-    analysisManager->CreateNtupleDColumn("z", m_zpos);                // id 9
+    analysisManager->CreateNtupleFColumn("x", m_xpos);                // id 7
+    analysisManager->CreateNtupleFColumn("y", m_ypos);                // id 8
+    analysisManager->CreateNtupleFColumn("z", m_zpos);                // id 9
     analysisManager->CreateNtupleDColumn("Etot", m_energy);           // id 10
-    analysisManager->CreateNtupleDColumn("px", m_xmom);               // id 11
-    analysisManager->CreateNtupleDColumn("py", m_ymom);               // id 12
-    analysisManager->CreateNtupleDColumn("pz", m_zmom);               // id 13
+    analysisManager->CreateNtupleFColumn("px", m_xmom);               // id 11
+    analysisManager->CreateNtupleFColumn("py", m_ymom);               // id 12
+    analysisManager->CreateNtupleFColumn("pz", m_zmom);               // id 13
     analysisManager->CreateNtupleIColumn("identifier", m_identifier); // id 14
 
     if (m_debug) 
@@ -295,13 +295,13 @@ namespace gramsg4 {
       analysisManager->FillNtupleIColumn(m_LArNTID, 4, hit->GetNumPhotons() );
       analysisManager->FillNtupleDColumn(m_LArNTID, 5, hit->GetEnergy() );
       analysisManager->FillNtupleDColumn(m_LArNTID, 6, hit->GetStartTime() );
-      analysisManager->FillNtupleDColumn(m_LArNTID, 7, (hit->GetStartPosition()).x() );
-      analysisManager->FillNtupleDColumn(m_LArNTID, 8, (hit->GetStartPosition()).y() );
-      analysisManager->FillNtupleDColumn(m_LArNTID, 9, (hit->GetStartPosition()).z() );
+      analysisManager->FillNtupleFColumn(m_LArNTID, 7, (hit->GetStartPosition()).x() );
+      analysisManager->FillNtupleFColumn(m_LArNTID, 8, (hit->GetStartPosition()).y() );
+      analysisManager->FillNtupleFColumn(m_LArNTID, 9, (hit->GetStartPosition()).z() );
       analysisManager->FillNtupleDColumn(m_LArNTID,10, hit->GetEndTime() );
-      analysisManager->FillNtupleDColumn(m_LArNTID,11, (hit->GetEndPosition()).x() );
-      analysisManager->FillNtupleDColumn(m_LArNTID,12, (hit->GetEndPosition()).y() );
-      analysisManager->FillNtupleDColumn(m_LArNTID,13, (hit->GetEndPosition()).z() );
+      analysisManager->FillNtupleFColumn(m_LArNTID,11, (hit->GetEndPosition()).x() );
+      analysisManager->FillNtupleFColumn(m_LArNTID,12, (hit->GetEndPosition()).y() );
+      analysisManager->FillNtupleFColumn(m_LArNTID,13, (hit->GetEndPosition()).z() );
       analysisManager->FillNtupleIColumn(m_LArNTID,14, hit->GetIdentifier() );
 
       if (m_debug) 
@@ -335,13 +335,13 @@ namespace gramsg4 {
       analysisManager->FillNtupleIColumn(m_ScintNTID, 3, hit->GetPDGCode() );
       analysisManager->FillNtupleDColumn(m_ScintNTID, 4, hit->GetEnergy() );
       analysisManager->FillNtupleDColumn(m_ScintNTID, 5, hit->GetStartTime() );
-      analysisManager->FillNtupleDColumn(m_ScintNTID, 6, (hit->GetStartPosition()).x() );
-      analysisManager->FillNtupleDColumn(m_ScintNTID, 7, (hit->GetStartPosition()).y() );
-      analysisManager->FillNtupleDColumn(m_ScintNTID, 8, (hit->GetStartPosition()).z() );
+      analysisManager->FillNtupleFColumn(m_ScintNTID, 6, (hit->GetStartPosition()).x() );
+      analysisManager->FillNtupleFColumn(m_ScintNTID, 7, (hit->GetStartPosition()).y() );
+      analysisManager->FillNtupleFColumn(m_ScintNTID, 8, (hit->GetStartPosition()).z() );
       analysisManager->FillNtupleDColumn(m_ScintNTID, 9, hit->GetEndTime() );
-      analysisManager->FillNtupleDColumn(m_ScintNTID,10, (hit->GetEndPosition()).x() );
-      analysisManager->FillNtupleDColumn(m_ScintNTID,11, (hit->GetEndPosition()).y() );
-      analysisManager->FillNtupleDColumn(m_ScintNTID,12, (hit->GetEndPosition()).z() );
+      analysisManager->FillNtupleFColumn(m_ScintNTID,10, (hit->GetEndPosition()).x() );
+      analysisManager->FillNtupleFColumn(m_ScintNTID,11, (hit->GetEndPosition()).y() );
+      analysisManager->FillNtupleFColumn(m_ScintNTID,12, (hit->GetEndPosition()).z() );
       analysisManager->FillNtupleIColumn(m_ScintNTID,13, hit->GetIdentifier() );
 
       if (m_debug) {
