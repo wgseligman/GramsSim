@@ -261,7 +261,7 @@ See options.xml for details.
 #### Displaying a table of all the options
 
 `util::Options::PrintOptions()` will print all the options and their values as a text table. 
-This is handy for debugging. In the case of `gramsg4`, the `PrintHelp()` method is called
+This is handy for debugging. In the case of `gramsg4`, the `PrintOptions()` method is called
 if the `--verbose` or `-v` option is turned on:
 
 In the code:
