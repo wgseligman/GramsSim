@@ -9,6 +9,8 @@ programs I write.
 
 *Although you'll see the text `gramsg4` below, the Options class is generic and can work with any program. Just substitute the program's name for `gramsg4`.*
 
+#### Format of `options.xml`
+
 If you look at the file `options.xml`, what you'll first notice that is that within the global `<parameters>` tag there are
 at least two sections. It looks something like this:
 
@@ -56,6 +58,8 @@ Anatomy of <option> tag:
            less than 20 characters); used in the --help|-h message
 ```
 
+##### Defining new options
+
 Note that the options in this XML file can be overridden by command-line options.
 However, the contents of this file _define_ those command-line options. For example, assume 
 this line appears in the XML file:
@@ -98,6 +102,7 @@ then you could do this on the command line:
  
     ./gramsg4 --makeHistograms --energyCut 123.45                      
 
+##### Abbreviating options
 
 You can define one-character short options:
 
@@ -133,10 +138,10 @@ Then all of the following are equivalent:
     ./gramsg4 -t 5
     ./gramsg4 -t5
 
-### Programming new options
+### Accessing options from within your program
 
 Just having an option defined in the XML file is not enough.
-You need the programming to do something with that option. First you need to initiate the parsing of the options XML file and the command line. 
+You need the programming to do something with that option. Typically you'd initiate the parsing of the options XML file and the command line in your program's `main` routine. 
 
 The first two arguments to `util::Options::ParseOptions` are the standard C++ arguments to
 the main routine; the contents of the second argument (`argv` in the example) will be altered
@@ -256,7 +261,7 @@ See options.xml for details.
 #### Displaying a table of all the options
 
 `util::Options::PrintOptions()` will print all the options and their values as a text table. 
-This is handy for debugging. In the caste of `gramsg4`, the `PrintHelp()` method is called
+This is handy for debugging. In the case of `gramsg4`, the `PrintHelp()` method is called
 if the `--verbose` or `-v` option is turned on:
 
 In the code:
@@ -265,9 +270,9 @@ In the code:
   bool verbose;
   options->GetOption("verbose",verbose);
   if (verbose) {
-    // Display all program options and physics lists.
+    // Display all program options and other details.
     options->PrintOptions();
-    PrintAvailablePhysics();
+    // Print other program details.
   }
 
 ```
