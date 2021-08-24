@@ -1,6 +1,6 @@
 # GramsG4
 
-If you want a formatted (or easier-to-read) version of this file, scroll to the bottom.
+If you want a formatted (or easier-to-read) version of this file, scroll to the bottom. If you're reading this on github, then it's already formatted. 
 
 ## Table of Contents
 
@@ -691,7 +691,8 @@ Geant4 General Particle Source:
 This document is written in
 [Markdown](https://www.markdownguide.org/cheat-sheet/), a tool for
 formatting documents but still keeping the unformatted versions
-readable.
+readable. It's also handy for reading documents on github, since files ending in `.md`
+are automatically formatted for the web. 
 
 If you want to read a formatted version of this document (so you're
 spared the funny backticks and hashtags and whatnot), do a web search on
