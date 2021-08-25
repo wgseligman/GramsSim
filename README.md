@@ -2,20 +2,21 @@
 
 If you want a formatted (or easier-to-read) version of this file, scroll to the bottom. If you're reading this on github, then it's already formatted. 
 
-## Table of Contents
-
 - [GramsG4](#gramsg4)
   * [Introduction](#introduction)
   * [Installing GramsG4](#installing-gramsg4)
     + [Working with github](#working-with-github)
     + [Prerequisites](#prerequisites)
-      - [Notes](#notes-)
+      - [CentOS packages](#centos-packages)
+      - [conda](#conda)
     + [Prepare your local computer](#prepare-your-local-computer)
   * [Running GramsG4](#running-gramsg4)
     + [Controlling the particle source](#controlling-the-particle-source)
+    + [Visualization](#visualization)
     + [Events from an external generator](#events-from-an-external-generator)
-      - [Notes](#notes--1)
+      - [Notes](#notes)
     + [Program outputs](#program-outputs)
+    + [Generating large numbers of events](#generating-large-numbers-of-events)
   * [Making changes](#making-changes)
     + [Work files](#work-files)
     + [Development "flow"](#development--flow-)
@@ -218,6 +219,10 @@ Of particular interest is the file `mac/sky.mac`, which shows how to generate an
 
 For more on the gps commands, see the [References](#references) section near the end of this document. 
 
+### Visualization
+
+See `GramsG4/mac/README.md` for a description of the visualization examples in the `GramsG4/mac` directory.
+
 ### Events from an external generator
 
 The GPS commands may not be sufficient. For example, you may want to generate the primary particles from an initial nuclear interaction (*n-<span style="text-decoration:overline">n</span>*
@@ -272,11 +277,29 @@ For information about what the term "Identifier" means, see `grams.gdml`. (It's 
 
 If you don't know how to browse an ROOT ntuple, I suggest this [ROOT tutorial](https://www.nevis.columbia.edu/~seligman/root-class/).
 
-*Note:* If you run the program with multiple threads (the `--nthreads` option), the events in the ntuples will *not* be ascending numeric order. The G4Track IDs will be in the order that Geant4 processes them, which is *not* in ascending numeric order even if you don't run with multiple threads. Also note that it's possible for an event to leave no energy deposits in an active TPC volume. 
+*Note:* The G4Track IDs will be in the order that Geant4 processes them, which is *not* in ascending numeric order (even if you don't run with multiple threads; see below). Also note that it's possible for an event to leave no energy deposits in an active TPC volume, so there may be information in `TrackInfo` with no corresponding information in `LArHits`. 
 
-If you're looking for a place to start in accessing the ntuples for analysis, look at `SimpleAnalysis.C` in the `scripts` directory which was copied to your build/work directory. To run it:
+If you're looking for a place to start in accessing the ntuples for analysis, look at the examples in the `scripts` directory which was copied to your build/work directory. 
+    
+### Generating large numbers of events
 
-    root -l scripts/SimpleAnalysis.C
+Some things to consider:
+
+   - You can speed up the simulation considerably by letting turning on multi-threaded running. To do this,
+   supply the number of threads to use via the `-t` or `--nthreads` option; e.g.,
+   
+      `./gramsg4 --nthreads 4`
+      
+       will run with 4 simultaneous threads. The potential disadvantage of this is that the information in the output
+       ntuples will *not* be in ascending order. 
+       
+   - If you are running multiple jobs to generate events, by default they'll all run with the same random number seed;
+   i.e., in the options XML file there is a parameter `rngseed` which is set to -1 by default. To generate a different set
+   of events for each job, you will want to vary the seed for each job. 
+   
+      For example, if the job has a unique process ID in the variable `${Process}`, then you probably want something like this:
+      
+      `./gramsg4 --rngseed ${Process}`
 
 ## Making changes
 
