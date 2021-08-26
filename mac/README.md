@@ -90,7 +90,7 @@ The disadvantages of HepRep compared to OpenGL:
 
    - It can't be used to control Geant4 interactively.
    
-   - It write the event information in HepRep format, which uses XML, with each event
+   - It writes the event information in HepRep format, which uses XML, with each event
    in its own file. As a result HepRep outputs can take up a lot of disk space.
    
 To use HepRep, run `gramsg4` with appropriate macro commands; `heprep.mac` shows
@@ -115,6 +115,6 @@ While running HepRApp, there are two key items in its `Options` menu:
    the two most useful are `IMag` (the track energy) and `PDG`; `ID` (G4 track ID) and
    `PID` (parent ID) may also be helpful. 
    
-   - `Cut Control` - This allows to set cuts on which tracks are displayed. For example, in the `IMag`
+   - `Cut Control` - This allows you to set cuts on which tracks are displayed. For example, in the `IMag`
    line, you can set the Min to `20 MeV` to show only those tracks with more than 20 MeV. Note
    that you *must* include units in the cut. 

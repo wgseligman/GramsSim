@@ -285,7 +285,7 @@ If you're looking for a place to start in accessing the ntuples for analysis, lo
 
 Some things to consider:
 
-   - You can speed up the simulation considerably by letting turning on multi-threaded running. To do this,
+   - You can speed up the simulation considerably by turning on multi-threaded running. To do this,
    supply the number of threads to use via the `-t` or `--nthreads` option; e.g.,
    
       `./gramsg4 --nthreads 4`
@@ -692,7 +692,6 @@ Toolkits:
 GDML detector geometry description
    - [GDML manual](http://lcgapp.cern.ch/project/simu/framework/GDML/doc/GDMLmanual.pdf)
    - [Geant4 Applications Guide](http://geant4-userdoc.web.cern.ch/geant4-userdoc/UsersGuides/ForApplicationDeveloper/html/), especially the [geometry section](http://geant4-userdoc.web.cern.ch/geant4-userdoc/UsersGuides/ForApplicationDeveloper/html/Detector/Geometry/geometry.html) which explains the difference between solids, logical volumes, and physical volumes. 
-
 
 Geant4 General Particle Source:
    - [Documentation](http://geant4-userdoc.web.cern.ch/geant4-userdoc/UsersGuides/ForApplicationDeveloper/html/GettingStarted/generalParticleSource.html)
