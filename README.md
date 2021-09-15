@@ -80,47 +80,24 @@ You will also need the development libraries for:
    - [OpenGL](https://www.opengl.org/)
    - [QT4](https://www.qt.io/)
 
-At Nevis, the approach that fully worked was to install recent versions of C++, cmake,
+At Nevis, the approach that fully worked on [CentOS 7](https://www.centos.org/download/) was to install recent versions of C++, cmake,
 ROOT, Geant4, and HepMC3 by compiling them from source. There was no need to recompile 
 xerces-c, OpenGL, and QT4; the CentOS 7 development packages were sufficient:
 
-    sudo yum install freeglut-devel xerces-c-devel \
+    sudo yum -y install freeglut-devel xerces-c-devel \
        qt-devel mesa-libGLw-devel
-
-#### CentOS packages
-
-You can try to fulfill these requirements using RPM packages for RHEL-derived
-Linux distributions (e.g., Scientific Linux, CentOS). The
-[EPEL](https://fedoraproject.org/wiki/EPEL) install is for CentOS 7
-and its cousins; visit the [EPEL](https://fedoraproject.org/wiki/EPEL) web site for other releases.
-
-    sudo yum install https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
-    sudo yum install root HepMC3-devel HepMC3-rootIO-devel 
-    sudo yum install gcc-c++ glibc-devel
-       
-There are problems with this approach:
-
-   - The default version of CMake for CentOS 7 is 2.8. You will have to
-     download, build, and install a later of version of CMake on your system.
-
-   - You will still have to
-     [download](https://geant4.web.cern.ch/support/download) and
-     build/install Geant4 on your own.
-
-   - It's important that ROOT, HepMC3, and Geant4 all be compiled with
-     the same version of the C++ compiler that
-     supports C++11 and above. The "native compiler" of CentOS 7 is GCC 4.8.5
-     which does _not_ support C++11. 
 
 #### conda
 
-Another approach is to use [conda](https://docs.conda.io/en/latest/). This *mostly* works,
+You can try to fulfill these requirements using [conda](https://docs.conda.io/en/latest/). This *mostly* works,
 though it does not include ROOT I/O in HepMC3 and there are some issues with the Geant4
 OpenGL display. 
 
-On RHEL-derived systems, this is the one-time setup:
+On [RHEL](https://www.redhat.com/en/technologies/linux-platforms/enterprise-linux)-derived systems, this is the one-time setup; 
+visit the [EPEL](https://fedoraproject.org/wiki/EPEL) web site for releases other than CentOS 7:
 
      # Install conda
+     sudo yum -7 install https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
      sudo yum -y install conda
      
      # Add the conda-forge repository
@@ -128,12 +105,44 @@ On RHEL-derived systems, this is the one-time setup:
      conda config --set channel_priority strict
 
      # Create a conda environment. The name "grams-devel" is arbitrary.
-     conda create -y --name grams-devel gcc_linux-64 cmake root geant4 hepmc3
+     conda create -y --name grams-devel compilers cmake root geant4 hepmc3
 
 Afterwards, the following must be executed once per login session:
 
      # Activate the environment to modify $PATH and other variables.
      conda activate grams-devel
+
+#### CentOS packages
+
+Another potential solution is to use RPM packages for RHEL-derived
+Linux distributions (e.g., Scientific Linux, CentOS). In addition to the EPEL repository,
+you will need a more recent version of the GCC compiler than comes with CentOS 7. One
+solution is to use the [SCL](https://www.softwarecollections.org/en/scls/rhscl/devtoolset-7/) 
+tools (but see the cautions below).
+
+    sudo yum -7 install https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
+    sudo yum -y install root HepMC3-devel HepMC3-rootIO-devel 
+    sudo yum -y install gcc-c++ glibc-devel cmake3
+    sudo yum -y install centos-release-scl
+    sudo yum -y install devtoolset-7-gcc*
+    
+To enable the SCL version of the GCC compiler:
+
+    scl enable devtoolset-7 bash
+       
+There are problems with this approach:
+
+   - In the following instructions, you will want to use `cmake3` instead of just `cmake`.
+
+   - You will still have to
+     [download](https://geant4.web.cern.ch/support/download) and
+     build/install Geant4 on your own.
+
+   - It's important that ROOT, HepMC3, and Geant4 all be compiled with
+     the same version of the C++ compiler that
+     supports C++11 and above. The ROOT and HepMC3 packages from EPEL were compiled with
+     the "native compiler" of CentOS 7, GCC 4.8.5,
+     which does _not_ support C++11. 
 
 (If you determine the installation commands needed for
 Debian-style distributions (including Ubuntu), please let
