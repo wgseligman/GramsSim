@@ -4,7 +4,11 @@
 #----------------------------------------------------------------------------
 # Setup the project
 cmake_minimum_required(VERSION 3.6 FATAL_ERROR)
-project(GramsG4)
+# Note: Do NOT make the project name the same as any executable
+# name, including case. When the project was GramsG4 and the 
+# main executable gramsg4, the build process would work on Linux
+# but not on Mac OS. 
+project(GramsG4Project)
 
 # Add source dir as a place for CMake modules
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/cmake/Modules)
@@ -55,24 +59,9 @@ include_directories(${PROJECT_SOURCE_DIR}/include
                     ${PROJECT_SOURCE_DIR}/g4util/include
                     ${Geant4_INCLUDE_DIR}
                     ${ROOT_INCLUDE_DIR})
-# List all the source files used explicitly. Although it's
-# more convenient to use CMAKE's GLOB keyword, best practices
-# suggest that we don't use it. 
-set(sources ${PROJECT_SOURCE_DIR}/src/GramsG4ActionInitialization.cc
-            ${PROJECT_SOURCE_DIR}/src/GramsG4DetectorConstruction.cc
-            ${PROJECT_SOURCE_DIR}/src/GramsG4GPSGeneratorAction.cc
-            ${PROJECT_SOURCE_DIR}/src/GramsG4HepMC3GeneratorAction.cc
-            ${PROJECT_SOURCE_DIR}/src/GramsG4LArHit.cc
-            ${PROJECT_SOURCE_DIR}/src/GramsG4LArSensitiveDetector.cc
-            ${PROJECT_SOURCE_DIR}/src/GramsG4ScintillatorHit.cc
-            ${PROJECT_SOURCE_DIR}/src/GramsG4ScintillatorSD.cc
-            ${PROJECT_SOURCE_DIR}/src/GramsG4WriteNtuplesAction.cc
-            ${PROJECT_SOURCE_DIR}/util/src/Options.cc
-            ${PROJECT_SOURCE_DIR}/g4util/src/EventAction.cc
-            ${PROJECT_SOURCE_DIR}/g4util/src/RunAction.cc
-            ${PROJECT_SOURCE_DIR}/g4util/src/SteppingAction.cc
-            ${PROJECT_SOURCE_DIR}/g4util/src/TrackingAction.cc
-            ${PROJECT_SOURCE_DIR}/g4util/src/UserActionManager.cc
+file(GLOB sources ${PROJECT_SOURCE_DIR}/src/*.cc
+                  ${PROJECT_SOURCE_DIR}/util/src/*.cc
+                  ${PROJECT_SOURCE_DIR}/g4util/src/*.cc
     )
 
 #----------------------------------------------------------------------------
@@ -110,7 +99,7 @@ add_subdirectory(scripts)
 # Add program to the project targets
 # (this avoids the need of typing the program name after make)
 #
-add_custom_target(GramsG4 DEPENDS gramsg4)
+add_custom_target(GramsG4Project DEPENDS gramsg4)
 
 #----------------------------------------------------------------------------
 # Install the executable to 'bin' directory under CMAKE_INSTALL_PREFIX
