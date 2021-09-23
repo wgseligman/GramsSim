@@ -55,17 +55,30 @@ include_directories(${PROJECT_SOURCE_DIR}/include
                     ${PROJECT_SOURCE_DIR}/g4util/include
                     ${Geant4_INCLUDE_DIR}
                     ${ROOT_INCLUDE_DIR})
-file(GLOB sources ${PROJECT_SOURCE_DIR}/src/*.cc
-                  ${PROJECT_SOURCE_DIR}/util/src/*.cc
-                  ${PROJECT_SOURCE_DIR}/g4util/src/*.cc)
-file(GLOB headers ${PROJECT_SOURCE_DIR}/include/*.hh
-                  ${PROJECT_SOURCE_DIR}/util/include/*.h
-                  ${PROJECT_SOURCE_DIR}/g4util/include/*.h)
+# List all the source files used explicitly. Although it's
+# more convenient to use CMAKE's GLOB keyword, best practices
+# suggest that we don't use it. 
+set(sources ${PROJECT_SOURCE_DIR}/src/GramsG4ActionInitialization.cc
+            ${PROJECT_SOURCE_DIR}/src/GramsG4DetectorConstruction.cc
+            ${PROJECT_SOURCE_DIR}/src/GramsG4GPSGeneratorAction.cc
+            ${PROJECT_SOURCE_DIR}/src/GramsG4HepMC3GeneratorAction.cc
+            ${PROJECT_SOURCE_DIR}/src/GramsG4LArHit.cc
+            ${PROJECT_SOURCE_DIR}/src/GramsG4LArSensitiveDetector.cc
+            ${PROJECT_SOURCE_DIR}/src/GramsG4ScintillatorHit.cc
+            ${PROJECT_SOURCE_DIR}/src/GramsG4ScintillatorSD.cc
+            ${PROJECT_SOURCE_DIR}/src/GramsG4WriteNtuplesAction.cc
+            ${PROJECT_SOURCE_DIR}/util/src/Options.cc
+            ${PROJECT_SOURCE_DIR}/g4util/src/EventAction.cc
+            ${PROJECT_SOURCE_DIR}/g4util/src/RunAction.cc
+            ${PROJECT_SOURCE_DIR}/g4util/src/SteppingAction.cc
+            ${PROJECT_SOURCE_DIR}/g4util/src/TrackingAction.cc
+            ${PROJECT_SOURCE_DIR}/g4util/src/UserActionManager.cc
+    )
 
 #----------------------------------------------------------------------------
 # Add the executable, and link it to the libraries
 #
-add_executable(gramsg4 gramsg4.cc ${sources} ${headers})
+add_executable(gramsg4 gramsg4.cc ${sources})
 target_link_libraries(gramsg4 ${HEPMC3_LIBRARIES} )
 target_link_libraries(gramsg4 ${ROOT_LIBRARIES} )
 target_link_libraries(gramsg4 ${Geant4_LIBRARIES} )
