@@ -97,7 +97,7 @@ On [RHEL](https://www.redhat.com/en/technologies/linux-platforms/enterprise-linu
 visit the [EPEL](https://fedoraproject.org/wiki/EPEL) web site for releases other than CentOS 7:
 
      # Install conda
-     sudo yum -7 install https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
+     sudo yum -y install https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
      sudo yum -y install conda
      
 On any system with conda installed (including [anaconda3](https://www.anaconda.com/products/individual) and [miniconda](https://docs.conda.io/en/latest/miniconda.html)), the following will set up a suitable development environment:
@@ -126,9 +126,12 @@ tools (but see the cautions below).
     sudo yum -y install root HepMC3-devel HepMC3-rootIO-devel 
     sudo yum -y install gcc-c++ glibc-devel cmake3
     sudo yum -y install centos-release-scl
+    
+    # Note that as of Sep-2021 the devtoolsets range from from 7 to 10,
+    # which corresponds to the major version of GCC they include. 
     sudo yum -y install devtoolset-7-gcc*
     
-To enable the SCL version of the GCC compiler:
+To enable the SCL version of the GCC compiler installed above:
 
     scl enable devtoolset-7 bash
        
