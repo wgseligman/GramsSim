@@ -89,7 +89,7 @@ xerces-c, OpenGL, and QT4; the CentOS 7 development packages were sufficient:
 
 #### conda
 
-You can try to fulfill these requirements using [conda](https://docs.conda.io/en/latest/). This *mostly* works,
+You can try to fulfill these requirements using [conda](https://docs.conda.io/projects/conda/en/latest/). This *mostly* works,
 though it does not include ROOT I/O in HepMC3 and there are some issues with the Geant4
 OpenGL display. 
 
@@ -99,6 +99,8 @@ visit the [EPEL](https://fedoraproject.org/wiki/EPEL) web site for releases othe
      # Install conda
      sudo yum -7 install https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
      sudo yum -y install conda
+     
+On any system with conda installed (including [anaconda3](https://www.anaconda.com/products/individual) and [miniconda](https://docs.conda.io/en/latest/miniconda.html)), the following will set up a suitable development environment:
      
      # Add the conda-forge repository
      conda config --add channels conda-forge
