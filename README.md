@@ -86,6 +86,8 @@ xerces-c, OpenGL, and QT4; the CentOS 7 development packages were sufficient:
 
     sudo yum -y install freeglut-devel xerces-c-devel \
        qt-devel mesa-libGLw-devel
+       
+Note that compiling Geant4 from source may be the only way to reliably use the [OpenGL visualizer](https://conferences.fnal.gov/g4tutorial/g4cd/Documentation/Visualization/G4OpenGLTutorial/G4OpenGLTutorial.html). 
 
 #### conda
 
