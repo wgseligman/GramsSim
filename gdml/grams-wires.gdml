@@ -146,8 +146,7 @@ source of interactions (e.g., the cryostat walls.)
     With no other information, I'm assuming a steel cryostat of 1cm thickness. -->
     <!-- 10-Mar-2021 WGS: Following a suggestion by GK, reduce the cryostat thickness
     to 0.5cm -->
-    <!-- 29-Sep-2021 WGS: A talk at the collaboration meeting suggest 6mm is more likely. -->
-    <constant name="cryostatThickness" value="0.6" />
+    <constant name="cryostatThickness" value="0.5" />
     <constant name="cryostatXSize" value="lArTPCXSize + 2*cryostatThickness" />
     <constant name="cryostatYSize" value="lArTPCYSize + 2*cryostatThickness" />
     <constant name="cryostatZSize" value="lArTPCZSize + 2*cryostatThickness" />
@@ -301,9 +300,7 @@ source of interactions (e.g., the cryostat walls.)
     diagram I made of the detector. In the actual GRAMs detector they'll 
     almost certainly be different. 
     -->
-    <!-- 29-Sep-2021 WGS: At the collaboration meeting, I learned that
-    GAPS uses 6mm scintillator strips. -->
-    <constant name="scintillatorThickness" value="0.6" />
+    <constant name="scintillatorThickness" value="1.0" />
     <constant name="scintillatorWidth"     value="2.0" />
     
     <!-- 15-Jun-2020 WGS: Each wall contains a single layer of strips (in an
