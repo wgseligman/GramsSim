@@ -69,9 +69,8 @@ namespace gramsg4 {
     void ClearTrajectory();
 
     // Add the current track's trajectory information; e.g.,
-    // (t,x,y,z), (E,px,py,pz). Return the number of trajectory points
-    // we've recorded so far.
-    size_t AddTrajectoryPoint( const G4Track* );
+    // (t,x,y,z), (E,px,py,pz).
+    void AddTrajectoryPoint( const G4Track* );
 
     // Create trajectory information for each track. In this case, a
     // trajectory will be set of (t,x,y,z) and (E,px,py,pz)
@@ -82,14 +81,17 @@ namespace gramsg4 {
 
     // 15-Mar-2021 WGS: Include the Identifier number for the volumes
     // in the trajectory; see the GDML file's comments for more.
+
+    // 18-Aug-2021 WGS: Save some disk space by only using single
+    // precision to save some values.
     std::vector<G4double> m_time;
-    std::vector<G4double> m_xpos;
-    std::vector<G4double> m_ypos;
-    std::vector<G4double> m_zpos;
+    std::vector<G4float> m_xpos;
+    std::vector<G4float> m_ypos;
+    std::vector<G4float> m_zpos;
     std::vector<G4double> m_energy;
-    std::vector<G4double> m_xmom;
-    std::vector<G4double> m_ymom;
-    std::vector<G4double> m_zmom;
+    std::vector<G4float> m_xmom;
+    std::vector<G4float> m_ymom;
+    std::vector<G4float> m_zmom;
     std::vector<int> m_identifier;
   };
 

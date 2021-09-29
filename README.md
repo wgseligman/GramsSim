@@ -1,21 +1,22 @@
 # GramsG4
 
-If you want a formatted (or easier-to-read) version of this file, scroll to the bottom.
-
-## Table of Contents
+If you want a formatted (or easier-to-read) version of this file, scroll to the bottom. If you're reading this on github, then it's already formatted. 
 
 - [GramsG4](#gramsg4)
   * [Introduction](#introduction)
   * [Installing GramsG4](#installing-gramsg4)
     + [Working with github](#working-with-github)
     + [Prerequisites](#prerequisites)
-      - [Notes](#notes-)
+      - [CentOS packages](#centos-packages)
+      - [conda](#conda)
     + [Prepare your local computer](#prepare-your-local-computer)
   * [Running GramsG4](#running-gramsg4)
     + [Controlling the particle source](#controlling-the-particle-source)
+    + [Visualization](#visualization)
     + [Events from an external generator](#events-from-an-external-generator)
-      - [Notes](#notes--1)
+      - [Notes](#notes)
     + [Program outputs](#program-outputs)
+    + [Generating large numbers of events](#generating-large-numbers-of-events)
   * [Making changes](#making-changes)
     + [Work files](#work-files)
     + [Development "flow"](#development--flow-)
@@ -67,51 +68,92 @@ and skip to the next section. Otherwise, read on.
 
 You will need recent versions of:
 
-   - [Cmake](https://cmake.org/) (verified to work with version 3.14)
+   - [Cmake](https://cmake.org/) (verified to work with version 3.14 and higher)
    - [ROOT](https://root.cern.ch/) (verified to work with ROOT 6.16 and higher)
    - [Geant4](http://geant4.web.cern.ch/) (verified to work with Geant4 10.7 and higher)
-   - [HepMC3](https://gitlab.cern.ch/hepmc/HepMC3) (optional but recommended)
+   - [HepMC3](https://gitlab.cern.ch/hepmc/HepMC3) 
    
 You will also need the development libraries for:
 
-   - [GNU C++](https://gcc.gnu.org/) (version 6.2 or higher, though the compilation might work with [clang](https://clang.llvm.org/); requires c++11 or higher)
+   - [GNU C++](https://gcc.gnu.org/) (version 6.2 or higher, though the compilation might work with [clang](https://clang.llvm.org/); requires C++11 or higher)
    - [Xerces-C](https://xerces.apache.org/xerces-c/)
    - [OpenGL](https://www.opengl.org/)
    - [QT4](https://www.qt.io/)
 
-Here are example commands to install these packages for RHEL-derived
-Linux distributions (e.g., Scientific Linux, CentOS). The
-[EPEL](https://fedoraproject.org/wiki/EPEL) install is for CentOS 7
-and its cousins; visit the [EPEL](https://fedoraproject.org/wiki/EPEL) web site for other releases.
+At Nevis, the approach that fully worked on [CentOS 7](https://www.centos.org/download/) was to install recent versions of C++, cmake,
+ROOT, Geant4, and HepMC3 by compiling them from source. There was no need to recompile 
+xerces-c, OpenGL, and QT4; the CentOS 7 development packages were sufficient:
 
-    sudo yum install https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
-    sudo yum install root HepMC3-devel HepMC3-rootIO-devel
-    sudo yum install gcc-c++ glibc-devel \
-       freeglut-devel xerces-c-devel \
+    sudo yum -y install freeglut-devel xerces-c-devel \
        qt-devel mesa-libGLw-devel
+       
+Note that compiling Geant4 from source may be the only way to reliably use the [OpenGL visualizer](https://conferences.fnal.gov/g4tutorial/g4cd/Documentation/Visualization/G4OpenGLTutorial/G4OpenGLTutorial.html). 
 
-#### Notes
+#### conda
 
-   - The default version of CMake for CentOS 7 is 2.8. You may have to
-     download, build, and install a later of version of CMake on your system.
+You can try to fulfill these requirements using [conda](https://docs.conda.io/projects/conda/en/latest/). This *mostly* works,
+though it does not include ROOT I/O in HepMC3 and there are some issues with the Geant4
+OpenGL display. 
 
-   - It's important that ROOT, HepMC3, and Geant4 all be compiled with
-     the same version of the C++ compiler (or at least one that
-     supports C++11 and above). The "native compiler" of CentOS 7 does
-     _not_ have this property. This may mean that the CentOS 7 versions of 
-     ROOT and HepMC3 will not be sufficient and you'll have to compile
-     them from source as well. 
+On [RHEL](https://www.redhat.com/en/technologies/linux-platforms/enterprise-linux)-derived systems, this is the one-time setup; 
+visit the [EPEL](https://fedoraproject.org/wiki/EPEL) web site for releases other than CentOS 7:
 
-   - There are few packages distributions that include Geant4 at
-     present (Jan-2021); one exception is
-     [MacPorts](https://www.macports.org/) but that's probably not
-     useful for code development. You will have to
+     # Install conda
+     sudo yum -y install https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
+     sudo yum -y install conda
+     
+On any system with conda installed (including [anaconda3](https://www.anaconda.com/products/individual) and [miniconda](https://docs.conda.io/en/latest/miniconda.html)), the following will set up a suitable development environment:
+     
+     # Add the conda-forge repository
+     conda config --add channels conda-forge
+     conda config --set channel_priority strict
+
+     # Create a conda environment. The name "grams-devel" is arbitrary.
+     conda create -y --name grams-devel compilers cmake root geant4 hepmc3
+
+Afterwards, the following must be executed once per login session:
+
+     # Activate the environment to modify $PATH and other variables.
+     conda activate grams-devel
+
+#### CentOS packages
+
+Another potential solution is to use RPM packages for RHEL-derived
+Linux distributions (e.g., Scientific Linux, CentOS). In addition to the EPEL repository,
+you will need a more recent version of the GCC compiler than comes with CentOS 7. One
+solution is to use the [SCL](https://www.softwarecollections.org/en/scls/rhscl/devtoolset-7/) 
+tools (but see the cautions below).
+
+    sudo yum -7 install https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
+    sudo yum -y install root HepMC3-devel HepMC3-rootIO-devel 
+    sudo yum -y install gcc-c++ glibc-devel cmake3
+    sudo yum -y install centos-release-scl
+    
+    # Note that as of Sep-2021 the devtoolsets range from from 7 to 10,
+    # which corresponds to the major version of GCC they include. 
+    sudo yum -y install devtoolset-7-gcc*
+    
+To enable the SCL version of the GCC compiler installed above:
+
+    scl enable devtoolset-7 bash
+       
+There are problems with this approach:
+
+   - In the following instructions, you will want to use `cmake3` instead of just `cmake`.
+
+   - You will still have to
      [download](https://geant4.web.cern.ch/support/download) and
      build/install Geant4 on your own.
 
-   - If you determine the installation commands needed for
-     Debian-style distributions (including Ubuntu), please let
-     wgseligman know so he can update this documentation.
+   - It's important that ROOT, HepMC3, and Geant4 all be compiled with
+     the same version of the C++ compiler that
+     supports C++11 and above. The ROOT and HepMC3 packages from EPEL were compiled with
+     the "native compiler" of CentOS 7, GCC 4.8.5,
+     which does _not_ support C++11. 
+
+(If you determine the installation commands needed for
+Debian-style distributions (including Ubuntu), please let
+wgseligman know so he can update this documentation.)
  
 ### Prepare your local computer 
    
@@ -193,6 +235,10 @@ Of particular interest is the file `mac/sky.mac`, which shows how to generate an
 
 For more on the gps commands, see the [References](#references) section near the end of this document. 
 
+### Visualization
+
+See `GramsG4/mac/README.md` for a description of the visualization examples in the `GramsG4/mac` directory.
+
 ### Events from an external generator
 
 The GPS commands may not be sufficient. For example, you may want to generate the primary particles from an initial nuclear interaction (*n-<span style="text-decoration:overline">n</span>*
@@ -202,7 +248,7 @@ GramsG4 can read files of events in [HepMC3](https://gitlab.cern.ch/hepmc/HepMC3
 
     ./gramsg4 --macrofile mac/hepmc3.mac --inputgen scripts/example.hepmc3
 
-Note that HepMC3 can also read files in older formats. The format of the file is assumed to match the file's extension (the part after the final period ".") as follows:
+Note that HepMC3 can also read files in various formats. The format of the file is assumed to match the file's extension (the part after the final period ".") as follows:
 
 <table>
 <tr><th>Extension</th><th>Format</th></tr>
@@ -210,6 +256,8 @@ Note that HepMC3 can also read files in older formats. The format of the file is
 <tr><td>.hepmc2</td><td>HepMC2 ASCII</td></tr>
 <tr><td>.hpe</td><td><a href="https://cdcvs.fnal.gov/redmine/projects/minos-sim/wiki/HEPEVT_files">HEPEVT</a> (ASCII)</td></tr>
 <tr><td>.lhef</td><td><a href="http://home.thep.lu.se/~leif/LHEF/LHEF_8h_source.html">Les Houches Event File</a></td></tr>
+<tr><td>.root</td><td>HepMC3 ROOT</td></tr>
+<tr><td>.treeroot</td><td>HepMC3 ROOT TTree</td></tr>
 </table>
 
 If you want to write HepMC3 files, there are a couple of simple examples in the `scripts/` directory. More detailed examples can be found in the `examples/` directory within the HepMC3 distribution. 
@@ -245,11 +293,29 @@ For information about what the term "Identifier" means, see `grams.gdml`. (It's 
 
 If you don't know how to browse an ROOT ntuple, I suggest this [ROOT tutorial](https://www.nevis.columbia.edu/~seligman/root-class/).
 
-*Note:* If you run the program with multiple threads (the `--nthreads` option), the events in the ntuples will *not* be ascending numeric order. The G4Track IDs will be in the order that Geant4 processes them, which is *not* in ascending numeric order even if you don't run with multiple threads. Also note that it's possible for an event to leave no energy deposits in an active TPC volume. 
+*Note:* The G4Track IDs will be in the order that Geant4 processes them, which is *not* in ascending numeric order (even if you don't run with multiple threads; see below). Also note that it's possible for an event to leave no energy deposits in an active TPC volume, so there may be information in `TrackInfo` with no corresponding information in `LArHits`. 
 
-If you're looking for a place to start in accessing the ntuples for analysis, look at `SimpleAnalysis.C` in the `scripts` directory which was copied to your build/work directory. To run it:
+If you're looking for a place to start in accessing the ntuples for analysis, look at the examples in the `scripts` directory which was copied to your build/work directory. 
+    
+### Generating large numbers of events
 
-    root -l scripts/SimpleAnalysis.C
+Some things to consider:
+
+   - You can speed up the simulation considerably by turning on multi-threaded running. To do this,
+   supply the number of threads to use via the `-t` or `--nthreads` option; e.g.,
+   
+      `./gramsg4 --nthreads 4`
+      
+       will run with 4 simultaneous threads. The potential disadvantage of this is that the information in the output
+       ntuples will *not* be in ascending order. 
+       
+   - If you are running multiple jobs to generate events, by default they'll all run with the same random number seed;
+   i.e., in the options XML file there is a parameter `rngseed` which is set to -1 by default. To generate a different set
+   of events for each job, you will want to vary the seed for each job. 
+   
+      For example, if the job has a unique process ID in the variable `${Process}`, then you probably want something like this:
+      
+      `./gramsg4 --rngseed ${Process}`
 
 ## Making changes
 
@@ -365,6 +431,8 @@ If you want to start working with the program options, read the
 next couple of sections. Otherwise, skip to physics lists below.  
 
 ### Options XML file - details
+
+*See `util/README.md` for more information.*
 
 What you'll first notice that is that within the global `<parameters>` tag there are
 at least two sections. It looks something like this:
@@ -488,10 +556,10 @@ You need the programming to do something with that option.
 Within the code, you can access the value of a given option:
 
 ```
-  #include "Options.h"
+  #include "Options.h" 
   // ...
   std::string optionValue; /* ... or int or double or bool ... */
-  auto success = GramsG4Options::GetInstance()->GetOption("option-name",optionValue);
+  auto success = util::Options::GetInstance()->GetOption("option-name",optionValue);
   if (success) { ... do whatever with optionValue ... }
   else { there is no option with name "option-name" that is of the type of optionValue }
 ```  
@@ -499,9 +567,9 @@ Within the code, you can access the value of a given option:
 For example:
 
 ```  
-  #include "Options.h"
+  #include "Options.h" 
   // ...
-  auto options = GramsG4Options::GetInstance();
+  auto options = util::Options::GetInstance();
   G4double myCut;
   auto success = options->GetOption("energyCut",myCut);
   if (success) { 
@@ -622,8 +690,8 @@ This will show you many places to get started!
 ## References
 
 Understanding UNIX:
-   - [UNIXhelp](http://deslab.mit.edu/UNIXhelp/)
-   - [UNIX is a Four Letter Word](https://t-a-y-l-o-r.com/unix/)
+   - [UNIX tutorial for beginners](http://www.ee.surrey.ac.uk/Teaching/Unix/)
+   - [Learn UNIX](https://www.tutorialspoint.com/unix/index.htm)
 
 Version control system:
    - git: <https://git-scm.com/doc> 
@@ -640,7 +708,6 @@ Toolkits:
 GDML detector geometry description
    - [GDML manual](http://lcgapp.cern.ch/project/simu/framework/GDML/doc/GDMLmanual.pdf)
    - [Geant4 Applications Guide](http://geant4-userdoc.web.cern.ch/geant4-userdoc/UsersGuides/ForApplicationDeveloper/html/), especially the [geometry section](http://geant4-userdoc.web.cern.ch/geant4-userdoc/UsersGuides/ForApplicationDeveloper/html/Detector/Geometry/geometry.html) which explains the difference between solids, logical volumes, and physical volumes. 
-
 
 Geant4 General Particle Source:
    - [Documentation](http://geant4-userdoc.web.cern.ch/geant4-userdoc/UsersGuides/ForApplicationDeveloper/html/GettingStarted/generalParticleSource.html)
@@ -662,7 +729,8 @@ Geant4 General Particle Source:
 This document is written in
 [Markdown](https://www.markdownguide.org/cheat-sheet/), a tool for
 formatting documents but still keeping the unformatted versions
-readable.
+readable. It's also handy for reading documents on github, since files ending in `.md`
+are automatically formatted for the web. 
 
 If you want to read a formatted version of this document (so you're
 spared the funny backticks and hashtags and whatnot), do a web search on

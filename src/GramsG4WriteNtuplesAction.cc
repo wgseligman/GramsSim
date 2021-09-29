@@ -3,7 +3,7 @@
 
 /// This is a user-action class that writes out the event hits and
 /// truth information. At present, the output takes the form of basic
-/// (and inefficient) ROOT n-tuples.
+/// ROOT n-tuples.
 
 #include "GramsG4WriteNtuplesAction.hh"
 #include "GramsG4LArHit.hh"
@@ -18,9 +18,23 @@
 #include "G4Event.hh"
 #include "G4SDManager.hh"
 #include "G4Threading.hh"
+#include "G4AutoLock.hh"
 
 namespace gramsg4 {
 
+  // In a multi-threaded application, there's an issue: std::vector
+  // operations are not thread-safe. Vectors can reallocate their
+  // memory, and we get into trouble when two or more vectors try to
+  // reallocate memory at once.
+
+  // To get around this, use G4's locking mechanism (which is
+  // basically a wrapper around the standard C++ mutex). See
+  // $G4INSTALL/include/G4AutoLock.hh for details.
+  static G4Mutex myMutex;
+
+  //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+
+  // Default constructor. 
   WriteNtuplesAction::WriteNtuplesAction()
     : UserAction()
     , m_LArHitCollectionID(-1)
@@ -29,6 +43,7 @@ namespace gramsg4 {
 
   //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
+  // Destructor.
   WriteNtuplesAction::~WriteNtuplesAction() {}
 
   //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -39,12 +54,6 @@ namespace gramsg4 {
   void WriteNtuplesAction::BeginOfRunAction(const G4Run*) {
     // Access (maybe create) the G4AnalysisManager.
     auto analysisManager = G4AnalysisManager::Instance();
-    // Without this, each execution thread writes its own file, or
-    // perhaps each event will have its own set of ntuples.. It may
-    // turn out that's what we want after all, but let's see. Note
-    // that a consequence of merging files is that the events may not
-    // be in order in the output file if you use multiple threads.
-    analysisManager->SetNtupleMerging(true);
 
     auto options = util::Options::GetInstance();
     options->GetOption("debug",m_debug);
@@ -53,6 +62,13 @@ namespace gramsg4 {
     options->GetOption("verbose",verbose);
     if (verbose)
       analysisManager->SetVerboseLevel(1);
+
+    // Without this, each execution thread writes its own file, or
+    // perhaps each event will have its own set of ntuples. It may
+    // turn out that's what we want after all, but let's see. Note
+    // that a consequence of merging files is that the events may not
+    // be in order in the output file if you use multiple threads.
+    analysisManager->SetNtupleMerging(true);
 
     // Open the output file.
     G4String filename;
@@ -88,13 +104,13 @@ namespace gramsg4 {
     analysisManager->CreateNtupleIColumn("numPhotons"); // id 4
     analysisManager->CreateNtupleDColumn("energy");     // id 5
     analysisManager->CreateNtupleDColumn("tStart");     // id 6
-    analysisManager->CreateNtupleDColumn("xStart");     // id 7
-    analysisManager->CreateNtupleDColumn("yStart");     // id 8
-    analysisManager->CreateNtupleDColumn("zStart");     // id 9
+    analysisManager->CreateNtupleFColumn("xStart");     // id 7
+    analysisManager->CreateNtupleFColumn("yStart");     // id 8
+    analysisManager->CreateNtupleFColumn("zStart");     // id 9
     analysisManager->CreateNtupleDColumn("tEnd");       // id 10
-    analysisManager->CreateNtupleDColumn("xEnd");       // id 11
-    analysisManager->CreateNtupleDColumn("yEnd");       // id 12
-    analysisManager->CreateNtupleDColumn("zEnd");       // id 13
+    analysisManager->CreateNtupleFColumn("xEnd");       // id 11
+    analysisManager->CreateNtupleFColumn("yEnd");       // id 12
+    analysisManager->CreateNtupleFColumn("zEnd");       // id 13
     analysisManager->CreateNtupleIColumn("identifier"); // id 14
 
     if (m_debug) 
@@ -113,13 +129,13 @@ namespace gramsg4 {
     analysisManager->CreateNtupleIColumn("PDGCode");    // id 3
     analysisManager->CreateNtupleDColumn("energy");     // id 4
     analysisManager->CreateNtupleDColumn("tStart");     // id 5
-    analysisManager->CreateNtupleDColumn("xStart");     // id 6
-    analysisManager->CreateNtupleDColumn("yStart");     // id 7
-    analysisManager->CreateNtupleDColumn("zStart");     // id 8
+    analysisManager->CreateNtupleFColumn("xStart");     // id 6
+    analysisManager->CreateNtupleFColumn("yStart");     // id 7
+    analysisManager->CreateNtupleFColumn("zStart");     // id 8
     analysisManager->CreateNtupleDColumn("tEnd");       // id 9
-    analysisManager->CreateNtupleDColumn("xEnd");       // id 10
-    analysisManager->CreateNtupleDColumn("yEnd");       // id 11
-    analysisManager->CreateNtupleDColumn("zEnd");       // id 12
+    analysisManager->CreateNtupleFColumn("xEnd");       // id 10
+    analysisManager->CreateNtupleFColumn("yEnd");       // id 11
+    analysisManager->CreateNtupleFColumn("zEnd");       // id 12
     analysisManager->CreateNtupleIColumn("identifier"); // id 13
     analysisManager->FinishNtuple();
 
@@ -145,13 +161,13 @@ namespace gramsg4 {
     analysisManager->CreateNtupleIColumn("PDGCode");                  // id 4
     analysisManager->CreateNtupleSColumn("ProcessName");              // id 5
     analysisManager->CreateNtupleDColumn("t", m_time);                // id 6
-    analysisManager->CreateNtupleDColumn("x", m_xpos);                // id 7
-    analysisManager->CreateNtupleDColumn("y", m_ypos);                // id 8
-    analysisManager->CreateNtupleDColumn("z", m_zpos);                // id 9
+    analysisManager->CreateNtupleFColumn("x", m_xpos);                // id 7
+    analysisManager->CreateNtupleFColumn("y", m_ypos);                // id 8
+    analysisManager->CreateNtupleFColumn("z", m_zpos);                // id 9
     analysisManager->CreateNtupleDColumn("Etot", m_energy);           // id 10
-    analysisManager->CreateNtupleDColumn("px", m_xmom);               // id 11
-    analysisManager->CreateNtupleDColumn("py", m_ymom);               // id 12
-    analysisManager->CreateNtupleDColumn("pz", m_zmom);               // id 13
+    analysisManager->CreateNtupleFColumn("px", m_xmom);               // id 11
+    analysisManager->CreateNtupleFColumn("py", m_ymom);               // id 12
+    analysisManager->CreateNtupleFColumn("pz", m_zmom);               // id 13
     analysisManager->CreateNtupleIColumn("identifier", m_identifier); // id 14
 
     if (m_debug) 
@@ -161,13 +177,18 @@ namespace gramsg4 {
     analysisManager->FinishNtuple();
 
     // Yet another ntuple: This contains the options used to run this
-    // program. Why do this? Isn't there an options.xml file that
-    // tells us which options were used? Not necessarily. For one
-    // thing, the user may have overridden options using the command
-    // line; this ntuple will record any such changes. Also, I find
-    // that often in an analysis I keep many files created by many
-    // jobs with many versions. If we store the exact options used to
-    // generate a file, we have a better chance of recreating results.
+    // program. 
+
+    // Why do this? Isn't there an options.xml file that tells us
+    // which options were used? Not necessarily. For one thing, the
+    // user may have overridden options using the command line; this
+    // ntuple will record any such changes.
+
+    // Also, I find that often in an analysis I keep many files
+    // created by many jobs with many versions. If we store the exact
+    // options used to generate a file, we have a better chance of
+    // recreating results.
+
     m_optionsNTID = analysisManager->CreateNtuple("Options", "Options used for this program");
     if (m_debug) 
       G4cout << "WriteNtuplesAction::() - "
@@ -186,15 +207,15 @@ namespace gramsg4 {
     analysisManager->FinishNtuple();
 
     // In multi-threaded running, ntuples exist in worker threads, but
-    // not in the main thread. If we try to fill the ntuple in the
-    // master thread, we get lots of annoying (but harmless) error
+    // not in the main thread. If we try to fill the options ntuple in
+    // the master thread, we get lots of annoying (but harmless) error
     // messages. The following test makes sure we only fill the ntuple
     // if there are no threads (SEQUENTIAL_ID), or for a single worker
-    // thread (WORKER_ID = 0) in a multi-threaded application.
+    // thread (ID == 0) in a multi-threaded application.
 
     auto threadID = G4Threading::G4GetThreadId();
     if ( threadID == G4Threading::SEQUENTIAL_ID  ||  
-	 threadID == G4Threading::WORKER_ID ) {
+	 threadID == 0 ) {
 
       // Write the options to the ntuple.
       auto numOptions = options->NumberOfOptions();
@@ -245,7 +266,7 @@ namespace gramsg4 {
 
     auto analysisManager = G4AnalysisManager::Instance();
 
-    // Get hits collections IDs (only once)
+    // Get hit collection ID (only once)
     if ( m_LArHitCollectionID == -1 ) {
       // Make sure the following collection ID name agrees with that
       // in GramsG4DetectorConstruction.cc
@@ -253,7 +274,7 @@ namespace gramsg4 {
 	= G4SDManager::GetSDMpointer()->GetCollectionID("LArHits");
     }
 
-    // Get hits collection
+    // Get collection of hits
     auto LArHC 
       = GetHitsCollection<LArHitsCollection>(m_LArHitCollectionID, a_event);
 
@@ -274,13 +295,13 @@ namespace gramsg4 {
       analysisManager->FillNtupleIColumn(m_LArNTID, 4, hit->GetNumPhotons() );
       analysisManager->FillNtupleDColumn(m_LArNTID, 5, hit->GetEnergy() );
       analysisManager->FillNtupleDColumn(m_LArNTID, 6, hit->GetStartTime() );
-      analysisManager->FillNtupleDColumn(m_LArNTID, 7, (hit->GetStartPosition()).x() );
-      analysisManager->FillNtupleDColumn(m_LArNTID, 8, (hit->GetStartPosition()).y() );
-      analysisManager->FillNtupleDColumn(m_LArNTID, 9, (hit->GetStartPosition()).z() );
+      analysisManager->FillNtupleFColumn(m_LArNTID, 7, (hit->GetStartPosition()).x() );
+      analysisManager->FillNtupleFColumn(m_LArNTID, 8, (hit->GetStartPosition()).y() );
+      analysisManager->FillNtupleFColumn(m_LArNTID, 9, (hit->GetStartPosition()).z() );
       analysisManager->FillNtupleDColumn(m_LArNTID,10, hit->GetEndTime() );
-      analysisManager->FillNtupleDColumn(m_LArNTID,11, (hit->GetEndPosition()).x() );
-      analysisManager->FillNtupleDColumn(m_LArNTID,12, (hit->GetEndPosition()).y() );
-      analysisManager->FillNtupleDColumn(m_LArNTID,13, (hit->GetEndPosition()).z() );
+      analysisManager->FillNtupleFColumn(m_LArNTID,11, (hit->GetEndPosition()).x() );
+      analysisManager->FillNtupleFColumn(m_LArNTID,12, (hit->GetEndPosition()).y() );
+      analysisManager->FillNtupleFColumn(m_LArNTID,13, (hit->GetEndPosition()).z() );
       analysisManager->FillNtupleIColumn(m_LArNTID,14, hit->GetIdentifier() );
 
       if (m_debug) 
@@ -290,7 +311,7 @@ namespace gramsg4 {
 
     // Do the same thing for the Scintillator hits.
 
-    // Get hits collections IDs (only once)
+    // Get hit collection ID (only once)
     if ( m_ScintillatorHitCollectionID == -1 ) {
       // Make sure the following collection ID name agrees with that
       // in GramsG4DetectorConstruction.cc
@@ -314,13 +335,13 @@ namespace gramsg4 {
       analysisManager->FillNtupleIColumn(m_ScintNTID, 3, hit->GetPDGCode() );
       analysisManager->FillNtupleDColumn(m_ScintNTID, 4, hit->GetEnergy() );
       analysisManager->FillNtupleDColumn(m_ScintNTID, 5, hit->GetStartTime() );
-      analysisManager->FillNtupleDColumn(m_ScintNTID, 6, (hit->GetStartPosition()).x() );
-      analysisManager->FillNtupleDColumn(m_ScintNTID, 7, (hit->GetStartPosition()).y() );
-      analysisManager->FillNtupleDColumn(m_ScintNTID, 8, (hit->GetStartPosition()).z() );
+      analysisManager->FillNtupleFColumn(m_ScintNTID, 6, (hit->GetStartPosition()).x() );
+      analysisManager->FillNtupleFColumn(m_ScintNTID, 7, (hit->GetStartPosition()).y() );
+      analysisManager->FillNtupleFColumn(m_ScintNTID, 8, (hit->GetStartPosition()).z() );
       analysisManager->FillNtupleDColumn(m_ScintNTID, 9, hit->GetEndTime() );
-      analysisManager->FillNtupleDColumn(m_ScintNTID,10, (hit->GetEndPosition()).x() );
-      analysisManager->FillNtupleDColumn(m_ScintNTID,11, (hit->GetEndPosition()).y() );
-      analysisManager->FillNtupleDColumn(m_ScintNTID,12, (hit->GetEndPosition()).z() );
+      analysisManager->FillNtupleFColumn(m_ScintNTID,10, (hit->GetEndPosition()).x() );
+      analysisManager->FillNtupleFColumn(m_ScintNTID,11, (hit->GetEndPosition()).y() );
+      analysisManager->FillNtupleFColumn(m_ScintNTID,12, (hit->GetEndPosition()).z() );
       analysisManager->FillNtupleIColumn(m_ScintNTID,13, hit->GetIdentifier() );
 
       if (m_debug) {
@@ -380,7 +401,14 @@ namespace gramsg4 {
     if (m_debug) 
       G4cout << "WriteNtuplesAction::PostTrackingAction - Adding row" << G4endl;
 
-    analysisManager->AddNtupleRow(m_TrackNTID);  
+    // It appears that the analysis manager has a problem writing
+    // vectors in a multi-threaded environment. Within the scope of
+    // the braces, G4AutoLock will make sure only a single thread can
+    // execute this block of code.
+    {
+      G4AutoLock lock(&myMutex);
+      analysisManager->AddNtupleRow(m_TrackNTID);  
+    }
   }
 
   //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -439,7 +467,7 @@ namespace gramsg4 {
       // numbers is tricky on computer systems. Instead, let's check
       // if the different between their components is small.
 
-      const G4double small = 1.e-4;
+      static const G4double small = 1.e-4;
       if ( std::abs( currentMomentumDirection.x() - lastMomentumDirection.x() ) < small
 	   &&
 	   std::abs( currentMomentumDirection.y() - lastMomentumDirection.y() ) < small
@@ -459,6 +487,11 @@ namespace gramsg4 {
   }
 
   void WriteNtuplesAction::ClearTrajectory() {
+    // There's a small chance that std::vector::clear might cause a
+    // memory reallocation, so lock the following code so only one
+    // thread can execute it.
+    G4AutoLock lock(myMutex);
+
     // Clear all the trajectory vectors. 
     m_time.clear();
     m_xpos.clear();
@@ -471,8 +504,11 @@ namespace gramsg4 {
     m_identifier.clear();
   }
 
-  size_t WriteNtuplesAction::AddTrajectoryPoint( const G4Track* a_track )
+  void WriteNtuplesAction::AddTrajectoryPoint( const G4Track* a_track )
   {
+    // Lock the following code so only one thread can execute it.
+    G4AutoLock lock(myMutex);
+
     // Add the components of our two 4-vectors (t,x,y,z) (E,px,py,pz)
     // to the individual std::vectors.
     m_time.push_back( a_track->GetGlobalTime() );
@@ -484,10 +520,6 @@ namespace gramsg4 {
     m_ymom.push_back( a_track->GetMomentum().y() );
     m_zmom.push_back( a_track->GetMomentum().z() );
     m_identifier.push_back( a_track->GetVolume()->GetCopyNo() );
-
-    // All the std::vectors should be the same size, so pick one and
-    // return its size.
-    return m_time.size();
   }
 
 } // namespace gramsg4

@@ -3,6 +3,9 @@
 ###################################################
 
 # For GRAMS, let's look at monoenergetic 1MeV photons
+# Note: the Geant4 names for a couple of possible
+# particles for our studies are anti_proton and anti_deuteron
+# (don't forget the "_"!).
 /gps/particle gamma
 /gps/ene/type Mono
 /gps/ene/mono 1 MeV

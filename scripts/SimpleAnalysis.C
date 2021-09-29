@@ -1,3 +1,6 @@
+// To run this ROOT macro, you can do something like this:
+//    root scripts/SimpleAnalysis.C
+
 {
   // A very simple look at the ntuples produced by
   // gramsg4. 

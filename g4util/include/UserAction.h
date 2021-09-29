@@ -22,10 +22,6 @@
 /// UserAction comes in.  It gathers all the G4 user-hook or
 /// user-action classes into one place.
 
-/// For an example of how this class can be used, see the class
-/// LArRootPersistency in the LArG4Sim package.  This class implements
-/// the UserAction interface to make NTuples and write ROOT trees.
-
 #ifndef g4util_UserAction_H
 #define g4util_UserAction_H
 

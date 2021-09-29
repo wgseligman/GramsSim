@@ -4,7 +4,11 @@
 #----------------------------------------------------------------------------
 # Setup the project
 cmake_minimum_required(VERSION 3.6 FATAL_ERROR)
-project(GramsG4)
+# Note: Do NOT make the project name the same as any executable
+# name, including case. When the project was GramsG4 and the 
+# main executable gramsg4, the build process would work on Linux
+# but not on Mac OS. 
+project(GramsG4Project)
 
 # Add source dir as a place for CMake modules
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/cmake/Modules)
@@ -57,15 +61,13 @@ include_directories(${PROJECT_SOURCE_DIR}/include
                     ${ROOT_INCLUDE_DIR})
 file(GLOB sources ${PROJECT_SOURCE_DIR}/src/*.cc
                   ${PROJECT_SOURCE_DIR}/util/src/*.cc
-                  ${PROJECT_SOURCE_DIR}/g4util/src/*.cc)
-file(GLOB headers ${PROJECT_SOURCE_DIR}/include/*.hh
-                  ${PROJECT_SOURCE_DIR}/util/include/*.h
-                  ${PROJECT_SOURCE_DIR}/g4util/include/*.h)
+                  ${PROJECT_SOURCE_DIR}/g4util/src/*.cc
+    )
 
 #----------------------------------------------------------------------------
 # Add the executable, and link it to the libraries
 #
-add_executable(gramsg4 gramsg4.cc ${sources} ${headers})
+add_executable(gramsg4 gramsg4.cc ${sources})
 target_link_libraries(gramsg4 ${HEPMC3_LIBRARIES} )
 target_link_libraries(gramsg4 ${ROOT_LIBRARIES} )
 target_link_libraries(gramsg4 ${Geant4_LIBRARIES} )
@@ -97,7 +99,7 @@ add_subdirectory(scripts)
 # Add program to the project targets
 # (this avoids the need of typing the program name after make)
 #
-add_custom_target(GramsG4 DEPENDS gramsg4)
+add_custom_target(GramsG4Project DEPENDS gramsg4)
 
 #----------------------------------------------------------------------------
 # Install the executable to 'bin' directory under CMAKE_INSTALL_PREFIX

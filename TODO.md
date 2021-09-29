@@ -1,30 +1,24 @@
 # TODO 
 
-As of 22-May-2021:
+As of 25-Aug-2021:
 
 - Multi-threaded execution
-   - gramsg4 crashes if -t is set higher than 1.
    - Test the saving and restoring of random-number states.
 
 - Scintillator hits
-   - Requires a two-way map of strip geometry to (x,y,z).
-
-- Improve SimpleAnalysis.C
-   - Perhaps a concrete example of turning the LAr hits to an image format for ML studies.
+   - It would be handy to provide a two-way map of strip geometry to (x,y,z).
    
 - ROOT 
-   - Ntuples will only go so far. 
-   - Some form of structured TTrees would be better for MC truth information. 
+   - Ntuples have their limits. Some form of structured TTrees might be better for MC truth information. 
    - Can ROOT read the Geant4 GDML file directly?
       - Answer: As of ROOT 6.20, the answer is no. It must be parsed with --gdmlout first.
 
-- HepMC3
-   - Understand and fix the HepMC3+ROOT compilation issue. (This is a marginal use case for HepMC3, so we may never fix this.)
-
 ## Resolved issues:
+
+- Multi-threaded execution no longer causes the program to crash. 
 
 - UI display
    - Does OpenGL support display of hit/track information on mouse hover?
-      - Answer: OpenGL does not. There are other visualization formats that do (e.g., HepRep) but it's probably not worth forcing everyone to use them. 
+      - Answer: OpenGL does not. HepRep does, and we now provide an example of how to make this work. 
    - Can we add some kind of axis labels?
       - Answer: Yes. The G4 macro command is "/vis/scene/add/axes 0 -2.5 0 1 m". See mac/vis.mac for details.

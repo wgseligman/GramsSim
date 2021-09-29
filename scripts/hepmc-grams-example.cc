@@ -18,7 +18,7 @@
 #include "HepMC3/GenVertex.h"
 #include "HepMC3/GenParticle.h"
 #include "HepMC3/Writer.h"
-#include "HepMC3/WriterRoot.h"
+#include "HepMC3/WriterAscii.h"
 #include "HepMC3/FourVector.h"
 
 #include <cstring>
@@ -30,9 +30,9 @@
 int main() {
 
   // Fixed output file name. 
-  std::string outputFile("example.root");
+  std::string outputFile("example.hepmc3");
 
-  auto writer = new HepMC3::WriterRoot(outputFile);
+  auto writer = new HepMC3::WriterAscii(outputFile);
 
   // In this example, there's only one particle for each vertex.
   typedef std::pair < HepMC3::GenVertexPtr, HepMC3::GenParticlePtr > event_type;
