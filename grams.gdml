@@ -134,7 +134,7 @@ source of interactions (e.g., the cryostat walls.)
     
     <!-- 8-May-2020 WGS: How big will the active LAr volume be? I don't know. 
     To make the placement of the sensitive detector cells easier, I'm putting 
-    the same boundary in within the volume of the LArTPC. This
+    the same boundary as the volume of the LArTPC. This
     isn't realistic, but you have to start somewhere. -->
     <constant name="fidVolGap" value="0" />
 
@@ -290,7 +290,11 @@ source of interactions (e.g., the cryostat walls.)
     -->
     <!-- 29-Sep-2021 WGS: At the collaboration meeting, I learned that
     GAPS uses 6mm scintillator strips. -->
-    <constant name="scintillatorThickness" value="0.6" />
+    <!-- 05-Oct-2021 WGS: But if I use scintillatorThickness=0.6, the
+    arithmetic used in later sections doesn't work out. I'd need a 
+    detailed description of how the strips in the different walls fit
+    together. Without such a description, stick with 10mm. -->
+    <constant name="scintillatorThickness" value="1.0" />
     <constant name="scintillatorWidth"     value="2.0" />
     
     <!-- 15-Jun-2020 WGS: Each wall contains a single layer of strips (in an
@@ -392,7 +396,7 @@ source of interactions (e.g., the cryostat walls.)
     all of the TPC active cells have z<0. The purpose of LArSoft's definition of having
     the induction plane be at an axis=0 is to avoid negative numbers! Leave this
     for now, and let the collaboration decide an appropriate coordinate system. -->
-    <constant name="outerDetectorOffsetInWorld" value ="-(lArTPCZSize/2) + tilePlaneThickness - innerDetectorOffsetInOuter" />
+    <constant name="outerDetectorOffsetInWorld" value ="-(lArTPCZSize/2) + tilePlaneZSize - innerDetectorOffsetInOuter" />
 
     <!-- 07-Jul-2020 WGS: Material optical properties -->
     <!-- From https://cdcvs.fnal.gov/redmine/projects/larg4/wiki -->
@@ -887,7 +891,7 @@ source of interactions (e.g., the cryostat walls.)
       <!-- 15-Jul-2020 WGS: Leave just enough room for SIPMs above the tile planes. -->
       <physvol>
         <volumeref ref="volTilePlane"/>
-        <position name="posXplane" unit="cm" x="0" y="0" z="(lArTPCZSize/2) - (tilePlaneThickness/2) - sipmThickness" />
+        <position name="posXplane" unit="cm" x="0" y="0" z="(lArTPCZSize/2) - (tilePlaneZSize/2) - sipmThickness" />
       </physvol>
       
       <!-- Place the separator sheets that go along the entire y-length of the TPC area. -->
