@@ -53,7 +53,7 @@ An Identifier is an integer of the form TZZYYXX where
 T: 1 for LAr TPC
    2 for Scintillator strips
    3 for inside one of the sheets that optically separate cells
-   4 for the wires
+   4 for the tile
    5 for the SIPMs
    6 for the cathode plate
    7 for any bits of LAr not covered by the above
@@ -97,7 +97,7 @@ YYXX:
     For the scintillator strips, this is the index of the scintillator
     strips within its wall (considering YYXX as a four-digit number).
 
-For  now, there are no individual identifiers for the wires or the
+For  now, there are no individual identifiers for the tiles or the
 separators. 
 
 Examples: 1000309 is in the LArTPC, the 4th cell along y, the 10th cell
@@ -152,43 +152,30 @@ source of interactions (e.g., the cryostat walls.)
     <constant name="cryostatYSize" value="lArTPCYSize + 2*cryostatThickness" />
     <constant name="cryostatZSize" value="lArTPCZSize + 2*cryostatThickness" />
 
-    <!-- 5-May-2020 WGS: For the x-y wires, use the wire spacing from the GRAMS
-    collaboration meeting (2mm) and radius from MicroBooNE.-->
-    <constant name="wireSpacing" value="0.2" />
-    <constant name="wireRadius" value="0.0075" />
-    <constant name="lengthXWire" value="lArTPCXSize" />
-    <constant name="lengthYWire" value="lArTPCYSize" />
-    <!-- 5-May-2020 WGS: Since I have to pick one plane (X or Y) to be the anode plane,
-    I'll pick X. The X-plane defines z=0 for the coordinate system (this is a LArSoft
-    convention). The distance between planes comes from MicroBoone: 3mm -->
-    <constant name="planeSeparation" value="0.3" />
+    <!-- 05-Oct-2021 WGS: 
     
-    <!-- 6-May-2020 WGS: Define "wire planes" in which to place the wires. This extra
-    layer of geometry will make things easier in the long run; e.g., for placing the wires
-    within a mechanical frame. -->
-    <constant name="wirePlaneThickness" value="0.15" />
-    <constant name="wirePlaneXSize" value="lArTPCXSize" />
-    <constant name="wirePlaneYSize" value="lArTPCYSize" />
-    <constant name="wirePlaneZSize" value="wirePlaneThickness" />
+    Set aside the wire anodes used by prior LArTPC detectors in favor of
+    etched tiles. For now, model this as a 0.6mm layer of silica with a
+    1.57mm layer of G10 on top for support. (It's likely that the actual
+    tile arrangement won't be a single solid plane, but for now model it
+    as such.) 
     
-    <!-- 6-May-2020 WGS: Create values and variables for loop statements
-    when we place the wires in the planes; see the <structure> section. -->
-    <constant name="numberXWires" value="( wirePlaneYSize / wireSpacing ) - 1" />
-    <constant name="numberYWires" value="( wirePlaneXSize / wireSpacing ) - 1" />
+    The tile plane has gold etched into the surface, but it's so thin
+    that this is not likely to affect the simulation. 
     
-    <variable name="xWireLoopIndex" value="0" />
-    <variable name="yWireLoopIndex" value="0" />
-
-    <!-- 6-May-2020 WGS: By default, "tubes" are created along the z-axis. We'll
-    need a couple of rotation definitions to get the wires to go along the x and y axes.
+    For "compatibility" with LArSoft, the bottom of the tile plane (the anode)
+    will define z=0 for our coordinate system. 
+    
     -->
-    <!-- For y-wires -->
-    <rotation name="rPlus90AboutX" unit="deg" x="90" y="0"  z="0"/>
-    <!-- For x-wires -->
-    <rotation name="rPlus90AboutY" unit="deg" x="0"  y="90" z="0"/>
+    
+    <constant name="silicaThickness" value="0.06" />
+    <constant name="G10Thickness" value="0.157" />
+    <constant name="tilePlaneXSize" value="lArTPCXSize" />
+    <constant name="tilePlaneYSize" value="lArTPCYSize" />
+    <constant name="tilePlaneZSize" value="silicaThickness + G10Thickness" />
  
     <!-- 6-May-2020 WGS: There has to be a cathode plate to provide the field along with
-    the anode plane (the x-wires in this draft geometry). -->
+    the anode plane. -->
     <constant name="cathodeThickness" value="0.1" />
     <constant name="cathodeXSize" value="lArTPCXSize" />
     <constant name="cathodeYSize" value="lArTPCYSize" />
@@ -198,7 +185,7 @@ source of interactions (e.g., the cryostat walls.)
     so assume 5 separator sheets dividing the LAr into 6 cells (the number
     in the diagrams in arXiv:1901.03430v3). -->
     
-    <!-- 16-Jul-2020 WGS: It's not clear from  arXiv:1901.03430v3, but it appears
+    <!-- 16-Jul-2020 WGS: It's not clear from arXiv:1901.03430v3, but it appears
     that cells are delimited in both x and y. -->
     
     <!-- 15-Mar-2021 WGS: I should have noted this before: Late last year,
@@ -216,7 +203,7 @@ source of interactions (e.g., the cryostat walls.)
     <constant name="numberSepSheetsX" value="numberActiveCellsX - 1" />
    
     <!-- 5-May-2020 WGS: How thick will the separator sheets be? I don't know, so 
-    assume 1mm. For the sheets' z-size, leave some room for the wires and the 
+    assume 1mm. For the sheets' z-size, leave some room for the tiles and the 
     cathode plate. -->
     <constant name="sepThickness" value="0.1" />
 
@@ -398,14 +385,14 @@ source of interactions (e.g., the cryostat walls.)
 
     <!-- 10-May-2020 WGS: This is the offset of the outer detector from the center of
     of the world volume. This is tricky, because (to follow the LArSoft convention,
-    at least partly) the Anode wires (the plane of x-wires in this tentative geometry)
+    at least partly) the anode (the low-z side of the tiles in this tentative geometry)
     defines the z=0 axis. -->
     
-    <!-- 15-May-2020 WGS: It took me 5 days to realize that, with z=0 set to the x-wires,
+    <!-- 15-May-2020 WGS: It took me 5 days to realize that, with z=0 set to the anode,
     all of the TPC active cells have z<0. The purpose of LArSoft's definition of having
     the induction plane be at an axis=0 is to avoid negative numbers! Leave this
     for now, and let the collaboration decide an appropriate coordinate system. -->
-    <constant name="outerDetectorOffsetInWorld" value ="-(lArTPCZSize/2) + (wirePlaneThickness/2) - innerDetectorOffsetInOuter" />
+    <constant name="outerDetectorOffsetInWorld" value ="-(lArTPCZSize/2) + tilePlaneThickness - innerDetectorOffsetInOuter" />
 
     <!-- 07-Jul-2020 WGS: Material optical properties -->
     <!-- From https://cdcvs.fnal.gov/redmine/projects/larg4/wiki -->
@@ -464,8 +451,8 @@ source of interactions (e.g., the cryostat walls.)
 					     1.59515*eV 1.74941
 					     1.63606*eV 1.75
 					     1.67667*eV 1.75178
-                                             1.71167*eV 1.75296
-                                             1.76698*eV 1.75474
+                         1.71167*eV 1.75296
+                         1.76698*eV 1.75474
 					     1.80023*eV 1.75593
 					     1.84655*eV 1.7583
 					     1.9016*eV  1.7583 
@@ -751,11 +738,10 @@ source of interactions (e.g., the cryostat walls.)
     section above. -->
     <box lunit="cm" name="TPC" x="lArTPCXSize" y="lArTPCYSize" z="lArTPCZSize" />
 
-    <tube aunit="deg" deltaphi="360" lunit="cm" name="TPCXWire" rmax="wireRadius" z="lengthXWire" />
-    <tube aunit="deg" deltaphi="360" lunit="cm" name="TPCYWire" rmax="wireRadius" z="lengthYWire" />
-
     <box lunit="cm" name="CathodePlate" x="cathodeXSize" y="cathodeYSize" z="cathodeZSize" />
-    <box lunit="cm" name="TPCWirePlane" x="wirePlaneXSize" y="wirePlaneYSize" z="wirePlaneZSize" />
+    <box lunit="cm" name="SilicaPlane" x="tilePlaneXSize" y="tilePlaneYSize" z="silicaThickness" />
+    <box lunit="cm" name="G10Plane" x="tilePlaneXSize" y="tilePlaneYSize" z="G10Thickness" />
+    <box lunit="cm" name="TilePlane" x="tilePlaneXSize" y="tilePlaneYSize" z="tilePlaneZSize" />
     <box lunit="cm" name="SeparatorGroupSheet" x="sepGroupXSize" y="sepGroupYSize" z="sepGroupZSize" />
     <box lunit="cm" name="SeparatorSheet" x="sepXSize" y="sepYSize" z="sepZSize" />
     <box lunit="cm" name="CellGroup" x="cellGroupXSize" y="cellGroupYSize" z="cellGroupZSize" />
@@ -825,44 +811,31 @@ source of interactions (e.g., the cryostat walls.)
   
     <!-- 6-May-2020 WGS: Note that the materials used below are mostly the MicroBooNE definitions.
     They may not apply to GRAMS. -->
-  
-    <volume name="volTPCXWire">
-      <materialref ref="Titanium"/>
-      <solidref ref="TPCXWire"/>
-      <auxiliary auxtype="Color" auxvalue="none" />
-    </volume>
-     <volume name="volTPCYWire">
-      <materialref ref="Titanium"/>
-      <solidref ref="TPCYWire"/>
+
+    <volume name="volTPCSilica">
+      <materialref ref="SiO2"/>
+      <solidref ref="SilicaPlane"/>
       <auxiliary auxtype="Color" auxvalue="none" />
     </volume>
 
-    <!-- 6-May-2020 WGS: Use loops to place the wires within the planes. -->
- 
-    <volume name="volTPCXPlane">
+    <volume name="volTPCG10">
       <materialref ref="LAr"/>
-      <solidref ref="TPCWirePlane"/>
-      <loop for="xWireLoopIndex" to="numberXWires - 1" step="1">
-        <physvol copynumber="4000000">
-            <volumeref ref="volTPCXWire"/>
-            <position name="posXwire" unit="cm" x="0" y="(-((numberXWires - 1) / 2) + xWireLoopIndex)*wireSpacing" z="0"/>
-            <rotationref ref="rPlus90AboutY"/>
-        </physvol>
-     </loop>
-     <auxiliary auxtype="Color" auxvalue="none" />
+      <solidref ref="G10Plane"/>
+      <auxiliary auxtype="Color" auxvalue="none" />
     </volume>
 
-    <volume name="volTPCYPlane">
-      <materialref ref="LAr"/>
-      <solidref ref="TPCWirePlane"/>
-      <loop for="yWireLoopIndex" to="numberYWires - 1" step="1">
-        <physvol copynumber="4000000">
-            <volumeref ref="volTPCYWire"/>
-            <position name="posYwire" unit="cm" x="(-((numberYWires - 1) / 2) + yWireLoopIndex)*wireSpacing" y="0" z="0"/>
-            <rotationref ref="rPlus90AboutX"/>
-        </physvol>
-     </loop>
-     <auxiliary auxtype="Color" auxvalue="none" />
+    <volume name="volTilePlane">
+      <materialref ref="G10"/>
+      <solidref ref="TilePlane"/>
+      <physvol copynumber="4000000">
+         <volumeref ref="volTPCSilica"/>
+         <position name="posSilica" unit="cm" x="0" y="0" z="-(tilePlaneZSize/2) + (silicaThickness/2)"/>
+      </physvol>
+      <physvol copynumber="4100000">
+         <volumeref ref="volTPCG10"/>
+         <position name="posG10" unit="cm" x="0" y="0" z="(tilePlaneZSize/2) - (G10Thickness/2)"/>
+      </physvol>
+     <auxiliary auxtype="Color" auxvalue="yellow" />
     </volume>
 
     <volume name="volTPCActive">
@@ -876,13 +849,13 @@ source of interactions (e.g., the cryostat walls.)
     <volume name="volSeparatorGroupSheet">
       <materialref ref="PTFE"/>
       <solidref ref="SeparatorGroupSheet"/>
-      <auxiliary auxtype="Color" auxvalue="yellow" />
+      <auxiliary auxtype="Color" auxvalue="none" />
     </volume>
 
     <volume name="volSeparatorSheet">
       <materialref ref="PTFE"/>
       <solidref ref="SeparatorSheet"/>
-      <auxiliary auxtype="Color" auxvalue="yellow" />
+      <auxiliary auxtype="Color" auxvalue="none" />
     </volume>
 
     <!-- 8-May-2020 WGS: As a first approximation, let's assume that
@@ -910,15 +883,11 @@ source of interactions (e.g., the cryostat walls.)
         <position name="posCathod" unit="cm" x="0" y="0" z="-(lArTPCZSize/2) + 2*cathodeThickness" />
       </physvol>
       
-      <!-- 08-May-2020 WGS: Where will the wire planes be? I don't know. Make a guess. -->
-      <!-- 15-Jul-2020 WGS: Leave just enough room for SIPMs above the wire planes. -->
+      <!-- 08-May-2020 WGS: Where will the tile planes be? I don't know. Make a guess. -->
+      <!-- 15-Jul-2020 WGS: Leave just enough room for SIPMs above the tile planes. -->
       <physvol>
-        <volumeref ref="volTPCXPlane"/>
-        <position name="posXplane" unit="cm" x="0" y="0" z="(lArTPCZSize/2) - (wirePlaneThickness/2) - sipmThickness" />
-      </physvol>
-      <physvol>
-        <volumeref ref="volTPCYPlane"/>
-        <position name="posYplane" unit="cm" x="0" y="0" z="(lArTPCZSize/2) - (wirePlaneThickness*3/2) - sipmThickness"/>
+        <volumeref ref="volTilePlane"/>
+        <position name="posXplane" unit="cm" x="0" y="0" z="(lArTPCZSize/2) - (tilePlaneThickness/2) - sipmThickness" />
       </physvol>
       
       <!-- Place the separator sheets that go along the entire y-length of the TPC area. -->
@@ -957,7 +926,7 @@ source of interactions (e.g., the cryostat walls.)
       </loop> <!-- over x-cells -->
 
       <!-- 17-Jul-2020 WGS: Where are the SIPMs? How will they be mounted? I don't know.
-      For now, let them magically float just above the wire planes, and let the
+      For now, let them magically float just above the tile planes, and let the
       positions be identical relative to each cell. -->
       <loop for="activeCellIndexY" from="0" to="numberActiveCellsY - 1" step="1">
         <loop for="activeCellIndexX" from="0" to="numberActiveCellsX - 1" step="1">
@@ -1007,7 +976,7 @@ source of interactions (e.g., the cryostat walls.)
       <auxiliary auxtype="Color" auxvalue="none" />
     </volume>
     
-    <!-- 8-May-2020 WGS: In the same way we placed x and y wires in their volumes, place the scintillator 
+    <!-- 8-May-2020 WGS: Place the scintillator 
     strips in the x, y, and z detector walls. -->
     
     <!-- 11-Mar-2021 WGS: In an earlier version of this file, I just defined the high-axis volumes
@@ -1155,7 +1124,7 @@ source of interactions (e.g., the cryostat walls.)
       <auxiliary auxtype="Color" auxvalue="none" />
     </volume>
     
-    <!-- 8-May-2020 WGS: In the same way we placed x and y wires in their volumes, place the scintillator 
+    <!-- 8-May-2020 WGS: Place the scintillator 
     strips in the x, y, and z detector walls.  -->
     
     <!-- 11-Mar-2021 WGS: In an earlier version of this file, I just defined the high-axis volumes
