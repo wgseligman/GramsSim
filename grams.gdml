@@ -847,9 +847,24 @@ source of interactions (e.g., the cryostat walls.)
      <auxiliary auxtype="Color" auxvalue="yellow" />
     </volume>
 
+    <!-- 8-May-2020 WGS: As a first approximation, let's assume that
+    SIPMs are pure silicon. Question this assumption! -->
+    <volume name="volSIPM">
+      <materialref ref="SILICON_Si"/>
+      <solidref ref="SIPM"/>
+      <auxiliary auxtype="Color" auxvalue="gray" />
+    </volume>
+
     <volume name="volTPCActive">
       <materialref ref="LAr"/>
       <solidref ref="ActiveCell"/>
+      <!-- 05-Oct-2021 WGS: Where are the SIPMs? How will they be mounted? I don't know.
+      For now, let them magically be attached to the separator sheets on the high-x
+      side of each cell. -->
+      <physvol copynumber="5000000">
+        <volumeref ref="volSIPM"/>
+        <position name="posSIPM" unit="cm" x="(activeCellXSize/2) - sipmThickness" y="0" z="0" />
+      </physvol>
       <auxiliary auxtype="SensDet" auxvalue="LArSensitiveDetector" />
       <auxiliary auxtype="StepLimit" auxvalue="0.02"/>
       <auxiliary auxtype="Color" auxvalue="red" />
@@ -865,14 +880,6 @@ source of interactions (e.g., the cryostat walls.)
       <materialref ref="PTFE"/>
       <solidref ref="SeparatorSheet"/>
       <auxiliary auxtype="Color" auxvalue="none" />
-    </volume>
-
-    <!-- 8-May-2020 WGS: As a first approximation, let's assume that
-    SIPMs are pure silicon. Question this assumption! -->
-    <volume name="volSIPM">
-      <materialref ref="SILICON_Si"/>
-      <solidref ref="SIPM"/>
-      <auxiliary auxtype="Color" auxvalue="gray" />
     </volume>
 
     <volume name="volCathodePlate">
@@ -932,21 +939,6 @@ source of interactions (e.g., the cryostat walls.)
         </loop> <!-- over y-cells -->  
 
       </loop> <!-- over x-cells -->
-
-      <!-- 05-Oct-2021 WGS: Where are the SIPMs? How will they be mounted? I don't know.
-      For now, let them magically be attached to the separator sheets on the high-x
-      side of each cell. -->
-      <loop for="activeCellIndexY" from="0" to="numberActiveCellsY - 1" step="1">
-        <loop for="activeCellIndexX" from="0" to="numberActiveCellsX - 1" step="1">
-            <physvol copynumber="5000000">
-                <volumeref ref="volSIPM"/>
-                <!--
-                <position name="posSIPM" unit="cm" x="-(cellGroupXRegion/2) + cellGroupXSize/2 + activeCellIndexX*(cellGroupXSize + sepGroupXSize)" y="-(cellGroupYSize/2) + activeCellYSize/2 + activeCellIndexY*(activeCellYSize + sepYSize)" z="(lArTPCZSize/2) - (sipmThickness)/2"/>
-                -->
-                <position name="posSIPM" unit="cm" x="(lArTPCXSize/2) - (sipmThickness)/2" y="-(cellGroupYSize/2) + activeCellYSize/2 + activeCellIndexY*(activeCellYSize + sepYSize)" z="0"/>
-            </physvol>
-        </loop> <!-- over x-cells -->
-      </loop> <!-- over y-cells -->
 
       <auxiliary auxtype="Color" auxvalue="magenta" />
     </volume>
