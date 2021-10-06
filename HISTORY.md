@@ -4,6 +4,10 @@ A description of major development milestones. The most recent are at
 the top. For a detailed list of all changes (basically, every time
 someone typed "git commit"), see the output of "git log".
 
+Oct-2021:
+
+   - Replace the wires with a tile anode in the GDML file. 
+
 Sep-2021:
 
    - The build process now works on Mac OS X. 
