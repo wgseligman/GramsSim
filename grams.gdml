@@ -247,17 +247,22 @@ source of interactions (e.g., the cryostat walls.)
     for now, is always 000. -->
     <variable name="zLayerIndex" value="0" />
     
-    <!-- 5-May-2020 WGS: How big is a SIPM? I don't know. Make a guess. -->
+    <!-- 05-May-2020 WGS: How big is a SIPM? I don't know. Make a guess. -->
+    <!-- 06-Oct-2021 WGS: With a plate as a cathode and a tile as the anode,
+    the location of the SiPMs is now a complete unknown. I'm going to arbitrarily
+    place them in the center of the high-x side of each cell, magically
+    attached to the separator sheet. This will _definitely_ need revision in 
+    the future. -->
     <constant name="sipmThickness" value="0.1" />
-    <constant name="sipmXSize" value="1.0" />
+    <constant name="sipmXSize" value="sipmThickness" />
     <constant name="sipmYSize" value="1.0" />
-    <constant name="sipmZSize" value="sipmThickness" />
+    <constant name="sipmZSize" value="1.0" />
     <!-- 17-Jul-2020 WGS: How many SIPMs within each cell? What will their
     arrangement be? I don't know. Start with evenly spacing the SIPMs within
     each cell evenly and identicially. (This will become more complex if we
     explore "honeycomb" patterns.) The following values are defined here,
-    but the code to implement anything with them must wait until we until
-    we do some optical physics studies. -->
+    but they are not used (yet) in this GDML file. The code to implement anything 
+    with them must wait until we until we do some optical physics studies. -->
     <constant name="numberSIPMsInCell" value="6" />
     <variable name="indexSIPMsInCell" value="0" />
     <constant name="sipmXseparation" value="activeCellXSize/numberSIPMsInCell" />
@@ -888,10 +893,9 @@ source of interactions (e.g., the cryostat walls.)
       </physvol>
       
       <!-- 08-May-2020 WGS: Where will the tile planes be? I don't know. Make a guess. -->
-      <!-- 15-Jul-2020 WGS: Leave just enough room for SIPMs above the tile planes. -->
       <physvol>
         <volumeref ref="volTilePlane"/>
-        <position name="posXplane" unit="cm" x="0" y="0" z="(lArTPCZSize/2) - (tilePlaneZSize/2) - sipmThickness" />
+        <position name="posXplane" unit="cm" x="0" y="0" z="(lArTPCZSize/2) - (tilePlaneZSize/2)" />
       </physvol>
       
       <!-- Place the separator sheets that go along the entire y-length of the TPC area. -->
@@ -929,14 +933,17 @@ source of interactions (e.g., the cryostat walls.)
 
       </loop> <!-- over x-cells -->
 
-      <!-- 17-Jul-2020 WGS: Where are the SIPMs? How will they be mounted? I don't know.
-      For now, let them magically float just above the tile planes, and let the
-      positions be identical relative to each cell. -->
+      <!-- 05-Oct-2021 WGS: Where are the SIPMs? How will they be mounted? I don't know.
+      For now, let them magically be attached to the separator sheets on the high-x
+      side of each cell. -->
       <loop for="activeCellIndexY" from="0" to="numberActiveCellsY - 1" step="1">
         <loop for="activeCellIndexX" from="0" to="numberActiveCellsX - 1" step="1">
             <physvol copynumber="5000000">
                 <volumeref ref="volSIPM"/>
+                <!--
                 <position name="posSIPM" unit="cm" x="-(cellGroupXRegion/2) + cellGroupXSize/2 + activeCellIndexX*(cellGroupXSize + sepGroupXSize)" y="-(cellGroupYSize/2) + activeCellYSize/2 + activeCellIndexY*(activeCellYSize + sepYSize)" z="(lArTPCZSize/2) - (sipmThickness)/2"/>
+                -->
+                <position name="posSIPM" unit="cm" x="(lArTPCXSize/2) - (sipmThickness)/2" y="-(cellGroupYSize/2) + activeCellYSize/2 + activeCellIndexY*(activeCellYSize + sepYSize)" z="0"/>
             </physvol>
         </loop> <!-- over x-cells -->
       </loop> <!-- over y-cells -->
