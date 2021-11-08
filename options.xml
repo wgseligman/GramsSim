@@ -108,7 +108,10 @@
     </option>
 
     <!-- If # threads > 0, enable multi-threaded execution. 
-    Note that this does not magically make your program thread-safe -->
+    Note that this does not magically make your program thread-safe.
+    While the current version of gramsg4 is thread-safe, turning this
+    option on means the order of rows in the output ntuples can't be
+    predicted. -->
     <option name="nthreads" short = "t" value="0" type="integer" desc="number of threads"/>
 
     <!-- Variables that have to do with Random Number Generation (RNG).
