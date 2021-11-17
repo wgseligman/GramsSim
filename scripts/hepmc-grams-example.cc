@@ -32,16 +32,23 @@ int main() {
   // Fixed output file name. 
   std::string outputFile("example.hepmc3");
 
+  // Pick an output method format for HepMC3. WriterAscii
+  // writes files in the standard HepMC3 format, but there are
+  // other writer methods (e.g., WriterROOT).
   auto writer = new HepMC3::WriterAscii(outputFile);
 
   // In this example, there's only one particle for each vertex.
+  // To create code that might be used generally for future examples, create
+  // them as (vertex,particle) pairs. Define a special type and
+  // vector for this. 
   typedef std::pair < HepMC3::GenVertexPtr, HepMC3::GenParticlePtr > event_type;
   std::vector< event_type > events;
 
-  // Creating vertices and particles "by hand". The first three 
+  // Create vertices and particles "by hand". The first three 
   // are 1-MeV photons coming from above the detector. The last
   // is an anti-deuteron appearing just off-center in the detector. 
 
+  // The elements of an HepMC3::FourVector are:
   //                       x    y       z    t
   auto v1 = std::make_shared<HepMC3::GenVertex>
     ( HepMC3::FourVector( 0.0, 0.0, 2000.0, 0.0 ) );
@@ -58,6 +65,7 @@ int main() {
   // status = 1 (in HepMC3 notation) means this is a final-state particle
   //        from the primary vertex.
 
+  // The elements of an HepMC3::GenParticle are:
   //                       px   py   pz   e     pdgid status
   auto p1 = std::make_shared<HepMC3::GenParticle>
     ( HepMC3::FourVector( 0.0, 0.0, -1.0, 1.0  ),  22,  1 );
@@ -68,13 +76,16 @@ int main() {
   auto p4 = std::make_shared<HepMC3::GenParticle>
     ( HepMC3::FourVector( 0.0, 0.0, 1.0, 1875.), -1000010020,  1 );
 
+  // Create a vector of our custom-built (vertex,particle) pairs.
   events.push_back( event_type(v1, p1) );
   events.push_back( event_type(v2, p2) );
   events.push_back( event_type(v3, p3) );
   events.push_back( event_type(v4, p4) );
 
+  // For each of the (vertex,particle) pairs we've created:
   for ( size_t i = 0; i < events.size(); ++i )
     {
+      // Extract the vertex and the particle from the vector. 
       auto vp = events[i];
       auto vertex = vp.first;
       auto particle = vp.second;
@@ -82,8 +93,9 @@ int main() {
       // Use Geant4 units for this example. 
       HepMC3::GenEvent event(HepMC3::Units::MEV,HepMC3::Units::MM);
       
-      // Assign an event number. You don't have to do this, but then
-      // each event has an ID of zero.
+      // Assign an event number. Strictly speaking ou don't have to do 
+      // this, but then each event would have an ID of zero, which would make
+      // the Geant4 output harder to analyze. 
       event.set_event_number( i );
 
       // If we had more than one vertex in this event we'd call this
@@ -102,7 +114,7 @@ int main() {
 	( HepMC3::FourVector( 0.0, 0.0, 0.0, 0.0), 0,  0 );
       vertex->add_particle_in( p0 );
       
-      // This is how you handle polarization.  In general, you can add
+      // This is how you handle polarization. In general, you can add
       // arbitrary attributes to any event, vertex, or particle. See
       // HepMC3/Attributes.h for the different types available. Also
       // note that you can only add attributes to a vertex or a
@@ -111,15 +123,19 @@ int main() {
       // Do this for one particular event, let's say ID = 2. We'll set
       // the polarization to be along the y-axis.
       if ( i == 2 ) {
-	double theta = M_PI / 2.0;
-	particle->add_attribute("theta",std::make_shared<HepMC3::DoubleAttribute>(theta));
-	double phi = 0.0;
-	particle->add_attribute("phi",std::make_shared<HepMC3::DoubleAttribute>(phi)); 
+	    double theta = M_PI / 2.0;
+	    auto thetaAttribute = std::make_shared<HepMC3::DoubleAttribute>(theta);
+	    particle->add_attribute("theta",thetaAttribute);
+	    
+	    double phi = 0.0;
+	    auto phiAttribute = std::make_shared<HepMC3::DoubleAttribute>(phi);
+	    particle->add_attribute("phi",phiAttribute); 
       }
 
       // Save event to output file
       writer->write_event(event);
-    }
+      
+    } // for each (vertex,particle) in our vector of examples.
 
   writer->close();
   delete writer;
