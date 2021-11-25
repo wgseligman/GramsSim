@@ -95,8 +95,14 @@ int main(int argc,char **argv)
   // be "friends" with the input ntuple, we only have to include
   // columns that are unique to the detector response.
 
+  // In this case, we're giving the column in the friend ntuple the
+  // same name as the column in the main ntuple. This means that we'd
+  // have to qualify the column name with the name of the ntuple in
+  // subsequent code; e.g., if the output ntuple name is "DetSim",
+  // then this new column would be called "DetSim.energy".
+
   Double_t energyAtAnode;
-  ntuple->Branch("energyAtAnode",&energyAtAnode);
+  ntuple->Branch("energy",&energyAtAnode);
 
   // For each row in the input ntuple:
   while ( reader.Next() ) {

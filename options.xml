@@ -159,7 +159,7 @@
          row-for-row match with the input ntuple, and can therefore be
          used as a "friend ntuple" with the input intuple (see "friend
          TTrees" in the ROOT documentation.  -->
-    <option name="outputntuple" value="ResponseHits" type="string" desc="output ntuple"/>
+    <option name="outputntuple" value="DetSim" type="string" desc="output ntuple"/>
 
   </gramsdetsim>
 
