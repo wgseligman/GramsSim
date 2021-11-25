@@ -141,4 +141,26 @@
     
   </gramsg4>
 
+  <gramsdetsim>
+
+    <!-- Input ROOT file from GramsG4 (or at least contains a LArHits-compatible ntuple -->
+    <option name="inputfile" short="i" value="gramsg4.root" type="string" 
+        desc="input file"/>    
+
+    <!-- Name of ntuple in the input file that contains the hit information. -->
+    <option name="inputntuple" value="LArHits" type="string" desc="input ntuple"/>
+
+    <!-- Output ROOT file -->
+    <option name="outputfile" short="o" value="gramsdetsim.root" type="string" 
+        desc="output file"/>    
+
+    <!-- Name of ntuple in the output file that contains the
+         detector-response information. This ntuple will be a
+         row-for-row match with the input ntuple, and can therefore be
+         used as a "friend ntuple" with the input intuple (see "friend
+         TTrees" in the ROOT documentation.  -->
+    <option name="outputntuple" value="ResponseHits" type="string" desc="output ntuple"/>
+
+  </gramsdetsim>
+
 </parameters>

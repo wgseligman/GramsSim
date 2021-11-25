@@ -40,6 +40,9 @@ endif()
 #
 include(${Geant4_USE_FILE})
 
+# 25-Nov-2021 WGS: We're going to need the Xerces-C package.
+find_package (XercesC REQUIRED)
+
 # 11-Jan-2021 WGS: Again, copied from BDSim.
 # rpath for libraries to work from installation correctly
 set(CMAKE_BUILD_RPATH   "${ROOT_LIBRARY_DIR}")
@@ -58,15 +61,18 @@ include_directories(${PROJECT_SOURCE_DIR}/include
                     ${PROJECT_SOURCE_DIR}/util/include
                     ${PROJECT_SOURCE_DIR}/g4util/include
                     ${Geant4_INCLUDE_DIR}
-                    ${ROOT_INCLUDE_DIR})
+                    ${ROOT_INCLUDE_DIR}
+		    ${XercesC_INCLUDE_DIR})
+
 file(GLOB sources ${PROJECT_SOURCE_DIR}/src/*.cc
                   ${PROJECT_SOURCE_DIR}/util/src/*.cc
                   ${PROJECT_SOURCE_DIR}/g4util/src/*.cc
     )
 
 #----------------------------------------------------------------------------
-# Add the executable, and link it to the libraries
-#
+# Add the executables, and link them to the libraries
+
+# GramsG4
 add_executable(gramsg4 gramsg4.cc ${sources})
 target_link_libraries(gramsg4 ${HEPMC3_LIBRARIES} )
 target_link_libraries(gramsg4 ${ROOT_LIBRARIES} )
@@ -74,6 +80,12 @@ target_link_libraries(gramsg4 ${Geant4_LIBRARIES} )
 #message(STATUS "Geant4_LIBRARIES = ${Geant4_LIBRARIES}")
 #message(STATUS "ROOT_LIBRARIES = ${ROOT_LIBRARIES}")
 #message(STATUS "HEPMC3_LIBRARIES = ${HEPMC3_LIBRARIES}")
+
+# GramsDetSim
+file(GLOB utilities ${PROJECT_SOURCE_DIR}/util/src/*.cc)
+add_executable(gramsdetsim gramsdetsim.cc ${utilities})
+target_link_libraries(gramsdetsim ${ROOT_LIBRARIES} )
+target_link_libraries(gramsdetsim ${XercesC_LIBRARY} )
 
 #----------------------------------------------------------------------------
 # Copy all scripts to the build directory, i.e. the directory in which we
