@@ -58,10 +58,10 @@ namespace util {
     Options() {}
     
   private:
-    enum m_option_type { e_string, e_double, e_integer, e_boolean };
+    enum m_option_type { e_string, e_double, e_integer, e_boolean, e_flag};
     struct m_option_attributes {
       std::string value;   ///< The option's value
-      m_option_type type;  ///< string/double/integer/boolean
+      m_option_type type;  ///< string/double/integer/boolean/flag
       char brief;          ///< Optional one-char short option
       std::string desc;    ///< Optional description for --help
     };

@@ -14,9 +14,9 @@
         does not read or interpret it. 
     </option>
 
-    <option name="verbose" short="v" value="false" type="bool" desc="display details"/>
-    <option name="debug" short="d" value="false" type="bool" />
-    <option name="help" short="h" value="false" type="bool" desc="show help then exit" />
+    <option name="verbose" short="v" type="flag" desc="display details"/>
+    <option name="debug" short="d" type="flag" />
+    <option name="help" short="h" type="flag" desc="show help then exit" />
 
   </global>
 
@@ -42,7 +42,7 @@
     <!-- If this flag is turned on, gramsg4 will start in an
     interactive graphical mode. It will then execute the contents
     of the Geant4 macro file specified by option 'uimacrofile' -->
-    <option name="ui" value="false" type="boolean" desc="start UI session"/>
+    <option name="ui" type="flag" desc="start UI session"/>
     <option name="uimacrofile" value="mac/vis-menus.mac" type="string" desc="G4 macro file for UI"/>
 
     <!-- The name of an input file containing events from some external
@@ -82,14 +82,14 @@
         See README.md for references.
     </option>
 
-    <!-- Do we want to turn off this optical physics? Note that if you don't include
+    <!-- Do we want to turn on this optical physics? Note that if you don't include
     OPTICAL (or G4OpticalPhysics) in the physics list above, these processes
     won't happen anyway. -->
-    <option name="noscint" value="false" type="boolean" 
-	    desc="turn off scintillation" /> 
+    <option name="scint" value="true" type="boolean" 
+	    desc="turn on/off scintillation" /> 
 
     <!-- Display available physics lists. --> 
-    <option name="showphysicslists" short="l" value="false" type="boolean" 
+    <option name="showphysicslists" short="l" type="flag" 
         desc="show physics lists then exit" />
 
     <option name="larstepsize" value="0.02" type="double" 

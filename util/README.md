@@ -52,7 +52,7 @@ Anatomy of <option> tag:
    value - the number/text/bool passed to the program;
            can be overridden on the command line
 
-   type  - string/bool/integer/double
+   type  - string/bool/flag/integer/double
    
    desc  - optional; brief description of the option (keep it 
            less than 20 characters); used in the --help|-h message
@@ -89,12 +89,16 @@ Of course, you can mix and mash to your heart's content:
 
     ./gramsg4 --energyCut 199.9 --options myEnergyStudyOptions.xml
 
-If a job option has `type="boolean"`, then on the command line it takes no
-arguments; either it's there or it isn't. For example, if this is
-in the XML file:
+If a job option has `type="boolean"`, then it's a feature that can be
+turned on or off. Possble values are `true`, `false`, `on`, `off`,
+`0`, `1`.
+
+This is different from a job option that has `type="flag"`. Then on
+the command line the options takes no arguments; either it's there or
+it isn't. For example, if this is in the XML file:
 
 ```  
-  <option name="makeHistograms" value="false" type="bool" desc="make my special hists"/>
+  <option name="makeHistograms" type="flag" desc="make my special hists"/>
 ```  
 
 then you could do this on the command line:
@@ -277,20 +281,19 @@ In the code:
 
 ```
 
-On 28-Jul-2021, the output from `./gramsg4 -v` included:
+On 25-Nov-2021, the output from `./gramsg4 -v` included:
 
 ```
 20 options:
 Option            short  value                            type       desc                
 ------            -----  -----                            ----       ----                
-debug               d    false                            bool       
+debug               d    false                            flag       
 gdmlfile            g    grams.gdml                       string     input GDML detector desc
 gdmlout                                                   string     write parsed GDML to this file
-help                h    false                            bool       show help then exit
+help                h    false                            flag       show help then exit
 inputgen            i                                     string     input generator events
 larstepsize              0.020000                         double     LAr TPC step size
 macrofile           m    mac/batch.mac                    string     G4 macro file
-noscint                  false                            bool       turn off scintillation
 nthreads            t    0                                integer    number of threads
 options                  options.xml                      string     XML file of options
 outputfile          o    gramsg4                          string     output file
@@ -299,10 +302,11 @@ rngdir                                                    string     rng save/re
 rngperevent              0                                integer    rng save per event
 rngrestorefile                                            string     restore rng from file
 rngseed             s    -1                               integer    random number seed
-showphysicslists    l    false                            bool       show physics lists then exit
-ui                       false                            bool       start UI session
+scint                    true                             bool       turn on scintillation
+showphysicslists    l    false                            flag       show physics lists then exit
+ui                       false                            flag       start UI session
 uimacrofile              mac/vis-menus.mac                string     G4 macro file for UI
-verbose             v    true                             bool       display details
+verbose             v    true                             flag       display details
 ```
 
 #### Going through options one-by-one

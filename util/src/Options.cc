@@ -128,7 +128,7 @@ namespace util {
 	  // below if a short option is not specified.
 
 	  auto required = required_argument; // defined in "getopt.h"
-	  if ( (*option_iter).second.type == e_boolean ) {
+	  if ( (*option_iter).second.type == e_flag ) {
 	    required = no_argument;
 	    if (brief != 0) abbreviations.push_back(brief);
 	  }
@@ -235,7 +235,7 @@ namespace util {
 	  auto type = (*search).second.type;
 	  // Did it require an argument that the user omitted?
 	  // (Yes, we have to compare an integer with a char!)
-	  if ( type != e_boolean  &&  result == ':' ) {
+	  if ( type != e_flag  &&  result == ':' ) {
 	    std::cerr << "WARNING: File " << __FILE__ << " Line " << __LINE__ << " " 
 		      << std::endl
 		      << "There is no argument to --" << name
@@ -249,9 +249,10 @@ namespace util {
 	  // error-detection, because who knows what the users are doing?
 	  switch (type)
 	    {
-	    case e_boolean:
+	    case e_flag:
 	      m_options[name].value = "1";
 	      break;
+	    case e_boolean:
 	    case e_string:
 	      m_options[name].value = optarg;
 	      break;
@@ -303,7 +304,7 @@ namespace util {
   // For the getters, it would perhaps be possible to create a template. 
   // But the resulting code would be even more difficult to read, and there
   // are only three types of values that matter for this work
-  // (numbers, flags, strings). If I'm wrong, feel free to template the
+  // (numbers, boolss, strings). If I'm wrong, feel free to template the
   // heck out of this method!
 
   bool Options::GetOption(const std::string name, double& value) const
@@ -340,7 +341,8 @@ namespace util {
     if ( result != m_options.end() )
       {
 	value = false;
-	if ( (*result).second.type == e_boolean ) {
+	if ( ( (*result).second.type == e_boolean ) || 
+	     ( (*result).second.type == e_flag    ) ) {
 	  if ( (*result).second.value == "1" ) value = true;
 	  return true;
 	}
@@ -409,7 +411,8 @@ namespace util {
 
 	std::cout << std::left << "  "
 		  << std::setw(valueWidth);
-	if ( (*iter).second.type == e_boolean )
+	if ( ( (*iter).second.type == e_boolean ) ||
+	     ( (*iter).second.type == e_flag    ) )
 	  {
 	    if ( (*iter).second.value == "1" ) 
 	      std::cout << "true";
@@ -421,6 +424,9 @@ namespace util {
 	std::cout << std::left << std::setw(9);
 	switch ( (*iter).second.type )
 	  {
+	  case e_flag:
+	    std::cout << "flag";
+	    break;
 	  case e_boolean:
 	    std::cout << "bool";
 	    break;
@@ -461,9 +467,9 @@ namespace util {
 	  text <<  "-" << brief << " | ";
       
 	auto desc = (*iter).second.desc;
-	auto boolean = (*iter).second.type == e_boolean;
+	auto flag = (*iter).second.type == e_flag;
 	text << "--" << (*iter).first;
-	if ( ! boolean ) {
+	if ( ! flag ) {
 	  text << " <" << desc << ">";
 	}
 	text << " ]";
@@ -471,8 +477,8 @@ namespace util {
 	std::cerr << std::left << std::setw(40);
 	std::cerr << text.str();
 
-	// Now put in the boolean comment, if any.
-	if ( boolean  &&  ! desc.empty()) {
+	// Now put in the flag comment, if any.
+	if ( flag  &&  ! desc.empty()) {
 	  std::cerr << "# " << desc;
 	}
 	std::cerr << std::endl;
@@ -520,6 +526,9 @@ namespace util {
       break;
     case e_boolean:
       return "boolean";
+      break;
+    case e_flag:
+      return "flag";
       break;
     default:
       return "";
@@ -690,19 +699,32 @@ namespace util {
 	  xercesc::XMLString::release(&cdesc);
 
 	  // Validate as much as we can. 
-	  // Just look at the first letter of the type:
+	  // Start with the first letter of the type:
+
 	  // "b" = boolean
 	  // "d" or "f" = double or float
 	  // "i" = integer
 	  // "s" or "t" = string or text
+
+	  // This is almost good enough, but not quite; "float" and
+	  // "flag" both begin with "f". Disambiguate by looking at
+	  // the first three characters, then use "g" as the 'first
+	  // character' if it's a flag.
 	  auto firstCharacter = type[0];
+	  if ( type.compare(0,3,"fla") == 0 ) firstCharacter = 'g';
 	  switch (firstCharacter)
 	    {
-	    case 'b':
-	      m_options[name].type = e_boolean;
+	    case 'g':
+	      m_options[name].type = e_flag;
 	      m_options[name].value = "1";
 	      if ( value.size() == 0 || value == "0" || value[0] == 'f' )
 		m_options[name].value ="0";
+	      break;
+	    case 'b':
+	      m_options[name].type = e_boolean;
+	      m_options[name].value = "0";
+	      if ( value == "on" || value[0] == 't'|| value[0] == '1' )
+		m_options[name].value ="1";
 	      break;
 	    case 'f':
 	    case 'd':
@@ -746,7 +768,7 @@ namespace util {
 			<< "<" << parentNodeName << "><option name=\""
 			<< name << "\" value=\"" << value << "\" type=\"" << type
 			<< "\" /></" << parentNodeName << "> :" << std::endl
-			<< "   has an invalid 'type' (not string, boolean, integer, or double)" 
+			<< "   has an invalid 'type' (not string, boolean, flag, integer, or double)" 
 			<< std::endl;
 	      success = false;
 	      ;
