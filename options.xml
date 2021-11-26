@@ -161,6 +161,32 @@
          TTrees" in the ROOT documentation.  -->
     <option name="outputntuple" value="DetSim" type="string" desc="output ntuple"/>
 
+    Physics-model options. Note that ntuple units are the same as
+    Geant4: MeV, mm, ns.
+
+    Options associated with modeling recombination effects.
+    <option name="recombination" value="true" type="boolean" 
+	    desc="model recombination effects"/>
+
+    Electric field on the cloud of ionized particles, varies with
+    position due to space charge, which we don't have a model for yet.
+    <option name="field"  value="1.0" type="double"
+	    desc="electric field [kV/cm]"/>
+
+    Average of the a value for 20 to 90 degrees angle bins for proton
+    sample detection in ArgoNeuT, unitless value.
+    <option name="a" value="0.930" type="double"
+	    desc="recombination constant"/>
+
+    Average of the B value for 20 to 90 degrees angle bins for proton
+    sample detection in ArgoNeuT, units of (kV*g)/(MeV*cm^3)
+    <option name="b" value="0.212" type="double"
+	    desc="recombination constant [(kV*g)/(MeV*cm^3)]"/>
+
+    Density of liquid argon, from Brookhaven LAr page, units of (g/cm^3)
+    <option name="rho" value="1.3973" type="double"
+	    desc="LAr density [g/cm^3]"/>
+
   </gramsdetsim>
 
 </parameters>
