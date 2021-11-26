@@ -2,6 +2,27 @@
 
 If you want a formatted (or easier-to-read) version of this file, scroll to the bottom. If you're reading this on github, then it's already formatted. 
 
+- [GramsSim](#gramssim)
+  * [Introduction](#introduction)
+  * [Installing GramsSim](#installing-gramssim)
+    + [Working with github](#working-with-github)
+    + [Prerequisites](#prerequisites)
+      - [conda](#conda)
+      - [CentOS packages](#centos-packages)
+    + [Prepare your local computer](#prepare-your-local-computer)
+  * [Running GramsSim](#running-gramssim)
+  * [Making changes](#making-changes)
+    + [Work files](#work-files)
+    + [Development "flow"](#development--flow-)
+  * [Detector geometry](#detector-geometry)
+  * [Program options](#program-options)
+  * [References](#references)
+  * [Credits](#credits)
+  * [Viewing a Markdown document](#viewing-a-markdown-document)
+
+<small><i><a href='http://ecotrust-canada.github.io/markdown-toc/'>Table of contents generated with markdown-toc</a></i></small>
+
+
 ## Introduction
 
 **GramsSim** is a simulation of the detector for the
@@ -37,7 +58,7 @@ Once this is done, you can download a copy of the GramsSim repository:
     git checkout develop
     cd ..
 
-*Note:* For now, it is important that you down the `develop` branch *and not the `master` branch*.
+*Note:* For now, it is important that you download the `develop` branch *and not the `master` branch*.
 
 ### Prerequisites
 
@@ -139,12 +160,12 @@ wgseligman know so he can update this documentation.)
 ### Prepare your local computer 
    
 If you are working remotely (e.g., on a laptop), and you want to use
-the interactive display, you may also need to
+the GramsG4 interactive display, you may also need to
 install and/or activate both X-Windows and OpenGL for your local
 computer. You can find instructions
 [here](https://twiki.nevis.columbia.edu/twiki/bin/view/Main/X11OnLaptops).
 
-## Running GramsSim
+## Setting up GramsSim
 
 To make things easier, I'm going to define a variable for the repository
 directory in your area. You may want to include a suitably modified version
@@ -179,7 +200,7 @@ To run the programs:
     ./gramsg4
     ./gramsdetsim
 
-...and so on.
+...and so on. Consult the `README.md` in the individual program directories for details. 
 
 ## Making changes
 
@@ -215,14 +236,14 @@ To incorporate changes that other people have made and checked into
 the repository:
 
     git fetch origin
-    git rebase origin/develop
+    git rebase origin develop
 
 When you've finished working on your task (after testing it, putting
 in the comments, writing the documentation, discussing it at a group
 meeting, etc.):
 
     git flow feature finish
-    git push origin/develop
+    git push origin develop
 
 If you want other people to see your feature work without making
 changes to the develop branch:
@@ -231,7 +252,7 @@ changes to the develop branch:
 
 ### Work files
 
-The GramsSim programs require several input files (e.g., `grams.gdml`, `options.xml`).
+The GramsSim programs require several shared input files (e.g., `grams.gdml`, `options.xml`).
 These are copied from the GramsSim directory to your work/build directory when you executed 
 the `cmake` command. Go ahead and make any changes you want to these work files; they won't 
 affect the original files in `$GSDIR/GramsSim`. 

@@ -1,6 +1,22 @@
 # GramsG4
 
-If you want a formatted (or easier-to-read) version of this file, scroll to the bottom of `GramsSim/README.md`. If you're reading this on github, then it's already formatted. 
+If you want a formatted (or easier-to-read) version of this file, scroll to the bottom of `GramsSim/README.md` for instructions. If you're reading this on github, then it's already formatted. 
+
+- [GramsG4](#gramsg4)
+  * [Introduction](#introduction)
+  * [Running GramsG4](#running-gramsg4)
+    + [Controlling the particle source](#controlling-the-particle-source)
+    + [Visualization](#visualization)
+    + [Events from an external generator](#events-from-an-external-generator)
+      - [Notes](#notes)
+    + [Program outputs](#program-outputs)
+    + [Generating large numbers of events](#generating-large-numbers-of-events)
+  * [Physics lists and how to extend them](#physics-lists-and-how-to-extend-them)
+    + [Using the available physics lists](#using-the-available-physics-lists)
+    + [Custom physics lists](#custom-physics-lists)
+  * [References](#references)
+
+<small><i><a href='http://ecotrust-canada.github.io/markdown-toc/'>Table of contents generated with markdown-toc</a></i></small>
 
 ## Introduction
 
