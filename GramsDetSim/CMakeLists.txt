@@ -5,8 +5,10 @@ include_directories(include
                     ${ROOT_INCLUDE_DIR}
 		    ${XercesC_INCLUDE_DIR})
 
-file(GLOB utilities ${PROJECT_SOURCE_DIR}/util/src/*.cc)
-add_executable(gramsdetsim gramsdetsim.cc ${utilities})
+file(GLOB DetSimSrc src/*.cc
+                    ${PROJECT_SOURCE_DIR}/util/src/*.cc
+    )
+add_executable(gramsdetsim gramsdetsim.cc ${DetSimSrc})
 target_link_libraries(gramsdetsim ${ROOT_LIBRARIES} )
 target_link_libraries(gramsdetsim ${XercesC_LIBRARY} )
 

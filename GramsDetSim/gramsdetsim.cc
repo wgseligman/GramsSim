@@ -2,73 +2,20 @@
 // Take the hit output from GramsG4 and apply detector-response effects.
 // 25-Nov-2011 William Seligman
 
+// Our function(s) for the detector response.
+#include "RecombinationModel.h"
+
 // For processing command-line and XML file options.
 #include "Options.h" // in util/
 
 // ROOT includes
 #include "TFile.h"
 #include "TTreeReader.h"
-#include "TTreeReaderValue.h"
 
 // C++ includes
-#include <exception>
 #include <iostream>
 #include <string>
 #include <cmath>
-
-// These are "global" variables that will be shared by both our model
-// functions and the main routines.
-
-// Recombination constants.
-static double field;
-static double a;
-static double b;
-static double rho;
-
-// Recombination model function definition.
-double RecombinationModel( double energy,
-			   double xStart, 
-			   double yStart, 
-			   double zStart, 
-			   double xEnd, 
-			   double yEnd, 
-			   double zEnd )
-{
-  // Takes input of the change in energy across the distance travelled
-  // in a single step by the particle source for this equation is eqn
-  // 2.4 in the 2013 paper "A study of electron recombination using
-  // highly ionizing particles in the ArgoNeuT Liquid ArgonTPC". This
-  // modified box model is used because it works for all ranges of
-  // dE/dx as well as not having the technical difficulties that arise
-  // when applying the birks model to highly ionizing particles.
-
-  double dx = std::sqrt( std::pow(xStart-xEnd,2) + 
-			 std::pow(yStart-yEnd,2) + 
-			 std::pow(zStart-zEnd,2) );
-  double dEdx = energy / dx;
-
-  // The above variables are in Geant4 units (MeV, mm, ns). But the
-  // recombination constants use cm.
-  dEdx *= 10.;
-
-  // Note that a, b, field, and rho are static constants defined
-  // above. Their values are read in from options.xml in the main
-  // routine below.
-
-  // The following calculations are based off of the modified box
-  // model used in the ICARUS experiment, with constant values taken
-  // from the Brookhaven page on liquid argon TPCs. Be very specific in
-  // where this equation is from (what paper), what it is finding,
-  // what it is talking about.
-  double sigma = (b * dEdx) / (field * rho);
-  double effect = std::log(a + sigma) / sigma;
-
-  // Note to Luke: Check the units! Check that "effect" is a
-  // multiplication factor on dEdx! If it's not, fix my equation!
-  return energy * effect * dx;
-}
-
-
 
 ///////////////////////////////////////
 int main(int argc,char **argv)
@@ -83,10 +30,9 @@ int main(int argc,char **argv)
   auto result = options->ParseOptions(argc, argv, "gramsdetsim");
 
   // Abort if we couldn't parse the job options.
-  if (result) std::cout << "ParseOptions succeeded" << std::endl;
-  else {
+  if (! result) {
     std::cerr << "File " << __FILE__ << " Line " << __LINE__ << " " << std::endl
-	      << "GramsDetSim: Aborting job due to failure to parse options"
+	      << "gramsdetsim: Aborting job due to failure to parse options"
 	      << std::endl;
     exit(EXIT_FAILURE);
   }
@@ -105,6 +51,13 @@ int main(int argc,char **argv)
     exit(EXIT_SUCCESS);
   }
 
+  bool verbose;
+  options->GetOption("verbose",verbose);
+  if (verbose) {
+    // Display all program options and physics lists.
+    options->PrintOptions();
+  }
+
   // Get the options associated with the input file and ntuple..
   std::string inputFileName;
   options->GetOption("inputfile",inputFileName);
@@ -112,32 +65,31 @@ int main(int argc,char **argv)
   std::string inputNtupleName;
   options->GetOption("inputntuple",inputNtupleName);
 
+  if (verbose)
+    std::cout << "gramsdetsim: input file = '" << inputFileName
+	      << "', input ntuple = '" << inputNtupleName
+	      << "'" << std::endl;
+
   // Open the input file. For historical reasons, ROOT methods can't
   // handle the type std::string, so we use the c_str() method to
   // convert the std::string into an old-style C string.
   auto input = TFile::Open(inputFileName.c_str());
   if (!input || input->IsZombie()) {
     std::cerr << "File " << __FILE__ << " Line " << __LINE__ << " " << std::endl
-	      << "GramsDetSim: Could not open file '" << inputFileName << "'"
+	      << "gramsdetsim: Could not open file '" << inputFileName << "'"
 	      << std::endl;
     exit(EXIT_FAILURE);
   }
 
   // The standard way of reading a TTree (without using RDataFrame) in
   // C++ is using the TTreeReader.
-  TTreeReader reader(inputNtupleName.c_str(), input);
+  auto reader = new TTreeReader(inputNtupleName.c_str(), input);
 
   // Create a TTreeReaderValue for each column in the ntuple whose
   // value we'll use. Note that the variable we create must be
   // accessed as if it were a pointer; e.g., if you want the value of
   // "energy", you must use *energy in the code.
-  TTreeReaderValue<Double_t> energy = {reader, "energy"};
-  TTreeReaderValue<Float_t>  xStart = {reader, "xStart"};
-  TTreeReaderValue<Float_t>  yStart = {reader, "yStart"};
-  TTreeReaderValue<Float_t>  zStart = {reader, "zStart"};
-  TTreeReaderValue<Float_t>  xEnd   = {reader, "xEnd"};
-  TTreeReaderValue<Float_t>  yEnd   = {reader, "yEnd"};
-  TTreeReaderValue<Float_t>  zEnd   = {reader, "zEnd"};
+  TTreeReaderValue<Double_t> energy = {*reader, "energy"};
 
   // Now read in the options associated with the output file and ntuple. 
   std::string outputFileName;
@@ -145,6 +97,11 @@ int main(int argc,char **argv)
   
   std::string outputNtupleName;
   options->GetOption("outputntuple",outputNtupleName);
+
+  if (verbose)
+    std::cout << "gramsdetsim: output file = '" << outputFileName
+	      << "', output ntuple = '" << outputNtupleName
+	      << "'" << std::endl;
 
   // Open the output file.
   auto output = TFile::Open(outputFileName.c_str(),"RECREATE");
@@ -165,37 +122,61 @@ int main(int argc,char **argv)
   Double_t energyAtAnode;
   outputNtuple->Branch("energy",&energyAtAnode);
 
-  // Get the options for the various models.
+  // Are we using this particular model?
   bool doRecombination;
   options->GetOption("recombination",doRecombination);
-  options->GetOption("field",field);
-  options->GetOption("a",a);
-  options->GetOption("b",b);
-  options->GetOption("rho",rho);
+
+  // If we're using this model, initialize it. 
+  gramsdetsim::RecombinationModel* recombinationModel = NULL;
+  if ( doRecombination ) {
+    recombinationModel = new gramsdetsim::RecombinationModel(reader);
+    if (verbose)
+      std::cout << "gramsdetsim: RecombinationModel turned on" << std::endl;
+  }
+  else {
+    if (verbose)
+      std::cout << "gramsdetsim: RecombinationModel turned off" << std::endl;
+  }
 
   // For each row in the input ntuple:
-  while ( reader.Next() ) {
+  while ( (*reader).Next() ) {
+
+    if (debug)
+      std::cout << "gramsdetsim: at entry " << reader->GetCurrentEntry() << std::endl;
+
+    // Start with the approximation that the energy at the anode will
+    // be the same as the hit energy, then apply corrections to it.
 
     // Remember that given the TTreeReaderValue definitions above, a
     // variable read from the input ntuple must be accessed like a
     // pointer.
     energyAtAnode = *energy;
 
+    if (debug)
+      std::cout << "gramsdetsim: before model corrections, energyAtAnode=" 
+		<< energyAtAnode << std::endl;
+
     // Apply the model(s).
 
+    // Note to Luke: Check that this how the result of this
+    // calculation should be applied.
     if ( doRecombination ) {
-      energyAtAnode *= RecombinationModel( energyAtAnode,
-	   *xStart, *yStart, *zStart, *xEnd, *yEnd, *zEnd );
+      energyAtAnode *= recombinationModel->Calculate(energyAtAnode);
     }
+
+    if (debug)
+      std::cout << "gramsdetsim: after model corrections, energyAtAnode=" 
+		<< energyAtAnode << std::endl;
 
     // After all the model effects have been applied, write the
     // detector-response value(s).
     outputNtuple->Fill();
-
   }
 
-  // Wrap-up.
+  // Wrap-up. Close all files. Delete any pointers we created.
   outputNtuple->Write();
   output->Close();
+  delete recombinationModel;
+  delete reader;
   input->Close();
 }
