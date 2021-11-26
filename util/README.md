@@ -12,7 +12,7 @@ programs I write.
 #### Format of `options.xml`
 
 If you look at the file `options.xml`, what you'll first notice that is that within the global `<parameters>` tag there are
-at least two sections. It looks something like this:
+more than one sections. It looks something like this:
 
 ```
 <parameters>
@@ -25,12 +25,22 @@ at least two sections. It looks something like this:
     <option [...] />
     <option [...] />
   </gramsg4>
+
+  <gramsdetsim>
+    <option [...] />
+    <option [...] />
+  </gramsdetsim>
 </parameters>
 ```
 
-The idea is that this same options XML file might eventually be used by more programs
-in an analysis. The `<global>` section contains parameters that will apply to more
-than one program. Individual programs will have their options in their own sections. For the purpose of these examples, we're using the name `gramsg4`. If you created a program with the name `myanalysis`, within the options XML file you'd have:
+The idea is that this same options XML file might eventually be used
+by more than one program in an analysis. The `<global>` section
+contains parameters that might apply to any program. Individual
+programs will have their options in their own sections. For the
+purpose of these examples, we're using the name `gramsg4`. If you
+created a program with the name `myanalysis`, within the options XML
+file you'd have:
+
 ```
   <myanalysis>
     <option [...] />
@@ -93,6 +103,10 @@ If a job option has `type="boolean"`, then it's a feature that can be
 turned on or off. Possble values are `true`, `false`, `on`, `off`,
 `0`, `1`.
 
+```  
+  <option name="recombination" type="boolean" value="on" desc="turn recombination on/off"/>
+```  
+
 This is different from a job option that has `type="flag"`. Then on
 the command line the options takes no arguments; either it's there or
 it isn't. For example, if this is in the XML file:
@@ -118,7 +132,7 @@ Then you can do:
     ./gramsg4 -e 123.45 
 
 Be careful not to overuse the short options, since they can make the
-command harder to understand. 
+command line harder to understand. 
 
 If you duplicate the short character between different options the behavior is
 unpredictable. However, case is significant; e.g., you can do this:
