@@ -54,7 +54,7 @@ int main(int argc,char **argv)
   bool verbose;
   options->GetOption("verbose",verbose);
   if (verbose) {
-    // Display all program options and physics lists.
+    // Display all program options.
     options->PrintOptions();
   }
 

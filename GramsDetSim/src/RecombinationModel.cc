@@ -25,10 +25,11 @@ namespace gramsdetsim {
     // from options.xml and the command line.
     auto options = util::Options::GetInstance();
 
+    // Fetch the options we want from the class. 
+
     options->GetOption("verbose",m_verbose);
     options->GetOption("debug",m_debug);
 
-    // Fetch the options we want from the class. 
     options->GetOption("field",m_field);
     options->GetOption("a",m_a);
     options->GetOption("b",m_b);
@@ -100,10 +101,6 @@ namespace gramsdetsim {
     // The above variables are in Geant4 units (MeV, mm, ns). But the
     // recombination constants use cm.
     dEdx *= 10.;
-
-    // Note that a, b, field, and rho are static constants defined
-    // above. Their values are read in from options.xml in the main
-    // routine below.
     
     // The following calculations are based off of the modified box
     // model used in the ICARUS experiment, with constant values taken
