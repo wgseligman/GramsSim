@@ -1,4 +1,20 @@
-# GramsG4
+# Utilities
+
+- [Utilities](#utilities)
+  * [Directory and Namespace `util`](#directory-and-namespace--util-)
+    + [Options - parse XML file and command line](#options---parse-xml-file-and-command-line)
+      - [Format of `options.xml`](#format-of--optionsxml-)
+        * [Defining new options](#defining-new-options)
+        * [Abbreviating options](#abbreviating-options)
+    + [Accessing options from within your program](#accessing-options-from-within-your-program)
+    + [Implementing the `-h/--help` option](#implementing-the---h---help--option)
+    + [Other `Options` methods.](#other--options--methods)
+      - [Displaying a table of all the options](#displaying-a-table-of-all-the-options)
+      - [Going through options one-by-one](#going-through-options-one-by-one)
+      - [Saving options in the output](#saving-options-in-the-output)
+      - [Restoring options from a ROOT file](#restoring-options-from-a-root-file)
+
+<small><i><a href='http://ecotrust-canada.github.io/markdown-toc/'>Table of contents generated with markdown-toc</a></i></small>
 
 ## Directory and Namespace `util`
 
@@ -100,16 +116,20 @@ Of course, you can mix and mash to your heart's content:
     ./gramsg4 --energyCut 199.9 --options myEnergyStudyOptions.xml
 
 If a job option has `type="boolean"`, then it's a feature that can be
-turned on or off. Possble values are `true`, `false`, `on`, `off`,
+turned on or off. Possible values are `true`, `false`, `on`, `off`,
 `0`, `1`.
+
+For example:
 
 ```  
   <option name="recombination" type="boolean" value="on" desc="turn recombination on/off"/>
 ```  
 
 This is different from a job option that has `type="flag"`. Then on
-the command line the options takes no arguments; either it's there or
-it isn't. For example, if this is in the XML file:
+the command line the option takes no arguments; either it's there or
+it isn't. Examples of a flag are `--verbose` and `--help`.
+
+For example, if this is in the XML file:
 
 ```  
   <option name="makeHistograms" type="flag" desc="make my special hists"/>
@@ -355,3 +375,24 @@ options->WriteNtuple(output);
 ```
 
 `WriteNtuple` can take a second argument, the name of the options ntuple. If you don't supply one, the default is `Options`.
+
+#### Restoring options from a ROOT file
+
+Suppose you have an ROOT file that was created by a program that had its options saved using the `WriteOptions` method described above. You'd like to rerun the program with those same options, perhaps with one or more options changed via the command line. Let's further suppose that, due to the complexities of file management over a long analysis, you've lost the original XML options file that generated the ROOT file. 
+
+The `Options` class can automatically recognize ROOT files that are passed to the program in place of an XML file. For example:
+```
+./gramsdetsim gramsdetsim.root
+```
+or
+```
+./gramsdetsim -v --options gramsdetsim.root
+```
+The `Options` class will search the ROOT file for an ntuple with a name that contains the text `Options`. It will then populate its list of options from that ntuple, and accept any option overrides on the command line. For example:
+```
+./gramsdetsim -v --options gramsdetsim.root --rho 1.5
+```
+Take care! In this particular example, the default output file for `gramsdetsim` is `gramsdetsim.root`. So we're reading our options from the same file to which we're going to write our output; you've overridden the value of `rho` which will be written to the output file. To avoid unpredictable behaviors, you probably want to make sure the files from which you're reading options and to which you're writing output are different:
+```
+./gramsdetsim -v --options gramsdetsim.root --rho 1.5 --outputfile gramsdetsim-revised.root
+```
