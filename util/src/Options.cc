@@ -98,6 +98,12 @@ namespace util {
   
     if (debug) std::cout << "ParseOptions: m_optionsFile=" << m_optionsFile << std::endl;
 
+    // If we don't suppress ROOT error messages, then the following
+    // IsZombie test will display an unnecessary error message when
+    // we're reading an XML file instead of a ROOT file.
+    auto saveErrorLevel = gErrorIgnoreLevel;
+    gErrorIgnoreLevel = 5000;
+
     // Is the options file actually a ROOT file?
     if ( TFile(m_optionsFile.c_str()).IsZombie() ) 
       {
@@ -119,6 +125,9 @@ namespace util {
 	  exit(EXIT_FAILURE);
 	} 
       } // if ROOT file
+
+    // Restore error level.
+    gErrorIgnoreLevel = saveErrorLevel;
   
     // Override the contents of the options file with options on the command line. 
     // For more on getopt, along with global variables like "optarg", see
