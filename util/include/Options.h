@@ -25,11 +25,14 @@ namespace util {
       return &instance;
     }
 
-    /// Initialize the options from an XML file.  This should be called
-    /// just once, from the main routine.  Note: This routine uses
-    /// getopt_long, a standard GNU utility that will "mangle" the
-    /// contents of argv.
-    bool ParseOptions(int argc, char** argv, const std::string& programName);
+    /// ParseOptions initializes the options from an XML file or a
+    /// ROOT file. This should be called just once, from the main
+    /// routine. 
+
+    /// Note: This routine uses getopt_long, a standard GNU utility
+    /// that will "mangle" the contents of argv.
+    bool ParseOptions(int argc, char** argv, 
+		      const std::string programName);
     
     /// The "getters", one for each type of value.
     bool GetOption(const std::string name, double& value) const;
