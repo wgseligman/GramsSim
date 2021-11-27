@@ -8,6 +8,7 @@ Nov-2021:
 
    - Create a "skeleton" for GramsDetSim.
    - Restructure the directories. Each program now has its own directory with a README: GramsG4, GramsDetSim. 
+   - Created util::WriteOptions, to save a program's options in its output file.
 
 Oct-2021:
 

@@ -7,6 +7,7 @@
 
 // For processing command-line and XML file options.
 #include "Options.h" // in util/
+#include "WriteOptions.h" // in util/
 
 // ROOT includes
 #include "TFile.h"
@@ -106,7 +107,11 @@ int main(int argc,char **argv)
   // Open the output file.
   auto output = TFile::Open(outputFileName.c_str(),"RECREATE");
 
-  // Define the output ntuple.
+  // Write the options to the output file, so we have a record.
+  util::WriteOptions writeOptions;
+  writeOptions.WriteNtuple(output);
+
+  // Define our output ntuple.
   auto outputNtuple = new TTree(outputNtupleName.c_str(),"Detector Response");
 
   // Define the columns of the output ntuple. Since this ntuple will
