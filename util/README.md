@@ -340,3 +340,18 @@ for example, to save the options in an ntuple for later reference. The following
     std::string GetOptionBrief( size_t i ) const;
     std::string GetOptionDescription( size_t i ) const;
 ```
+
+#### Saving options in the output
+
+The utility method `WriteOptions` can be used to write the option to an ntuple in the output file. This lets you record the values used to run the program that generated that particular file.
+
+```
+#include "WriteOptions.h" // in util/ 
+// ... call ParseOptions ...
+// Define a ROOT output file, e.g.,:
+auto output = TFile::Open("output-file-name.root","RECREATE")
+//
+options->WriteNtuple(output);
+```
+
+`WriteNtuple` can take a second argument, the name of the options ntuple. If you don't supply one, the default is `Options`.
