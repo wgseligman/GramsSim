@@ -35,9 +35,9 @@ This document assumes that you're familiar with basic UNIX concepts. If you don'
 GramsSim consists of several components. Each is described in its own
 subdirectory's README.md file:
 
-   - GramsG4: A Geant4 simulation of the particle transport in the GRAMS detector. 
+   - **GramsG4**: A Geant4 simulation of particle transport in the GRAMS detector. 
 
-   - GramsDetSim: Models the detector response to the energy deposits recorded by GramsG4. 
+   - **GramsDetSim**: Models the detector response to the energy deposits recorded by GramsG4. 
 
 ## Installing GramsSim
     
