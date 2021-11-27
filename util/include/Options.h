@@ -6,6 +6,7 @@
 #ifndef Options_h
 #define Options_h 1
 
+#include <TDirectory.h>
 #include <map>
 #include <string>
 
@@ -52,6 +53,11 @@ namespace util {
     std::string GetOptionType( size_t i ) const;
     std::string GetOptionBrief( size_t i ) const;
     std::string GetOptionDescription( size_t i ) const;
+
+    // The argument to this method is the output directory for the
+    // ntuple. Presumably this will be a ROOT file.
+    bool WriteNtuple(TDirectory* output, std::string outputNtuple = "Options");
+
 
   protected:
     /// Standard null constructor for a singleton class.

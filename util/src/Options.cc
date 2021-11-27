@@ -1,4 +1,11 @@
 #include "Options.h"
+
+// ROOT includes
+#include "TROOT.h"
+#include "TDirectory.h"
+#include "TTree.h"
+
+// C++ includes
 #include <getopt.h>
 #include <map>
 #include <vector>
@@ -9,6 +16,7 @@
 #include <iomanip>
 #include <cstdlib>
 
+// XML parser
 #include <xercesc/parsers/XercesDOMParser.hpp>
 #include <xercesc/dom/DOM.hpp>
 #include <xercesc/sax/HandlerBase.hpp>
@@ -551,6 +559,50 @@ namespace util {
     return (*j).second.desc; 
   }
 
+  bool Options::WriteNtuple( TDirectory* a_output, std::string a_ntupleName ) {
+    // Start by assuming we'll succeed.
+    bool success = true;
+
+    // Almost certainly, ROOT's current directory is the output file
+    // to which we're writing the ntuple. But just in case, save the
+    // current directory, and switch to the output directory.
+    auto saveDirectory = gROOT->CurrentDirectory();
+    a_output->cd();
+
+    // Create the ntuple in the output file.
+    auto ntuple = new TTree(a_ntupleName.c_str(), "Options used for this program");
+
+    // Set up the columns of the ntuple. 
+    std::string name, value, type, brief, desc;
+    ntuple->Branch("OptionName",&name);
+    ntuple->Branch("OptionValue",&value);
+    ntuple->Branch("OptionType",&type);
+    ntuple->Branch("OptionBrief",&brief);
+    ntuple->Branch("OptionDesc",&desc);
+
+    // Loop over the options. As it says in Options.h, this is an
+    // inefficient operation, but hopefully no program will do it more
+    // than once.
+    auto numOptions = NumberOfOptions();
+    for ( size_t i = 0; i != numOptions; ++i ) {
+      name = GetOptionName(i);
+      value = GetOptionValue(i);
+      type = GetOptionType(i);
+      brief = GetOptionBrief(i);
+      desc = GetOptionDescription(i);
+
+      // Write out the ntuple entry.
+      ntuple->Fill();
+    }
+
+    // Wrap up the ntuple.
+    ntuple->Write();
+
+    // Switch back to the original directory.
+    saveDirectory->cd();
+
+    return success;
+  }
 
   // The following code is heavily adapted from
   // https://vichargrave.github.io/programming/xml-parsing-with-dom-in-cpp/
