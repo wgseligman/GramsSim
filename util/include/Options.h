@@ -79,10 +79,14 @@ namespace util {
 
     // Parse the contents of the XML file... once we've
     // determined the name of that file. 
-    bool m_ParseXML(const std::string filename, const std::string programTag);
+    bool m_ParseXML(const std::string& filename, const std::string& programTag);
+
+    // If it turns out that the options file is a ROOT file, look for
+    // an Options ntuple.
+    bool m_RootOptions(const std::string& filename);
 
     std::string m_progName;    ///< The name of the running program (argv[0])
-    std::string m_xmlFile;     ///< The name of the options XML file used
+    std::string m_optionsFile; ///< The name of the options XML file used
   };
 
 } // namespace util

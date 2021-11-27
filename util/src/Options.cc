@@ -40,7 +40,7 @@ namespace util {
     bool success = true;
 
     // Default XML file name.
-    m_xmlFile = "options.xml";
+    m_optionsFile = "options.xml";
 
     // Save the name of the running program.
     m_progName = argv[0];
@@ -56,7 +56,7 @@ namespace util {
       // Does the first one begin with a dash?
       if ( argv[1][0] != '-' ) {
 	// No, so that first word must be the name of the XML file.
-	m_xmlFile = std::string(argv[1]);
+	m_optionsFile = std::string(argv[1]);
       }
       else {
 	// The user could still have put "--options <filename>"
@@ -71,7 +71,7 @@ namespace util {
 	    if ( search == std::string::npos ) {
 	      // no '=', so the next word is the file name.
 	      if ( i+1 < argc )
-		m_xmlFile = std::string(argv[i+1]);
+		m_optionsFile = std::string(argv[i+1]);
 	      else {
 		std::cerr << "ABORT: File " << __FILE__ << " Line " << __LINE__ << " " 
 			  << std::endl
@@ -82,7 +82,7 @@ namespace util {
 	    else {
 	      // The file name is the part after the '='
 	      if ( search + 2 < argument.size() )
-		m_xmlFile = argument.substr( search+1 );
+		m_optionsFile = argument.substr( search+1 );
 	      else {
 		std::cerr << "ABORT: File " << __FILE__ << " Line " << __LINE__ << " " 
 			  << std::endl
@@ -96,69 +96,31 @@ namespace util {
       } // look for --options
     } // if there are command-line arguments
   
-    if (debug) std::cout << "ParseOptions: m_xmlFile=" << m_xmlFile << std::endl;
+    if (debug) std::cout << "ParseOptions: m_optionsFile=" << m_optionsFile << std::endl;
 
     // Is the options file actually a ROOT file?
-    if ( ! TFile(m_xmlFile.c_str()).IsZombie() ) {
-      // It _is_ a ROOT file! So instead of parsing it as XML file,
-      // we're going to read the options from a ROOT ntuple.
-      std::cout << "ParseOptions: File '" << m_xmlFile 
-		<< "' is a ROOT file." << std::endl;
-
-      // Search through all the items in the file, looking for the
-      // first TTree whose name include "Options".
-      auto inputFile = TFile::Open(m_xmlFile.c_str());
-      TIter next(inputFile->GetListOfKeys());
-      TKey* key;
-      TTree* ntuple;
-      while ( ( key = (TKey*) next() ) ) {
-	if (key != NULL) {
-	  ntuple = (TTree*) key->ReadObj(); 
-	  if ( ntuple != NULL ) {
-	    std::string ntName = ntuple->GetName();
-	    if ( ntName.find("Options") != std::string::npos ) {
-	      std::cout << "ParseOptions: ntuple '" << ntName
-			<< "' found in ROOT file" << std::endl;
-
-	      // Set up reading columns from this ntuple.
-	      TTreeReader reader(ntName.c_str(), inputFile);
-	      TTreeReaderValue<std::string> name(reader, "OptionName");
-	      TTreeReaderValue<std::string> value(reader, "OptionValue");
-	      TTreeReaderValue<std::string> type(reader, "OptionType");
-	      TTreeReaderValue<std::string> brief(reader, "OptionBrief");
-	      TTreeReaderValue<std::string> desc(reader, "OptionDesc");
-
-	      // For each row in the ntuple
-	      while ( reader.Next() ) {
-		// Add the row to the options map.
-		m_option_type eType = e_string;
-		if ( std::string(*type).compare("double")  == 0 ) eType = e_double;
-		if ( std::string(*type).compare("integer") == 0 ) eType = e_integer;
-		if ( std::string(*type).compare("boolean") == 0 ) eType = e_boolean;
-		if ( std::string(*type).compare("flag")    == 0 ) eType = e_flag;
-		m_option_attributes attr = { *value, eType, (*brief)[0], *desc };
-		m_options[ *name ] = attr;
-	      }
-	      // We've filled the options map from the ntuple. Exit.
-	      inputFile->Close();
-	      return success;
-	    } // name contains "Options"
-	  } // it's an ntuple
-	} // key exists
-      } // while looking through items
-      std::cerr << "ABORT: File " << __FILE__ << " Line " << __LINE__ << " " 
-		<< std::endl
-		<< "No ntuples found in ROOT file '" << m_xmlFile 
-		<< "'" << std::endl;
-      exit(EXIT_FAILURE);
-    } // if ROOT file
-
-    // XML parsing goes here, filling m_options. 
-    auto parseSuccess = m_ParseXML(m_xmlFile, a_programName);
-    // Fold in whether the parsing worked with the overall success of this method.
-    success = success && parseSuccess;
+    if ( TFile(m_optionsFile.c_str()).IsZombie() ) 
+      {
+	// It's not a ROOT file (the most probable case). XML parsing
+	// goes here, filling m_options.
+	auto parseSuccess = m_ParseXML(m_optionsFile, a_programName);
+	// Fold in whether the parsing worked with the overall success of this method.
+	success = success && parseSuccess;
+      }
+    else
+      {
+	// It _is_ a ROOT file! Instead of parsing it as XML file,
+	// we're going to fill m_options from a ROOT ntuple.
+	std::cout << "ParseOptions: File '" << m_optionsFile 
+		  << "' is a ROOT file." << std::endl;
+	auto result = m_RootOptions(m_optionsFile);
+	if ( ! result ) {
+	  std::cerr << "ABORT: Invalid ROOT options file." << std::endl;
+	  exit(EXIT_FAILURE);
+	} 
+      } // if ROOT file
   
-    // Override the contents of the XML file with options on the command line. 
+    // Override the contents of the options file with options on the command line. 
     // For more on getopt, along with global variables like "optarg", see
     // <https://www.informit.com/articles/article.aspx?p=175771>
 
@@ -551,7 +513,7 @@ namespace util {
 	std::cerr << std::endl;
       }
     std::cerr << std::right << std::endl;
-    std::cerr << "See " << m_xmlFile << " for details." << std::endl;
+    std::cerr << "See " << m_optionsFile << " for details." << std::endl;
     std::cerr << std::endl;
   }
 
@@ -690,7 +652,7 @@ namespace util {
     }
   };
 
-  bool Options::m_ParseXML(const std::string a_xmlFile, const std::string a_program)
+  bool Options::m_ParseXML(const std::string& a_xmlFile, const std::string& a_program)
   {
     bool success = true;
 
@@ -912,5 +874,59 @@ namespace util {
 
     return success; 
   }
+
+
+  bool Options::m_RootOptions(const std::string& a_optionsFile)
+  {
+    // Search through all the items in the file, looking for the
+    // first TTree whose name include "Options".
+    auto inputFile = TFile::Open(a_optionsFile.c_str());
+    TIter next(inputFile->GetListOfKeys());
+    TKey* key;
+    TTree* ntuple;
+    while ( ( key = (TKey*) next() ) ) {
+      if (key != NULL) {
+	ntuple = (TTree*) key->ReadObj(); 
+	if ( ntuple != NULL ) {
+	  std::string ntName = ntuple->GetName();
+	  if ( ntName.find("Options") != std::string::npos ) {
+	    std::cout << "ParseOptions: ntuple '" << ntName
+		      << "' found in ROOT file" << std::endl;
+	    
+	    // Set up reading columns from this ntuple.
+	    TTreeReader reader(ntName.c_str(), inputFile);
+	    TTreeReaderValue<std::string> name(reader, "OptionName");
+	    TTreeReaderValue<std::string> value(reader, "OptionValue");
+	    TTreeReaderValue<std::string> type(reader, "OptionType");
+	    TTreeReaderValue<std::string> brief(reader, "OptionBrief");
+	    TTreeReaderValue<std::string> desc(reader, "OptionDesc");
+	    
+	    // For each row in the ntuple
+	    while ( reader.Next() ) {
+	      // Add the row to the options map.
+	      m_option_type eType = e_string;
+	      if ( std::string(*type).compare("double")  == 0 ) eType = e_double;
+	      if ( std::string(*type).compare("integer") == 0 ) eType = e_integer;
+	      if ( std::string(*type).compare("boolean") == 0 ) eType = e_boolean;
+	      if ( std::string(*type).compare("flag")    == 0 ) eType = e_flag;
+	      m_option_attributes attr = { *value, eType, (*brief)[0], *desc };
+	      m_options[ *name ] = attr;
+	    }
+	    // We've filled the options map from the ntuple.
+	    inputFile->Close();
+	    return true;
+	  } // name contains "Options"
+	} // it's an ntuple
+      } // key exists
+    } // while looking through items
+    // If we get here, we've failed! There are no ntuples whose name
+    // contains "Options" in the ROOT file.
+    std::cerr << "ERROR! File " << __FILE__ << " Line " << __LINE__ << " " 
+	      << std::endl
+	      << "No ntuple with a name containing 'Options' found in file '"
+	      << a_optionsFile << "'" << std::endl;
+    return false;
+  }
+
 
 } // namespace util
