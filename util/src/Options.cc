@@ -13,6 +13,8 @@
 #include <getopt.h>
 #include <map>
 #include <vector>
+#include <algorithm>
+#include <iterator>
 #include <exception>
 #include <string>
 #include <iostream>
@@ -283,6 +285,9 @@ namespace util {
 	    success = false;
 	    break;
 	  }
+	  // The source of this options was the command line.
+	  m_options[name].source = "Command Line";
+
 	  // Convert the argument based on its type... with lots of 
 	  // error-detection, because who knows what the users are doing?
 	  switch (type)
@@ -406,10 +411,12 @@ namespace util {
     // To make things look neat, find the maximum field widths.
     size_t nameWidth = 0;
     size_t valueWidth = 0;
+    size_t sourceWidth = 0;
     for ( auto iter = m_options.cbegin(); iter != m_options.cend(); ++iter )
       {
 	nameWidth = std::max( nameWidth, (*iter).first.size() );
 	valueWidth = std::max( valueWidth, (*iter).second.value.size() );
+	sourceWidth = std::max( sourceWidth, (*iter).second.source.size() );
       }
     valueWidth += 2;
 
@@ -423,6 +430,8 @@ namespace util {
 	      << std::left
 	      << std::setw(9) << "type" 
 	      << std::left << "  "
+	      << std::setw(sourceWidth) << "source" 
+	      << std::left << "  "
 	      << std::setw(20) << "desc" 
 	      << std::endl;
     std::cout << std::left
@@ -432,7 +441,9 @@ namespace util {
 	      << std::left << "  "
 	      << std::setw(valueWidth) << "-----" 
 	      << std::left
-	      << std::setw(9) << "----" 
+	      << std::setw(9) << "------" 
+	      << std::left << "  "
+	      << std::setw(sourceWidth) << "------" 
 	      << std::left << "  "
 	      << std::setw(20) << "----" 
 	      << std::endl;
@@ -480,6 +491,10 @@ namespace util {
 	  default:
 	    std::cout << "unknown";
 	  }
+
+	std::cout << std::left << "  "
+		  << std::setw(sourceWidth);
+	std::cout << (*iter).second.source;
 
 	std::cout << "  " << std::left << (*iter).second.desc;
 	std::cout << std::endl;
@@ -589,6 +604,12 @@ namespace util {
     return (*j).second.desc; 
   }
 
+  std::string Options::GetOptionSource( size_t i ) const {
+    auto j = m_options.cbegin(); 
+    std::advance(j,i); 
+    return (*j).second.source; 
+  }
+
   bool Options::WriteNtuple( TDirectory* a_output, std::string a_ntupleName ) {
     // Start by assuming we'll succeed.
     bool success = true;
@@ -603,12 +624,13 @@ namespace util {
     auto ntuple = new TTree(a_ntupleName.c_str(), "Options used for this program");
 
     // Set up the columns of the ntuple. 
-    std::string name, value, type, brief, desc;
+    std::string name, value, type, brief, desc, source;
     ntuple->Branch("OptionName",&name);
     ntuple->Branch("OptionValue",&value);
     ntuple->Branch("OptionType",&type);
     ntuple->Branch("OptionBrief",&brief);
     ntuple->Branch("OptionDesc",&desc);
+    ntuple->Branch("OptionSource",&source);
 
     // Loop over the options. As it says in Options.h, this is an
     // inefficient operation, but hopefully no program will do it more
@@ -620,6 +642,7 @@ namespace util {
       type = GetOptionType(i);
       brief = GetOptionBrief(i);
       desc = GetOptionDescription(i);
+      source = GetOptionSource(i);
 
       // Write out the ntuple entry.
       ntuple->Fill();
@@ -693,14 +716,21 @@ namespace util {
     // For everything we'd look for in an in XML file, the
     // tag name must be transcoded into Xerces-C custom format.
     auto rootTag = xercesc::XMLString::transcode("parameters");
-    auto globalTag = xercesc::XMLString::transcode("global");
-    auto programTag = xercesc::XMLString::transcode(a_program.c_str());
     auto optionTag = xercesc::XMLString::transcode("option");
     auto nameAttr = xercesc::XMLString::transcode("name");
     auto shortAttr = xercesc::XMLString::transcode("short");
     auto valueAttr = xercesc::XMLString::transcode("value");
     auto typeAttr = xercesc::XMLString::transcode("type");
     auto descAttr = xercesc::XMLString::transcode("desc");
+
+    // For the program-level tag blocks, store them in a vector. 
+    std::vector<std::string> programTags;
+    // Later in the code, we'll have to loop over the vector and save
+    // which entry we're on.
+    std::vector<std::string>::const_iterator tagIter;
+
+    programTags.push_back("global");
+    programTags.push_back(a_program);
 
     // Read in the XML file and parse its contents. 
     parser->parse(a_xmlFile.c_str());
@@ -740,9 +770,22 @@ namespace util {
 
       // To compare the Xerces-C strings, we have to use compareIString;
       // it's like strcmp, but for the Xerces-C string format.
-      if ( xercesc::XMLString::compareIString(thisNodeName,optionTag) == 0  &&
-	   ( xercesc::XMLString::compareIString(parentNodeName,programTag) == 0  ||  
-	     xercesc::XMLString::compareIString(parentNodeName,globalTag) == 0 ) )
+      if ( xercesc::XMLString::compareIString(thisNodeName,optionTag) != 0 )
+	// This is not an <option> tag. 
+	continue;
+
+      // It _is_ an <option> tag. See if the parent tag is on our list
+      // of recognized tags. First, convert the parent tag into a string. 
+      std::string parentString(xercesc::XMLString::transcode(parentNodeName));
+
+      // Define a function for the STL find
+      // algorithm to test if two Xerces-C strings match.
+      auto tagsMatch = [&](const std::string tag)
+	{ return tag.compare(parentString) == 0;};
+
+      // Search for a matching program tag in our list.
+      tagIter = std::find_if(programTags.cbegin(), programTags.cend(), tagsMatch);
+      if ( tagIter != programTags.cend() )
 	{
 	  // The current node is an <option> tag.  Covert current_node
 	  // (a DOMNode*) into a DOMElement* to access its attributes.
@@ -865,13 +908,16 @@ namespace util {
 	  // The "desc" attribute:
 	  m_options[name].desc = desc;
 
+	  // The "source" attribute. We're converting the XML string
+	  // format to an old C-style string, then converting that to
+	  // an std::string.
+	  m_options[name].source = *tagIter;
+
 	} // appropriate <option> tag
     } // walking through the XML nodes
 
     // Clean up memory.
     xercesc::XMLString::release(&rootTag);
-    xercesc::XMLString::release(&globalTag);
-    xercesc::XMLString::release(&programTag);
     xercesc::XMLString::release(&optionTag);
     xercesc::XMLString::release(&nameAttr);
     xercesc::XMLString::release(&shortAttr);
@@ -909,6 +955,7 @@ namespace util {
 	    TTreeReaderValue<std::string> type(reader, "OptionType");
 	    TTreeReaderValue<std::string> brief(reader, "OptionBrief");
 	    TTreeReaderValue<std::string> desc(reader, "OptionDesc");
+	    TTreeReaderValue<std::string> source(reader, "OptionSource");
 	    
 	    // For each row in the ntuple
 	    while ( reader.Next() ) {
@@ -918,7 +965,7 @@ namespace util {
 	      if ( std::string(*type).compare("integer") == 0 ) eType = e_integer;
 	      if ( std::string(*type).compare("boolean") == 0 ) eType = e_boolean;
 	      if ( std::string(*type).compare("flag")    == 0 ) eType = e_flag;
-	      m_option_attributes attr = { *value, eType, (*brief)[0], *desc };
+	      m_option_attributes attr = { *value, eType, (*brief)[0], *desc, *source };
 	      m_options[ *name ] = attr;
 	    }
 	    // We've filled the options map from the ntuple.

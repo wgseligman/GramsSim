@@ -56,6 +56,7 @@ namespace util {
     std::string GetOptionType( size_t i ) const;
     std::string GetOptionBrief( size_t i ) const;
     std::string GetOptionDescription( size_t i ) const;
+    std::string GetOptionSource( size_t i ) const;
 
     // The argument to this method is the output directory for the
     // ntuple. Presumably this will be a ROOT file.
@@ -73,6 +74,7 @@ namespace util {
       m_option_type type;  ///< string/double/integer/boolean/flag
       char brief;          ///< Optional one-char short option
       std::string desc;    ///< Optional description for --help
+      std::string source;  ///< From which place (XML tag block, command line) did this come from?
     };
 
     std::map<std::string,m_option_attributes> m_options; ///< User options map
