@@ -179,17 +179,17 @@ Then all of the following are equivalent:
 ### Accessing options from within your program
 
 Just having an option defined in the XML file is not enough.
-You need the programming to do something with that option. Typically you'd initiate the parsing of the options XML file and the command line in your program's `main` routine. 
+You need the programming to do something with that option. Typically you'd initiate the parsing of the options XML file and the command line by invoking `ParseOptions` in your program's `main` routine. 
 
-The three arguments to `util::Options::ParseOptions`:
-   - The number of arguments on the command line; normally that is the first argument to the main routine (`argc`). 
-   - A character array (**char) that contains the arguments on the command line; normally this is the second argument to the main routine (`argv`). The contents of this array will be altered during the process. 
-   - The third argument can be one of the following:
+The three arguments to `util::Options::ParseOptions` are:
+   1. The number of arguments on the command line; normally that is the first argument to the main routine (`argc`). 
+   2. A character array (**char) that contains the arguments on the command line; normally this is the second argument to the main routine (`argv`). The contents of this array will be altered during the process. 
+   3. The third argument can be one of the following:
+      - A character string. This should match a tag-block of the same name in the XML file. The examples below use `gramsg4` in order to select the tag block `<gramsg4> ... <\gramsg4>`. 
       - Omitted. In this case, the name of the executing program (in `argv[0]`) will be used to search for a matching tag-block within the XML file.
-      - A character string. This should match a tag-block of the same name in the XML file. The examples below use `gramsg4` in order to select the tag block `<gramsgr> ... <\gramsgr>`. 
-      - The string `"ALL"`. In that case, all the tag-block will be read in and used. Note that if multiple tag blocks have options with the same `name` attribute, then last one in the file will be used, overriding the ones above it. 
+      - The string `"ALL"`. In that case, all the tag-blocks will be read in and used. Note that if multiple tag blocks have options with the same `name` attribute, then last one in the file will be used, overriding the ones above it. 
          
-As noted above we use `gramsg4` here as an example:
+As noted above, here we use `gramsg4` as an example:
 
 ```
 #include "Options.h"
