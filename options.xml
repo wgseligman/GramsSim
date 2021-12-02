@@ -14,9 +14,9 @@
         does not read or interpret it. 
     </option>
 
-    <option name="verbose" short="v" value="false" type="bool" desc="display details"/>
-    <option name="debug" short="d" value="false" type="bool" />
-    <option name="help" short="h" value="false" type="bool" desc="show help then exit" />
+    <option name="verbose" short="v" type="flag" desc="display details"/>
+    <option name="debug" short="d" type="flag" />
+    <option name="help" short="h" type="flag" desc="show help then exit" />
 
   </global>
 
@@ -26,43 +26,96 @@
     <option name="gdmlfile" short="g" value="grams.gdml" type="string" 
         desc="input GDML detector desc"/>    
 
-    <!-- If not blank, 2rite a parsed version of the GDML input file.
+    <!-- If not blank, write a parsed version of the GDML input file.
     This can be used as input to ROOT, since ROOT doesn't accept the
-    GDML <loop> tags. -->
+    GDML <loop> tags. Note that prior to Geant4.10.7, a G4 application
+    (like gramsg4) will crash if it tries to out to a GDML file 
+    that already exists. -->
     <option name="gdmlout" value="" type="string" 
         desc="write parsed GDML to this file" />    
 
-    <!-- If you want to use gramsg4 in batch mode, this is the
-    file of Geant4 commands to be executed. If UI is on, this file is not
-    run automatically. -->
-    <option name="macrofile" short="m" value="run.mac" type="string" 
-        desc="G4 command batch file"/>
+    <!-- The file of Geant4 commands to be executed. If UI is on, this parameter
+    is ignored. Take a look at the mac/ directory for some ideas. -->
+    <option name="macrofile" short="m" value="mac/batch.mac" type="string" 
+        desc="G4 macro file"/>
 
     <!-- If this flag is turned on, gramsg4 will start in an
     interactive graphical mode. It will then execute the contents
-    of the Geant4 command file specified by option 'uimacrofile' -->
-    <option name="ui" value="false" type="boolean" desc="start UI session"/>
-    <option name="uimacrofile" value="vis.mac" type="string" desc="G4 command file for UI"/>
+    of the Geant4 macro file specified by option 'uimacrofile' -->
+    <option name="ui" type="flag" desc="start UI session"/>
+    <option name="uimacrofile" value="mac/vis-menus.mac" type="string" desc="G4 macro file for UI"/>
+
+    <!-- The name of an input file containing events from some external
+    event generator.. If this option is present, this file will override
+    any particle-generation commands in the macrofile. The file must be in
+    HepMC3 format (https://gitlab.cern.ch/hepmc/HepMC3). The internal format
+    of the file is determined from its extension (the part after the final "."):
+
+    .hepmc2 = HepMC2 text format
+    .hepmc3 = HepMC3 text format
+    .hep    = HEPEVT text format (https://cdcvs.fnal.gov/redmine/projects/minos-sim/wiki/HEPEVT_files)
+    .root   = HepMC3 ROOT format
+    .treeroot = HepMC3 TTree ROOT format
+    .lhef     = LHEF format (arXiv:hep-ph/0609017)
+
+    Some of these formats do not provide a way to specify the (x,y,z,t) vertex
+    of an event (e.g., HEPEVT, LHEF). In those cases the vertex of the event will be
+    [TODO: Fill in an appropriate action.]
+
+    See README.md for a more detailed description.
+    -->
+    <option name="inputgen" short="i" value="" type="string" desc="input generator events"/>
+
+    <!-- The name of the output file. The G4 Analysis Manager will automatically
+    append '.root' to this name.-->
+    <option name="outputfile" short="o" value="gramsg4" type="string" desc="output file"/>
 
     <!-- The physics list to be used by the detector simulation. --> 
-    <option name="physicslist" short= "p" value="FTFP_BERT" type="string" 
+    <option name="physicslist" short= "p" value="FTFP_BERT_LIV+OPTICAL+STEPLIMIT" type="string" 
         desc="physics list">
+        Here are few options. There are many, many others. Note that to simulate
+        voxels/pixels, you want to include +STEPLIMIT; to include scintillation
+        photons you want to include +OPTICAL. 
         "FTFP_BERT" - typical for HEP applications
         "QGSP_BIC_HP" - typical medical applications
-        "QGSP_BIC_HP_EMY+G4OpticalPhysics" - Gave this a try. Needs review.
+        "QGSP_BIC_HP_LIV+OPTICAL+STEPLIMIT" - Gave this a try. Needs review.
         See README.md for references.
     </option>
 
+    <!-- Do we want to turn on this optical physics? Note that if you don't include
+    OPTICAL (or G4OpticalPhysics) in the physics list above, these processes
+    won't happen anyway. -->
+    <option name="scint" value="true" type="boolean" 
+	    desc="turn on/off scintillation" /> 
+
     <!-- Display available physics lists. --> 
-    <option name="showphysicslists" short="l" value="false" type="boolean" 
+    <option name="showphysicslists" short="l" type="flag" 
         desc="show physics lists then exit" />
 
+    <option name="larstepsize" value="0.02" type="double" 
+        desc="LAr TPC step size" >
+      This is the step size for charged particles in the LAr TPC.
+      It has no effect until the step-limit physics is turned on
+      ("G4StepLimiterPhysics" or simply STEPLIMIT) in the physicslist
+      option above. 
+
+      It should be the size of the voxels or pixels in the readout.
+
+      Units are mm (default G4 length unit). 
+
+      If this is commented out, the program will use the step size
+      in the GDML file for "volTPCActive".
+    </option>
+
     <!-- If # threads > 0, enable multi-threaded execution. 
-    Note that this does not magically make your program thread-safe -->
+    Note that this does not magically make your program thread-safe.
+    While the current version of gramsg4 is thread-safe, turning this
+    option on means the order of rows in the output ntuples can't be
+    predicted. -->
     <option name="nthreads" short = "t" value="0" type="integer" desc="number of threads"/>
 
     <!-- Variables that have to do with Random Number Generation (RNG).
-    You can leave these alone until you want to create a particular
+    You can leave these alone until you want to re-create a particular
     Monte Carlo event. -->
 
     <option name="rngseed" short="s" value="-1" type="integer" desc="random number seed">
@@ -87,5 +140,53 @@
     </option>
     
   </gramsg4>
+
+  <gramsdetsim>
+
+    <!-- Input ROOT file from GramsG4 (or at least contains a LArHits-compatible ntuple -->
+    <option name="inputfile" short="i" value="gramsg4.root" type="string" 
+        desc="input file"/>    
+
+    <!-- Name of ntuple in the input file that contains the hit information. -->
+    <option name="inputntuple" value="LArHits" type="string" desc="input ntuple"/>
+
+    <!-- Output ROOT file -->
+    <option name="outputfile" short="o" value="gramsdetsim.root" type="string" 
+        desc="output file"/>    
+
+    <!-- Name of ntuple in the output file that contains the
+         detector-response information. This ntuple will be a
+         row-for-row match with the input ntuple, and can therefore be
+         used as a "friend ntuple" with the input intuple (see "friend
+         TTrees" in the ROOT documentation.  -->
+    <option name="outputntuple" value="DetSim" type="string" desc="output ntuple"/>
+
+    Physics-model options. Note that ntuple units are the same as
+    Geant4: MeV, mm, ns.
+
+    Options associated with modeling recombination effects.
+    <option name="recombination" value="true" type="boolean" 
+	    desc="model recombination effects"/>
+
+    Electric field on the cloud of ionized particles, varies with
+    position due to space charge, which we don't have a model for yet.
+    <option name="field"  value="1.0" type="double"
+	    desc="electric field [kV/cm]"/>
+
+    Average of the a value for 20 to 90 degrees angle bins for proton
+    sample detection in ArgoNeuT, unitless value.
+    <option name="a" value="0.930" type="double"
+	    desc="recombination constant"/>
+
+    Average of the B value for 20 to 90 degrees angle bins for proton
+    sample detection in ArgoNeuT, units of (kV*g)/(MeV*cm^3)
+    <option name="b" value="0.212" type="double"
+	    desc="recombination constant [(kV*g)/(MeV*cm^3)]"/>
+
+    Density of liquid argon, from Brookhaven LAr page, units of (g/cm^3)
+    <option name="rho" value="1.3973" type="double"
+	    desc="LAr density [g/cm^3]"/>
+
+  </gramsdetsim>
 
 </parameters>

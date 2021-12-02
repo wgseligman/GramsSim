@@ -1,0 +1,24 @@
+###################################################
+# Batch running of events  
+###################################################
+
+# This file is meant to be used with an input file
+# of generated events. A typical command might be
+#
+# ./gramsg4 -i example.treeroot -m hepmc3.mac
+#
+# See the main README.md file for more documentation.
+
+# verbosity
+/tracking/verbose 1
+/control/verbose 1
+/run/verbose 2
+
+# This means "run Geant4 and generate 5 events".  Note that if this
+# number is greater than the number of events in the input file of
+# generated events, the program will "rewind" the file and start
+# reading from the begining.
+
+/run/beamOn 5
+
+exit

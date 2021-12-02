@@ -1,0 +1,41 @@
+###################################################
+# Batch running of events  
+###################################################
+
+# Note that the /gps (General Particle Source) commands below can
+# be overridden by GramsG4PrimaryGeneratorAction.cc.
+
+# verbosity
+/tracking/verbose 1
+/control/verbose 1
+/run/verbose 2
+
+# For GRAMS, let's look at monoenergetic 1MeV photons
+/gps/particle gamma
+/gps/ene/type Mono
+/gps/ene/mono 1 MeV
+
+# Aim a little off from the center of the detector (so we don't aim
+# precisely at a PTFE sheet). (Remember that z=0 is set at the
+# location of the induction plane.)  
+/gps/ang/type focused
+/gps/ang/focuspoint 0.5 0.5 -100 cm
+
+# Shoot along Z direction downwards from above
+/gps/pos/centre 0.5 0.5 200 cm
+
+# This means "run Geant4 and generate 20 events"
+/run/beamOn 20
+
+# Turn off detailed track information. 
+/tracking/verbose 0
+
+# Shoot along the y-axis
+/gps/pos/centre 0.5 -180 -100 cm
+/run/beamOn 20
+
+# Shoot along the x-axis
+/gps/pos/centre -200 0.5 -100 cm
+/run/beamOn 20
+
+exit

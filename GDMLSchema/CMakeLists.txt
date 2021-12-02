@@ -1,14 +1,6 @@
 # Install GDML schema files
-set(gdml_schema 
-		gdml_core.xsd
-		gdml_define.xsd
-		gdml_extensions.xsd
-		gdml_materials.xsd
-		gdml_parameterised.xsd
-		gdml_replicas.xsd
-		gdml_solids.xsd
-		gdml.xsd
-)
+
+file(GLOB gdml_schema RELATIVE ${PROJECT_SOURCE_DIR}/GDMLSchema CONFIGURE_DEPENDS *.xsd)
 
 foreach(_schema ${gdml_schema})
   configure_file(

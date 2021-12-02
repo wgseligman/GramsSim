@@ -1,0 +1,10 @@
+# Show a view of the GRAMS detector along the z-axis.
+# This is sized to fill the view of the G4
+# visualizer if the windows is left at its default size.
+
+/vis/viewer/set/viewpointVector 0 0 1
+/vis/viewer/set/upVector 1 0 0
+/vis/viewer/zoomTo 3.66837
+/vis/viewer/set/projection orthogonal
+/vis/viewer/scaleTo 1 1 1
+/vis/viewer/set/targetPoint 0 0 -10 cm 

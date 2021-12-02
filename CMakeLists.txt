@@ -1,10 +1,23 @@
-#----------------------------------------------------------------------------
-# Setup the project
-cmake_minimum_required(VERSION 2.6 FATAL_ERROR)
-project(GramsG4)
+# 12-Jan-2021 WGS: Any lines which reference HepMC3 were copied
+# from the BDSim Project, by the University of London. 
 
 #----------------------------------------------------------------------------
-# Find Geant4 package, activating all available Vis drivers by default
+# Setup the project
+cmake_minimum_required(VERSION 3.6 FATAL_ERROR)
+# Note: Do NOT make the project name the same as any executable
+# name, including case. When the project was GramsG4 and the 
+# main executable gramsg4, the build process would work on Linux
+# but not on Mac OS. 
+project(GramsSimProject)
+
+# Add this project's cmake/Module directory as a source of our own CMake modules
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/cmake/Modules)
+
+# Include any special macros
+include(macros)
+
+#----------------------------------------------------------------------------
+# Find the Geant4 package, activating all available Vis drivers by default
 # You can set WITH_GEANT4_VIS to OFF via the command line or ccmake/cmake-gui
 # to build a batch mode only executable
 #
@@ -16,44 +29,39 @@ else()
 endif()
 
 #----------------------------------------------------------------------------
-# Find ROOT
-
-# You need to tell CMake where to find the ROOT installation. This can be done in a number of ways:
-#   - ROOT built with classic configure/make use the provided $ROOTSYS/etc/cmake/FindROOT.cmake
-#   - ROOT built with CMake. Add in CMAKE_PREFIX_PATH the installation prefix for ROOT
-list(APPEND CMAKE_PREFIX_PATH $ENV{ROOTSYS})
-
-#---Locate the ROOT package and defines a number of variables (e.g. ROOT_INCLUDE_DIRS)
-find_package(ROOT REQUIRED COMPONENTS RIO)
-
-include_directories(${ROOT_INCLUDE_DIRS})
-
-#----------------------------------------------------------------------------
 # Setup Geant4 include directories and compile definitions
 #
 include(${Geant4_USE_FILE})
 
-#----------------------------------------------------------------------------
-# Locate sources and headers for this project
-#
-include_directories(${PROJECT_SOURCE_DIR}/include 
-                    ${Geant4_INCLUDE_DIR}
-                    ${ROOT_INCLUDE_DIR})
-file(GLOB sources ${PROJECT_SOURCE_DIR}/src/*.cc)
-file(GLOB headers ${PROJECT_SOURCE_DIR}/include/*.hh)
 
 #----------------------------------------------------------------------------
-# Add the executable, and link it to the Geant4 libraries
-#
-add_executable(gramsg4 gramsg4.cc ${sources} ${headers})
-target_link_libraries(gramsg4 ${Geant4_LIBRARIES} )
+# Set up ROOT
+include(cmake/ROOT.cmake)
+
+# Set up HEPMC3
+include(cmake/HepMC.cmake)
+
+# We're going to need the Xerces-C package for some programs.
+find_package (XercesC REQUIRED)
+
+# 11-Jan-2021 WGS: Again, copied from BDSim.
+# rpath for libraries to work from installation correctly
+
+# Include the Geant4 libraries.
+if (USE_HEPMC3)
+  set(CMAKE_INSTALL_RPATH "${ROOT_LIBRARY_DIR};${HEPMC3_ROOT_DIR}/lib;${Geant4_LIBRARY_DIR};${CMAKE_INSTALL_PREFIX}/lib")
+  message(STATUS "rpath = ${CMAKE_INSTALL_RPATH}")
+else()
+  set(CMAKE_INSTALL_RPATH "${ROOT_LIBRARY_DIR};${Geant4_LIBRARY_DIR};${CMAKE_INSTALL_PREFIX}/lib")
+  message(STATUS "rpath = ${CMAKE_INSTALL_RPATH}")
+endif()
 
 #----------------------------------------------------------------------------
 # Copy all scripts to the build directory, i.e. the directory in which we
 # build GramsG4. This is so that we can run the executable directly because it
 # relies on these scripts being in the current working directory.
 #
-set(GramsG4_SCRIPTS grams.gdml vis.mac run.mac options.xml)
+set(GramsG4_SCRIPTS grams.gdml options.xml README.md)
 
 foreach(_script ${GramsG4_SCRIPTS})
   configure_file(
@@ -63,16 +71,9 @@ foreach(_script ${GramsG4_SCRIPTS})
     )
 endforeach()
 
+# Copy/compile the sub-projects and work files.
+add_subdirectory(GramsG4)
+add_subdirectory(GramsDetSim)
 add_subdirectory(GDMLSchema)
-
-#----------------------------------------------------------------------------
-# Add program to the project targets
-# (this avoids the need of typing the program name after make)
-#
-add_custom_target(GramsG4 DEPENDS gramsg4)
-
-#----------------------------------------------------------------------------
-# Install the executable to 'bin' directory under CMAKE_INSTALL_PREFIX
-#
-install(TARGETS gramsg4 DESTINATION bin)
-
+add_subdirectory(mac)
+add_subdirectory(scripts)

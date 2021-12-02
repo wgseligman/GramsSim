@@ -1,0 +1,10 @@
+#
+# Draw coordinate axes,
+# For GRAMS, offset the axis by y-2.5 m so the axes are
+# visible outside of the detector. 
+/vis/scene/add/axes 0 -2.5 0 1 m
+# Add an axis label.
+/vis/set/textColour white
+#                   x   y    z  units size x-offset y-offset text
+/vis/scene/add/text 0 -2.5 -0.15   m   9    0        0       displaced det
+/vis/scene/add/text 0 -2.5 -0.25   m   9    0        0       coord y->y-2.5 m

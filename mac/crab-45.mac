@@ -1,0 +1,34 @@
+###################################################
+# An extremely crude simulation of MeV-level
+# photons coming from the Crab Nebula (M1)
+# at a 45-degree angle to the top of the GRAMS
+# detector.
+###################################################
+
+# verbosity
+/tracking/verbose 0
+/control/verbose 0
+/run/verbose 0
+
+# 
+# From Naomi Tsuji, the power-law spectrum of the Crab Nebula. 
+/gps/particle gamma
+/gps/ene/type Pow 
+/gps/ene/min 1 MeV
+/gps/ene/max 10 MeV
+/gps/ene/alpha -2.17
+
+# Rotate a Plane source to a 45-degree angle in x-z,
+# still oriented to face the detector. 
+/gps/pos/type Plane
+/gps/pos/shape Square
+/gps/pos/centre 2 0 2 m
+/gps/pos/halfx 0.7 m
+/gps/pos/halfy 0.7 m
+/gps/ang/rot1 0.707 0 -0.707
+/gps/direction -0.707 0 -0.707
+
+# This means "run Geant4 and generate 1000 events"
+/run/beamOn 1000
+
+exit
