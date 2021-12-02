@@ -14,9 +14,9 @@
         does not read or interpret it. 
     </option>
 
-    <option name="verbose" short="v" value="false" type="bool" desc="display details"/>
-    <option name="debug" short="d" value="false" type="bool" />
-    <option name="help" short="h" value="false" type="bool" desc="show help then exit" />
+    <option name="verbose" short="v" type="flag" desc="display details"/>
+    <option name="debug" short="d" type="flag" />
+    <option name="help" short="h" type="flag" desc="show help then exit" />
 
   </global>
 
@@ -42,7 +42,7 @@
     <!-- If this flag is turned on, gramsg4 will start in an
     interactive graphical mode. It will then execute the contents
     of the Geant4 macro file specified by option 'uimacrofile' -->
-    <option name="ui" value="false" type="boolean" desc="start UI session"/>
+    <option name="ui" type="flag" desc="start UI session"/>
     <option name="uimacrofile" value="mac/vis-menus.mac" type="string" desc="G4 macro file for UI"/>
 
     <!-- The name of an input file containing events from some external
@@ -82,14 +82,14 @@
         See README.md for references.
     </option>
 
-    <!-- Do we want to turn off this optical physics? Note that if you don't include
+    <!-- Do we want to turn on this optical physics? Note that if you don't include
     OPTICAL (or G4OpticalPhysics) in the physics list above, these processes
     won't happen anyway. -->
-    <option name="noscint" value="false" type="boolean" 
-	    desc="turn off scintillation" /> 
+    <option name="scint" value="true" type="boolean" 
+	    desc="turn on/off scintillation" /> 
 
     <!-- Display available physics lists. --> 
-    <option name="showphysicslists" short="l" value="false" type="boolean" 
+    <option name="showphysicslists" short="l" type="flag" 
         desc="show physics lists then exit" />
 
     <option name="larstepsize" value="0.02" type="double" 
@@ -140,5 +140,53 @@
     </option>
     
   </gramsg4>
+
+  <gramsdetsim>
+
+    <!-- Input ROOT file from GramsG4 (or at least contains a LArHits-compatible ntuple -->
+    <option name="inputfile" short="i" value="gramsg4.root" type="string" 
+        desc="input file"/>    
+
+    <!-- Name of ntuple in the input file that contains the hit information. -->
+    <option name="inputntuple" value="LArHits" type="string" desc="input ntuple"/>
+
+    <!-- Output ROOT file -->
+    <option name="outputfile" short="o" value="gramsdetsim.root" type="string" 
+        desc="output file"/>    
+
+    <!-- Name of ntuple in the output file that contains the
+         detector-response information. This ntuple will be a
+         row-for-row match with the input ntuple, and can therefore be
+         used as a "friend ntuple" with the input intuple (see "friend
+         TTrees" in the ROOT documentation.  -->
+    <option name="outputntuple" value="DetSim" type="string" desc="output ntuple"/>
+
+    Physics-model options. Note that ntuple units are the same as
+    Geant4: MeV, mm, ns.
+
+    Options associated with modeling recombination effects.
+    <option name="recombination" value="true" type="boolean" 
+	    desc="model recombination effects"/>
+
+    Electric field on the cloud of ionized particles, varies with
+    position due to space charge, which we don't have a model for yet.
+    <option name="field"  value="1.0" type="double"
+	    desc="electric field [kV/cm]"/>
+
+    Average of the a value for 20 to 90 degrees angle bins for proton
+    sample detection in ArgoNeuT, unitless value.
+    <option name="a" value="0.930" type="double"
+	    desc="recombination constant"/>
+
+    Average of the B value for 20 to 90 degrees angle bins for proton
+    sample detection in ArgoNeuT, units of (kV*g)/(MeV*cm^3)
+    <option name="b" value="0.212" type="double"
+	    desc="recombination constant [(kV*g)/(MeV*cm^3)]"/>
+
+    Density of liquid argon, from Brookhaven LAr page, units of (g/cm^3)
+    <option name="rho" value="1.3973" type="double"
+	    desc="LAr density [g/cm^3]"/>
+
+  </gramsdetsim>
 
 </parameters>

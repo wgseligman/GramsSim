@@ -187,15 +187,15 @@ int main(int argc,char **argv)
     // defaults used by artg4tk in LArSoft.
 
     opticalPhysics->SetScintillationStackPhotons(false);
-    G4bool disable;
-    options->GetOption("noscint",disable);
-    if (disable) {
-      opticalPhysics->Configure(kScintillation,false);
-      if (verbose) G4cout << "GramsG4::main(): Scintillation is off" << G4endl;
-    }
-    else {
+    G4bool isScint;
+    options->GetOption("scint",isScint);
+    if (isScint) {
       opticalPhysics->Configure(kScintillation,true);
       if (verbose) G4cout << "GramsG4::main(): Scintillation is on" << G4endl;
+    }
+    else {
+      opticalPhysics->Configure(kScintillation,false);
+      if (verbose) G4cout << "GramsG4::main(): Scintillation is of" << G4endl;
     }
 
     // For now, make absolutely sure that the Cerenkov process is

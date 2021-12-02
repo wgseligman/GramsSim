@@ -199,6 +199,7 @@ namespace gramsg4 {
     analysisManager->CreateNtupleSColumn("OptionType");     // id 2
     analysisManager->CreateNtupleSColumn("OptionBrief");    // id 3
     analysisManager->CreateNtupleSColumn("OptionDesc");     // id 4
+    analysisManager->CreateNtupleSColumn("OptionSource");   // id 5
 
     if (m_debug) 
 	G4cout << "WriteNtuplesAction::BeginOfRunAction() - "
@@ -233,6 +234,7 @@ namespace gramsg4 {
 	analysisManager->FillNtupleSColumn(m_optionsNTID, 2, options->GetOptionType(i));
 	analysisManager->FillNtupleSColumn(m_optionsNTID, 3, options->GetOptionBrief(i));
 	analysisManager->FillNtupleSColumn(m_optionsNTID, 4, options->GetOptionDescription(i));
+	analysisManager->FillNtupleSColumn(m_optionsNTID, 5, options->GetOptionSource(i));
 	analysisManager->AddNtupleRow(m_optionsNTID);  
       }
     } // if sequential or worker thread

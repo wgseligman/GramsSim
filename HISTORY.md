@@ -4,6 +4,12 @@ A description of major development milestones. The most recent are at
 the top. For a detailed list of all changes (basically, every time
 someone typed "git commit"), see the output of "git log".
 
+Nov-2021:
+
+   - Create a "skeleton" for GramsDetSim.
+   - Restructure the directories. Each program now has its own directory with a README: GramsG4, GramsDetSim. 
+   - Created util::WriteOptions, to save a program's options in its output file.
+
 Oct-2021:
 
    - Replace the wires with a tile anode in the GDML file. 

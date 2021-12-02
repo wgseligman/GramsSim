@@ -1,4 +1,20 @@
-# GramsG4
+# Utilities
+
+- [Utilities](#utilities)
+  * [Directory and Namespace `util`](#directory-and-namespace--util-)
+    + [Options - parse XML file and command line](#options---parse-xml-file-and-command-line)
+      - [Format of `options.xml`](#format-of--optionsxml-)
+        * [Defining new options](#defining-new-options)
+        * [Abbreviating options](#abbreviating-options)
+    + [Accessing options from within your program](#accessing-options-from-within-your-program)
+    + [Implementing the `-h/--help` option](#implementing-the---h---help--option)
+    + [Other `Options` methods.](#other--options--methods)
+      - [Displaying a table of all the options](#displaying-a-table-of-all-the-options)
+      - [Going through options one-by-one](#going-through-options-one-by-one)
+      - [Saving options in the output](#saving-options-in-the-output)
+      - [Restoring options from a ROOT file](#restoring-options-from-a-root-file)
+
+<small><i><a href='http://ecotrust-canada.github.io/markdown-toc/'>Table of contents generated with markdown-toc</a></i></small>
 
 ## Directory and Namespace `util`
 
@@ -12,7 +28,7 @@ programs I write.
 #### Format of `options.xml`
 
 If you look at the file `options.xml`, what you'll first notice that is that within the global `<parameters>` tag there are
-at least two sections. It looks something like this:
+more than one sections. It looks something like this:
 
 ```
 <parameters>
@@ -25,12 +41,22 @@ at least two sections. It looks something like this:
     <option [...] />
     <option [...] />
   </gramsg4>
+
+  <gramsdetsim>
+    <option [...] />
+    <option [...] />
+  </gramsdetsim>
 </parameters>
 ```
 
-The idea is that this same options XML file might eventually be used by more programs
-in an analysis. The `<global>` section contains parameters that will apply to more
-than one program. Individual programs will have their options in their own sections. For the purpose of these examples, we're using the name `gramsg4`. If you created a program with the name `myanalysis`, within the options XML file you'd have:
+The idea is that this same options XML file might eventually be used
+by more than one program in an analysis. The `<global>` section
+contains parameters that might apply to any program. Individual
+programs will have their options in their own sections. For the
+purpose of these examples, we're using the name `gramsg4`. If you
+created a program with the name `myanalysis`, within the options XML
+file you'd have:
+
 ```
   <myanalysis>
     <option [...] />
@@ -52,7 +78,7 @@ Anatomy of <option> tag:
    value - the number/text/bool passed to the program;
            can be overridden on the command line
 
-   type  - string/bool/integer/double
+   type  - string/bool/flag/integer/double
    
    desc  - optional; brief description of the option (keep it 
            less than 20 characters); used in the --help|-h message
@@ -89,12 +115,24 @@ Of course, you can mix and mash to your heart's content:
 
     ./gramsg4 --energyCut 199.9 --options myEnergyStudyOptions.xml
 
-If a job option has `type="boolean"`, then on the command line it takes no
-arguments; either it's there or it isn't. For example, if this is
-in the XML file:
+If a job option has `type="boolean"`, then it's a feature that can be
+turned on or off. Possible values are `true`, `false`, `on`, `off`,
+`0`, `1`.
+
+For example:
 
 ```  
-  <option name="makeHistograms" value="false" type="bool" desc="make my special hists"/>
+  <option name="recombination" type="boolean" value="on" desc="turn recombination on/off"/>
+```  
+
+This is different from a job option that has `type="flag"`. Then on
+the command line the option takes no arguments; either it's there or
+it isn't. Examples of a flag are `--verbose` and `--help`.
+
+For example, if this is in the XML file:
+
+```  
+  <option name="makeHistograms" type="flag" desc="make my special hists"/>
 ```  
 
 then you could do this on the command line:
@@ -114,7 +152,7 @@ Then you can do:
     ./gramsg4 -e 123.45 
 
 Be careful not to overuse the short options, since they can make the
-command harder to understand. 
+command line harder to understand. 
 
 If you duplicate the short character between different options the behavior is
 unpredictable. However, case is significant; e.g., you can do this:
@@ -141,13 +179,18 @@ Then all of the following are equivalent:
 ### Accessing options from within your program
 
 Just having an option defined in the XML file is not enough.
-You need the programming to do something with that option. Typically you'd initiate the parsing of the options XML file and the command line in your program's `main` routine. 
+You need the programming to do something with that option. Typically you'd initiate the parsing of the options XML file and the command line by invoking `ParseOptions` in your program's `main` routine. 
 
-The first two arguments to `util::Options::ParseOptions` are the standard C++ arguments to
-the main routine; the contents of the second argument (`argv` in the example) will be altered
-during the process. The third argument must
-agree with a single tag-block within the XML file; as noted above we use
-`gramsg4` here as an example. 
+The three arguments to `util::Options::ParseOptions` are:
+   1. The number of arguments on the command line; normally that is the first argument to the main routine (`argc`). 
+   2. A character array (**char) that contains the arguments on the command line; normally this is the second argument to the main routine (`argv`). The contents of this array will be altered during the process. 
+   3. The third argument can be one of the following:
+      - A character string. This should match a tag-block of the same name in the XML file. The examples below use `gramsg4` in order to select the tag block `<gramsg4> ... <\gramsg4>`. 
+      - Omitted. In this case, the name of the executing program (in `argv[0]`) will be used to search for a matching tag-block within the XML file.
+      - The string `"ALL"`. In that case, all the tag-blocks will be read in and used. Note that if multiple tag blocks have options with the same `name` attribute, then last one in the file will be used, overriding the ones above it. 
+         
+As noted above, here we use `gramsg4` as an example:
+
 ```
 #include "Options.h"
 #include <iostream> 
@@ -277,20 +320,19 @@ In the code:
 
 ```
 
-On 28-Jul-2021, the output from `./gramsg4 -v` included:
+On 25-Nov-2021, the output from `./gramsg4 -v` included:
 
 ```
 20 options:
 Option            short  value                            type       desc                
 ------            -----  -----                            ----       ----                
-debug               d    false                            bool       
+debug               d    false                            flag       
 gdmlfile            g    grams.gdml                       string     input GDML detector desc
 gdmlout                                                   string     write parsed GDML to this file
-help                h    false                            bool       show help then exit
+help                h    false                            flag       show help then exit
 inputgen            i                                     string     input generator events
 larstepsize              0.020000                         double     LAr TPC step size
 macrofile           m    mac/batch.mac                    string     G4 macro file
-noscint                  false                            bool       turn off scintillation
 nthreads            t    0                                integer    number of threads
 options                  options.xml                      string     XML file of options
 outputfile          o    gramsg4                          string     output file
@@ -299,10 +341,11 @@ rngdir                                                    string     rng save/re
 rngperevent              0                                integer    rng save per event
 rngrestorefile                                            string     restore rng from file
 rngseed             s    -1                               integer    random number seed
-showphysicslists    l    false                            bool       show physics lists then exit
-ui                       false                            bool       start UI session
+scint                    true                             bool       turn on scintillation
+showphysicslists    l    false                            flag       show physics lists then exit
+ui                       false                            flag       start UI session
 uimacrofile              mac/vis-menus.mac                string     G4 macro file for UI
-verbose             v    true                             bool       display details
+verbose             v    true                             flag       display details
 ```
 
 #### Going through options one-by-one
@@ -321,4 +364,40 @@ for example, to save the options in an ntuple for later reference. The following
     std::string GetOptionType( size_t i ) const;
     std::string GetOptionBrief( size_t i ) const;
     std::string GetOptionDescription( size_t i ) const;
+```
+
+#### Saving options in the output
+
+The utility method `WriteOptions` can be used to write the option to an ntuple in the output file. This lets you record the values used to run the program that generated that particular file.
+
+```
+#include "WriteOptions.h" // in util/ 
+// ... call ParseOptions ...
+// Define a ROOT output file, e.g.,:
+auto output = TFile::Open("output-file-name.root","RECREATE")
+//
+options->WriteNtuple(output);
+```
+
+`WriteNtuple` can take a second argument, the name of the options ntuple. If you don't supply one, the default is `Options`.
+
+#### Restoring options from a ROOT file
+
+Suppose you have an ROOT file that was created by a program that had its options saved using the `WriteOptions` method described above. You'd like to rerun the program with those same options, perhaps with one or more options changed via the command line. Let's further suppose that, due to the complexities of file management over a long analysis, you've lost the original XML options file that generated the ROOT file. 
+
+The `Options` class can automatically recognize ROOT files that are passed to the program in place of an XML file. For example:
+```
+./gramsdetsim gramsdetsim.root
+```
+or
+```
+./gramsdetsim -v --options gramsdetsim.root
+```
+The `Options` class will search the ROOT file for an ntuple with a name that contains the text `Options`. It will then populate its list of options from that ntuple, and accept any option overrides on the command line. For example:
+```
+./gramsdetsim -v --options gramsdetsim.root --rho 1.5
+```
+Take care! In this particular example, the default output file for `gramsdetsim` is `gramsdetsim.root`. So we're reading our options from the same file to which we're going to write our output; you've overridden the value of `rho` which will be written to the output file. To avoid unpredictable behaviors, you probably want to make sure the files from which you're reading options and to which you're writing output are different:
+```
+./gramsdetsim -v --options gramsdetsim.root --rho 1.5 --outputfile gramsdetsim-revised.root
 ```

@@ -1,7 +1,21 @@
 #include "Options.h"
+
+// ROOT includes
+#include "TROOT.h"
+#include "TDirectory.h"
+#include "TFile.h"
+#include "TTree.h"
+#include "TKey.h"
+#include "TTreeReader.h"
+#include "TTreeReaderValue.h"
+
+// C++ includes
 #include <getopt.h>
 #include <map>
 #include <vector>
+#include <set>
+#include <algorithm>
+#include <iterator>
 #include <exception>
 #include <string>
 #include <iostream>
@@ -9,6 +23,7 @@
 #include <iomanip>
 #include <cstdlib>
 
+// XML parser
 #include <xercesc/parsers/XercesDOMParser.hpp>
 #include <xercesc/dom/DOM.hpp>
 #include <xercesc/sax/HandlerBase.hpp>
@@ -23,15 +38,15 @@ namespace util {
   // processing we don't know the state of the --debug option yet.
   const bool debug = false;
 
-  bool Options::ParseOptions(int argc, char** argv, const std::string& a_programName)
+  bool Options::ParseOptions(int argc, char** argv, const std::string a_programName)
   {
     bool success = true;
 
     // Default XML file name.
-    m_xmlFile = "options.xml";
+    m_optionsFile = "options.xml";
 
-    // Save the name of the running program.
-    m_progName = argv[0];
+    // Save the path of the running program.
+    m_progPath = std::string( argv[0] );
 
     if (debug) {
       for ( int i = 0; i != argc; i++ ) {
@@ -39,12 +54,23 @@ namespace util {
       }
     }
 
+    // If the program name argument is empty, then derive the likely
+    // program tag from the end of the program path. For example, if
+    // the program path is "~/GramsDetSim-work/gramsdetsim", then
+    // assume the tag would be "gramsdetsim".
+    std::string tagName(a_programName);
+    if ( tagName.empty() ) {
+      tagName = m_progPath.substr(m_progPath.find_last_of("/\\") + 1);
+    }
+    if (debug)
+      std::cout << "Debug: tagName=" << tagName << std::endl;
+
     // Are there options on the command line?
     if (argc >= 2 ) {
       // Does the first one begin with a dash?
       if ( argv[1][0] != '-' ) {
 	// No, so that first word must be the name of the XML file.
-	m_xmlFile = std::string(argv[1]);
+	m_optionsFile = std::string(argv[1]);
       }
       else {
 	// The user could still have put "--options <filename>"
@@ -59,7 +85,7 @@ namespace util {
 	    if ( search == std::string::npos ) {
 	      // no '=', so the next word is the file name.
 	      if ( i+1 < argc )
-		m_xmlFile = std::string(argv[i+1]);
+		m_optionsFile = std::string(argv[i+1]);
 	      else {
 		std::cerr << "ABORT: File " << __FILE__ << " Line " << __LINE__ << " " 
 			  << std::endl
@@ -70,7 +96,7 @@ namespace util {
 	    else {
 	      // The file name is the part after the '='
 	      if ( search + 2 < argument.size() )
-		m_xmlFile = argument.substr( search+1 );
+		m_optionsFile = argument.substr( search+1 );
 	      else {
 		std::cerr << "ABORT: File " << __FILE__ << " Line " << __LINE__ << " " 
 			  << std::endl
@@ -84,14 +110,40 @@ namespace util {
       } // look for --options
     } // if there are command-line arguments
   
-    if (debug) std::cout << "ParseOptions: m_xmlFile=" << m_xmlFile << std::endl;
+    if (debug) std::cout << "ParseOptions: m_optionsFile=" << m_optionsFile << std::endl;
 
-    // XML parsing goes here, filling m_options. 
-    auto parseSuccess = m_ParseXML(m_xmlFile, a_programName);
-    // Fold in whether the parsing worked with the overall success of this method.
-    success = success && parseSuccess;
+    // If we don't suppress ROOT error messages, then the following
+    // IsZombie test will display an unnecessary error message when
+    // we're reading an XML file instead of a ROOT file.
+    auto saveErrorLevel = gErrorIgnoreLevel;
+    gErrorIgnoreLevel = 5000;
+
+    // Is the options file actually a ROOT file?
+    if ( TFile(m_optionsFile.c_str()).IsZombie() ) 
+      {
+	// It's not a ROOT file (the most probable case). XML parsing
+	// goes here, filling m_options.
+	auto parseSuccess = m_ParseXML(m_optionsFile, tagName);
+	// Fold in whether the parsing worked with the overall success of this method.
+	success = success && parseSuccess;
+      }
+    else
+      {
+	// It _is_ a ROOT file! Instead of parsing it as XML file,
+	// we're going to fill m_options from a ROOT ntuple.
+	std::cout << "ParseOptions: File '" << m_optionsFile 
+		  << "' is a ROOT file." << std::endl;
+	auto result = m_RootOptions(m_optionsFile);
+	if ( ! result ) {
+	  std::cerr << "ABORT: Invalid ROOT options file." << std::endl;
+	  exit(EXIT_FAILURE);
+	} 
+      } // if ROOT file
+
+    // Restore error level.
+    gErrorIgnoreLevel = saveErrorLevel;
   
-    // Override the contents of the XML file with options on the command line. 
+    // Override the contents of the options file with options on the command line. 
     // For more on getopt, along with global variables like "optarg", see
     // <https://www.informit.com/articles/article.aspx?p=175771>
 
@@ -128,7 +180,7 @@ namespace util {
 	  // below if a short option is not specified.
 
 	  auto required = required_argument; // defined in "getopt.h"
-	  if ( (*option_iter).second.type == e_boolean ) {
+	  if ( (*option_iter).second.type == e_flag ) {
 	    required = no_argument;
 	    if (brief != 0) abbreviations.push_back(brief);
 	  }
@@ -235,7 +287,7 @@ namespace util {
 	  auto type = (*search).second.type;
 	  // Did it require an argument that the user omitted?
 	  // (Yes, we have to compare an integer with a char!)
-	  if ( type != e_boolean  &&  result == ':' ) {
+	  if ( type != e_flag  &&  result == ':' ) {
 	    std::cerr << "WARNING: File " << __FILE__ << " Line " << __LINE__ << " " 
 		      << std::endl
 		      << "There is no argument to --" << name
@@ -245,13 +297,17 @@ namespace util {
 	    success = false;
 	    break;
 	  }
+	  // The source of this options was the command line.
+	  m_options[name].source = "Command Line";
+
 	  // Convert the argument based on its type... with lots of 
 	  // error-detection, because who knows what the users are doing?
 	  switch (type)
 	    {
-	    case e_boolean:
+	    case e_flag:
 	      m_options[name].value = "1";
 	      break;
+	    case e_boolean:
 	    case e_string:
 	      m_options[name].value = optarg;
 	      break;
@@ -303,7 +359,7 @@ namespace util {
   // For the getters, it would perhaps be possible to create a template. 
   // But the resulting code would be even more difficult to read, and there
   // are only three types of values that matter for this work
-  // (numbers, flags, strings). If I'm wrong, feel free to template the
+  // (numbers, boolss, strings). If I'm wrong, feel free to template the
   // heck out of this method!
 
   bool Options::GetOption(const std::string name, double& value) const
@@ -340,7 +396,8 @@ namespace util {
     if ( result != m_options.end() )
       {
 	value = false;
-	if ( (*result).second.type == e_boolean ) {
+	if ( ( (*result).second.type == e_boolean ) || 
+	     ( (*result).second.type == e_flag    ) ) {
 	  if ( (*result).second.value == "1" ) value = true;
 	  return true;
 	}
@@ -366,10 +423,12 @@ namespace util {
     // To make things look neat, find the maximum field widths.
     size_t nameWidth = 0;
     size_t valueWidth = 0;
+    size_t sourceWidth = 0;
     for ( auto iter = m_options.cbegin(); iter != m_options.cend(); ++iter )
       {
 	nameWidth = std::max( nameWidth, (*iter).first.size() );
 	valueWidth = std::max( valueWidth, (*iter).second.value.size() );
+	sourceWidth = std::max( sourceWidth, (*iter).second.source.size() );
       }
     valueWidth += 2;
 
@@ -383,6 +442,8 @@ namespace util {
 	      << std::left
 	      << std::setw(9) << "type" 
 	      << std::left << "  "
+	      << std::setw(sourceWidth) << "source" 
+	      << std::left << "  "
 	      << std::setw(20) << "desc" 
 	      << std::endl;
     std::cout << std::left
@@ -392,7 +453,9 @@ namespace util {
 	      << std::left << "  "
 	      << std::setw(valueWidth) << "-----" 
 	      << std::left
-	      << std::setw(9) << "----" 
+	      << std::setw(9) << "------" 
+	      << std::left << "  "
+	      << std::setw(sourceWidth) << "------" 
 	      << std::left << "  "
 	      << std::setw(20) << "----" 
 	      << std::endl;
@@ -409,7 +472,8 @@ namespace util {
 
 	std::cout << std::left << "  "
 		  << std::setw(valueWidth);
-	if ( (*iter).second.type == e_boolean )
+	if ( ( (*iter).second.type == e_boolean ) ||
+	     ( (*iter).second.type == e_flag    ) )
 	  {
 	    if ( (*iter).second.value == "1" ) 
 	      std::cout << "true";
@@ -421,6 +485,9 @@ namespace util {
 	std::cout << std::left << std::setw(9);
 	switch ( (*iter).second.type )
 	  {
+	  case e_flag:
+	    std::cout << "flag";
+	    break;
 	  case e_boolean:
 	    std::cout << "bool";
 	    break;
@@ -437,6 +504,10 @@ namespace util {
 	    std::cout << "unknown";
 	  }
 
+	std::cout << std::left << "  "
+		  << std::setw(sourceWidth);
+	std::cout << (*iter).second.source;
+
 	std::cout << "  " << std::left << (*iter).second.desc;
 	std::cout << std::endl;
       }
@@ -447,7 +518,7 @@ namespace util {
   void Options::PrintHelp() const
   {
     std::cerr << "Usage:" << std::endl;
-    std::cerr << "  " << m_progName << std::endl;
+    std::cerr << "  " << m_progPath << std::endl;
     for ( auto iter = m_options.cbegin(); iter != m_options.cend(); ++iter )
       {
 	// To line up the descriptions of the boolean options,
@@ -461,9 +532,9 @@ namespace util {
 	  text <<  "-" << brief << " | ";
       
 	auto desc = (*iter).second.desc;
-	auto boolean = (*iter).second.type == e_boolean;
+	auto flag = (*iter).second.type == e_flag;
 	text << "--" << (*iter).first;
-	if ( ! boolean ) {
+	if ( ! flag ) {
 	  text << " <" << desc << ">";
 	}
 	text << " ]";
@@ -471,14 +542,14 @@ namespace util {
 	std::cerr << std::left << std::setw(40);
 	std::cerr << text.str();
 
-	// Now put in the boolean comment, if any.
-	if ( boolean  &&  ! desc.empty()) {
+	// Now put in the flag comment, if any.
+	if ( flag  &&  ! desc.empty()) {
 	  std::cerr << "# " << desc;
 	}
 	std::cerr << std::endl;
       }
     std::cerr << std::right << std::endl;
-    std::cerr << "See " << m_xmlFile << " for details." << std::endl;
+    std::cerr << "See " << m_optionsFile << " for details." << std::endl;
     std::cerr << std::endl;
   }
 
@@ -521,6 +592,9 @@ namespace util {
     case e_boolean:
       return "boolean";
       break;
+    case e_flag:
+      return "flag";
+      break;
     default:
       return "";
     }
@@ -542,6 +616,58 @@ namespace util {
     return (*j).second.desc; 
   }
 
+  std::string Options::GetOptionSource( size_t i ) const {
+    auto j = m_options.cbegin(); 
+    std::advance(j,i); 
+    return (*j).second.source; 
+  }
+
+  bool Options::WriteNtuple( TDirectory* a_output, std::string a_ntupleName ) {
+    // Start by assuming we'll succeed.
+    bool success = true;
+
+    // Almost certainly, ROOT's current directory is the output file
+    // to which we're writing the ntuple. But just in case, save the
+    // current directory, and switch to the output directory.
+    auto saveDirectory = gROOT->CurrentDirectory();
+    a_output->cd();
+
+    // Create the ntuple in the output file.
+    auto ntuple = new TTree(a_ntupleName.c_str(), "Options used for this program");
+
+    // Set up the columns of the ntuple. 
+    std::string name, value, type, brief, desc, source;
+    ntuple->Branch("OptionName",&name);
+    ntuple->Branch("OptionValue",&value);
+    ntuple->Branch("OptionType",&type);
+    ntuple->Branch("OptionBrief",&brief);
+    ntuple->Branch("OptionDesc",&desc);
+    ntuple->Branch("OptionSource",&source);
+
+    // Loop over the options. As it says in Options.h, this is an
+    // inefficient operation, but hopefully no program will do it more
+    // than once.
+    auto numOptions = NumberOfOptions();
+    for ( size_t i = 0; i != numOptions; ++i ) {
+      name = GetOptionName(i);
+      value = GetOptionValue(i);
+      type = GetOptionType(i);
+      brief = GetOptionBrief(i);
+      desc = GetOptionDescription(i);
+      source = GetOptionSource(i);
+
+      // Write out the ntuple entry.
+      ntuple->Fill();
+    }
+
+    // Wrap up the ntuple.
+    ntuple->Write();
+
+    // Switch back to the original directory.
+    saveDirectory->cd();
+
+    return success;
+  }
 
   // The following code is heavily adapted from
   // https://vichargrave.github.io/programming/xml-parsing-with-dom-in-cpp/
@@ -570,7 +696,7 @@ namespace util {
     }
   };
 
-  bool Options::m_ParseXML(const std::string a_xmlFile, const std::string a_program)
+  bool Options::m_ParseXML(const std::string& a_xmlFile, const std::string& a_program)
   {
     bool success = true;
 
@@ -602,14 +728,24 @@ namespace util {
     // For everything we'd look for in an in XML file, the
     // tag name must be transcoded into Xerces-C custom format.
     auto rootTag = xercesc::XMLString::transcode("parameters");
-    auto globalTag = xercesc::XMLString::transcode("global");
-    auto programTag = xercesc::XMLString::transcode(a_program.c_str());
     auto optionTag = xercesc::XMLString::transcode("option");
     auto nameAttr = xercesc::XMLString::transcode("name");
     auto shortAttr = xercesc::XMLString::transcode("short");
     auto valueAttr = xercesc::XMLString::transcode("value");
     auto typeAttr = xercesc::XMLString::transcode("type");
     auto descAttr = xercesc::XMLString::transcode("desc");
+
+    // For the program-level tag blocks, store them in a list.. 
+    std::set<std::string> programTags;
+
+    // If a_program is "ALL", then we're going to add every single
+    // program tag we find. Otherwise, initial the program tags in the
+    // list.
+    bool allTags = ( a_program.compare("ALL") == 0 );
+    if ( ! allTags ) {
+      programTags.insert("global");
+      programTags.insert(a_program);
+    }
 
     // Read in the XML file and parse its contents. 
     parser->parse(a_xmlFile.c_str());
@@ -649,9 +785,28 @@ namespace util {
 
       // To compare the Xerces-C strings, we have to use compareIString;
       // it's like strcmp, but for the Xerces-C string format.
-      if ( xercesc::XMLString::compareIString(thisNodeName,optionTag) == 0  &&
-	   ( xercesc::XMLString::compareIString(parentNodeName,programTag) == 0  ||  
-	     xercesc::XMLString::compareIString(parentNodeName,globalTag) == 0 ) )
+      if ( xercesc::XMLString::compareIString(thisNodeName,optionTag) != 0 )
+	// This is not an <option> tag. 
+	continue;
+
+      // It _is_ an <option> tag. See if the parent tag is on our list
+      // of recognized tags. First, convert the parent tag into a string. 
+      std::string parentString(xercesc::XMLString::transcode(parentNodeName));
+
+      // If the program name is "ALL", then insert the parent tag into
+      // our list if it isn't already there.
+      if (allTags) 
+	programTags.insert(parentString);
+
+      // Define a function for the STL find
+      // algorithm to test if two Xerces-C strings match.
+      auto tagsMatch = [&](const std::string tag)
+	{ return tag.compare(parentString) == 0;};
+
+      // Search for a matching program tag in our list.
+      auto const tagIter 
+	= std::find_if(programTags.cbegin(), programTags.cend(), tagsMatch);
+      if ( tagIter != programTags.cend() )
 	{
 	  // The current node is an <option> tag.  Covert current_node
 	  // (a DOMNode*) into a DOMElement* to access its attributes.
@@ -690,19 +845,32 @@ namespace util {
 	  xercesc::XMLString::release(&cdesc);
 
 	  // Validate as much as we can. 
-	  // Just look at the first letter of the type:
+	  // Start with the first letter of the type:
+
 	  // "b" = boolean
 	  // "d" or "f" = double or float
 	  // "i" = integer
 	  // "s" or "t" = string or text
+
+	  // This is almost good enough, but not quite; "float" and
+	  // "flag" both begin with "f". Disambiguate by looking at
+	  // the first three characters, then use "g" as the 'first
+	  // character' if it's a flag.
 	  auto firstCharacter = type[0];
+	  if ( type.compare(0,3,"fla") == 0 ) firstCharacter = 'g';
 	  switch (firstCharacter)
 	    {
-	    case 'b':
-	      m_options[name].type = e_boolean;
+	    case 'g':
+	      m_options[name].type = e_flag;
 	      m_options[name].value = "1";
 	      if ( value.size() == 0 || value == "0" || value[0] == 'f' )
 		m_options[name].value ="0";
+	      break;
+	    case 'b':
+	      m_options[name].type = e_boolean;
+	      m_options[name].value = "0";
+	      if ( value == "on" || value[0] == 't'|| value[0] == '1' )
+		m_options[name].value ="1";
 	      break;
 	    case 'f':
 	    case 'd':
@@ -746,7 +914,7 @@ namespace util {
 			<< "<" << parentNodeName << "><option name=\""
 			<< name << "\" value=\"" << value << "\" type=\"" << type
 			<< "\" /></" << parentNodeName << "> :" << std::endl
-			<< "   has an invalid 'type' (not string, boolean, integer, or double)" 
+			<< "   has an invalid 'type' (not string, boolean, flag, integer, or double)" 
 			<< std::endl;
 	      success = false;
 	      ;
@@ -761,13 +929,16 @@ namespace util {
 	  // The "desc" attribute:
 	  m_options[name].desc = desc;
 
+	  // The "source" attribute. We're converting the XML string
+	  // format to an old C-style string, then converting that to
+	  // an std::string.
+	  m_options[name].source = *tagIter;
+
 	} // appropriate <option> tag
     } // walking through the XML nodes
 
     // Clean up memory.
     xercesc::XMLString::release(&rootTag);
-    xercesc::XMLString::release(&globalTag);
-    xercesc::XMLString::release(&programTag);
     xercesc::XMLString::release(&optionTag);
     xercesc::XMLString::release(&nameAttr);
     xercesc::XMLString::release(&shortAttr);
@@ -779,5 +950,60 @@ namespace util {
 
     return success; 
   }
+
+
+  bool Options::m_RootOptions(const std::string& a_optionsFile)
+  {
+    // Search through all the items in the file, looking for the
+    // first TTree whose name include "Options".
+    auto inputFile = TFile::Open(a_optionsFile.c_str());
+    TIter next(inputFile->GetListOfKeys());
+    TKey* key;
+    TTree* ntuple;
+    while ( ( key = (TKey*) next() ) ) {
+      if (key != NULL) {
+	ntuple = (TTree*) key->ReadObj(); 
+	if ( ntuple != NULL ) {
+	  std::string ntName = ntuple->GetName();
+	  if ( ntName.find("Options") != std::string::npos ) {
+	    std::cout << "ParseOptions: ntuple '" << ntName
+		      << "' found in ROOT file" << std::endl;
+	    
+	    // Set up reading columns from this ntuple.
+	    TTreeReader reader(ntName.c_str(), inputFile);
+	    TTreeReaderValue<std::string> name(reader, "OptionName");
+	    TTreeReaderValue<std::string> value(reader, "OptionValue");
+	    TTreeReaderValue<std::string> type(reader, "OptionType");
+	    TTreeReaderValue<std::string> brief(reader, "OptionBrief");
+	    TTreeReaderValue<std::string> desc(reader, "OptionDesc");
+	    TTreeReaderValue<std::string> source(reader, "OptionSource");
+	    
+	    // For each row in the ntuple
+	    while ( reader.Next() ) {
+	      // Add the row to the options map.
+	      m_option_type eType = e_string;
+	      if ( std::string(*type).compare("double")  == 0 ) eType = e_double;
+	      if ( std::string(*type).compare("integer") == 0 ) eType = e_integer;
+	      if ( std::string(*type).compare("boolean") == 0 ) eType = e_boolean;
+	      if ( std::string(*type).compare("flag")    == 0 ) eType = e_flag;
+	      m_option_attributes attr = { *value, eType, (*brief)[0], *desc, *source };
+	      m_options[ *name ] = attr;
+	    }
+	    // We've filled the options map from the ntuple.
+	    inputFile->Close();
+	    return true;
+	  } // name contains "Options"
+	} // it's an ntuple
+      } // key exists
+    } // while looking through items
+    // If we get here, we've failed! There are no ntuples whose name
+    // contains "Options" in the ROOT file.
+    std::cerr << "ERROR! File " << __FILE__ << " Line " << __LINE__ << " " 
+	      << std::endl
+	      << "No ntuple with a name containing 'Options' found in file '"
+	      << a_optionsFile << "'" << std::endl;
+    return false;
+  }
+
 
 } // namespace util
