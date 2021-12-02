@@ -1,7 +1,7 @@
 # Directory and Namespace `util`
 
 This directory contains modules that I find generally useful in the
-programs I write. 
+C++ programs I write. 
 
 - [Directory and Namespace `util`](#directory-and-namespace--util-)
   * [Options - parse XML file and command line](#options---parse-xml-file-and-command-line)
@@ -271,7 +271,7 @@ The method `util::Options::PrintHelp()` can be used to implement the `-h` and `-
 
 This will display all the relevant options in the XML file, along with their descriptions.
 
-For example, as of 17-Jul-2021:
+For example, using `GramsSim/GramsG4` and `GramsSim/options.xml` as of 2-Dec-2021:
 ```
 $ ./gramsg4 -h
 Usage:
@@ -283,7 +283,6 @@ Usage:
     [ -i | --inputgen <input generator events> ]
     [ --larstepsize <LAr TPC step size> ]
     [ -m | --macrofile <G4 macro file> ]
-    [ --noscint ]                       # turn off scintillation
     [ -t | --nthreads <number of threads> ]
     [ --options <XML file of options> ] 
     [ -o | --outputfile <output file> ] 
@@ -292,6 +291,7 @@ Usage:
     [ --rngperevent <rng save per event> ]
     [ --rngrestorefile <restore rng from file> ]
     [ -s | --rngseed <random number seed> ]
+    [ --scint <turn on/off scintillation> ]
     [ -l | --showphysicslists ]         # show physics lists then exit
     [ --ui ]                            # start UI session
     [ --uimacrofile <G4 macro file for UI> ]
@@ -322,38 +322,40 @@ In the code:
 
 ```
 
-On 25-Nov-2021, the output from `./gramsg4 -v` included:
+On 2-Dec-2021, the output from `./gramsg4 -v` included:
 
 ```
 20 options:
-Option            short  value                            type       desc                
-------            -----  -----                            ----       ----                
-debug               d    false                            flag       
-gdmlfile            g    grams.gdml                       string     input GDML detector desc
-gdmlout                                                   string     write parsed GDML to this file
-help                h    false                            flag       show help then exit
-inputgen            i                                     string     input generator events
-larstepsize              0.020000                         double     LAr TPC step size
-macrofile           m    mac/batch.mac                    string     G4 macro file
-nthreads            t    0                                integer    number of threads
-options                  options.xml                      string     XML file of options
-outputfile          o    gramsg4                          string     output file
-physicslist         p    FTFP_BERT_LIV+OPTICAL+STEPLIMIT  string     physics list
-rngdir                                                    string     rng save/restore directory
-rngperevent              0                                integer    rng save per event
-rngrestorefile                                            string     restore rng from file
-rngseed             s    -1                               integer    random number seed
-scint                    true                             bool       turn on scintillation
-showphysicslists    l    false                            flag       show physics lists then exit
-ui                       false                            flag       start UI session
-uimacrofile              mac/vis-menus.mac                string     G4 macro file for UI
-verbose             v    true                             flag       display details
+Option            short  value                            type       source        desc                
+------            -----  -----                            ------     ------        ----                
+debug               d    false                            flag       global        
+gdmlfile            g    grams.gdml                       string     gramsg4       input GDML detector desc
+gdmlout                                                   string     gramsg4       write parsed GDML to this file
+help                h    false                            flag       global        show help then exit
+inputgen            i                                     string     gramsg4       input generator events
+larstepsize              0.020000                         double     gramsg4       LAr TPC step size
+macrofile           m    mac/batch.mac                    string     gramsg4       G4 macro file
+nthreads            t    0                                integer    gramsg4       number of threads
+options                  options.xml                      string     global        XML file of options
+outputfile          o    gramsg4                          string     gramsg4       output file
+physicslist         p    FTFP_BERT_LIV+OPTICAL+STEPLIMIT  string     gramsg4       physics list
+rngdir                                                    string     gramsg4       rng save/restore directory
+rngperevent              0                                integer    gramsg4       rng save per event
+rngrestorefile                                            string     gramsg4       restore rng from file
+rngseed             s    -1                               integer    gramsg4       random number seed
+scint                    true                             bool       gramsg4       turn on/off scintillation
+showphysicslists    l    false                            flag       gramsg4       show physics lists then exit
+ui                       false                            flag       gramsg4       start UI session
+uimacrofile              mac/vis-menus.mac                string     gramsg4       G4 macro file for UI
+verbose             v    true                             flag       Command Line  display details
 ```
+
+Note that `Options` keeps track of which tag block was the source of a given option, or if the option came from the command line. 
 
 ### Going through options one-by-one
 
 There are times when it's useful to "iterate" through the internal table of all available options;
-for example, to save the options in an ntuple for later reference. The following methods are available:
+for example, to save the options in an ntuple for later reference. The following methods are available (these are the lines from `Option.h`):
 
 ```
     /// Provide a way to access the "i-th" option stored by this
@@ -371,7 +373,7 @@ for example, to save the options in an ntuple for later reference. The following
 
 ### Saving options to a ROOT file
 
-The utility method `WriteOptions` can be used to write the option to an ntuple in the output file. This lets you record the values used to run the program that generated that particular file.
+The utility method `WriteOptions` can be used to write the option to an ntuple in an output file in [ROOT](https://root.cern.ch/) format. This lets you record the values used to run the program that generated that particular file.
 
 ```
 #include "Options.h" // in util/ 
