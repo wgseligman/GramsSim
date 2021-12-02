@@ -181,11 +181,15 @@ Then all of the following are equivalent:
 Just having an option defined in the XML file is not enough.
 You need the programming to do something with that option. Typically you'd initiate the parsing of the options XML file and the command line in your program's `main` routine. 
 
-The first two arguments to `util::Options::ParseOptions` are the standard C++ arguments to
-the main routine; the contents of the second argument (`argv` in the example) will be altered
-during the process. The third argument can be a single tag-block within the XML file, or it can be omitted; in the latter case, the name of the executing program will be used to search for a matching tag-block within the XML file:
-As noted above we use
-`gramsg4` here as an example:
+The three arguments to `util::Options::ParseOptions`:
+   - The number of arguments on the command line; normally that is the first argument to the main routine (`argc`). 
+   - A character array (**char) that contains the arguments on the command line; normally this is the second argument to the main routine (`argv`). The contents of this array will be altered during the process. 
+   - The third argument can be one of the following:
+      - Omitted. In this case, the name of the executing program (in `argv[0]`) will be used to search for a matching tag-block within the XML file.
+      - A character string. This should match a tag-block of the same name in the XML file. The examples below use `gramsg4` in order to select the tag block `<gramsgr> ... <\gramsgr>`. 
+      - The string `"ALL"`. In that case, all the tag-block will be read in and used. Note that if multiple tag blocks have options with the same `name` attribute, then last one in the file will be used, overriding the ones above it. 
+         
+As noted above we use `gramsg4` here as an example:
 
 ```
 #include "Options.h"
@@ -199,9 +203,7 @@ int main( int argc, char** argv ) {
 //  Parse the contents of the options XML file, with overrides
 //  from the command line. 
 
-    auto result = options->ParseOptions(argc, argv);
-//  or, if we want to deliberately supply a tag-block:
-//  auto result = options->ParseOptions(argc, argv, "gramsg4");
+    auto result = options->ParseOptions(argc, argv, "gramsg4");
 
     // Abort if we couldn't parse the job options.
     if (result) std::cout << "ParseOptions succeeded" << std::endl;

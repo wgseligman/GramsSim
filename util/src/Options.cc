@@ -13,6 +13,7 @@
 #include <getopt.h>
 #include <map>
 #include <vector>
+#include <set>
 #include <algorithm>
 #include <iterator>
 #include <exception>
@@ -734,14 +735,17 @@ namespace util {
     auto typeAttr = xercesc::XMLString::transcode("type");
     auto descAttr = xercesc::XMLString::transcode("desc");
 
-    // For the program-level tag blocks, store them in a vector. 
-    std::vector<std::string> programTags;
-    // Later in the code, we'll have to loop over the vector and save
-    // which entry we're on.
-    std::vector<std::string>::const_iterator tagIter;
+    // For the program-level tag blocks, store them in a list.. 
+    std::set<std::string> programTags;
 
-    programTags.push_back("global");
-    programTags.push_back(a_program);
+    // If a_program is "ALL", then we're going to add every single
+    // program tag we find. Otherwise, initial the program tags in the
+    // list.
+    bool allTags = ( a_program.compare("ALL") == 0 );
+    if ( ! allTags ) {
+      programTags.insert("global");
+      programTags.insert(a_program);
+    }
 
     // Read in the XML file and parse its contents. 
     parser->parse(a_xmlFile.c_str());
@@ -789,13 +793,19 @@ namespace util {
       // of recognized tags. First, convert the parent tag into a string. 
       std::string parentString(xercesc::XMLString::transcode(parentNodeName));
 
+      // If the program name is "ALL", then insert the parent tag into
+      // our list if it isn't already there.
+      if (allTags) 
+	programTags.insert(parentString);
+
       // Define a function for the STL find
       // algorithm to test if two Xerces-C strings match.
       auto tagsMatch = [&](const std::string tag)
 	{ return tag.compare(parentString) == 0;};
 
       // Search for a matching program tag in our list.
-      tagIter = std::find_if(programTags.cbegin(), programTags.cend(), tagsMatch);
+      auto const tagIter 
+	= std::find_if(programTags.cbegin(), programTags.cend(), tagsMatch);
       if ( tagIter != programTags.cend() )
 	{
 	  // The current node is an <option> tag.  Covert current_node
