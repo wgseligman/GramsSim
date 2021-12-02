@@ -44,14 +44,25 @@ namespace util {
     // Default XML file name.
     m_optionsFile = "options.xml";
 
-    // Save the name of the running program.
-    m_progName = argv[0];
+    // Save the path of the running program.
+    m_progPath = std::string( argv[0] );
 
     if (debug) {
       for ( int i = 0; i != argc; i++ ) {
 	std::cout << "ParseOptions: argv[" << i << "]=" << argv[i] << std::endl;
       }
     }
+
+    // If the program name argument is empty, then derive the likely
+    // program tag from the end of the program path. For example, if
+    // the program path is "~/GramsDetSim-work/gramsdetsim", then
+    // assume the tag would be "gramsdetsim".
+    std::string tagName(a_programName);
+    if ( tagName.empty() ) {
+      tagName = m_progPath.substr(m_progPath.find_last_of("/\\") + 1);
+    }
+    if (debug)
+      std::cout << "Debug: tagName=" << tagName << std::endl;
 
     // Are there options on the command line?
     if (argc >= 2 ) {
@@ -111,7 +122,7 @@ namespace util {
       {
 	// It's not a ROOT file (the most probable case). XML parsing
 	// goes here, filling m_options.
-	auto parseSuccess = m_ParseXML(m_optionsFile, a_programName);
+	auto parseSuccess = m_ParseXML(m_optionsFile, tagName);
 	// Fold in whether the parsing worked with the overall success of this method.
 	success = success && parseSuccess;
       }
@@ -506,7 +517,7 @@ namespace util {
   void Options::PrintHelp() const
   {
     std::cerr << "Usage:" << std::endl;
-    std::cerr << "  " << m_progName << std::endl;
+    std::cerr << "  " << m_progPath << std::endl;
     for ( auto iter = m_options.cbegin(); iter != m_options.cend(); ++iter )
       {
 	// To line up the descriptions of the boolean options,

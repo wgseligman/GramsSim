@@ -24,10 +24,12 @@ int main(int argc,char **argv)
   // command line. Make sure this happens first!
   auto options = util::Options::GetInstance();
 
-  // The third argument of ParseOptions is the name of the tag to use
-  // for this program's options. See options.xml and/or util/README.md
-  // to see how this works.
-  auto result = options->ParseOptions(argc, argv, "gramsdetsim");
+  // Here, we omit the third argument to ParseOptions as an example:
+  // the ParseOptions method will look for the program name in argv[0]
+  // and search for the tag-block in the XML file with that name for
+  // this program's options. See options.xml and/or util/README.md to
+  // see how this works.
+  auto result = options->ParseOptions(argc, argv);
 
   // Abort if we couldn't parse the job options.
   if (! result) {

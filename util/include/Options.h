@@ -32,7 +32,7 @@ namespace util {
     /// Note: This routine uses getopt_long, a standard GNU utility
     /// that will "mangle" the contents of argv.
     bool ParseOptions(int argc, char** argv, 
-		      const std::string programName);
+		      const std::string programName = "");
     
     /// The "getters", one for each type of value.
     bool GetOption(const std::string name, double& value) const;
@@ -87,7 +87,7 @@ namespace util {
     // an Options ntuple.
     bool m_RootOptions(const std::string& filename);
 
-    std::string m_progName;    ///< The name of the running program (argv[0])
+    std::string m_progPath;    ///< The path of the running program (argv[0])
     std::string m_optionsFile; ///< The name of the options XML file used
   };
 
