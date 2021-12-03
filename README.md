@@ -39,6 +39,8 @@ subdirectory's README.md file:
 
    - **GramsDetSim**: Models the detector response to the energy deposits recorded by GramsG4. 
 
+   - **util**: Common utilities (e.g., options processing) shared by all components. 
+
 ## Installing GramsSim
     
 ### Working with github
@@ -209,9 +211,8 @@ Obviously, you can make any changes you want to GramsSim for your own use. This 
     cd $GSDIR/GramsSim
     git flow init 
 
-You'll be asked a bunch of questions. The answer to the first one
-"Branch name for production releases:" is 'develop' (without the
-quotes). Accept the defaults for everything else.
+You'll be asked a bunch of questions. Each time you're prompted for an answer
+whose default is `master` please enter `develop`. Accept the defaults for everything else.
 
 If you get a message that git flow is not recognized, it means that
 the gitflow package has to be installed on your machine.   
@@ -264,13 +265,13 @@ repository, be sure to copy the changed work files to `$GSDIR/GramsSim` and
 ### Development "flow"
 
 What may not be clear from the above is that you'll typically "sit" in your
-work/build directory. You'll run programs, make changes, then run it again. 
+work/build directory. You'll run programs, make changes, then run them again. 
 
 If you want to change the program code, edit the C++ files in `$GSDIR/GramsSim`;
 e.g.,
 
     cd $GSDIR/GramsSim-work
-    emacs ../GramsG4/include/MyPhysicsList.hh
+    emacs ../GramsSim/GramsG4/include/MyPhysicsList.hh
     make
     ./gramsg4 
     
