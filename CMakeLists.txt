@@ -72,6 +72,7 @@ foreach(_script ${GramsG4_SCRIPTS})
 endforeach()
 
 # Copy/compile the sub-projects and work files.
+add_subdirectory(GramsSky)
 add_subdirectory(GramsG4)
 add_subdirectory(GramsDetSim)
 add_subdirectory(GDMLSchema)

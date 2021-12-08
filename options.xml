@@ -20,6 +20,25 @@
 
   </global>
 
+  <gramssky>
+
+    <option name="rngseed" short="s" value="-1" type="integer" desc="random number seed">
+        The random number seed for the simulation. Use 0 if you want the
+        program to start with a random value and you're not interested 
+        in recreating the run.
+    </option>
+
+    <!-- Number of sky events to generate -->
+    <option name="events" short="n" value="1000" type="integer" desc="number of events" />
+
+    <!-- Output HepMC3 file. If you omit an extension to this file
+         name, then the program will append ".hepmc3" to the end of
+         this parameter. -->
+    <option name="outputfile" short="o" value="gramssky.hepmc3" type="string" 
+        desc="output file"/>    
+
+  </gramssky>
+
   <gramsg4>
 
     <!-- The file that contains the GDML description of the detector -->
@@ -119,7 +138,7 @@
     Monte Carlo event. -->
 
     <option name="rngseed" short="s" value="-1" type="integer" desc="random number seed">
-        The random number seed for the simulation. Use -1 if you want the
+        The random number seed for the simulation. Use 0 if you want the
         program to start with a random value and you're not interested 
         in recreating the run.
     </option>
