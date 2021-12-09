@@ -2,6 +2,6 @@
 
 A simulation of photons coming from spherical (sky) backgrounds around the GRAMS detector. 
 
-![Photon flux from surface of a sphere][SkyDiagram.jpg]
+<img src="SkyDiagram.jpg" alt="Sky flux diagram" />
 
 It might look something like this. 
