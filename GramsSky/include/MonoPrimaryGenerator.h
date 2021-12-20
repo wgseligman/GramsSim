@@ -14,7 +14,7 @@
 
 namespace gramssky {
 
-  class MonoPrimaryGenerator : PrimaryGenerator
+  class MonoPrimaryGenerator : public PrimaryGenerator
   {
   public:
 

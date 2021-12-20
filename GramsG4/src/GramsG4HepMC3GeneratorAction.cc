@@ -255,12 +255,12 @@ namespace gramsg4 {
       auto g4vertex = new G4PrimaryVertex( xyz, position.t() );
       a_event->AddPrimaryVertex(g4vertex);
  
-    if ( debug ) {
-      G4cout << "GramsG4HepMC3GeneratorAction::HepMC2G4 - " 
-	     << "   Number of particles in this vertex = " 
-	     << (a_hepmc->particles()).size()
-	     << G4endl;
-    }
+      if ( debug ) {
+	G4cout << "GramsG4HepMC3GeneratorAction::HepMC2G4 - " 
+	       << "   Number of particles in this vertex = " 
+	       << (a_hepmc->particles()).size()
+	       << G4endl;
+      }
 
       // For the purposes of Geant4, we're only interested in the
       // outgoing particles from this primary event. For each outgoing

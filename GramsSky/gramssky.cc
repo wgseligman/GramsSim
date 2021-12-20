@@ -5,12 +5,9 @@
 //
 
 #include "ParticleInfo.h"
+#include "ParticleGeneration.h"
 #include "PrimaryGenerator.h"
-#include "MonoPrimaryGenerator.h"
 #include "Options.h" // in util
-
-// ROOT includes
-#include "TRandom.h"
  
 #include "HepMC3/Attribute.h"
 #include "HepMC3/GenEvent.h"
@@ -65,13 +62,6 @@ int main(int argc, char** argv) {
     options->PrintOptions();
   }
 
-  // Get and set the random number seed.
-  int seed;
-  options->GetOption("rngseed",seed);
-  // Note that the default random-number generator in ROOT is
-  // TRandom3.
-  gRandom->SetSeed(seed);
-
   // Get output file name.
   std::string outputFileName;
   options->GetOption("outputfile",outputFileName);
@@ -87,14 +77,21 @@ int main(int argc, char** argv) {
 
   // Pick an output method format for HepMC3. WriterAscii writes files
   // in the standard HepMC3 format, which is the most human-readable,
-  // but there are other writer methods (e.g., WriterROOT).
+  // but there are other writer methods (e.g., WriterROOT). Note that
+  // instead of using "new" for a standard C++ pointer, I'm using
+  // shared_ptr created by make_shared, so I don't have to worry about
+  // when to delete the pointer.
   auto writer = std::make_shared<HepMC3::WriterAscii>(outputFileName);
 
   // Number of events to generate.
   int numberOfEvents;
   options->GetOption("events",numberOfEvents);
 
-  auto generator = std::make_shared<gramssky::MonoPrimaryGenerator>();
+  // The ParticleGeneration class will select which procedure we'll
+  // use to generate particles. 
+  auto pg = std::make_shared<gramssky::ParticleGeneration>();
+  // GetGenerator returns std::shared_ptr<PrimaryGenerator>. 
+  auto generator = pg->GetGenerator();
 
   // For each event:
   for ( int e = 0; e != numberOfEvents; ++e ) {
@@ -120,12 +117,12 @@ int main(int argc, char** argv) {
 	info->GetPDG(),
 	1 );  // status
 
-      // Use Geant4 units. 
+      // Use Geant4 units in our events.
       HepMC3::GenEvent event(HepMC3::Units::MEV,HepMC3::Units::MM);
 
       // Assign an event number. Strictly speaking you don't have to
       // do this, but then each event would have an ID of zero, which
-      // would make the Geant4 output harder to analyze.
+      // would make this program's output harder to analyze by hand.
       event.set_event_number( e );
 
       // If we had more than one vertex in this event we'd call this
@@ -139,7 +136,7 @@ int main(int argc, char** argv) {
       // Unless you include an incoming particle, the HepMC3 package
       // will have trouble reading HepMC3 events. This is a "dummy"
       // incoming particle; PDG code 0 is a "geantino", a massless
-      // uncharged particle that doesn't do anything.
+      // uncharged particle that doesn't do anything in Geant4.
       auto p0 = std::make_shared<HepMC3::GenParticle>
 	( HepMC3::FourVector( 0.0, 0.0, 0.0, 0.0), 0,  0 );
       vertex->add_particle_in( p0 );
