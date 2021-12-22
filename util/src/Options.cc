@@ -15,6 +15,7 @@
 #include <vector>
 #include <set>
 #include <algorithm>
+#include <regex>
 #include <iterator>
 #include <exception>
 #include <string>
@@ -343,6 +344,15 @@ namespace util {
 		success = false;
 	      }
 	      break;
+	    case e_vector:
+	      // We don't need a try-catch block here, since a vector
+	      // of length zero is allowed. But we still need a block
+	      // because of the case statement.
+	      {
+		auto value = m_stringToValues(std::string(optarg));
+		m_options[name].value = m_valuesToString(value);
+	      }
+	      break;
 	    default:
 	      std::cerr << "WARNING: File " << __FILE__ << " Line " << __LINE__ << " " 
 			<< std::endl
@@ -362,9 +372,9 @@ namespace util {
 
   // For the getters, it would perhaps be possible to create a
   // template.  But the resulting code would be even more difficult to
-  // read, and there are only three types of values that matter for
-  // this work (numbers, bools, strings). If I'm wrong, feel free to
-  // template the heck out of this method!
+  // read, and there are only four types of values that matter for
+  // this work (numbers, bools, strings, vectors). If I'm wrong, feel
+  // free to template the heck out of this method!
 
   bool Options::GetOption(const std::string name, double& value) const
   {
@@ -416,6 +426,19 @@ namespace util {
       {
 	if ( (*result).second.type == e_string ) {
 	  value = (*result).second.value;
+	  return true;
+	}
+      }
+    return false;
+  }
+
+  bool Options::GetOption(const std::string name, std::vector<double>& value) const
+  {
+    auto result = m_options.find( name );
+    if ( result != m_options.end() )
+      {
+	if ( (*result).second.type == e_vector ) {
+	  value = m_stringToValues( (*result).second.value );
 	  return true;
 	}
       }
@@ -505,6 +528,9 @@ namespace util {
 	    break;
 	  case e_string:
 	    std::cout << "string";
+	    break;
+	  case e_vector:
+	    std::cout << "vector";
 	    break;
 	  default:
 	    std::cout << "unknown";
@@ -600,6 +626,9 @@ namespace util {
       break;
     case e_flag:
       return "flag";
+      break;
+    case e_vector:
+      return "vector";
       break;
     default:
       return "";
@@ -928,6 +957,16 @@ namespace util {
 	      m_options[name].type = e_string;
 	      m_options[name].value = value;
 	      break;
+	    case 'v':
+	      m_options[name].type = e_vector;
+	      // There's no try-catch block here, since a vector of
+	      // length zero is possible. But we still need a block
+	      // because we're inside a case statement.
+	      {
+		auto values = m_stringToValues(value);
+		m_options[name].value = m_valuesToString(values);
+	      }
+	      break;
 	    default:
 	      std::cerr << "WARNING: File " << __FILE__ << " Line " << __LINE__ << " " 
 			<< std::endl
@@ -1012,6 +1051,7 @@ namespace util {
 	      if ( std::string(*type).compare("integer") == 0 ) eType = e_integer;
 	      if ( std::string(*type).compare("boolean") == 0 ) eType = e_boolean;
 	      if ( std::string(*type).compare("flag")    == 0 ) eType = e_flag;
+	      if ( std::string(*type).compare("vector")  == 0 ) eType = e_vector;
 	      m_option_attributes attr = { *value, eType, (*brief)[0], *desc, *source };
 	      m_options[ *name ] = attr;
 	    }
@@ -1032,5 +1072,71 @@ namespace util {
     return false;
   }
 
+  // Convert a vector of numbers into a string "(1.1,2.,-3)".
+  std::string Options::m_valuesToString( const std::vector<double>& a_vector) const {
+
+    // Although the "string-to-values" method (see below) can handle a
+    // wide variety of delimiters, for display purposes let's be
+    // consistent. We'll use "(v1,v2,v3,...)". Start with the initial
+    // parenthesis.
+    std::string result = "(";
+
+    // For each value in the vector...
+    for ( auto i = a_vector.cbegin(); i != a_vector.cend(); ++i ) {
+      // Convert to string.
+      std::string svalue = std::to_string(*i);
+      
+      // Solely for display purposes, remove any trailing zeros and a
+      // final "." if there is one.
+      svalue.erase ( svalue.find_last_not_of('0') + 1, std::string::npos );
+      svalue.erase ( svalue.find_last_not_of('.') + 1, std::string::npos );
+
+      // append the formatted number to the end of the result. 
+      result += svalue;
+
+      // If it's not the last value, append a comma. 
+      if ( i != ( a_vector.end() - 1) )
+	result += ",";
+    }
+
+    // Finish off with a closing parenthesis. 
+    result += ")";
+
+    return result;
+  }
+
+  // Convert a string of values like "(1.1,2,-3)" into a vector of
+  // numbers.
+  std::vector<double> Options::m_stringToValues(const std::string& a_string) const {
+
+    // Define a regular expression for searching a string for numbers.
+    // See <https://www.regular-expressions.info/floatingpoint.html>
+
+    std::regex valueRegex("[-+]?[0-9]*\\.?[0-9]+([eE][-+]?[0-9]+)?");
+
+    // Define an iterator that searches the argument string for all
+    // the sub-strings that match the above regular expression.
+    auto values_begin = 
+      std::sregex_iterator(a_string.begin(), a_string.end(), valueRegex);
+    auto values_end = std::sregex_iterator();
+
+    // Initialize our output vector.
+    std::vector<double> values;
+
+    // For each matching string pointed to by the iterator:
+    for (std::sregex_iterator i = values_begin; i != values_end; ++i) {
+
+      // Convert what matched into a string.
+      std::string valueString = (*i).str();
+
+      // Convert the match into a numeric value.
+      double value = std::stod(valueString);
+
+      // Add the value to the end of the output.
+      values.push_back( value );
+    }
+
+    return values;
+  }
 
 } // namespace util

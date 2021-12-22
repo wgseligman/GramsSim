@@ -75,7 +75,7 @@ Anatomy of <option> tag:
    value - the number/text/bool passed to the program;
            can be overridden on the command line
 
-   type  - string/bool/flag/integer/double
+   type  - string/bool/flag/integer/double/vector
    
    desc  - optional; brief description of the option (keep it 
            less than 20 characters); used in the --help|-h message
@@ -141,6 +141,27 @@ then you could do this on the command line:
     ./gramsg4 --makeHistograms --energyCut 123.45
     
 In this example, if `--makeHistograms` is present on the command line, the value of the option is `true`; if `--makeHistograms` is not on the command line, the value of the option is `false`.
+
+##### Vectors
+
+As far as Options are concerned, a "vector" is a sequence or tuple of numbers. Here's an example:
+
+    <option name="direction" value="(0,0,1)" type="vector" desc="initial direction"/>
+
+The number format is fairly flexible. 
+Any characters that are not part of a numeric format will be ignored. 
+All of the following are equivalent:
+
+    <option name="direction" value="(0.0,0.0,1.0)" type="vector" desc="initial direction"/>
+    <option name="direction" value="<0;0;1>" type="vector" desc="initial direction"/>
+    <option name="direction" value="[0E20 0 10E-1]" type="vector" desc="initial direction"/>
+    <option name="direction" value="+0 -0 1" type="vector" desc="initial direction"/>
+    <option name="direction" value="(0nowisthewinterofourdiscontent0,1)" type="vector" desc="initial direction"/>
+
+If you are going to supply a vector on the command line, you'll have
+to enclose it in quotes. For example:
+
+    ./gramssky --direction "(0,0.707,-0.707)"
 
 #### Abbreviating options
 
@@ -254,6 +275,23 @@ in the options XML File:
            << std::endl;
   }
 
+```
+
+To fetch a vector, use `std::vector<double>`; e.g.,
+```
+#include <vector>
+// ...
+  auto options = util::Options::GetInstance();
+  // ...
+  std::vector<double> myVector;
+  options->GetOption("direction",myVector);
+  if ( myVector.size() == 3 ) {
+     ROOT::TMath::XYZVector direction(myVector[0], myVector[1], myVector[2]);
+     // ...
+  }
+  else {
+     std::cerr << "A direction vector needs exactly three values!" << std::endl;
+  }     
 ```
 
 ## Implementing the `-h/--help` option
