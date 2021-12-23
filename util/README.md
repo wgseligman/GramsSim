@@ -7,16 +7,20 @@ C++ programs I write.
   * [Options - parse XML file and command line](#options---parse-xml-file-and-command-line)
     + [Format of `options.xml`](#format-of--optionsxml-)
       - [Defining new options](#defining-new-options)
+        * [Boolean values](#boolean-values)
+        * [Flags](#flags)
+        * [Vectors](#vectors)
       - [Abbreviating options](#abbreviating-options)
   * [Accessing options from within your program](#accessing-options-from-within-your-program)
   * [Implementing the `-h/--help` option](#implementing-the---h---help--option)
-  * [Other `Options` methods.](#other--options--methods)
+  * [Other `Options` methods](#other--options--methods)
     + [Displaying a table of all the options](#displaying-a-table-of-all-the-options)
     + [Going through options one-by-one](#going-through-options-one-by-one)
-    + [Saving options in the output](#saving-options-in-the-output)
+    + [Saving options to a ROOT file](#saving-options-to-a-root-file)
     + [Restoring options from a ROOT file](#restoring-options-from-a-root-file)
 
 <small><i><a href='http://ecotrust-canada.github.io/markdown-toc/'>Table of contents generated with markdown-toc</a></i></small>
+
 
 ## Options - parse XML file and command line
 
@@ -157,6 +161,7 @@ All of the following are equivalent:
     <option name="direction" value="[0E20 0 10E-1]" type="vector" desc="initial direction"/>
     <option name="direction" value="+0 -0 1" type="vector" desc="initial direction"/>
     <option name="direction" value="(0nowisthewinterofourdiscontent0,1)" type="vector" desc="initial direction"/>
+    <option name="direction" value=".0 .0 .1e1" type="vector" desc="initial direction"/>
 
 If you are going to supply a vector on the command line, you'll have
 to enclose it in quotes. For example:
