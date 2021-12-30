@@ -30,7 +30,7 @@ int main(int argc, char** argv) {
   // ./gramsg4 --gdmlout <output-gdml-file>
   //
   // This only has to be repeated if the contents of the input GDML
-  // file (normally grams.gdml) is changed.
+  // file (normally grams.gdml) are changed.
   //
   // In this example, I named that output GDML file 'parsed.gdml'. 
   //
@@ -191,16 +191,17 @@ int main(int argc, char** argv) {
 		  << std::endl;
       }
 
+      // Assuming that the search was successful, the global
+      // z-coordinate of the bottom of the anode will be in
+      // master[2]. As of Dec-2021, that number will be... (drum
+      // roll...) zero! Or close to it. That's because the coordinate
+      // system was designed so that z=0 is defined by the edge of the
+      // anode, as it is in LArSoft.
+
       // Exit the iterator loop if the search was successful. 
       break;
     } // search successful
   } // geometry iterator loop
-
-  // Assuming that the search was successful, the global z-coordinate
-  // of the bottom of the anode will be in master[2]. As of Dec-2021,
-  // that number will be... (drum roll...) zero! Or close to
-  // it. That's because the coordinate system was designed so that z=0
-  // is defined by the edge of the anode, as it is in LArSoft.
 
   // We've done whatever we're going to do. Restore the TGeoManager to
   // the volume it used before we did our search.
