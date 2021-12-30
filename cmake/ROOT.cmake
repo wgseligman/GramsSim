@@ -10,10 +10,6 @@ endif()
 # find ROOT of at least version 6
 find_package(ROOT 6.0 REQUIRED)
 
-# remove the C++ standard set by ROOT so CMake can handle it correctly for the
-# compiler we find
-###removeCXXStandardFlags("${CMAKE_CXX_FLAGS}" CMAKE_CXX_FLAGS)
-
 # now remove any duplicates we have to keep things tidy
 removeDuplicateSubstring("${CMAKE_CXX_FLAGS}" $CMAKE_CXX_FLAGS)
  
@@ -83,7 +79,10 @@ endforeach()
 # remove C++ standard flags from root library linking flags
 string(REPLACE "-stdlib=libc++"  "" ROOT_LIBRARIES ${ROOT_LIBRARIES})
 
-
+# 30-Dec-2021 WGS: Include the geometry libraries, so that ROOT
+# programs can manage a detector geometry.
+string(CONCAT ROOT_LIBRARIES ${ROOT_LIBRARIES} " -lGeom")
+#message(STATUS "ROOT_LIBRARIES = ${ROOT_LIBRARIES}")
 
 # fix the version number from root
 # nice regex from CRMC pacakge in their search for ROOT also

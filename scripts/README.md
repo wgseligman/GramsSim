@@ -1,6 +1,6 @@
 # GramsG4 scripts
 
-This directory contains utility scripts to help work with GramsG4
+This directory contains utility scripts to help work with GramsSim
 inputs and outputs. Some of the programs are provided solely to teach
 programming concepts for folks new to handling ntuples and dataframes.
 
@@ -28,6 +28,9 @@ append a new column that also contains a vector.
 used by Geant4's General Particle Source system. Any `.root` or `.txt`
 files in this directory are used as example inputs and outputs for
 `Hist2Text.C`.
+
+`gdmlsearch.cc` - an example of how to use ROOT to search through a
+geometry specified in GDML and extract information from it.
 
 ## HepMC3 tests
 

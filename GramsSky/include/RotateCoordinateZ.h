@@ -27,9 +27,9 @@
 // The issue in this case is that neither ROOT::Math::XYZVector nor
 // any of ROOT's other modern rotation-related utility classes
 // (ROOT::Math::VectorUtil, ROOT::Math::AxisAngle) implements an
-// explicit rotateUz function. I'm not facile enough with rotations in
+// explicit RotateUz function. I'm not facile enough with rotations in
 // 3-space to figure out what combination of the VectorUtil and
-// AxisAngle methods corresponds to rotateUz.
+// AxisAngle methods corresponds to RotateUz.
 
 // So this function is essentially a copy-and-paste of the RotateUz
 // code in TVector3, with a couple of minor changes, for the
@@ -54,7 +54,7 @@ namespace gramssky {
     const double u3 = uzUnit.z();
     const double up2 = u1*u1 + u2*u2;
     
-    if (up2>0) {
+    if ( up2 > 0 ) {
       const double up = std::sqrt(up2);
       const double vx = v.x();
       const double vy = v.y();
@@ -63,7 +63,8 @@ namespace gramssky {
       v.SetY(-u2*vx/up    + u1*vy/up           );
       v.SetZ( u1*vx       + u2*vy       + u3*vz);
     }
-    else if (u3 < 0.) {
+    else if ( u3 < 0. ) {
+      // phi=0, theta=pi
       v.SetX(-v.x());
       v.SetZ(-v.z());
     }
