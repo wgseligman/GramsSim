@@ -15,7 +15,13 @@
 // C++ includes
 #include <iostream>
 
-int main(int argc, char** argv) {
+// Avoid meaningless warning message by omitting the names of the
+// standard arguments to 'main'. However, if this is ever expanded
+// beyond a stub (e.g., to get options from the XML file) then these
+// arguments may have to be restored.
+
+//int main(int argc, char** argv) {
+int main(int, char**) {
 
   // In a real program, this flag would come from the Options class
   // (see GramsSim/util/README.md).
@@ -133,6 +139,11 @@ int main(int argc, char** argv) {
       // of ROOT), every potential shape (cube, cone, cylinder,
       // sphere...) has a bounding box.
       auto box = dynamic_cast<TGeoBBox*>( volume->GetShape() );
+
+      // Note that length units of the GRAMS GDML file are
+      // _centimeters_. Geant4 automatically converts these to its
+      // internal length units (mm), either ROOT does not do this, or
+      // it uses its default length unit of cm.
 
       // The center of the box.
       auto origin = box->GetOrigin();

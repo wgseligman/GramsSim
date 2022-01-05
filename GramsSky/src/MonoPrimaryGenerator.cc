@@ -1,5 +1,4 @@
 #include "MonoPrimaryGenerator.h"
-#include "RotateCoordinateZ.h"
 
 #include <memory>
 
