@@ -96,7 +96,7 @@ int main(int argc, char** argv) {
   TString nodePath;
 
   // For each node and subnode in the geometry:
-  while ( current = next() ) {
+  while ( ( current = next() ) ) {
 
     // Get the name of the node we're on; 'GetPath' puts that name
     // into the TString in its argument.

@@ -106,5 +106,8 @@
 # We want the particle to be aimed in the negative z-direction. 
 /gps/direction 0 0 -1
 
+# Make the GPS source visible.
+/vis/scene/add/gps
+
 # See detailed gps information.
 /gps/verbose 2

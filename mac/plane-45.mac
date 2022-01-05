@@ -8,3 +8,6 @@
 /gps/pos/halfy 0.7 m
 /gps/ang/rot1 0.707 0 -0.707
 /gps/direction -0.707 0 -0.707
+
+# Make the GPS source visible.
+/vis/scene/add/gps
