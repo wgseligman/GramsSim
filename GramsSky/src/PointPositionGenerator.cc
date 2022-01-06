@@ -22,6 +22,12 @@ namespace gramssky {
 
     std::vector<double> pointSource;
     options->GetOption("PointSource",pointSource);
+    if ( pointSource.size() != 3 ) {
+      std::cerr << "File " << __FILE__ << " Line " << __LINE__ << " " << std::endl
+		<< "Point: PointSource must be a vector of exactly three values"
+		<< std::endl;
+      exit(EXIT_FAILURE);
+    }
     m_point.SetXYZ(pointSource[0],pointSource[1],pointSource[2]);
 
     options->GetOption("PrimaryPDG",m_PDG);

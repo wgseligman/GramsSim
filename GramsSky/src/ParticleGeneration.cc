@@ -14,6 +14,7 @@
 
 // The different generators we can return.
 #include "PointPositionGenerator.h"
+#include "IsotropicPositionGenerator.h"
 #include "FixedEnergyGenerator.h"
 
 // ROOT includes
@@ -45,6 +46,8 @@ namespace gramssky {
     options->GetOption("PositionGeneration",positionName);
     if ( positionName.compare("Point") == 0 )
       m_generator = std::make_shared<PointPositionGenerator>();
+    else if ( positionName.compare("Iso") == 0 )
+      m_generator = std::make_shared<IsotropicPositionGenerator>();
     else {
       std::cerr << "File " << __FILE__ << " Line " << __LINE__ << ":" << std::endl
 		<< " Did not recognize position generator '" << positionName

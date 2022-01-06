@@ -5,10 +5,10 @@ include_directories(include
                     ${ROOT_INCLUDE_DIR}
 		    ${XercesC_INCLUDE_DIR})
 
-file(GLOB DetSimSrc src/*.cc
+file(GLOB SkySrc src/*.cc
                     ${PROJECT_SOURCE_DIR}/util/src/*.cc
     )
-add_executable(gramssky gramssky.cc ${DetSimSrc})
+add_executable(gramssky gramssky.cc ${SkySrc})
 target_link_libraries(gramssky ${ROOT_LIBRARIES} )
 target_link_libraries(gramssky ${XercesC_LIBRARY} )
 target_link_libraries(gramssky ${HEPMC3_LIBRARIES} )

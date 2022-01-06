@@ -62,10 +62,17 @@
          are defined:
 
 	 "Point": Specify an (x,y,z) fixed position.
+	 "Iso": Generate particles isotropically on a (theta,phi) region of the celestial sphere.
     -->
 
-    <option name="PositionGeneration" value="Point" type="string" desc="how to generate primary positions"/>    
+    <option name="PositionGeneration" value="Point" type="string" desc="how to generate primary positions"/> 
+
+    <!-- The option(s) for "Point" -->
     <option name="PointSource" value="(0,0,200)" type="vector" desc="(x,y,z) for Point generation"/>    
+
+    <!-- The option(s) for "Iso"; units are radians -->
+    <option name="ThetaMinMax" value="(0,1.571)" type="vector" desc="theta (min,max) for Iso generation"/>    
+    <option name="PhiMinMax" value="(0,6.283)" type="vector" desc="phi (min,max) for Iso generation"/>    
     
     <!-- How to generate the primary particle energies. The following
          are defined:
