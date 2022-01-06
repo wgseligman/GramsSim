@@ -16,6 +16,9 @@ namespace gramssky {
   {
     auto stub = std::make_shared<ParticleInfo>();
     stub->SetZ(1);
+    stub->SetPDG(22);
+    stub->SetE(1);
+    stub->SetPz(-1);
     auto transformed = GetTransform()->Transform( stub );
     return transformed;
   }

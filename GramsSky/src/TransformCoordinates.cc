@@ -62,10 +62,10 @@ namespace gramssky {
     TVector3 disc = source.Orthogonal();
 
     // A random position from the center of the disc.
-    disc.SetMag( m_radiusDisc * std::sqrt( gRandom->Rndm() ) );
+    disc.SetMag( m_radiusDisc * std::sqrt( gRandom->Uniform() ) );
 
     // A random angle around the disc.
-    const double angle = M_PI * gRandom->Rndm();
+    const double angle = 2.0 * M_PI * gRandom->Uniform();
     disc.Rotate( angle, source );
 
     // The adjusted position on the tangent disc.

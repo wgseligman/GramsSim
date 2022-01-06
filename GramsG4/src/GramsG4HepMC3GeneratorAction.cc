@@ -311,7 +311,7 @@ namespace gramsg4 {
 	// If these pointers are not null, then fetch the value and
 	// assign it to the particle's polarization.
 	if (theta && phi) {
-	  G4ThreeVector polarization;
+	  G4ThreeVector polarization(0,0,1);
 	  polarization.setMag(1.0);
 	  polarization.setTheta( theta->value() );
 	  polarization.setPhi  ( phi->value() );
