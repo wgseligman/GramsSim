@@ -14,7 +14,9 @@
 
 namespace gramssky {
 
+  // Forward declarations.
   class TransformCoordinates;
+  class EnergyGenerator;
 
   class PrimaryGenerator
   {
@@ -37,9 +39,17 @@ namespace gramssky {
     // routine.
     TransformCoordinates* GetTransform() { return m_transform; }
 
+    // Another things most generators will need is a separate process
+    // to generate energy. This will be determined by
+    // ParticleGeneration (a double strategy!) and stored (and
+    // deleted) in this class.
+    void AdoptEnergyGenerator( EnergyGenerator* gen ) { m_energyGenerator = gen; }
+    EnergyGenerator* GetEnergyGenerator() { return m_energyGenerator; }
+
   private:
     
     TransformCoordinates* m_transform;
+    EnergyGenerator* m_energyGenerator;
 
   };
 

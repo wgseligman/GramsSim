@@ -27,6 +27,10 @@ namespace gramssky {
 
     // Select an primary-generation method.
     std::shared_ptr<PrimaryGenerator> GetGenerator();
+
+  private:
+    // The generator selected by the user.
+    std::shared_ptr<PrimaryGenerator> m_generator;
   };
 
 } // namespace gramssky

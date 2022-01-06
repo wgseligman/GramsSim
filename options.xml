@@ -51,7 +51,31 @@
          this parameter. -->
     <option name="outputfile" short="o" value="gramssky.hepmc3" type="string" 
         desc="output file"/>    
+
+    <!-- The PDG (Particle Data Group) code of the primary
+         particles. For a sky simulation, that will almost certainly
+         be 22 (photon). Note that as of Jan2022 the energy-generation
+         code assume that the particle is massless. -->
+    <option name="PrimaryPDG" value="22" type="integer" desc="primary particle PDG"/>    
     
+    <!-- How to generate the primary particle positions. The following
+         are defined:
+
+	 "Point": Specify an (x,y,z) fixed position.
+    -->
+
+    <option name="PositionGeneration" value="Point" type="string" desc="how to generate primary positions"/>    
+    <option name="PointSource" value="(0,0,200)" type="vector" desc="(x,y,z) for Point generation"/>    
+    
+    <!-- How to generate the primary particle energies. The following
+         are defined:
+
+	 "Fixed": Specify a fixed energy.
+    -->
+
+    <option name="EnergyGeneration" value="Fixed" type="string" desc="how to generate primary energies"/>    
+    <option name="FixedEnergy" value="1" type="double" desc="Energy for Fixed generation"/>    
+
     <!-- In GramsSky, we generate a particle coming from the celestial
          sphere according to some energy/position
          distribution. However, the simulation's sphere has some
