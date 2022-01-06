@@ -1,5 +1,5 @@
-#include "PointPrimaryGenerator.h"
-#include "PrimaryGenerator.h" // For GetTransform
+#include "PointPositionGenerator.h"
+#include "PositionGenerator.h" // For GetTransform
 #include "EnergyGenerator.h" 
 #include "TransformCoordinates.h"
 #include "Options.h" // in util
@@ -14,8 +14,8 @@
 
 namespace gramssky {
 
-  PointPrimaryGenerator::PointPrimaryGenerator()
-    : PrimaryGenerator()
+  PointPositionGenerator::PointPositionGenerator()
+    : PositionGenerator()
   {
     // Get the point from the Options XML file.
     auto options = util::Options::GetInstance();
@@ -27,10 +27,10 @@ namespace gramssky {
     options->GetOption("PrimaryPDG",m_PDG);
   }
 
-  PointPrimaryGenerator::~PointPrimaryGenerator()
+  PointPositionGenerator::~PointPositionGenerator()
   {}
 
-  std::shared_ptr<ParticleInfo> PointPrimaryGenerator::Generate()
+  std::shared_ptr<ParticleInfo> PointPositionGenerator::Generate()
   {
     // Create a new particle.
     auto particle = std::make_shared<ParticleInfo>();
@@ -41,7 +41,7 @@ namespace gramssky {
     particle->SetZ( m_point.z() );
     particle->SetPDG(m_PDG);
 
-    // GetEnergyGenerator is defined in PrimaryGenerator.h
+    // GetEnergyGenerator is defined in PositionGenerator.h
     double energy = GetEnergyGenerator()->Generate();
     particle->SetE(energy);
 

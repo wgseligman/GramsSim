@@ -2,11 +2,11 @@
 
 // A simple generator: A beam from a fixed point in the sky.
 
-#ifndef Grams_PointPrimaryGenerator_h
-#define Grams_PointPrimaryGenerator_h
+#ifndef Grams_PointPositionGenerator_h
+#define Grams_PointPositionGenerator_h
 
 #include "ParticleInfo.h"
-#include "PrimaryGenerator.h"
+#include "PositionGenerator.h"
 
 // ROOT includes
 #include "TVector3.h"
@@ -16,15 +16,15 @@
 
 namespace gramssky {
 
-  class PointPrimaryGenerator : public PrimaryGenerator
+  class PointPositionGenerator : public PositionGenerator
   {
   public:
 
     // Constructor. 
-    PointPrimaryGenerator();
+    PointPositionGenerator();
 
     // Destructor.
-    virtual ~PointPrimaryGenerator();
+    virtual ~PointPositionGenerator();
 
     // Generate an event.
     virtual std::shared_ptr<ParticleInfo> Generate();
@@ -39,4 +39,4 @@ namespace gramssky {
 
 } // namespace gramssky
 
-#endif // Grams_PointPrimaryGenerator_h
+#endif // Grams_PointPositionGenerator_h

@@ -7,13 +7,13 @@
 // in the user's options XML file.
 
 #include "ParticleGeneration.h"
-#include "PrimaryGenerator.h"
+#include "PositionGenerator.h"
 #include "EnergyGenerator.h"
 #include "ParticleInfo.h"
 #include "Options.h"
 
 // The different generators we can return.
-#include "PointPrimaryGenerator.h"
+#include "PointPositionGenerator.h"
 #include "FixedEnergyGenerator.h"
 
 // ROOT includes
@@ -44,7 +44,7 @@ namespace gramssky {
     std::string positionName;
     options->GetOption("PositionGeneration",positionName);
     if ( positionName.compare("Point") == 0 )
-      m_generator = std::make_shared<PointPrimaryGenerator>();
+      m_generator = std::make_shared<PointPositionGenerator>();
     else {
       std::cerr << "File " << __FILE__ << " Line " << __LINE__ << ":" << std::endl
 		<< " Did not recognize position generator '" << positionName
@@ -73,7 +73,7 @@ namespace gramssky {
   // Destructor
   ParticleGeneration::~ParticleGeneration() {}
 
-  std::shared_ptr<PrimaryGenerator> ParticleGeneration::GetGenerator() {
+  std::shared_ptr<PositionGenerator> ParticleGeneration::GetGenerator() {
     return m_generator;
   }
 

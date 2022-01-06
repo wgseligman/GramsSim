@@ -4,8 +4,8 @@
 // "strategy design pattern"; here we define the methods that must be
 // implemented by specific primary-particle generators.
 
-#ifndef Grams_PrimaryGenerator_h
-#define Grams_PrimaryGenerator_h
+#ifndef Grams_PositionGenerator_h
+#define Grams_PositionGenerator_h
 
 #include "ParticleInfo.h"
 
@@ -18,15 +18,15 @@ namespace gramssky {
   class TransformCoordinates;
   class EnergyGenerator;
 
-  class PrimaryGenerator
+  class PositionGenerator
   {
   public:
 
     // Constructor. 
-    PrimaryGenerator(); 
+    PositionGenerator(); 
 
     // Destructor.
-    virtual ~PrimaryGenerator();
+    virtual ~PositionGenerator();
 
     // Generate an event. This method MUST be overridden by a method
     // that inherits it.
@@ -55,4 +55,4 @@ namespace gramssky {
 
 } // namespace gramssky
 
-#endif // Grams_PrimaryGenerator_h
+#endif // Grams_PositionGenerator_h

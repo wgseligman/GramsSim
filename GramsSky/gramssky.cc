@@ -6,7 +6,7 @@
 
 #include "ParticleInfo.h"
 #include "ParticleGeneration.h"
-#include "PrimaryGenerator.h"
+#include "PositionGenerator.h"
 #include "Options.h" // in util
  
 #include "HepMC3/Attribute.h"
@@ -92,7 +92,7 @@ int main(int argc, char** argv) {
   // The ParticleGeneration class will select which procedure we'll
   // use to generate particles. 
   auto pg = std::make_shared<gramssky::ParticleGeneration>();
-  // GetGenerator returns std::shared_ptr<PrimaryGenerator>. 
+  // GetGenerator returns std::shared_ptr<PositionGenerator>. 
   auto generator = pg->GetGenerator();
 
   // Setting up units based on the Options XML file.
