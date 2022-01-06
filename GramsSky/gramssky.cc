@@ -17,6 +17,7 @@
 #include "HepMC3/WriterAscii.h"
 #include "HepMC3/FourVector.h"
 
+#include <cmath>
 #include <string>
 #include <iostream>
 #include <memory>
@@ -117,8 +118,9 @@ int main(int argc, char** argv) {
 	info->GetPDG(),
 	1 );  // status
 
-      // Use Geant4 units in our events.
-      HepMC3::GenEvent event(HepMC3::Units::MEV,HepMC3::Units::MM);
+      // Make sure we set the correct units. As of Jan-2022, the
+      // Options XML file and the GRAMS GDML file use centimeters.
+      HepMC3::GenEvent event(HepMC3::Units::MEV,HepMC3::Units::CM);
 
       // Assign an event number. Strictly speaking you don't have to
       // do this, but then each event would have an ID of zero, which
@@ -147,10 +149,15 @@ int main(int argc, char** argv) {
       // note that you can only add attributes to a vertex or a
       // particle _after_ you've added it to the event.
 
-      auto thetaAttribute = std::make_shared<HepMC3::DoubleAttribute>(info->GetPolTheta());
-      particle->add_attribute("theta",thetaAttribute);
-      auto phiAttribute = std::make_shared<HepMC3::DoubleAttribute>(info->GetPolPhi());
-      particle->add_attribute("phi",phiAttribute); 
+      auto theta = info->GetPolTheta();
+      auto phi = info->GetPolPhi();
+      // Skip if theta or phi polarization has not been set.
+      if ( ! ( std::isnan(theta) || std::isnan(phi) ) ) {
+	auto thetaAttribute = std::make_shared<HepMC3::DoubleAttribute>(theta);
+	auto phiAttribute = std::make_shared<HepMC3::DoubleAttribute>(phi);
+	particle->add_attribute("theta",thetaAttribute);
+	particle->add_attribute("phi",phiAttribute); 
+      }
 
       // Save event to output file
       writer->write_event(event);

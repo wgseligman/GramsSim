@@ -96,7 +96,7 @@
     <!-- If not blank, write a parsed version of the GDML input file.
     This can be used as input to ROOT, since ROOT doesn't accept the
     GDML <loop> tags. Note that prior to Geant4.10.7, a G4 application
-    (like gramsg4) will crash if it tries to out to a GDML file 
+    (like gramsg4) will crash if it tries to write to a GDML file 
     that already exists. -->
     <option name="gdmlout" value="" type="string" 
         desc="write parsed GDML to this file" />    

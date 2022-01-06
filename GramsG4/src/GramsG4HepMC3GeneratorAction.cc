@@ -312,7 +312,6 @@ namespace gramsg4 {
 	// assign it to the particle's polarization.
 	if (theta && phi) {
 	  G4ThreeVector polarization(0,0,1);
-	  polarization.setMag(1.0);
 	  polarization.setTheta( theta->value() );
 	  polarization.setPhi  ( phi->value() );
 	  g4particle->SetPolarization( polarization );

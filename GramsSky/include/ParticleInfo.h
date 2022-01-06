@@ -6,6 +6,8 @@
 #ifndef Grams_ParticleInfo_h
 #define Grams_ParticleInfo_h
 
+#include <limits> // for NaN
+
 namespace gramssky {
 
   class ParticleInfo
@@ -13,6 +15,13 @@ namespace gramssky {
   public:
 
     // Constructor. 
+
+    // I don't like using artificial limits like -999 to indicate that
+    // a variable is flagged with an invalid value. Let's use a C++
+    // standard NaN (meaning "Not a Number") to indicate that a
+    // polarization has not been set.
+
+    // Similarly, 
     ParticleInfo()
       : m_x(0.)
       , m_y(0.)
@@ -23,8 +32,8 @@ namespace gramssky {
       , m_pz(0.)
       , m_e(0.)
       , m_pdg(0)
-      , m_polPhi(0.)
-      , m_polTheta(0.)
+      , m_polPhi( std::numeric_limits<double>::quiet_NaN() )
+      , m_polTheta( std::numeric_limits<double>::quiet_NaN() )
     {}
 
     // Destructor. It's standard practice to declare all destructors
