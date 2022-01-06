@@ -21,6 +21,7 @@
 #include <string>
 #include <iostream>
 #include <memory>
+#include <algorithm>
 
 /** Main program */
 int main(int argc, char** argv) {
@@ -94,6 +95,32 @@ int main(int argc, char** argv) {
   // GetGenerator returns std::shared_ptr<PrimaryGenerator>. 
   auto generator = pg->GetGenerator();
 
+  // Setting up units based on the Options XML file.
+  std::string lengthText, energyText;
+  options->GetOption("LengthUnit",lengthText);
+  options->GetOption("EnergyUnit",energyText);
+  
+  // Since users are crazy, convert the text to lower case.
+  auto lowC = [](unsigned char c){ return std::tolower(c); };
+  std::transform(lengthText.begin(), lengthText.end(), lengthText.begin(), lowC);
+  std::transform(energyText.begin(), energyText.end(), energyText.begin(), lowC);
+
+  auto lengthUnit = HepMC3::Units::CM;
+  auto energyUnit = HepMC3::Units::MEV;
+
+  if (debug) {
+    std::cout << "gramssky: lengthText = " << lengthText
+	      << ", mm compare = " << lengthText.compare("mm")
+	      << ", energyText = " << energyText
+	      << ", gev compare = " << energyText.compare("gev")
+	      << std::endl;
+  }
+
+  if ( lengthText.compare("mm") == 0 )
+    lengthUnit = HepMC3::Units::MM;
+  if ( energyText.compare("gev") == 0 )
+    energyUnit = HepMC3::Units::GEV;
+
   // For each event:
   for ( int e = 0; e != numberOfEvents; ++e ) {
 
@@ -118,9 +145,8 @@ int main(int argc, char** argv) {
 	info->GetPDG(),
 	1 );  // status
 
-      // Make sure we set the correct units. As of Jan-2022, the
-      // Options XML file and the GRAMS GDML file use centimeters.
-      HepMC3::GenEvent event(HepMC3::Units::MEV,HepMC3::Units::CM);
+      // Make sure we set the correct units.
+      HepMC3::GenEvent event(energyUnit,lengthUnit);
 
       // Assign an event number. Strictly speaking you don't have to
       // do this, but then each event would have an ID of zero, which

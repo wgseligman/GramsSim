@@ -18,6 +18,21 @@
     <option name="debug" short="d" type="flag" />
     <option name="help" short="h" type="flag" desc="show help then exit" />
 
+    <!-- Define a consistent set of units to use in GramsSim. Note
+         that it's up to the individual programs to access these
+         parameters and write their output in these units. (I'm
+         looking at you, Geant4!).
+
+	 Length unit: as of Jan-2022, the only valid values are "cm" and "mm".
+	 Energy unit: as of Jan-2022, the only valid values are "MeV" and "GeV".
+
+	 Note that this does not directly affect the GDML file and
+	 Geant4 macro files, as any dimensioned quantities in those
+	 files have units specified explicitly.
+	 -->
+    <option name="LengthUnit" type="string" value="cm" desc="length unit for program output" />
+    <option name="EnergyUnit" type="string" value="MeV" desc="energy unit for program output" />
+
   </global>
 
   <gramssky>
@@ -53,8 +68,8 @@
          to detector coordinates, and the center of the detector with
          respect to the center of the sphere.
 
-         The units are the same as those of the GDML file. As of
-         Jan-2022, these are centimeters.
+         See the <global> section above for units. As of Jan-2022,
+         these are cm and MeV
     -->
 
     <!-- The radius of a sphere from which the particles will be
