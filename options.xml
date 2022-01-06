@@ -54,8 +54,7 @@
 
     <!-- The PDG (Particle Data Group) code of the primary
          particles. For a sky simulation, that will almost certainly
-         be 22 (photon). Note that as of Jan2022 the energy-generation
-         code assume that the particle is massless. -->
+         be 22 (photon). -->
     <option name="PrimaryPDG" value="22" type="integer" desc="primary particle PDG"/>    
     
     <!-- How to generate the primary particle positions. The following

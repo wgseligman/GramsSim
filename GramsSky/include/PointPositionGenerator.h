@@ -30,8 +30,9 @@ namespace gramssky {
     virtual std::shared_ptr<ParticleInfo> Generate();
 
   private:
-    // The PDG code of the primary particle.
+    // The PDG code and mass of the primary particle.
     int m_PDG;
+    double m_mass;
 
     // The (x,y,z) location of the primary particle.
     TVector3 m_point;

@@ -6,6 +6,8 @@
 
 // ROOT includes
 #include "TVector3.h"
+#include "TDatabasePDG.h"
+#include "TParticlePDG.h"
 
 // C++ includes
 #include <vector>
@@ -20,6 +22,10 @@ namespace gramssky {
     // Get the point from the Options XML file.
     auto options = util::Options::GetInstance();
 
+    // Debug flag from Options.
+    bool debug;
+    options->GetOption("debug",debug);
+
     std::vector<double> pointSource;
     options->GetOption("PointSource",pointSource);
     if ( pointSource.size() != 3 ) {
@@ -30,7 +36,25 @@ namespace gramssky {
     }
     m_point.SetXYZ(pointSource[0],pointSource[1],pointSource[2]);
 
+    // Get the PDG code; from that get the mass of the particle.
     options->GetOption("PrimaryPDG",m_PDG);
+    TParticlePDG* particle = TDatabasePDG::Instance()->GetParticle(m_PDG);
+    m_mass = 0.;
+    if ( particle != NULL ) {
+      m_mass = particle->Mass();
+      if (debug) {
+	std::cout << "IsotropicPositionGenerator: PDG code "
+		  << m_PDG << " found in ROOT particle database, mass = "
+		  << m_mass << std::endl;
+      }
+    }
+    else {
+      if (debug) {
+	std::cout << "IsotropicPositionGenerator: PDG code "
+		  << m_PDG << " not found in ROOT particle database! "
+		  << " mass set to 0" << std::endl;
+      }
+    }
   }
 
   PointPositionGenerator::~PointPositionGenerator()
@@ -54,9 +78,9 @@ namespace gramssky {
     // We don't have to set correct particle direction here, since the
     // Transform routine will rotate the momentum vector to point in
     // the direction of the detector's center. But we do want to get
-    // the magnitude right. Note that we're assuming that the particle
-    // is massless.
-    particle->SetPz(-energy);
+    // the magnitude right.
+    double momentum = std::sqrt( energy*energy - m_mass*m_mass );
+    particle->SetPz(-momentum);
 
     // Transform the particle position and direction from the
     // celestial sphere to the detector coordinates, applying a random
