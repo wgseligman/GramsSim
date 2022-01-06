@@ -1,4 +1,4 @@
-// SphereToSky.h
+// TransformCoordinates.h
 // 05-Jan-2022 WGS 
 
 // In GramsSky, we generate a particle coming from the celestial
@@ -16,8 +16,8 @@
 // detector coordinates, and the center of the detector with respect
 // to the center of the sphere.
 
-#ifndef Grams_SphereToSky_h
-#define Grams_SphereToSky_h
+#ifndef Grams_TransformCoordinates_h
+#define Grams_TransformCoordinates_h
 
 #include "ParticleInfo.h"
 
@@ -26,15 +26,15 @@
 
 namespace gramssky {
 
-  class SphereToSky
+  class TransformCoordinates
   {
   public:
 
     // Constructor. 
-    SphereToSky();
+    TransformCoordinates();
 
     // Destructor.
-    virtual ~SphereToSky();
+    virtual ~TransformCoordinates();
 
     // Take a pointer to a ParticleInfo and generate a new
     // ParticleInfo with a transformed position.
@@ -68,4 +68,4 @@ namespace gramssky {
 
 } // namespace gramssky
 
-#endif // Grams_SphereToSky_h
+#endif // Grams_TransformCoordinates_h

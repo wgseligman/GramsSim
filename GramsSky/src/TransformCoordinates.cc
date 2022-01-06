@@ -1,4 +1,4 @@
-#include "SphereToSky.h"
+#include "TransformCoordinates.h"
 #include "ParticleInfo.h"
 #include "Options.h" // in util/
 
@@ -10,10 +10,11 @@
 #include <memory> // for shared_ptr
 #include <vector>
 #include <cmath>
+#include <iostream>
 
 namespace gramssky {
 
-  SphereToSky::SphereToSky()
+  TransformCoordinates::TransformCoordinates()
   {
     // Fetch options from XML file.
     auto options = util::Options::GetInstance();
@@ -34,10 +35,10 @@ namespace gramssky {
     m_mapDirection = m_mapDirection.Unit();
   }
 
-  SphereToSky::~SphereToSky()
+  TransformCoordinates::~TransformCoordinates()
   {}
 
-  std::shared_ptr<ParticleInfo> SphereToSky::Transform( const std::shared_ptr<ParticleInfo> a_info )
+  std::shared_ptr<ParticleInfo> TransformCoordinates::Transform( const std::shared_ptr<ParticleInfo> a_info )
   {
     // Make a copy of the ParticleInfo object in the argument. That
     // way we can fiddle with it our heart's content without affected
@@ -74,7 +75,9 @@ namespace gramssky {
     // particle's original momentum.
     TVector3 direction = -source;
     TVector3 momentum( info->GetPx(), info->GetPy(), info->GetPz() );
-    direction.SetMag( momentum.Mag() );
+    auto magnitude = momentum.Mag();
+    if ( magnitude > 0.) 
+      direction.SetMag( magnitude );
 
     // Put the revised values into the ParticleInfo output.
     info->SetX( position.x() );
