@@ -77,10 +77,17 @@
          are defined:
 
 	 "Fixed": Specify a fixed energy.
+	 "Gaus": Generate energy according to gaussian distribution.
     -->
 
     <option name="EnergyGeneration" value="Fixed" type="string" desc="how to generate primary energies"/>    
+
+    <!-- Option(s) for "Fixed" energy distribution. -->
     <option name="FixedEnergy" value="1" type="double" desc="Energy for Fixed generation"/>    
+
+    <!-- Option(s) for "Gaus" energy distribution. -->
+    <option name="GausMean" value="2" type="double" desc="Mean for gaussian energy distribution"/>
+    <option name="GausWidth" value="0.2" type="double" desc="Width for gaussian energy distribution"/>
 
     <!-- In GramsSky, we generate a particle coming from the celestial
          sphere according to some energy/position

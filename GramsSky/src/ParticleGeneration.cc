@@ -16,6 +16,7 @@
 #include "PointPositionGenerator.h"
 #include "IsotropicPositionGenerator.h"
 #include "FixedEnergyGenerator.h"
+#include "GaussianEnergyGenerator.h"
 
 // ROOT includes
 #include "TRandom.h"
@@ -62,7 +63,11 @@ namespace gramssky {
     if ( energyName.compare("Fixed") == 0 ) {
       auto energyGenerator = new FixedEnergyGenerator();
       m_generator->AdoptEnergyGenerator( energyGenerator );
-    }
+    } 
+    else if ( energyName.compare("Gaus") == 0 ) {
+      auto energyGenerator = new GaussianEnergyGenerator();
+      m_generator->AdoptEnergyGenerator( energyGenerator );
+    } 
     else {
       std::cerr << "File " << __FILE__ << " Line " << __LINE__ << ":" << std::endl
 		<< " Did not recognize energy generator '" << energyName
@@ -70,7 +75,6 @@ namespace gramssky {
 		<< std::endl;
       exit(EXIT_FAILURE);
     }
-
   }
 
   // Destructor
