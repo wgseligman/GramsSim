@@ -12,11 +12,13 @@
 #include "ParticleInfo.h"
 #include "Options.h"
 
-// The different generators we can return.
+// The different generators we can manage.
 #include "PointPositionGenerator.h"
 #include "IsotropicPositionGenerator.h"
+
 #include "FixedEnergyGenerator.h"
 #include "GaussianEnergyGenerator.h"
+#include "UniformEnergyGenerator.h"
 
 // ROOT includes
 #include "TRandom.h"
@@ -45,6 +47,7 @@ namespace gramssky {
     // Determine which position generator we're going to use.
     std::string positionName;
     options->GetOption("PositionGeneration",positionName);
+
     if ( positionName.compare("Point") == 0 )
       m_generator = std::make_shared<PointPositionGenerator>();
     else if ( positionName.compare("Iso") == 0 )
@@ -66,6 +69,10 @@ namespace gramssky {
     } 
     else if ( energyName.compare("Gaus") == 0 ) {
       auto energyGenerator = new GaussianEnergyGenerator();
+      m_generator->AdoptEnergyGenerator( energyGenerator );
+    } 
+    else if ( energyName.compare("Flat") == 0 ) {
+      auto energyGenerator = new UniformEnergyGenerator();
       m_generator->AdoptEnergyGenerator( energyGenerator );
     } 
     else {
