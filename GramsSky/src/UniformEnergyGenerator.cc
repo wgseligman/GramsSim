@@ -14,8 +14,12 @@ namespace gramssky {
   {
     // Get the parameters from the Options XML file.
     auto options = util::Options::GetInstance();
-    options->GetOption("FlatMin",m_energyMin);
-    options->GetOption("FlatMax",m_energyMax);
+    options->GetOption("EnergyMin",m_energyMin);
+    options->GetOption("EnergyMax",m_energyMax);
+
+    // Prevent the users from creating zero-energy particles, which
+    // would cause problems later in the simulation chain.
+    m_energyMin = std::max( 1.0e-9, m_energyMin );
   }
 
   UniformEnergyGenerator::~UniformEnergyGenerator()

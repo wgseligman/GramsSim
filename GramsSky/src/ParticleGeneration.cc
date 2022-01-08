@@ -19,6 +19,7 @@
 #include "FixedEnergyGenerator.h"
 #include "GaussianEnergyGenerator.h"
 #include "UniformEnergyGenerator.h"
+#include "BlackBodyEnergyGenerator.h"
 
 // ROOT includes
 #include "TRandom.h"
@@ -27,6 +28,7 @@
 #include <string>
 #include <memory>
 #include <iostream>
+#include <algorithm>
 
 namespace gramssky {
 
@@ -48,9 +50,14 @@ namespace gramssky {
     std::string positionName;
     options->GetOption("PositionGeneration",positionName);
 
-    if ( positionName.compare("Point") == 0 )
+    // Since users rarely follow directions, convert the name into
+    // lower case.
+    auto lowC = [](unsigned char c){ return std::tolower(c); };
+    std::transform(positionName.begin(), positionName.end(), positionName.begin(), lowC);
+
+    if ( positionName.compare("point") == 0 )
       m_generator = std::make_shared<PointPositionGenerator>();
-    else if ( positionName.compare("Iso") == 0 )
+    else if ( positionName.compare("iso") == 0 )
       m_generator = std::make_shared<IsotropicPositionGenerator>();
     else {
       std::cerr << "File " << __FILE__ << " Line " << __LINE__ << ":" << std::endl
@@ -63,16 +70,24 @@ namespace gramssky {
     // Determine which energy generator we're going to use.
     std::string energyName;
     options->GetOption("EnergyGeneration",energyName);
-    if ( energyName.compare("Fixed") == 0 ) {
+
+    // Again, convert to lower case.
+    std::transform(energyName.begin(), energyName.end(), energyName.begin(), lowC);
+
+    if ( energyName.compare("fixed") == 0 ) {
       auto energyGenerator = new FixedEnergyGenerator();
       m_generator->AdoptEnergyGenerator( energyGenerator );
     } 
-    else if ( energyName.compare("Gaus") == 0 ) {
+    else if ( energyName.compare("gaus") == 0 ) {
       auto energyGenerator = new GaussianEnergyGenerator();
       m_generator->AdoptEnergyGenerator( energyGenerator );
     } 
-    else if ( energyName.compare("Flat") == 0 ) {
+    else if ( energyName.compare("flat") == 0 ) {
       auto energyGenerator = new UniformEnergyGenerator();
+      m_generator->AdoptEnergyGenerator( energyGenerator );
+    } 
+    else if ( energyName.compare("blackbody") == 0 ) {
+      auto energyGenerator = new BlackBodyEnergyGenerator();
       m_generator->AdoptEnergyGenerator( energyGenerator );
     } 
     else {

@@ -5,6 +5,12 @@
 <parameters>
   
   <global>
+
+    <!-- The parameters in this section are meant to apply to all the
+         programs. However, you can ovverride them within the
+         individual program blocks, though it's probably more useful
+         to override them on the command line. Be careful about what
+         you're overriding, especially the unit options. -->
   
     <!-- The following line does nothing! It's there for documentation:
     the default value of the 'options' option is "options.xml" -->
@@ -18,13 +24,12 @@
     <option name="debug" short="d" type="flag" />
     <option name="help" short="h" type="flag" desc="show help then exit" />
 
-    <!-- Define a consistent set of units to use in GramsSim. Note
-         that it's up to the individual programs to access these
-         parameters and write their output in these units. (I'm
-         looking at you, Geant4!).
+    <!-- Define a consistent set of units. Note that it's up to the
+         individual programs to access these parameters and write
+         their output in these units. (I'm looking at you, Geant4!).
 
 	 Length unit: as of Jan-2022, the only valid values are "cm" and "mm".
-	 Energy unit: as of Jan-2022, the only valid values are "MeV" and "GeV".
+
 
 	 Note that this does not directly affect the GDML file and
 	 Geant4 macro files, as any dimensioned quantities in those
@@ -57,21 +62,27 @@
          be 22 (photon). -->
     <option name="PrimaryPDG" value="22" type="integer" desc="primary particle PDG"/>    
     
-    <!-- How to generate the primary particle positions. The following
-         are defined:
+    <!-- PositionGeneration = how to generate the primary particle
+         positions. The following are allowed values:
 
 	 "Point": Specify an (x,y,z) fixed position.
 	 "Iso": Generate particles isotropically on a (theta,phi) region of the celestial sphere.
+
+         See the <global> section above for units.
     -->
 
-    <option name="PositionGeneration" value="Point" type="string" desc="how to generate primary positions"/> 
+    <option name="PositionGeneration" value="Point" type="string" 
+	    desc="how to generate primary positions"/> 
 
     <!-- The option(s) for "Point" -->
-    <option name="PointSource" value="(0,0,200)" type="vector" desc="(x,y,z) for Point generation"/>    
+    <option name="PointSource" value="(0,0,200)" type="vector" 
+	    desc="(x,y,z) for Point generation"/>    
 
     <!-- The option(s) for "Iso"; units are radians -->
-    <option name="ThetaMinMax" value="(0,1.571)" type="vector" desc="theta (min,max) for Iso generation"/>    
-    <option name="PhiMinMax" value="(0,6.283)" type="vector" desc="phi (min,max) for Iso generation"/>    
+    <option name="ThetaMinMax" value="(0,1.571)" type="vector" 
+	    desc="theta (min,max) for Iso generation"/>    
+    <option name="PhiMinMax" value="(0,6.283)" type="vector" 
+	    desc="phi (min,max) for Iso generation"/>    
     
     <!-- How to generate the primary particle energies. The following
          are defined:
@@ -79,29 +90,48 @@
 	 "Fixed": Specify a fixed energy.
 	 "Gaus": Generate energy according to gaussian distribution.
 	 "Flat": Uniformly generate energy between two limits.
+	 "BlackBody": Generate energy according to black-body distribution.
+
+         See the <global> section above for units.
     -->
 
-    <option name="EnergyGeneration" value="Fixed" type="string" desc="how to generate primary energies"/>    
+    <option name="EnergyGeneration" value="Fixed" type="string" 
+	    desc="how to generate primary energies"/>    
+
+    <!-- Common to all energy distributions -->
+    <option name="EnergyMin" value="0" type="double" 
+	    desc="Minimum for energy distribution"/>
+    <option name="EnergyMax" value="1000" type="double" 
+	    desc="Minimum for energy distribution"/>
 
     <!-- Option(s) for "Fixed" energy distribution. -->
-    <option name="FixedEnergy" value="1" type="double" desc="Energy for Fixed generation"/>    
+    <option name="FixedEnergy" value="1" type="double" 
+	    desc="Energy for Fixed generation"/>    
 
     <!-- Option(s) for "Gaus" energy distribution. -->
-    <option name="GausMean" value="2" type="double" desc="Mean for gaussian energy distribution"/>
-    <option name="GausWidth" value="0.2" type="double" desc="Width for gaussian energy distribution"/>
+    <option name="GausMean" value="2" type="double" 
+	    desc="Mean for gaussian energy distribution"/>
+    <option name="GausWidth" value="0.2" type="double" 
+	    desc="Width for gaussian energy distribution"/>
 
     <!-- Option(s) for "Flat" energy distribution. -->
-    <option name="FlatMin" value="1" type="double" desc="Minimum energy for flat distribution"/>
-    <option name="FlatMax" value="3" type="double" desc="Maximum energy for flat distribution"/>
+    <option name="FlatMin" value="1" type="double" 
+	    desc="Minimum energy for flat distribution"/>
+    <option name="FlatMax" value="3" type="double" 
+	    desc="Maximum energy for flat distribution"/>
+
+    <!-- Option(s) for "BlackBody" energy distribution. -->
+    <option name="RadTemp" value="1" type="double" 
+	    desc="Radiation temperature (kT) for black-body distribution"/>
 
     <!-- In GramsSky, we generate a particle coming from the celestial
          sphere according to some energy/position
          distribution. However, the simulation's sphere has some
-         finite radius within the world volume, and the actual
+         finite radius within the world volume, while the actual
          celestial sphere is actually at "infinity".
 	 
-	 To simulate this effect, we construct an imaginary tangent
-	 disc tangent to the simulation sphere at the point of the
+	 To simulate this effect, we construct an imaginary disc
+	 tangent to the simulation sphere at the point of the
 	 particle's generation; see GramsSky/SkyDiagram.jpg and
 	 GramsSky/README.md for details. This routine randomly shifts
 	 the origin of the particle across the surface of that disc.
@@ -122,22 +152,26 @@
         desc="radius of generated particles"/>    
     
     <!-- The radius of the tangent disc. If this is <= 0, then
-	 m_radiusSphere is used. -->
+         RadiusSphere is used. -->
     <option name="RadiusDisc" value="0" type="double" 
         desc="radius of tangent disc"/> 
 
     <!-- The center of the simulated sphere in detector
-         coordinates. Bear in mind that the origin of the coordinate
-         system is determined by the GRAMS GDML file, and as Jan-2022
-         it is _not_ the center of the detector. -->
+         coordinates. 
+
+         Bear in mind that the origin of the coordinate system is
+         determined by the GRAMS GDML file, and as Jan-2022 it is
+         _not_ the center of the detector. For GRAMS, the center of
+         the LArTPC is roughly (0,0,-15); the center of the overall
+         detector is at (0,0,45.217) as of Jan-2022 -->
     <option name="OriginSphere" value="(0,0,-15)" type="vector" 
         desc="detector center in detector coords"/> 
     
     <!-- This is the direction of the "north pole" of the celestial
-         sphere with in the detector coordinate system. Bear in mind
-         that imported celestial maps are usually aligned with the
-         galactic coordinate system, while the physical detector will
-         have typically have some other orientation for its z-axis.
+         sphere in the detector coordinate system. Bear in mind that
+         imported celestial maps are usually aligned with the galactic
+         coordinate system, while the physical detector will have
+         typically have some other orientation for its z-axis.
     -->
     <option name="MapDirection" value="(0,0,1)" type="vector" 
         desc="map 'north pole' in detector coords"/> 
