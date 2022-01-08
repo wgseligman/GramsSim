@@ -1,8 +1,19 @@
-# GramsG4 scripts
+# GramsSim scripts
 
 This directory contains utility scripts to help work with GramsSim
 inputs and outputs. Some of the programs are provided solely to teach
-programming concepts for folks new to handling ntuples and dataframes.
+programming concepts for folks new to:
+
+- handling ntuples
+- working with dataframes
+- C++
+- ROOT
+- GDML (Geant4 geometry)
+- HepMC3 (particle-physics file format)
+
+For examples related to working with Geant4 and GramsG4, see `GramsSim/mac`.
+
+## Examples
 
 `SimpleAnalysis.C` - a very simple example of how to look at the
 ntuples produced by gramsg4.
