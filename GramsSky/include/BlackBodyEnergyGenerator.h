@@ -26,7 +26,7 @@ namespace gramssky {
     virtual double Generate();
 
   private:
-    // The parameters for the flat distribution.
+    // The parameters for the black-body distribution.
     double m_radTemp;
     double m_energyMin;
     double m_energyMax;

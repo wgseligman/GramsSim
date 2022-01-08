@@ -32,6 +32,9 @@ namespace gramssky {
 
   double BlackBodyEnergyGenerator::Generate()
   {
+    // Copied from
+    // https://github.com/odakahirokazu/ComptonSoft/blob/master/anlgeant4/src/BasicPrimaryGen.cc
+
     // Generate a random value from the black-body distribution.
     // Scale it to the radiation temperature. 
     double energy = m_radTemp * m_bbformula->GetRandom();

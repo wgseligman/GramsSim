@@ -20,6 +20,7 @@
 #include "GaussianEnergyGenerator.h"
 #include "UniformEnergyGenerator.h"
 #include "BlackBodyEnergyGenerator.h"
+#include "PowerLawEnergyGenerator.h"
 
 // ROOT includes
 #include "TRandom.h"
@@ -49,6 +50,8 @@ namespace gramssky {
     // Determine which position generator we're going to use.
     std::string positionName;
     options->GetOption("PositionGeneration",positionName);
+    // Save the original text for the error message.
+    std::string positionInput(positionName);
 
     // Since users rarely follow directions, convert the name into
     // lower case.
@@ -61,7 +64,7 @@ namespace gramssky {
       m_generator = std::make_shared<IsotropicPositionGenerator>();
     else {
       std::cerr << "File " << __FILE__ << " Line " << __LINE__ << ":" << std::endl
-		<< " Did not recognize position generator '" << positionName
+		<< " Did not recognize PositionGenerator option '" << positionInput
 		<< "'; Aborting job"
 		<< std::endl;
       exit(EXIT_FAILURE);
@@ -70,6 +73,8 @@ namespace gramssky {
     // Determine which energy generator we're going to use.
     std::string energyName;
     options->GetOption("EnergyGeneration",energyName);
+    // Save the original text for the error message.
+    std::string energyInput(energyName);
 
     // Again, convert to lower case.
     std::transform(energyName.begin(), energyName.end(), energyName.begin(), lowC);
@@ -90,9 +95,13 @@ namespace gramssky {
       auto energyGenerator = new BlackBodyEnergyGenerator();
       m_generator->AdoptEnergyGenerator( energyGenerator );
     } 
+    else if ( energyName.compare("powerlaw") == 0 ) {
+      auto energyGenerator = new PowerLawEnergyGenerator();
+      m_generator->AdoptEnergyGenerator( energyGenerator );
+    } 
     else {
       std::cerr << "File " << __FILE__ << " Line " << __LINE__ << ":" << std::endl
-		<< " Did not recognize energy generator '" << energyName
+		<< " Did not recognize EnergyGenerator option '" << energyInput
 		<< "'; Aborting job"
 		<< std::endl;
       exit(EXIT_FAILURE);

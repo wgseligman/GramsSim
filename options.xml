@@ -91,6 +91,7 @@
 	 "Gaus": Generate energy according to gaussian distribution.
 	 "Flat": Uniformly generate energy between two limits.
 	 "BlackBody": Generate energy according to black-body distribution.
+	 "PowerLaw": Generate energy according to power-law distribution.
 
          See the <global> section above for units.
     -->
@@ -102,7 +103,7 @@
     <option name="EnergyMin" value="0" type="double" 
 	    desc="Minimum for energy distribution"/>
     <option name="EnergyMax" value="1000" type="double" 
-	    desc="Minimum for energy distribution"/>
+	    desc="Maximum for energy distribution"/>
 
     <!-- Option(s) for "Fixed" energy distribution. -->
     <option name="FixedEnergy" value="1" type="double" 
@@ -123,6 +124,10 @@
     <!-- Option(s) for "BlackBody" energy distribution. -->
     <option name="RadTemp" value="1" type="double" 
 	    desc="Radiation temperature (kT) for black-body distribution"/>
+
+    <!-- Option(s) for "PowerLaw" energy distribution. -->
+    <option name="PhotonIndex" value="2" type="double" 
+	    desc="Power-law exponent of the photon spectrum"/>
 
     <!-- In GramsSky, we generate a particle coming from the celestial
          sphere according to some energy/position
