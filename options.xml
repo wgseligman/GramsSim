@@ -92,6 +92,7 @@
 	 "Flat": Uniformly generate energy between two limits.
 	 "BlackBody": Generate energy according to black-body distribution.
 	 "PowerLaw": Generate energy according to power-law distribution.
+	 "Hist": Generate energy according to a ROOT histogram. 
 
          See the <global> section above for units.
     -->
@@ -128,6 +129,14 @@
     <!-- Option(s) for "PowerLaw" energy distribution. -->
     <option name="PhotonIndex" value="2" type="double" 
 	    desc="Power-law exponent of the photon spectrum"/>
+
+    <!-- Option(s) for "Hist" energy distribution. -->
+    <!-- This can be a full or relative path to the file. -->
+    <option name="HistFile" value="example.root" type="string" 
+	    desc="Input file containing histogram"/>
+    <!-- This can be a path to the histogram within the file. -->
+    <option name="HistName" value="example" type="string" 
+	    desc="Name of histogram in input file"/>
 
     <!-- In GramsSky, we generate a particle coming from the celestial
          sphere according to some energy/position

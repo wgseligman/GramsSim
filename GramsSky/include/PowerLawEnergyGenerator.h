@@ -1,6 +1,6 @@
 // 07-Jan-2022 WGS 
 
-// Generate energy according to black-body distribution.
+// Generate energy according to power-law distribution.
 
 #ifndef Grams_PowerLawEnergyGenerator_h
 #define Grams_PowerLawEnergyGenerator_h

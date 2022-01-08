@@ -21,6 +21,7 @@
 #include "UniformEnergyGenerator.h"
 #include "BlackBodyEnergyGenerator.h"
 #include "PowerLawEnergyGenerator.h"
+#include "HistogramEnergyGenerator.h"
 
 // ROOT includes
 #include "TRandom.h"
@@ -97,6 +98,10 @@ namespace gramssky {
     } 
     else if ( energyName.compare("powerlaw") == 0 ) {
       auto energyGenerator = new PowerLawEnergyGenerator();
+      m_generator->AdoptEnergyGenerator( energyGenerator );
+    } 
+    else if ( energyName.compare("hist") == 0 ) {
+      auto energyGenerator = new HistogramEnergyGenerator();
       m_generator->AdoptEnergyGenerator( energyGenerator );
     } 
     else {
