@@ -80,7 +80,8 @@ See `GramsG4/mac/README.md` for a description of the visualization examples in t
 ### Events from an external generator
 
 The GPS commands may not be sufficient. For example, you may want to generate the primary particles from an initial nuclear interaction (*n-<span style="text-decoration:overline">n</span>*
-oscillations are one such case), or a shower of particles from a cosmic-ray simulation. 
+oscillations are one such case), a shower of particles from a cosmic-ray simulation, or the output of GramsSky
+(see `GramsSim/GramsSky/README.md`). 
 
 GramsG4 can read files of events in [HepMC3](https://gitlab.cern.ch/hepmc/HepMC3) format. A typical command to run the simulation with an input file would be:
 
