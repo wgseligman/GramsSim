@@ -32,7 +32,7 @@ C++ programs I write.
 If you look at the file [`options.xml`](../options.xml), what you'll first notice that is that within the `<parameters>` tag there is
 more than one section. It looks something like this:
 
-```
+```XML 
 <parameters>
   <global>
     <option [...] />
@@ -64,7 +64,7 @@ purpose of these examples, we're using the name `gramsg4`. If you
 created a program with the name `myanalysis`, in the options XML
 file you'd have:
 
-```
+```XML
   <myanalysis>
     <option [...] />
     <option [...] />
@@ -214,7 +214,7 @@ Then all of the following are equivalent:
 
 Suppose you had something like this in the options XML file:
 
-```
+```XML
 <parameters>
   <global>
     <option name="myoption" value="value1" ... />
@@ -248,7 +248,7 @@ The three arguments to `util::Options::ParseOptions` are:
          
 As noted above, here we use `gramsg4` as an example:
 
-```
+```C++
 #include "Options.h"
 #include <iostream> 
 // ...
@@ -276,7 +276,7 @@ int main( int argc, char** argv ) {
 
 After that one-time initialization in your `main` routine, you can access the value of a given option from any method:
 
-```
+```C++
 #include "Options.h" 
   
   // ...
@@ -290,7 +290,7 @@ After that one-time initialization in your `main` routine, you can access the va
 For example, assume there's a double-precision option defined with the name "energyCut"
 in the options XML File:
 
-```  
+```C++
 #include "Options.h" 
 #include <iostream> 
   // ...
@@ -312,7 +312,7 @@ in the options XML File:
 ```
 
 To fetch a vector, use `std::vector<double>`; e.g.,
-```
+```C++
 #include "Options.h" 
 #include "TVector3.h"
 #include <iostream> 
@@ -334,7 +334,7 @@ To fetch a vector, use `std::vector<double>`; e.g.,
 ### Implementing the `-h/--help` option
 
 The method `util::Options::PrintHelp()` can be used to implement the `-h` and `--help` options for your program:
-```
+```C++
   // Check for help message.
   bool help;
   options->GetOption("help",help);
@@ -386,7 +386,7 @@ if the `--verbose` or `-v` option is turned on:
 
 In the code:
 
-```
+```C++
   bool verbose;
   options->GetOption("verbose",verbose);
   if (verbose) {
@@ -430,9 +430,9 @@ Note that `Options` keeps track of which tag block was the source of a given opt
 #### Going through options one-by-one
 
 There are times when it's useful to "iterate" through the internal table of all available options;
-for example, to save the options in an ntuple for later reference. The following methods are available (these are the lines from `Option.h`):
+for example, to save the options in an ntuple for later reference. The following methods are available (these are the lines from [`Option.h`](include/Option.h)):
 
-```
+```C++
     /// Provide a way to access the "i-th" option stored by this
     /// class. Note that these routines are very inefficient (map
     /// iterators are not random-access) so don't use them inside
@@ -450,7 +450,7 @@ for example, to save the options in an ntuple for later reference. The following
 
 The utility method `WriteOptions` can be used to write the option to an ntuple in an output file in [ROOT](https://root.cern.ch/) format. This lets you record the values used to run the program that generated that particular file.
 
-```
+```C++
 #include "Options.h" // in util/ 
 // ... call ParseOptions ...
 // Define a ROOT output file, e.g.,:
