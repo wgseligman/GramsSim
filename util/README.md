@@ -11,13 +11,14 @@ C++ programs I write.
         * [Flags](#flags)
         * [Vectors](#vectors)
       - [Abbreviating options](#abbreviating-options)
-  * [Accessing options from within your program](#accessing-options-from-within-your-program)
-  * [Implementing the `-h/--help` option](#implementing-the---h---help--option)
-  * [Other `Options` methods](#other--options--methods)
-    + [Displaying a table of all the options](#displaying-a-table-of-all-the-options)
-    + [Going through options one-by-one](#going-through-options-one-by-one)
-    + [Saving options to a ROOT file](#saving-options-to-a-root-file)
-    + [Restoring options from a ROOT file](#restoring-options-from-a-root-file)
+      - [Overriding &lt;global&gt;](#overriding--lt-global-gt-)
+    + [Accessing options from within your program](#accessing-options-from-within-your-program)
+    + [Implementing the `-h/--help` option](#implementing-the---h---help--option)
+    + [Other `Options` methods](#other--options--methods)
+      - [Displaying a table of all the options](#displaying-a-table-of-all-the-options)
+      - [Going through options one-by-one](#going-through-options-one-by-one)
+      - [Saving options to a ROOT file](#saving-options-to-a-root-file)
+      - [Restoring options from a ROOT file](#restoring-options-from-a-root-file)
 
 <small><i><a href='http://ecotrust-canada.github.io/markdown-toc/'>Table of contents generated with markdown-toc</a></i></small>
 
@@ -38,6 +39,11 @@ more than one section. It looks something like this:
     <option [...] />
   </global>
 
+  <gramssky>
+    <option [...] />
+    <option [...] />
+  </gramssky>
+
   <gramsg4>
     <option [...] />
     <option [...] />
@@ -50,12 +56,12 @@ more than one section. It looks something like this:
 </parameters>
 ```
 
-The idea is that this same options XML file might can be used
+The idea is that this same options XML file can be used
 by more than one program in an analysis. The `<global>` section
-contains parameters that might apply to any program. Individual
+contains parameters that would apply to any program. Individual
 programs will have their options in their own sections. For the
 purpose of these examples, we're using the name `gramsg4`. If you
-created a program with the name `myanalysis`, within the options XML
+created a program with the name `myanalysis`, in the options XML
 file you'd have:
 
 ```
@@ -204,7 +210,30 @@ Then all of the following are equivalent:
     ./gramsg4 -t 5
     ./gramsg4 -t5
 
-## Accessing options from within your program
+#### Overriding &lt;global&gt;
+
+Suppose you had something like this in the options XML file:
+
+```
+<parameters>
+  <global>
+    <option name="myoption" value="value1" ... />
+  </global>
+
+  <myprogram>
+    <option name="myoption" value="value2" ... />
+  </myprogram>
+</parameters>
+```
+
+Then for every other program that uses the Options class, the value of `myoption` would be `value1`. But for the program `myprogram`, the value of `myoption` would be `value2`.
+
+This is not a good practice. It's probably better to use the command line for this sort of override; e.g.,
+```
+./myprogram --myoption=value2
+```
+
+### Accessing options from within your program
 
 Just having an option defined in the XML file is not enough.
 You need the programming to do something with that option. Typically you'd initiate the parsing of the options XML file and the command line by invoking `ParseOptions` in your program's `main` routine. 
@@ -248,7 +277,7 @@ int main( int argc, char** argv ) {
 After that one-time initialization in your `main` routine, you can access the value of a given option from any method:
 
 ```
-  #include "Options.h" 
+#include "Options.h" 
   
   // ...
   
@@ -262,8 +291,8 @@ For example, assume there's a double-precision option defined with the name "ene
 in the options XML File:
 
 ```  
-  #include "Options.h" 
-  #include <iostream> 
+#include "Options.h" 
+#include <iostream> 
   // ...
   // Save the pointer to the Options object.
   auto options = util::Options::GetInstance();
@@ -284,6 +313,9 @@ in the options XML File:
 
 To fetch a vector, use `std::vector<double>`; e.g.,
 ```
+#include "Options.h" 
+#include "TVector3.h"
+#include <iostream> 
 #include <vector>
 // ...
   auto options = util::Options::GetInstance();
@@ -291,7 +323,7 @@ To fetch a vector, use `std::vector<double>`; e.g.,
   std::vector<double> myVector;
   options->GetOption("direction",myVector);
   if ( myVector.size() == 3 ) {
-     ROOT::TMath::XYZVector direction(myVector[0], myVector[1], myVector[2]);
+     TVector3 direction(myVector[0], myVector[1], myVector[2]);
      // ...
   }
   else {
@@ -299,7 +331,7 @@ To fetch a vector, use `std::vector<double>`; e.g.,
   }     
 ```
 
-## Implementing the `-h/--help` option
+### Implementing the `-h/--help` option
 
 The method `util::Options::PrintHelp()` can be used to implement the `-h` and `--help` options for your program:
 ```
@@ -344,9 +376,9 @@ See options.xml for details.
 
 ```
 
-## Other `Options` methods
+### Other `Options` methods
 
-### Displaying a table of all the options
+#### Displaying a table of all the options
 
 `util::Options::PrintOptions()` will print all the options and their values as a text table. 
 This is handy for debugging. In the case of `gramsg4`, the `PrintOptions()` method is called
@@ -395,7 +427,7 @@ verbose             v    true                             flag       Command Lin
 
 Note that `Options` keeps track of which tag block was the source of a given option, or if the option came from the command line. 
 
-### Going through options one-by-one
+#### Going through options one-by-one
 
 There are times when it's useful to "iterate" through the internal table of all available options;
 for example, to save the options in an ntuple for later reference. The following methods are available (these are the lines from `Option.h`):
@@ -414,7 +446,7 @@ for example, to save the options in an ntuple for later reference. The following
     std::string GetOptionSource( size_t i ) const;
 ```
 
-### Saving options to a ROOT file
+#### Saving options to a ROOT file
 
 The utility method `WriteOptions` can be used to write the option to an ntuple in an output file in [ROOT](https://root.cern.ch/) format. This lets you record the values used to run the program that generated that particular file.
 
@@ -429,7 +461,7 @@ options->WriteNtuple(output);
 
 `WriteNtuple` can take a second argument, the name of the options ntuple. If you don't supply one, the default is `Options`.
 
-### Restoring options from a ROOT file
+#### Restoring options from a ROOT file
 
 Suppose you have an ROOT file that was created by a program that had its options saved using the `WriteOptions` method described above. You'd like to rerun the program with those same options, perhaps with one or more options changed via the command line. Let's further suppose that, due to the complexities of file management over a long analysis, you've lost the original XML options file that generated the ROOT file. 
 
