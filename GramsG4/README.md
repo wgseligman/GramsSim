@@ -25,9 +25,9 @@ If you want a formatted (or easier-to-read) version of this file, scroll to the 
 ## Running GramsG4
 
 Before running GramsG4 (or any of the GramsSim programs), please read
-`GramsSim/README.md` for how to set up a GramsSim build/work
+[`GramsSim/README.md`](../README.md) for how to set up a GramsSim build/work
 area. When you want to change program options, see
-`GramsSim/util/README.md`.
+[`GramsSim/util/README.md`](../util/README.md).
 
 To run the simulation:
 
@@ -45,7 +45,7 @@ display:
 
 GramsG4 uses the [Geant4 general particle source](http://geant4-userdoc.web.cern.ch/geant4-userdoc/UsersGuides/ForApplicationDeveloper/html/GettingStarted/generalParticleSource.html) (or "gps") to generate primary particles. The gps commands
 can only be executed from Geant4 macro files. You can find examples in the `GramsSim/mac` directory. 
-See `GramsSim/mac/README.md` for a description of the examples. 
+See [`GramsSim/mac/README.md`](../mac/README.md) for a description of the examples. 
 
 To use a particular Geant4 macro file, e.g.,  `mac/run.mac`:
 ```
@@ -81,7 +81,7 @@ See `GramsSim/mac/README.md` for a description of the visualization examples in 
 
 The GPS commands may not be sufficient. For example, you may want to generate the primary particles from an initial nuclear interaction (*n-<span style="text-decoration:overline">n</span>*
 oscillations are one such case), a shower of particles from a cosmic-ray simulation, or the output of GramsSky
-(see `GramsSim/GramsSky/README.md`). 
+(see [`GramsSim/GramsSky/README.md`](../GramsSky/README.md)). 
 
 GramsG4 can read files of events in [HepMC3](https://gitlab.cern.ch/hepmc/HepMC3) format. A typical command to run the simulation with an input file would be:
 
