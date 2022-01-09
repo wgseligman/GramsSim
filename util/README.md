@@ -29,7 +29,7 @@ C++ programs I write.
 
 ### Format of `options.xml`
 
-If you look at the file `options.xml`, what you'll first notice that is that within the `<parameters>` tag there is
+If you look at the file [`options.xml`](../options.xml), what you'll first notice that is that within the `<parameters>` tag there is
 more than one section. It looks something like this:
 
 ```

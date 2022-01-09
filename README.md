@@ -162,7 +162,7 @@ wgseligman know so he can update this documentation.)
 ### Prepare your local computer 
    
 If you are working remotely (e.g., on a laptop), and you want to use
-the GramsG4 interactive display, you may also need to
+the [GramsG4](GramsG4) interactive display, you may also need to
 install and/or activate both X-Windows and OpenGL for your local
 computer. You can find instructions
 [here](https://twiki.nevis.columbia.edu/twiki/bin/view/Main/X11OnLaptops).
@@ -253,7 +253,7 @@ changes to the develop branch:
 
 ### Work files
 
-The GramsSim programs require several shared input files (e.g., `grams.gdml`, `options.xml`).
+The GramsSim programs require several shared input files (e.g., [`grams.gdml`](grams.gdml), [`options.xml`](options.xml)).
 These are copied from the GramsSim directory to your work/build directory when you executed 
 the `cmake` command. Go ahead and make any changes you want to these work files; they won't 
 affect the original files in `$GSDIR/GramsSim`. 
@@ -301,7 +301,7 @@ When you've made your changes and wish to "bookmark" them:
 
 ## Detector geometry
 
-A version of the detector geometry is defined in `grams.gdml`. As the extension implies,
+A version of the detector geometry is defined in [`grams.gdml`](grams.gdml). As the extension implies,
 it is written in the geometry-definition language [GDML](http://lcgapp.cern.ch/project/simu/framework/GDML/doc/GDMLmanual.pdf).
 
 If you want to make changes to the detector geometry (including the colors used for
@@ -311,9 +311,9 @@ There's more about GDML in the [References](#references) section below.
 
 ## Program options
 
-Short version: look at `options.xml`. 
+Short version: look at [`options.xml`](options.xml). 
 
-For a complete description, see `GramsSim/util/README.md`.
+For a complete description, see [`GramsSim/util/README.md`](util/README.md).
 
 ## References
 

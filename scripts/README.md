@@ -11,7 +11,7 @@ programming concepts for folks new to:
 - GDML (Geant4 geometry)
 - HepMC3 (particle-physics file format)
 
-For examples related to working with Geant4 and GramsG4, see `GramsSim/mac`.
+For examples related to working with Geant4 and GramsG4, see [`GramsSim/mac`](../mac).
 
 ## Examples
 

@@ -1,7 +1,7 @@
 # Example GramsG4 macro files
 
 To get you started, here are examples of how to set up event
-generation and the interactive display for GramsG4. To use one of
+generation and the interactive display for [GramsG4](../GramsG4). To use one of
 these files, e.g., mac/test.mac:
 
     ./gramsg4 --macrofile mac/test.mac
@@ -49,7 +49,7 @@ in these macro files.
 With [OpenGL](https://en.wikipedia.org/wiki/OpenGL), Geant4 offers an interactive
 display. Unfortunately, OpenGL is now considered obsolete by some OS manufacturers
 (Apple in particular) which means that support can be spotty. As noted in the 
-main README.md file, you'll need OpenGL libraries installed on the system that's
+[`GramsSim/README.md`](../README.md) file, you'll need OpenGL libraries installed on the system that's
 running `gramsg4`. If you're using a local computer to view the display (e.g., you're running
 `gramsg4` on a server by connecting from a laptop), you may
 also need to [setup OpenGL](https://twiki.nevis.columbia.edu/twiki/bin/view/Main/X11OnLaptops)
