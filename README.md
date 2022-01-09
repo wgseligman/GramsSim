@@ -26,9 +26,12 @@ If you want a formatted (or easier-to-read) version of this file, scroll to the 
 ## Introduction
 
 **GramsSim** is a simulation of the detector for the
-[GRAMS](https://express.northeastern.edu/grams/) experiment
+[GRAMS][1] experiment
 (Gamma-Ray and AntiMatter Survey). For more on GRAMS, see the
-[initial paper](https://inspirehep.net/literature/1713393).
+[initial paper][2].
+
+[1]: https://express.northeastern.edu/grams/
+[2]: https://inspirehep.net/literature/1713393
 
 This document assumes that you're familiar with basic UNIX concepts. If you don't know what "`cd ..`" means (for example), please see the [UNIX references](#references) below for some tutorials. 
 
@@ -50,9 +53,11 @@ subdirectory's README.md file:
 Visit <https://github.com/> and sign up for an account if you don't already have one.
 
 I strongly advise you to use SSH as the means to access a repository, 
-and to [set up an SSH key](https://help.github.com/articles/generating-an-ssh-key/),
+and to [set up an SSH key][3],
 otherwise you'll have to type in a password every time you issue a git
 request against the repository. 
+
+[3]: https://help.github.com/articles/generating-an-ssh-key/
 
 Once this is done, you can download a copy of the GramsSim repository:
 
@@ -66,11 +71,13 @@ Once this is done, you can download a copy of the GramsSim repository:
 
 ### Prerequisites
 
-If you're working on a system of the [Nevis Linux cluster](https://twiki.nevis.columbia.edu/twiki/bin/view/Main/LinuxCluster), type
+If you're working on a system of the [Nevis Linux cluster][4], type
 
     module load cmake root geant4 hepmc3
 
 and skip to the next section. Otherwise, read on.
+
+[4]: https://twiki.nevis.columbia.edu/twiki/bin/view/Main/LinuxCluster
 
 You will need recent versions of:
 
@@ -86,29 +93,41 @@ You will also need the development libraries for:
    - [OpenGL](https://www.opengl.org/)
    - [QT4](https://www.qt.io/)
 
-At Nevis, the approach that fully worked on [CentOS 7](https://www.centos.org/download/) was to install recent versions of C++, cmake,
+At Nevis, the approach that fully worked on [CentOS 7][5] was to install recent versions of C++, cmake,
 ROOT, Geant4, and HepMC3 by compiling them from source. There was no need to recompile 
 xerces-c, OpenGL, and QT4; the CentOS 7 development packages were sufficient:
 
     sudo yum -y install freeglut-devel xerces-c-devel \
        qt-devel mesa-libGLw-devel
        
-Note that compiling Geant4 from source may be the only way to reliably use the [OpenGL visualizer](https://conferences.fnal.gov/g4tutorial/g4cd/Documentation/Visualization/G4OpenGLTutorial/G4OpenGLTutorial.html). 
+[5]: https://www.centos.org/download/
+
+Note that compiling Geant4 from source may be the only way to reliably use the [OpenGL visualizer][6].
+
+[6]: https://conferences.fnal.gov/g4tutorial/g4cd/Documentation/Visualization/G4OpenGLTutorial/G4OpenGLTutorial.html 
 
 #### conda
 
-You can try to fulfill these requirements using [conda](https://docs.conda.io/projects/conda/en/latest/). This *mostly* works,
+You can try to fulfill these requirements using [conda][7]. This *mostly* works,
 though it does not include ROOT I/O in HepMC3 and there are some issues with the Geant4
 OpenGL display. 
 
-On [RHEL](https://www.redhat.com/en/technologies/linux-platforms/enterprise-linux)-derived systems, this is the one-time setup; 
-visit the [EPEL](https://fedoraproject.org/wiki/EPEL) web site for releases other than CentOS 7:
+[7]: https://docs.conda.io/projects/conda/en/latest/
+
+On [RHEL][8]-derived systems, this is the one-time setup; 
+visit the [EPEL][9] web site for releases other than CentOS 7:
+
+[8]: https://www.redhat.com/en/technologies/linux-platforms/enterprise-linux
+[9]: https://fedoraproject.org/wiki/EPEL
 
      # Install conda
      sudo yum -y install https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
      sudo yum -y install conda
      
-On any system with conda installed (including [anaconda3](https://www.anaconda.com/products/individual) and [miniconda](https://docs.conda.io/en/latest/miniconda.html)), the following will set up a suitable development environment:
+On any system with conda installed (including [anaconda3][10] and [miniconda][11]), the following will set up a suitable development environment:
+
+[10]: https://www.anaconda.com/products/individual
+[11]: https://docs.conda.io/en/latest/miniconda.html
      
      # Add the conda-forge repository
      conda config --add channels conda-forge
@@ -127,8 +146,10 @@ Afterwards, the following must be executed once per login session:
 Another potential solution is to use RPM packages for RHEL-derived
 Linux distributions (e.g., Scientific Linux, CentOS). In addition to the EPEL repository,
 you will need a more recent version of the GCC compiler than comes with CentOS 7. One
-solution is to use the [SCL](https://www.softwarecollections.org/en/scls/rhscl/devtoolset-7/) 
+solution is to use the [SCL][12] 
 tools (but see the cautions below).
+
+[12]: https://www.softwarecollections.org/en/scls/rhscl/devtoolset-7/
 
     sudo yum -7 install https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
     sudo yum -y install root HepMC3-devel HepMC3-rootIO-devel 
@@ -148,7 +169,7 @@ There are problems with this approach:
    - In the following instructions, you will want to use `cmake3` instead of just `cmake`.
 
    - You will still have to
-     [download](https://geant4.web.cern.ch/support/download) and
+     [download][13] and
      build/install Geant4 on your own.
 
    - It's important that ROOT, HepMC3, and Geant4 all be compiled with
@@ -156,6 +177,8 @@ There are problems with this approach:
      supports C++11 and above. The ROOT and HepMC3 packages from EPEL were compiled with
      the "native compiler" of CentOS 7, GCC 4.8.5,
      which does _not_ support C++11. 
+
+[13]: https://geant4.web.cern.ch/support/download
 
 (If you determine the installation commands needed for
 Debian-style distributions (including Ubuntu), please let
@@ -167,7 +190,9 @@ If you are working remotely (e.g., on a laptop), and you want to use
 the [GramsG4](GramsG4) interactive display, you may also need to
 install and/or activate both X-Windows and OpenGL for your local
 computer. You can find instructions
-[here](https://twiki.nevis.columbia.edu/twiki/bin/view/Main/X11OnLaptops).
+[here][14].
+
+[14]: https://twiki.nevis.columbia.edu/twiki/bin/view/Main/X11OnLaptops
 
 ## Setting up GramsSim
 
@@ -201,6 +226,7 @@ To run the programs:
 
     # After succesfully making the executables, e.g., `gramsg4`, you can
     # run them in the build directory:
+    ./gramssky
     ./gramsg4
     ./gramsdetsim
 
@@ -304,7 +330,9 @@ When you've made your changes and wish to "bookmark" them:
 ## Detector geometry
 
 A version of the detector geometry is defined in [`grams.gdml`](grams.gdml). As the extension implies,
-it is written in the geometry-definition language [GDML](http://lcgapp.cern.ch/project/simu/framework/GDML/doc/GDMLmanual.pdf).
+it is written in the geometry-definition language [GDML][15].
+
+[15]: https://gdml.web.cern.ch/GDML/doc/GDMLmanual.pdf
 
 If you want to make changes to the detector geometry (including the colors used for
 the `gramsg4 --ui` interactive display), edit `grams.gdml`. If you're having trouble 
@@ -336,8 +364,11 @@ Toolkits:
    - [ROOT Tutorial](https://www.nevis.columbia.edu/~seligman/root-class/)
 
 GDML detector geometry description
-   - [GDML manual](http://lcgapp.cern.ch/project/simu/framework/GDML/doc/GDMLmanual.pdf)
-   - [Geant4 Applications Guide](http://geant4-userdoc.web.cern.ch/geant4-userdoc/UsersGuides/ForApplicationDeveloper/html/), especially the [geometry section](http://geant4-userdoc.web.cern.ch/geant4-userdoc/UsersGuides/ForApplicationDeveloper/html/Detector/Geometry/geometry.html) which explains the difference between solids, logical volumes, and physical volumes. 
+   - [GDML manual][15]
+   - [Geant4 Applications Guide][48], especially the [geometry section][49] which explains the difference between solids, logical volumes, and physical volumes. 
+
+[48]: http://geant4-userdoc.web.cern.ch/geant4-userdoc/UsersGuides/ForApplicationDeveloper/html/
+[49]: http://geant4-userdoc.web.cern.ch/geant4-userdoc/UsersGuides/ForApplicationDeveloper/html/Detector/Geometry/geometry.html
 
 ## Credits
 
@@ -352,16 +383,20 @@ GDML detector geometry description
 ## Viewing a Markdown document
 
 This document is written in
-[Markdown](https://www.markdownguide.org/cheat-sheet/), a tool for
+[Markdown][50], a tool for
 formatting documents but still keeping the unformatted versions
 readable. It's also handy for reading documents on github, since files ending in `.md`
 are automatically formatted for the web. 
 
+[50]: https://www.markdownguide.org/basic-syntax
+
 If you want to read a formatted version of this document (so you're
 spared the funny backticks and hashtags and whatnot), do a web search on
 "Markdown viewer" to find a suitable program. For example, at Nevis, all
-the Linux cluster systems have [pandoc](https://pandoc.org/) installed.
+the Linux cluster systems have [pandoc][51] installed.
 You can view a plain text version of this document with:
+
+[51]: https://pandoc.org/
 
     pandoc README.md -t plain | less
 
