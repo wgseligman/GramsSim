@@ -126,9 +126,9 @@ There are several ntuples in the ROOT file:
    - `TrackInfo`, which contains 'truth' information for all the tracks in the simulation;
    - `Options`, which includes the parsed options for the job (options XML file with the user overrides).
    
-To understand the structure of the ntuples, either view the contents using ROOT, or look in `$GGDIR/GramsSim/GramsG4/src/GramsG4WriteNtuplesAction.cc`.
+To understand the structure of the ntuples, either view the contents using ROOT, or look in [`$GGDIR/GramsSim/GramsG4/src/GramsG4WriteNtuplesAction.cc`][src/GramsG4WriteNtuplesAction.cc].
 
-For information about what the term "Identifier" means, see `grams.gdml`. (It's explained there, instead of in this documentation, because it's in `grams.gdml` that Identifiers are defined and assigned.)
+For information about what the term "Identifier" means, see [`grams.gdml`](grams.gdml). (It's explained there, instead of in this documentation, because it's in `grams.gdml` that Identifiers are defined and assigned.)
 
 If you don't know how to browse an ROOT ntuple, I suggest this [ROOT tutorial](https://www.nevis.columbia.edu/~seligman/root-class/).
 
