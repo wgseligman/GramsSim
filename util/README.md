@@ -97,7 +97,7 @@ Note that the options in this XML file can be overridden by command-line options
 However, the contents of this file _define_ those command-line options. For example, assume 
 this line appears in the XML file:
 
-```  
+```XML  
   <option name="energyCut" value="12.5" type="double" desc="muon energy cut [MeV]" />
 ```
 
@@ -130,7 +130,7 @@ turned on or off. Possible values are `true`, `false`, `on`, `off`,
 
 For example:
 
-```  
+```XML  
   <option name="recombination" type="boolean" value="on" desc="turn recombination on/off" />
 ```  
 
@@ -142,7 +142,7 @@ it isn't. Examples of a flag are `--verbose` and `--help`.
 
 For example, if this is in the XML file:
 
-```  
+```XML  
   <option name="makeHistograms" type="flag" desc="make my special hists"/>
 ```  
 
@@ -161,14 +161,14 @@ As far as Options are concerned, a "vector" is a sequence or tuple of numbers. H
 The number format is fairly flexible. 
 Any characters that are not part of a numeric format will be ignored. 
 All of the following are equivalent:
-
+```XML
     <option name="direction" value="(0.0,0.0,1.0)" type="vector" desc="initial direction"/>
     <option name="direction" value="<0;0;1>" type="vector" desc="initial direction"/>
     <option name="direction" value="[0E20 0 10E-1]" type="vector" desc="initial direction"/>
     <option name="direction" value="+0 -0 1" type="vector" desc="initial direction"/>
     <option name="direction" value="(0nowisthewinterofourdiscontent0,1)" type="vector" desc="initial direction"/>
     <option name="direction" value=".0 .0 .1e1" type="vector" desc="initial direction"/>
-
+```
 If you are going to supply a vector on the command line, you'll have
 to enclose it in quotes. For example:
 
@@ -178,7 +178,7 @@ to enclose it in quotes. For example:
 
 You can define one-character short options:
 
-```
+```XML
   <option name="energyCut" short="e" value="12.5" type="double" />
 ```
 Then you can do:
@@ -191,24 +191,25 @@ command line harder to understand.
 If you duplicate the short character between different options the behavior is
 unpredictable. However, case is significant; e.g., you can do this:
 
-```
+```XML
   <option name="energyMin" short="e" value="12.5" type="double" desc="min pion energy [MeV]"/>
   <option name="energyMax" short="E" value="125.0" type="double" desc="max pion energy [Mev]"/>
 ```  
 
-The usual UNIX shell flexibility is available with these options. Assume this line is in 
+The usual UNIX shell flexibility is available with these options. Assume these lines are in 
 the options XML file. 
 
-```
+```XML
+    <option name="verbose" short="v" type="flag" desc="display details"/>
     <option name="nthreads" short="t" value="0" type="integer" desc="number of threads"/>
 ```
 
 Then all of the following are equivalent:
 
-    ./gramsg4 --nthreads 5
-    ./gramsg4 --nthreads=5
-    ./gramsg4 -t 5
-    ./gramsg4 -t5
+    ./gramsg4 --nthreads 5 --verbose
+    ./gramsg4 -v --nthreads=5
+    ./gramsg4 -t 5 --verbose
+    ./gramsg4 -vt5
 
 #### Overriding &lt;global&gt;
 
