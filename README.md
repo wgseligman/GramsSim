@@ -205,7 +205,7 @@ of this command in one of your shell startup files:
     # be the directory you're in now ($PWD = "print working directory")
     export GSDIR=$PWD
 
-To build/compile:
+To build/compile:[^make]
 
     # Set up the tools as appropriate for your system
     # For example, at Nevis type
@@ -221,6 +221,8 @@ To build/compile:
     cd GramsSim-work
     cmake $GSDIR/GramsSim
     make
+
+[^make]: To speed up the build process, consider using `make -jN` where N is two more than the number of processors you have on your computer. Something like `make -j16` will compile all of GramsSim in under a minute. 
 
 To run the programs:
 
