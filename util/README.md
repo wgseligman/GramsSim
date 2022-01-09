@@ -1,34 +1,36 @@
-# Utilities
+# Directory and Namespace `util`
 
-- [Utilities](#utilities)
-  * [Directory and Namespace `util`](#directory-and-namespace--util-)
-    + [Options - parse XML file and command line](#options---parse-xml-file-and-command-line)
-      - [Format of `options.xml`](#format-of--optionsxml-)
-        * [Defining new options](#defining-new-options)
-        * [Abbreviating options](#abbreviating-options)
+This directory contains modules that I find generally useful in the
+C++ programs I write. 
+
+- [Directory and Namespace `util`](#directory-and-namespace--util-)
+  * [Options - parse XML file and command line](#options---parse-xml-file-and-command-line)
+    + [Format of `options.xml`](#format-of--optionsxml-)
+      - [Defining new options](#defining-new-options)
+        * [Boolean values](#boolean-values)
+        * [Flags](#flags)
+        * [Vectors](#vectors)
+      - [Abbreviating options](#abbreviating-options)
+      - [Overriding &lt;global&gt;](#overriding--lt-global-gt-)
     + [Accessing options from within your program](#accessing-options-from-within-your-program)
     + [Implementing the `-h/--help` option](#implementing-the---h---help--option)
-    + [Other `Options` methods.](#other--options--methods)
+    + [Other `Options` methods](#other--options--methods)
       - [Displaying a table of all the options](#displaying-a-table-of-all-the-options)
       - [Going through options one-by-one](#going-through-options-one-by-one)
-      - [Saving options in the output](#saving-options-in-the-output)
+      - [Saving options to a ROOT file](#saving-options-to-a-root-file)
       - [Restoring options from a ROOT file](#restoring-options-from-a-root-file)
 
 <small><i><a href='http://ecotrust-canada.github.io/markdown-toc/'>Table of contents generated with markdown-toc</a></i></small>
 
-## Directory and Namespace `util`
 
-This directory contains modules that I find generally useful in the
-programs I write. 
-
-### Options - parse XML file and command line
+## Options - parse XML file and command line
 
 *Although you'll see the text `gramsg4` below, the Options class is generic and can work with any program. Just substitute the program's name for `gramsg4`.*
 
-#### Format of `options.xml`
+### Format of `options.xml`
 
-If you look at the file `options.xml`, what you'll first notice that is that within the global `<parameters>` tag there are
-more than one sections. It looks something like this:
+If you look at the file `options.xml`, what you'll first notice that is that within the `<parameters>` tag there is
+more than one section. It looks something like this:
 
 ```
 <parameters>
@@ -36,6 +38,11 @@ more than one sections. It looks something like this:
     <option [...] />
     <option [...] />
   </global>
+
+  <gramssky>
+    <option [...] />
+    <option [...] />
+  </gramssky>
 
   <gramsg4>
     <option [...] />
@@ -49,12 +56,12 @@ more than one sections. It looks something like this:
 </parameters>
 ```
 
-The idea is that this same options XML file might eventually be used
+The idea is that this same options XML file can be used
 by more than one program in an analysis. The `<global>` section
-contains parameters that might apply to any program. Individual
+contains parameters that would apply to any program. Individual
 programs will have their options in their own sections. For the
 purpose of these examples, we're using the name `gramsg4`. If you
-created a program with the name `myanalysis`, within the options XML
+created a program with the name `myanalysis`, in the options XML
 file you'd have:
 
 ```
@@ -78,20 +85,20 @@ Anatomy of <option> tag:
    value - the number/text/bool passed to the program;
            can be overridden on the command line
 
-   type  - string/bool/flag/integer/double
+   type  - string/bool/flag/integer/double/vector
    
    desc  - optional; brief description of the option (keep it 
            less than 20 characters); used in the --help|-h message
 ```
 
-##### Defining new options
+#### Defining new options
 
 Note that the options in this XML file can be overridden by command-line options.
 However, the contents of this file _define_ those command-line options. For example, assume 
 this line appears in the XML file:
 
 ```  
-  <option name="energyCut" value="12.5" type="double" desc="muon energy cut [MeV]"/>
+  <option name="energyCut" value="12.5" type="double" desc="muon energy cut [MeV]" />
 ```
 
 This means that you can set `energyCut` by either editing the XML file, or by using the
@@ -115,6 +122,8 @@ Of course, you can mix and mash to your heart's content:
 
     ./gramsg4 --energyCut 199.9 --options myEnergyStudyOptions.xml
 
+##### Boolean values
+
 If a job option has `type="boolean"`, then it's a feature that can be
 turned on or off. Possible values are `true`, `false`, `on`, `off`,
 `0`, `1`.
@@ -122,11 +131,13 @@ turned on or off. Possible values are `true`, `false`, `on`, `off`,
 For example:
 
 ```  
-  <option name="recombination" type="boolean" value="on" desc="turn recombination on/off"/>
+  <option name="recombination" type="boolean" value="on" desc="turn recombination on/off" />
 ```  
 
-This is different from a job option that has `type="flag"`. Then on
-the command line the option takes no arguments; either it's there or
+##### Flags
+
+An option that has `type="flag"` is different from a boolean. A flag takes no arguments on
+the command line; either it's there or
 it isn't. Examples of a flag are `--verbose` and `--help`.
 
 For example, if this is in the XML file:
@@ -136,11 +147,34 @@ For example, if this is in the XML file:
 ```  
 
 then you could do this on the command line:
-
  
-    ./gramsg4 --makeHistograms --energyCut 123.45                      
+    ./gramsg4 --makeHistograms --energyCut 123.45
+    
+In this example, if `--makeHistograms` is present on the command line, the value of the option is `true`; if `--makeHistograms` is not on the command line, the value of the option is `false`.
 
-##### Abbreviating options
+##### Vectors
+
+As far as Options are concerned, a "vector" is a sequence or tuple of numbers. Here's an example:
+
+    <option name="direction" value="(0,0,1)" type="vector" desc="initial direction"/>
+
+The number format is fairly flexible. 
+Any characters that are not part of a numeric format will be ignored. 
+All of the following are equivalent:
+
+    <option name="direction" value="(0.0,0.0,1.0)" type="vector" desc="initial direction"/>
+    <option name="direction" value="<0;0;1>" type="vector" desc="initial direction"/>
+    <option name="direction" value="[0E20 0 10E-1]" type="vector" desc="initial direction"/>
+    <option name="direction" value="+0 -0 1" type="vector" desc="initial direction"/>
+    <option name="direction" value="(0nowisthewinterofourdiscontent0,1)" type="vector" desc="initial direction"/>
+    <option name="direction" value=".0 .0 .1e1" type="vector" desc="initial direction"/>
+
+If you are going to supply a vector on the command line, you'll have
+to enclose it in quotes. For example:
+
+    ./gramssky --direction "(0,0.707,-0.707)"
+
+#### Abbreviating options
 
 You can define one-character short options:
 
@@ -176,6 +210,29 @@ Then all of the following are equivalent:
     ./gramsg4 -t 5
     ./gramsg4 -t5
 
+#### Overriding &lt;global&gt;
+
+Suppose you had something like this in the options XML file:
+
+```
+<parameters>
+  <global>
+    <option name="myoption" value="value1" ... />
+  </global>
+
+  <myprogram>
+    <option name="myoption" value="value2" ... />
+  </myprogram>
+</parameters>
+```
+
+Then for every other program that uses the Options class, the value of `myoption` would be `value1`. But for the program `myprogram`, the value of `myoption` would be `value2`.
+
+This is not a good practice. It's probably better to use the command line for this sort of override; e.g.,
+```
+./myprogram --myoption=value2
+```
+
 ### Accessing options from within your program
 
 Just having an option defined in the XML file is not enough.
@@ -183,10 +240,10 @@ You need the programming to do something with that option. Typically you'd initi
 
 The three arguments to `util::Options::ParseOptions` are:
    1. The number of arguments on the command line; normally that is the first argument to the main routine (`argc`). 
-   2. A character array (**char) that contains the arguments on the command line; normally this is the second argument to the main routine (`argv`). The contents of this array will be altered during the process. 
+   2. An array of C-style character strings (or type **char) that contains the arguments on the command line; normally this is the second argument to the main routine (`argv`). The contents of this array will be altered by `ParseOptions`. 
    3. The third argument can be one of the following:
       - A character string. This should match a tag-block of the same name in the XML file. The examples below use `gramsg4` in order to select the tag block `<gramsg4> ... <\gramsg4>`. 
-      - Omitted. In this case, the name of the executing program (in `argv[0]`) will be used to search for a matching tag-block within the XML file.
+      - Omitted. In this case, the name of the executing program (in `argv[0]`) will be used to search for a matching tag-block within the XML file. Any path specifications for the program will be omitted in searching for a tag block; e.g., if you're running `~/grams/GramsSim-work/bin/gramsdetsim` then `ParseOptions` will look for a tag block beginning with `<gramsdetsim>`.
       - The string `"ALL"`. In that case, all the tag-blocks will be read in and used. Note that if multiple tag blocks have options with the same `name` attribute, then last one in the file will be used, overriding the ones above it. 
          
 As noted above, here we use `gramsg4` as an example:
@@ -217,10 +274,10 @@ int main( int argc, char** argv ) {
 }
 ```
 
-After that one-time initialization in your main routine, you can access the value of a given option from any method:
+After that one-time initialization in your `main` routine, you can access the value of a given option from any method:
 
 ```
-  #include "Options.h" 
+#include "Options.h" 
   
   // ...
   
@@ -234,8 +291,8 @@ For example, assume there's a double-precision option defined with the name "ene
 in the options XML File:
 
 ```  
-  #include "Options.h" 
-  #include <iostream> 
+#include "Options.h" 
+#include <iostream> 
   // ...
   // Save the pointer to the Options object.
   auto options = util::Options::GetInstance();
@@ -254,6 +311,26 @@ in the options XML File:
 
 ```
 
+To fetch a vector, use `std::vector<double>`; e.g.,
+```
+#include "Options.h" 
+#include "TVector3.h"
+#include <iostream> 
+#include <vector>
+// ...
+  auto options = util::Options::GetInstance();
+  // ...
+  std::vector<double> myVector;
+  options->GetOption("direction",myVector);
+  if ( myVector.size() == 3 ) {
+     TVector3 direction(myVector[0], myVector[1], myVector[2]);
+     // ...
+  }
+  else {
+     std::cerr << "A direction vector needs exactly three values!" << std::endl;
+  }     
+```
+
 ### Implementing the `-h/--help` option
 
 The method `util::Options::PrintHelp()` can be used to implement the `-h` and `--help` options for your program:
@@ -269,7 +346,7 @@ The method `util::Options::PrintHelp()` can be used to implement the `-h` and `-
 
 This will display all the relevant options in the XML file, along with their descriptions.
 
-For example, as of 17-Jul-2021:
+For example, using `GramsSim/GramsG4` and `GramsSim/options.xml` as of 2-Dec-2021:
 ```
 $ ./gramsg4 -h
 Usage:
@@ -281,7 +358,6 @@ Usage:
     [ -i | --inputgen <input generator events> ]
     [ --larstepsize <LAr TPC step size> ]
     [ -m | --macrofile <G4 macro file> ]
-    [ --noscint ]                       # turn off scintillation
     [ -t | --nthreads <number of threads> ]
     [ --options <XML file of options> ] 
     [ -o | --outputfile <output file> ] 
@@ -290,6 +366,7 @@ Usage:
     [ --rngperevent <rng save per event> ]
     [ --rngrestorefile <restore rng from file> ]
     [ -s | --rngseed <random number seed> ]
+    [ --scint <turn on/off scintillation> ]
     [ -l | --showphysicslists ]         # show physics lists then exit
     [ --ui ]                            # start UI session
     [ --uimacrofile <G4 macro file for UI> ]
@@ -299,7 +376,7 @@ See options.xml for details.
 
 ```
 
-### Other `Options` methods.
+### Other `Options` methods
 
 #### Displaying a table of all the options
 
@@ -320,38 +397,40 @@ In the code:
 
 ```
 
-On 25-Nov-2021, the output from `./gramsg4 -v` included:
+On 2-Dec-2021, the output from `./gramsg4 -v` included:
 
 ```
 20 options:
-Option            short  value                            type       desc                
-------            -----  -----                            ----       ----                
-debug               d    false                            flag       
-gdmlfile            g    grams.gdml                       string     input GDML detector desc
-gdmlout                                                   string     write parsed GDML to this file
-help                h    false                            flag       show help then exit
-inputgen            i                                     string     input generator events
-larstepsize              0.020000                         double     LAr TPC step size
-macrofile           m    mac/batch.mac                    string     G4 macro file
-nthreads            t    0                                integer    number of threads
-options                  options.xml                      string     XML file of options
-outputfile          o    gramsg4                          string     output file
-physicslist         p    FTFP_BERT_LIV+OPTICAL+STEPLIMIT  string     physics list
-rngdir                                                    string     rng save/restore directory
-rngperevent              0                                integer    rng save per event
-rngrestorefile                                            string     restore rng from file
-rngseed             s    -1                               integer    random number seed
-scint                    true                             bool       turn on scintillation
-showphysicslists    l    false                            flag       show physics lists then exit
-ui                       false                            flag       start UI session
-uimacrofile              mac/vis-menus.mac                string     G4 macro file for UI
-verbose             v    true                             flag       display details
+Option            short  value                            type       source        desc                
+------            -----  -----                            ------     ------        ----                
+debug               d    false                            flag       global        
+gdmlfile            g    grams.gdml                       string     gramsg4       input GDML detector desc
+gdmlout                                                   string     gramsg4       write parsed GDML to this file
+help                h    false                            flag       global        show help then exit
+inputgen            i                                     string     gramsg4       input generator events
+larstepsize              0.020000                         double     gramsg4       LAr TPC step size
+macrofile           m    mac/batch.mac                    string     gramsg4       G4 macro file
+nthreads            t    0                                integer    gramsg4       number of threads
+options                  options.xml                      string     global        XML file of options
+outputfile          o    gramsg4                          string     gramsg4       output file
+physicslist         p    FTFP_BERT_LIV+OPTICAL+STEPLIMIT  string     gramsg4       physics list
+rngdir                                                    string     gramsg4       rng save/restore directory
+rngperevent              0                                integer    gramsg4       rng save per event
+rngrestorefile                                            string     gramsg4       restore rng from file
+rngseed             s    -1                               integer    gramsg4       random number seed
+scint                    true                             bool       gramsg4       turn on/off scintillation
+showphysicslists    l    false                            flag       gramsg4       show physics lists then exit
+ui                       false                            flag       gramsg4       start UI session
+uimacrofile              mac/vis-menus.mac                string     gramsg4       G4 macro file for UI
+verbose             v    true                             flag       Command Line  display details
 ```
+
+Note that `Options` keeps track of which tag block was the source of a given option, or if the option came from the command line. 
 
 #### Going through options one-by-one
 
 There are times when it's useful to "iterate" through the internal table of all available options;
-for example, to save the options in an ntuple for later reference. The following methods are available:
+for example, to save the options in an ntuple for later reference. The following methods are available (these are the lines from `Option.h`):
 
 ```
     /// Provide a way to access the "i-th" option stored by this
@@ -364,18 +443,19 @@ for example, to save the options in an ntuple for later reference. The following
     std::string GetOptionType( size_t i ) const;
     std::string GetOptionBrief( size_t i ) const;
     std::string GetOptionDescription( size_t i ) const;
+    std::string GetOptionSource( size_t i ) const;
 ```
 
-#### Saving options in the output
+#### Saving options to a ROOT file
 
-The utility method `WriteOptions` can be used to write the option to an ntuple in the output file. This lets you record the values used to run the program that generated that particular file.
+The utility method `WriteOptions` can be used to write the option to an ntuple in an output file in [ROOT](https://root.cern.ch/) format. This lets you record the values used to run the program that generated that particular file.
 
 ```
-#include "WriteOptions.h" // in util/ 
+#include "Options.h" // in util/ 
 // ... call ParseOptions ...
 // Define a ROOT output file, e.g.,:
 auto output = TFile::Open("output-file-name.root","RECREATE")
-//
+// ...
 options->WriteNtuple(output);
 ```
 
@@ -393,7 +473,7 @@ or
 ```
 ./gramsdetsim -v --options gramsdetsim.root
 ```
-The `Options` class will search the ROOT file for an ntuple with a name that contains the text `Options`. It will then populate its list of options from that ntuple, and accept any option overrides on the command line. For example:
+The `ParseOptions` method will search the ROOT file for an ntuple with a name that contains the text `Options`. It will then populate its list of options from that ntuple, and accept any option overrides on the command line. For example:
 ```
 ./gramsdetsim -v --options gramsdetsim.root --rho 1.5
 ```

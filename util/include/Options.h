@@ -8,6 +8,7 @@
 
 #include <TDirectory.h>
 #include <map>
+#include <vector>
 #include <string>
 
 namespace util {
@@ -39,6 +40,7 @@ namespace util {
     bool GetOption(const std::string name, int& value) const;
     bool GetOption(const std::string name, bool& value) const;
     bool GetOption(const std::string name, std::string& value) const;
+    bool GetOption(const std::string name, std::vector<double>& value) const;
 
     /// Display all the options as a table.
     void PrintOptions() const;
@@ -68,7 +70,7 @@ namespace util {
     Options() {}
     
   private:
-    enum m_option_type { e_string, e_double, e_integer, e_boolean, e_flag};
+    enum m_option_type { e_string, e_double, e_integer, e_boolean, e_flag, e_vector};
     struct m_option_attributes {
       std::string value;   ///< The option's value
       m_option_type type;  ///< string/double/integer/boolean/flag
@@ -89,6 +91,12 @@ namespace util {
 
     std::string m_progPath;    ///< The path of the running program (argv[0])
     std::string m_optionsFile; ///< The name of the options XML file used
+
+    /// Convert a string like "(1,2,3)" into a vector of numbers.
+    std::vector<double> m_stringToValues( const std::string& ) const;
+
+    /// Convert a vector of numbers into a string like "(1,2,3)".
+    std::string m_valuesToString( const std::vector<double>& ) const;
   };
 
 } // namespace util

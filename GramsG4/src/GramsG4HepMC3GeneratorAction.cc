@@ -255,12 +255,12 @@ namespace gramsg4 {
       auto g4vertex = new G4PrimaryVertex( xyz, position.t() );
       a_event->AddPrimaryVertex(g4vertex);
  
-    if ( debug ) {
-      G4cout << "GramsG4HepMC3GeneratorAction::HepMC2G4 - " 
-	     << "   Number of particles in this vertex = " 
-	     << (a_hepmc->particles()).size()
-	     << G4endl;
-    }
+      if ( debug ) {
+	G4cout << "GramsG4HepMC3GeneratorAction::HepMC2G4 - " 
+	       << "   Number of particles in this vertex = " 
+	       << (a_hepmc->particles()).size()
+	       << G4endl;
+      }
 
       // For the purposes of Geant4, we're only interested in the
       // outgoing particles from this primary event. For each outgoing
@@ -311,8 +311,7 @@ namespace gramsg4 {
 	// If these pointers are not null, then fetch the value and
 	// assign it to the particle's polarization.
 	if (theta && phi) {
-	  G4ThreeVector polarization;
-	  polarization.setMag(1.0);
+	  G4ThreeVector polarization(0,0,1);
 	  polarization.setTheta( theta->value() );
 	  polarization.setPhi  ( phi->value() );
 	  g4particle->SetPolarization( polarization );
