@@ -29,7 +29,7 @@ C++ programs I write.
 
 ### Format of `options.xml`
 
-If you look at the file `options.xml`, what you'll first notice that is that within the `<parameters>` tag there is
+If you look at the file [`options.xml`](../options.xml), what you'll first notice that is that within the `<parameters>` tag there is
 more than one section. It looks something like this:
 
 ```
@@ -240,7 +240,7 @@ You need the programming to do something with that option. Typically you'd initi
 
 The three arguments to `util::Options::ParseOptions` are:
    1. The number of arguments on the command line; normally that is the first argument to the main routine (`argc`). 
-   2. An array of C-style character strings (or type **char) that contains the arguments on the command line; normally this is the second argument to the main routine (`argv`). The contents of this array will be altered by `ParseOptions`. 
+   2. An array of C-style character strings (or type char**) that contains the arguments on the command line; normally this is the second argument to the main routine (`argv`). The contents of this array will be altered by `ParseOptions`. 
    3. The third argument can be one of the following:
       - A character string. This should match a tag-block of the same name in the XML file. The examples below use `gramsg4` in order to select the tag block `<gramsg4> ... <\gramsg4>`. 
       - Omitted. In this case, the name of the executing program (in `argv[0]`) will be used to search for a matching tag-block within the XML file. Any path specifications for the program will be omitted in searching for a tag block; e.g., if you're running `~/grams/GramsSim-work/bin/gramsdetsim` then `ParseOptions` will look for a tag block beginning with `<gramsdetsim>`.
