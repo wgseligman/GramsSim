@@ -175,8 +175,8 @@
 
          Bear in mind that the origin of the coordinate system is
          determined by the GRAMS GDML file, and as Jan-2022 it is
-         _not_ the center of the detector. As of Jan-2022, the center of
-         the LArTPC is roughly (0,0,-15); the center of the overall
+         _not_ the center of the detector. As of Jan-2022, the center
+         of the LArTPC is (0,0,-14.783); the center of the overall
          detector is at (0,0,45.217). -->
     <option name="OriginSphere" value="(0,0,-15)" type="vector" 
         desc="detector center in detector coords"/> 
