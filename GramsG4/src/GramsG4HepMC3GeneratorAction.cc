@@ -244,6 +244,7 @@ namespace gramsg4 {
 		      << ") is outside of the World Volume; vertex skipped.";
 	  G4Exception("gramsg4::HepMC3GeneratorAction::HepMC2G4","invalid vertex",
 		      JustWarning, description);
+	  continue;
       }
  
       if ( debug ) {
