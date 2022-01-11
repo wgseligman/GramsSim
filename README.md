@@ -187,7 +187,7 @@ wgseligman know so he can update this documentation.)
 ### Prepare your local computer 
    
 If you are working remotely (e.g., on a laptop), and you want to use
-the [GramsG4](GramsG4) interactive display, you may also need to
+the [GramsG4](GramsG4/README.md) interactive display, you may also need to
 install and/or activate both X-Windows and OpenGL for your local
 computer. You can find instructions
 [here][14].
@@ -331,21 +331,22 @@ When you've made your changes and wish to "bookmark" them:
 
 ## Detector geometry
 
-A version of the detector geometry is defined in [`grams.gdml`](grams.gdml). As the extension implies,
-it is written in the geometry-definition language [GDML][15].
+The detector geometry is defined via [GDML file](grams.gdml)a geometry-definition language [GDML][15]
+original designed for Geant4.
 
 [15]: https://gdml.web.cern.ch/GDML/doc/GDMLmanual.pdf
 
 If you want to make changes to the detector geometry (including the colors used for
-the `gramsg4 --ui` interactive display), edit `grams.gdml`. If you're having trouble 
-understanding the contents of the file, start by reading the comments within the file.
+the `gramsg4 --ui` interactive display), edit `grams.gdml` or supply a different GDML file using the `--gdmfile` option.
+If you're having trouble 
+understanding the contents of the `grams.gdml`, start by reading the comments within the file.
 There's more about GDML in the [References](#references) section below. 
 
 ## Program options
 
 Short version: look at [`options.xml`](options.xml). 
 
-For a complete description, see [`GramsSim/util/README.md`](util/README.md).
+For a complete description, see [the Options XML file documentation](util/README.md).
 
 ## References
 
