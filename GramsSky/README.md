@@ -19,7 +19,7 @@ These are the steps taken to generate an event in GramsSky:
    
    - The particle's energy _E_ is generated according to the energy algorithm selected by the user; again, see below.
    
-   - The magnitude of the particle's momentum is calculated by $p = `sqrt{E^{2} - m^{2}}`$, where _m_ is the particle's mass from ROOT's [TParticlePDG][10] class based on its [PDG code][11]
+   - The magnitude of the particle's momentum is calculated by $$p = \sqrt{E^2 - m^2}$$, where _m_ is the particle's mass from ROOT's [TParticlePDG][10] class based on its [PDG code][11]
    
 [10]: https://root.cern.ch/doc/master/classTDatabasePDG.html
 [11]: https://pdg.lbl.gov/2007/reviews/montecarlorpp.pdf
