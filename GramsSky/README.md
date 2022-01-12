@@ -55,7 +55,9 @@ The number of events to generate comes from the __`events`__ parameter in the op
    
    - The direction of (x',y',z') is assumed to be located at a very large distance from the detector. Therefore, all particles from that source appear to be coming from that direction independent of the location within the detector; other words, the celestial sphere always appears to be at infinity no matter from where you look. To simulate this effect, the source of the particles is taken to be a disc with radius __`RadiusDisc`__ that is tangent to the celestial sphere at (x',y',z').
    
-      - In the XML file, if __`RadiusDisc`__ less than or equal to zero, the program will use the value of __`RadiusSphere`__. Note that, given the [grams.gdml](../grams.gdml) file as of 11-Jan-022, a radius of 267 _cm_ is sufficient to cover the entire GRAMS outer detector; a radius of 108 _cm_ will cover the LArTPC. (Make sure the value of __`OriginSphere`__ is consistent with the __`RadiusDisc`__ you choose.)
+      - In the XML file, if __`RadiusDisc`__ less than or equal to zero, the program will use the value of __`RadiusSphere`__. Note that, given the [grams.gdml](../grams.gdml) file as of 11-Jan-2022, a radius of 267 _cm_ is sufficient to cover the entire GRAMS outer detector; a radius of 108 _cm_ will cover the LArTPC. (These values come from adding the dimensions of the relevant volume in quadrature to get the maximum length of the volume's diagonal.) Check that the value of __`OriginSphere`__ is consistent with the __`RadiusDisc`__ you choose.
+      
+         However, if __`RadiusDisc`__ is larger than those limits, it won't directly affect the simulation. It just means that you're generating more particles whose trajectory won't interact with the detector.
 
    - The vector with origin (x',y',z') and vector (px,py,pz) is translated along the plane of the disc to a random (r,&theta;) in the _disc's_ coordinate system. These translated values are what's written as the particle's information in the `gramssky` output. 
      
