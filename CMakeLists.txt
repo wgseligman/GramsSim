@@ -44,6 +44,9 @@ include(cmake/HepMC.cmake)
 # We're going to need the Xerces-C package for some programs.
 find_package (XercesC REQUIRED)
 
+# Set up the astrophysics libraries
+include(cmake/FITS.cmake)
+
 # 11-Jan-2021 WGS: Again, copied from BDSim.
 # rpath for libraries to work from installation correctly
 
