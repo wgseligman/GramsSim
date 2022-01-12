@@ -28,7 +28,7 @@
          individual programs to access these parameters and write
          their output in these units. (I'm looking at you, Geant4!).
 
-	 Length unit: as of Jan-2022, the only valid values are "cm" and "mm".
+     Length unit: as of Jan-2022, the only valid values are "cm" and "mm".
      Energy unit: as of Jan-2022, the only valid values are "MeV" and "GeV".
      
 	 Note that this does not directly affect the GDML file and
