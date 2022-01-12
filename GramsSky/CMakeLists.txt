@@ -1,10 +1,11 @@
 # GramsSky
 
-include_directories(include 
+include_directories(SYSTEM
+                    include
                     ${PROJECT_SOURCE_DIR}/util/include
-                    ${ROOT_INCLUDE_DIR}
-		    ${XercesC_INCLUDE_DIR}
-		    ${FITS_CFLAGS}
+#                    ${ROOT_INCLUDE_DIR}
+#		    ${XercesC_INCLUDE_DIR}
+#		    ${FITS_INCLUDE_DIRS}
 )
 
 file(GLOB SkySrc src/*.cc

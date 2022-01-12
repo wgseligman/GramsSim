@@ -33,10 +33,11 @@ foreach(_filename ${script_progs})
 
    # Tell CMake to compile <whatever.cc> to make
    # the executable <whatever>, using the libraries
-   # from HepMC3 and ROOT.
+   # from HepMC3, ROOT, and FITS.
    add_executable(${_prog} ${_filename})
    target_link_libraries(${_prog} ${HEPMC3_LIBRARIES} )
    target_link_libraries(${_prog} ${ROOT_LIBRARIES} )
+   target_link_libraries(${_prog} ${FITS_LIBRARIES} )
 
    # Put the compiled binary into a "bin" directory within
    # the destination directory. 
