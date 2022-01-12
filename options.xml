@@ -28,12 +28,12 @@
          individual programs to access these parameters and write
          their output in these units. (I'm looking at you, Geant4!).
 
-     Length unit: as of Jan-2022, the only valid values are "cm" and "mm".
-     Energy unit: as of Jan-2022, the only valid values are "MeV" and "GeV".
+         Length unit: as of Jan-2022, the only valid values are "cm" and "mm".
+         Energy unit: as of Jan-2022, the only valid values are "MeV" and "GeV".
      
-	 Note that this does not directly affect the GDML file and
-	 Geant4 macro files, as any dimensioned quantities in those
-	 files have units specified explicitly.
+	     Note that this does not directly affect the GDML file and
+	     Geant4 macro files, as any dimensioned quantities in those
+	     files have units specified explicitly.
 	 -->
     <option name="LengthUnit" type="string" value="cm" desc="length unit for program output" />
     <option name="EnergyUnit" type="string" value="MeV" desc="energy unit for program output" />
