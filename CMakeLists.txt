@@ -52,12 +52,19 @@ include(cmake/FITS.cmake)
 
 # Include the Geant4 libraries.
 if (USE_HEPMC3)
-  set(CMAKE_INSTALL_RPATH "${ROOT_LIBRARY_DIR};${HEPMC3_ROOT_DIR}/lib;${Geant4_LIBRARY_DIR};${CMAKE_INSTALL_PREFIX}/lib")
-  message(STATUS "rpath = ${CMAKE_INSTALL_RPATH}")
+  set(CMAKE_INSTALL_RPATH "${ROOT_LIBRARY_DIR};${HEPMC3_LIB}/lib;${GEANT4_LIBRARY_DIR};${FITS_LIBRARY_DIRS}")
 else()
-  set(CMAKE_INSTALL_RPATH "${ROOT_LIBRARY_DIR};${Geant4_LIBRARY_DIR};${CMAKE_INSTALL_PREFIX}/lib")
-  message(STATUS "rpath = ${CMAKE_INSTALL_RPATH}")
+  set(CMAKE_INSTALL_RPATH "${ROOT_LIBRARY_DIR};${GEANT4_LIBRARY_DIR};${FITS_LIBRARY_DIRS}")
 endif()
+message(STATUS "rpath = ${CMAKE_INSTALL_RPATH}")
+
+#For debugging:
+#message(STATUS "FITS_CFLAGS = ${FITS_CFLAGS}")
+#message(STATUS "FITS_INCLUDE_DIRS = ${FITS_INCLUDE_DIRS}")
+#message(STATUS "FITS_LDFLAGS = ${FITS_LDFLAGS}")
+#message(STATUS "FITS_LIBRARIES = ${FITS_LIBRARIES}")
+#message(STATUS "FITS_LIBRARY_DIRS = ${FITS_LIBRARY_DIRS}")
+#message(STATUS "Geant4_LIBRARIES = ${Geant4_LIBRARIES}")
 
 #----------------------------------------------------------------------------
 # Copy all scripts to the build directory, i.e. the directory in which we
