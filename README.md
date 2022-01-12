@@ -73,7 +73,7 @@ Once this is done, you can download a copy of the GramsSim repository:
 
 If you're working on a system of the [Nevis Linux cluster][4], type
 
-    module load cmake root geant4 hepmc3
+    module load cmake root geant4 hepmc3 healpix
 
 and skip to the next section. Otherwise, read on.
 
@@ -85,7 +85,9 @@ You will need recent versions of:
    - [ROOT](https://root.cern.ch/) (verified to work with ROOT 6.16 and higher)
    - [Geant4](http://geant4.web.cern.ch/) (verified to work with Geant4 10.7 and higher)
    - [HepMC3](https://gitlab.cern.ch/hepmc/HepMC3) 
-   
+   - [CFITSIO](https://heasarc.gsfc.nasa.gov/fitsio/) (verified to work with cfitsio 4.0.0)
+   - [HEALPix](https://healpix.sourceforge.io/) (verified to work with healpix_cxx 3.8.0)
+  
 You will also need the development libraries for:
 
    - [GNU C++](https://gcc.gnu.org/) (version 6.2 or higher, though the compilation might work with [clang](https://clang.llvm.org/); requires C++11 or higher)
@@ -94,7 +96,7 @@ You will also need the development libraries for:
    - [QT4](https://www.qt.io/)
 
 At Nevis, the approach that fully worked on [CentOS 7][5] was to install recent versions of C++, cmake,
-ROOT, Geant4, and HepMC3 by compiling them from source. There was no need to recompile 
+ROOT, Geant4, HepMC3, cfitsio, and healpix_cxx by compiling them from source. There was no need to recompile 
 xerces-c, OpenGL, and QT4; the CentOS 7 development packages were sufficient:
 
     sudo yum -y install freeglut-devel xerces-c-devel \
@@ -134,7 +136,7 @@ On any system with conda installed (including [anaconda3][10] and [miniconda][11
      conda config --set channel_priority strict
 
      # Create a conda environment. The name "grams-devel" is arbitrary.
-     conda create -y --name grams-devel compilers cmake root geant4 hepmc3
+     conda create -y --name grams-devel compilers cmake root geant4 hepmc3 cfitsio healpix_cXX
 
 Afterwards, the following must be executed once per login session:
 
@@ -152,7 +154,7 @@ tools (but see the cautions below).
 [12]: https://www.softwarecollections.org/en/scls/rhscl/devtoolset-7/
 
     sudo yum -7 install https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
-    sudo yum -y install root HepMC3-devel HepMC3-rootIO-devel 
+    sudo yum -y install root HepMC3-devel HepMC3-rootIO-devel cfitsio-devel healpix_cxx-devel
     sudo yum -y install gcc-c++ glibc-devel cmake3
     sudo yum -y install centos-release-scl
     
@@ -174,7 +176,7 @@ There are problems with this approach:
 
    - It's important that ROOT, HepMC3, and Geant4 all be compiled with
      the same version of the C++ compiler that
-     supports C++11 and above. The ROOT and HepMC3 packages from EPEL were compiled with
+     supports C++11 and above. The ROOT, HepMC3, cfitsio, and healpix packages from EPEL were compiled with
      the "native compiler" of CentOS 7, GCC 4.8.5,
      which does _not_ support C++11. 
 
