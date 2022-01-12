@@ -67,13 +67,13 @@ The number of events to generate comes from the __`events`__ parameter in the op
 
 These are the available generators for (x,y,z) as 11-Jan-2022. If option __`PositionGeneration`__ has the value: 
 
-### `Fixed`
+### `"Fixed"`
 
 The user must supply the option __`PointSource`__ with a vector of values (x,y,z). All the particles are generated with an initial vertex at that point, then undergo the geometric transformations described above. 
 
    - The position (x,y,z) will be translated to the surface of the celestial sphere automatically. There's no need to do elaborate calculations to make sure (x,y,z) is exactly __`RadiusSphere`__ from __`OriginSphere`__; the program takes care of that. 
 
-### `Iso`
+### `"Iso"`
 
 The particle position is generated isotropically on the inner surface of the celestial sphere. The controlling options are:
 
@@ -86,33 +86,33 @@ Units are radians. Setting __`ThetaMinMax`__ to `(0,1.571)` and __`PhiMinMax`__ 
 
 These are the available generators for _E_ as 11-Jan-2022. If option __`EnergyGeneration`__ has the value: 
 
-### `Fixed`
+### `"Fixed"`
 
 The value of _E_ comes from the option `FixedEnergy`.
 
-### `Flat`
+### `"Flat"`
 
 _E_ is generated uniformly between the values of parameters __`EnergyMin`__ and __`EnergyMax`__.
 
-### `Gaus`
+### `"Gaus"`
 
 _E_ is generated according to a Gaussian distribution with mean of __`GausMean`__ and width __`GausWidth`__. 
 
    - Note that the limits in parameters __`EnergyMin`__ and __`EnergyMax`__ still apply to this generator. This is to keep the value of _E_ from going negative, which would cause problems in both `gramssky` and `gramsg4`.
    
-### `BlackBody`
+### `"BlackBody"`
 
 _E_ is generated according to a black-body distribution with radiation temperature (kT) given by parameter __`RadTemp`__. 
 
    - Again, the limits in parameters __`EnergyMin`__ and __`EnergyMax`__ still apply to this generator.
    
-### `PowerLaw`
+### `"PowerLaw"`
 
 _E_ is generated according to a power-law distribution with a photon index given by __`PhotonIndex`__.
 
    - The limits in parameters __`EnergyMin`__ and __`EnergyMax`__ still apply to this generator.
    
-### `Hist`
+### `"Hist"`
 
 The program expects two parameters: __`HistFile`__ with the name of a ROOT file, and __`HistName`__ with the name of a histogram within that file. 
 
