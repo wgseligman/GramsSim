@@ -38,15 +38,16 @@
     <option name="LengthUnit" type="string" value="cm" desc="length unit for program output" />
     <option name="EnergyUnit" type="string" value="MeV" desc="energy unit for program output" />
 
-  </global>
-
-  <gramssky>
-
     <option name="rngseed" short="s" value="-1" type="integer" desc="random number seed">
         The random number seed for the simulation. Use 0 if you want the
         program to start with a random value and you're not interested 
         in recreating the run.
     </option>
+
+
+  </global>
+
+  <gramssky>
 
     <!-- Number of sky events to generate -->
     <option name="events" short="n" value="1000" type="integer" desc="number of events" />
@@ -218,7 +219,7 @@
     <option name="uimacrofile" value="mac/vis-menus.mac" type="string" desc="G4 macro file for UI"/>
 
     <!-- The name of an input file containing events from some external
-    event generator.. If this option is present, this file will override
+    event generator. If this option is present, this file will override
     any particle-generation commands in the macrofile. The file must be in
     HepMC3 format (https://gitlab.cern.ch/hepmc/HepMC3). The internal format
     of the file is determined from its extension (the part after the final "."):
@@ -289,12 +290,6 @@
     <!-- Variables that have to do with Random Number Generation (RNG).
     You can leave these alone until you want to re-create a particular
     Monte Carlo event. -->
-
-    <option name="rngseed" short="s" value="-1" type="integer" desc="random number seed">
-        The random number seed for the simulation. Use 0 if you want the
-        program to start with a random value and you're not interested 
-        in recreating the run.
-    </option>
     <option name="rngdir" value="" type="string" desc="rng save/restore directory">
         The directory to save/restore the state of the random-number generation
         engine. If this is blank (value=""), do not save/restore the RNG state.
