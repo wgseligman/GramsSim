@@ -6,6 +6,9 @@
 // 
 // ... those portions, in turn, came from Geant4 example HepMCEx01. 
 
+// Is HepMC3 even defined for this system?
+#ifdef HEPMC3_INSTALLED
+
 #include "GramsG4HepMC3GeneratorAction.hh"
 
 #include "G4Event.hh"
@@ -23,7 +26,7 @@
 #include "HepMC3/ReaderAsciiHepMC2.h"
 #include "HepMC3/ReaderHEPEVT.h"
 #include "HepMC3/ReaderLHEF.h"
-#ifdef HEPMC3_ROOTIO
+#ifdef HEPMC3_ROOTIO_INSTALLED
 #include "HepMC3/ReaderRoot.h"
 #include "HepMC3/ReaderRootTree.h"
 #endif
@@ -109,7 +112,7 @@ namespace gramsg4 {
       m_reader = new HepMC3::ReaderHEPEVT(m_inputFile);
     else if ( extension == "lhef" )
       m_reader = new HepMC3::ReaderLHEF(m_inputFile);
-#ifdef HEPMC3_ROOTIO
+#ifdef HEPMC3_ROOTIO_INSTALLED
     else if ( extension == "root" )
       m_reader = new HepMC3::ReaderRoot(m_inputFile);
     else if ( extension == "treeroot" )
@@ -338,3 +341,5 @@ namespace gramsg4 {
   }
 
 } // namespace gramsg4
+
+#endif // HepMC3 defined

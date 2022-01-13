@@ -207,7 +207,7 @@
     <option name="gdmlout" value="" type="string" 
         desc="write parsed GDML to this file" />    
 
-    <!-- The file of Geant4 commands to be executed. If --ui is on, this parameter
+    <!-- The file of Geant4 commands to be executed. If ui is on, this parameter
     is ignored. Take a look at the mac/ directory for some ideas. -->
     <option name="macrofile" short="m" value="mac/batch.mac" type="string" 
         desc="G4 macro file"/>

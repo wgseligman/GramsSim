@@ -2,6 +2,14 @@
 
 # Set up variables for the cfitsio and healpix libraries.  They're
 # mainly needed for GramsSky, which needs to read in sky maps.
-pkg_check_modules (FITS cfitsio healpix_cxx)
+pkg_check_modules (FITS QUIET cfitsio healpix_cxx)
 
-include_directories(SYSTEM ${FITS_INCLUDE_DIRS})
+if (FITS_FOUND)
+  message(STATUS "Using cfitsio/healpix_cxx")
+  include_directories(SYSTEM ${FITS_INCLUDE_DIRS})
+  # Set a preprocessor flag that the code can use to test if we've got
+  # healpix_cxx.
+  add_definitions(-DHEALPIX_INSTALLED)
+else()
+  message(STATUS "cfitsio/healpix_cxx not found")
+endif()

@@ -1,5 +1,14 @@
 # GramsSky
 
+if (NOT HepMC3_FOUND)
+  message(STATUS "HepMC3 not found; skipping GramsSky compilation.")
+  return()
+endif()
+
+if (NOT FITS_FOUND)
+  message(STATUS "FITSIO/HEALPix not found; map-based generators omitted.")
+endif()
+
 include_directories(SYSTEM
                     include
                     ${PROJECT_SOURCE_DIR}/util/include
@@ -11,9 +20,11 @@ file(GLOB SkySrc src/*.cc
 
 add_executable(gramssky gramssky.cc ${SkySrc})
 target_link_libraries(gramssky ${ROOT_LIBRARIES} )
-target_link_libraries(gramssky ${XercesC_LIBRARY} )
+target_link_libraries(gramssky ${XercesC_LIBRARIES} )
 target_link_libraries(gramssky ${HEPMC3_LIBRARIES} )
-target_link_libraries(gramssky ${FITS_LDFLAGS} )
+if (FITS_FOUND)
+  target_link_libraries(gramssky ${FITS_LDFLAGS} )
+endif()
 
 # Put the compiled binary into the main GramsSim build directory.
 # Without this statement, the binary would be placed in

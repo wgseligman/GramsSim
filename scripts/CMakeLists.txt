@@ -25,8 +25,39 @@ file(GLOB script_progs RELATIVE ${PROJECT_SOURCE_DIR}/scripts CONFIGURE_DEPENDS
 	  *.cc
 	  )
 
+# Make lists of programs that have any special dependencies.
+list(APPEND HepMC3_Programs
+  "hepmc-convert.cc"
+  "hepmc-grams-example.cc"
+)
+# As of 13-Jan-2012, there are no programs in this directory that
+# depend on cfitsio or healpix_cxx.
+list(APPEND FITS_Programs
+  ""
+)
+
 # For each such file...
 foreach(_filename ${script_progs})
+   # Check if we can compile this program with the available
+   # libraries.
+   if (NOT HepMC3_FOUND)
+     # Is this file on our list of programs that need HepMC3?
+     list (FIND HepMC3_Programs "${_filename}" _index)
+     if ( _index GREATER -1 )
+       # Yes it is, so don't compile it.
+       continue()
+     endif()
+   endif()
+
+   if (NOT FITS_FOUND)
+     # Is this file on our list of programs that need cfitsio/healpix_cxx?
+     list (FIND FITS_Programs "${_filename}" _index)
+     if ( _index GREATER -1 )
+       # Yes it is, so don't compile it.
+       continue()
+     endif()
+   endif()
+
    # Derive the executable program name by
    # stripping the ".cc" from the end.
    string(REGEX REPLACE "\\.cc" "" _prog "${_filename}")
@@ -35,9 +66,13 @@ foreach(_filename ${script_progs})
    # the executable <whatever>, using the libraries
    # from HepMC3, ROOT, and FITS.
    add_executable(${_prog} ${_filename})
-   target_link_libraries(${_prog} ${HEPMC3_LIBRARIES} )
    target_link_libraries(${_prog} ${ROOT_LIBRARIES} )
-   target_link_libraries(${_prog} ${FITS_LDFLAGS} )
+   if (HepMC3_FOUND)
+     target_link_libraries(${_prog} ${HEPMC3_LIBRARIES} )
+   endif()
+   if (FITS_FOUND)
+     target_link_libraries(${_prog} ${FITS_LDFLAGS} )
+   endif()
 
    # Put the compiled binary into a "bin" directory within
    # the destination directory. 

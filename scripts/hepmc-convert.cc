@@ -24,7 +24,7 @@
 #include "HepMC3/WriterAscii.h"
 #include "HepMC3/WriterAsciiHepMC2.h"
 #include "HepMC3/WriterHEPEVT.h"
-#ifdef HEPMC3_ROOTIO
+#ifdef HEPMC3_ROOTIO_INSTALLED
 #include "HepMC3/ReaderRoot.h"
 #include "HepMC3/ReaderRootTree.h"
 #include "HepMC3/WriterRoot.h"
@@ -75,7 +75,7 @@ int main(int argc, char **argv) {
     reader = new HepMC3::ReaderHEPEVT(inputFile);
   else if ( extension == "lhef" )
     reader = new HepMC3::ReaderLHEF(inputFile);
-#ifdef HEPMC3_ROOTIO
+#ifdef HEPMC3_ROOTIO_INSTALLED
   else if ( extension == "root" )
     reader = new HepMC3::ReaderRoot(inputFile);
   else if ( extension == "treeroot" )
@@ -119,7 +119,7 @@ int main(int argc, char **argv) {
     writer = new HepMC3::WriterAscii(outputFile);
   else if ( extension == "hpe" )
     writer = new HepMC3::WriterHEPEVT(outputFile);
-#ifdef HEPMC3_ROOTIO
+#ifdef HEPMC3_ROOTIO_INSTALLED
   else if ( extension == "root" )
     writer = new HepMC3::WriterRoot(outputFile);
   else if ( extension == "treeroot" )

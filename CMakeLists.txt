@@ -47,33 +47,31 @@ find_package (XercesC REQUIRED)
 # Set up the astrophysics libraries
 include(cmake/FITS.cmake)
 
-# 11-Jan-2021 WGS: Again, copied from BDSim.
-# rpath for libraries to work from installation correctly
-
-# Include the Geant4 libraries.
-if (USE_HEPMC3)
-  set(CMAKE_INSTALL_RPATH "${ROOT_LIBRARY_DIR};${HEPMC3_LIB}/lib;${GEANT4_LIBRARY_DIR};${FITS_LIBRARY_DIRS}")
-else()
-  set(CMAKE_INSTALL_RPATH "${ROOT_LIBRARY_DIR};${GEANT4_LIBRARY_DIR};${FITS_LIBRARY_DIRS}")
+# Set the rpath so that the executables can find the libraries
+# even if the environment setups have not been run in the shell.  
+set(CMAKE_INSTALL_RPATH "${ROOT_LIBRARY_DIR}")
+if (FITS_FOUND)
+  list(APPEND CMAKE_INSTALL_RPATH "${FITS_LIBRARY_DIRS}")
 endif()
 message(STATUS "rpath = ${CMAKE_INSTALL_RPATH}")
 
 #For debugging:
-#message(STATUS "FITS_CFLAGS = ${FITS_CFLAGS}")
-#message(STATUS "FITS_INCLUDE_DIRS = ${FITS_INCLUDE_DIRS}")
+#message(STATUS "XercesC_LIBRARIES = ${XercesC_LIBRARIES}")
+#message(STATUS "XercesC_LIBRARY = ${XercesC_LIBRARY}")
+#message(STATUS "HEPMC3_LIBRARIES = ${HEPMC3_LIBRARIES}")
 #message(STATUS "FITS_LDFLAGS = ${FITS_LDFLAGS}")
 #message(STATUS "FITS_LIBRARIES = ${FITS_LIBRARIES}")
 #message(STATUS "FITS_LIBRARY_DIRS = ${FITS_LIBRARY_DIRS}")
 #message(STATUS "Geant4_LIBRARIES = ${Geant4_LIBRARIES}")
 
 #----------------------------------------------------------------------------
-# Copy all scripts to the build directory, i.e. the directory in which we
-# build GramsG4. This is so that we can run the executable directly because it
+# Copy all configuration files to the build directory, i.e. the directory in which we
+# build GramsSim. This is so that we can run the executables directly because they
 # relies on these scripts being in the current working directory.
 #
-set(GramsG4_SCRIPTS grams.gdml options.xml README.md)
+set(GramsSim_SCRIPTS grams.gdml options.xml README.md)
 
-foreach(_script ${GramsG4_SCRIPTS})
+foreach(_script ${GramsSim_SCRIPTS})
   configure_file(
     ${PROJECT_SOURCE_DIR}/${_script}
     ${PROJECT_BINARY_DIR}/${_script}
