@@ -125,7 +125,7 @@ There are problems with this approach:
      the "native compiler" of CentOS 7, GCC 4.8.5,
      which does _not_ support C++11. 
      
-     [This page](https://stackoverflow.com/questions/33394934/converting-std-cxx11string-to-stdstring) potentially offers a work-around by addung the following option as shown below when building both Geant4 and GramsSim, but it has not been tested for this package:
+     [This page](https://stackoverflow.com/questions/33394934/converting-std-cxx11string-to-stdstring) potentially offers a work-around by adding the following option as shown below when building both Geant4 and GramsSim, but it has not been tested:
 ```
      cmake ../GramsSim -D_GLIBCXX_USE_CXX11_ABI=0
 ```
