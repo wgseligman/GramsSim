@@ -14,7 +14,7 @@ If you're working on a system of the [Nevis Linux cluster][4], type
 
     module load cmake root geant4 hepmc3 healpix
 
-and skip to the section on preparing your local computer. Otherwise, read on.
+and skip to the [section below](#prepare-your-local-computer) on preparing your local computer. Otherwise, read on.
 
 [4]: https://twiki.nevis.columbia.edu/twiki/bin/view/Main/LinuxCluster
 
@@ -26,7 +26,7 @@ You will need recent versions of:
    
 The following libraries are optional. If one or more are not present, then GramsSim will compile without the corresponding features. For example, if HepMC3 is not installed, then [GramsSky](GramsSky) will not be compiled.
    
-   - [HepMC3](https://gitlab.cern.ch/hepmc/HepMC3) 
+   - [HepMC3](https://gitlab.cern.ch/hepmc/HepMC3) (verified to work with HepMC3 3.2.2)
    - [CFITSIO](https://heasarc.gsfc.nasa.gov/fitsio/) (verified to work with cfitsio 4.0.0)
    - [HEALPix](https://healpix.sourceforge.io/) (verified to work with healpix_cxx 3.8.0)
   
@@ -35,7 +35,7 @@ You will also need the development libraries for:
    - [GNU C++](https://gcc.gnu.org/) (version 6.2 or higher, though the compilation might work with [clang](https://clang.llvm.org/); requires C++11 or higher)
    - [Xerces-C](https://xerces.apache.org/xerces-c/)
    
-The following development libraries are needed for Geant4 visualization:
+The following optional development libraries are needed for Geant4 visualization:
 
    - [OpenGL](https://www.opengl.org/)
    - [QT4](https://www.qt.io/)
@@ -113,17 +113,23 @@ To enable the SCL version of the GCC compiler installed above:
        
 There are problems with this approach:
 
-   - In the following instructions, you will want to use `cmake3` instead of just `cmake`.
+   - In the [compilation instructions](README.md), you will want to use `cmake3` instead of just `cmake`.
 
    - You will still have to
      [download][13] and
      build/install Geant4 on your own.
 
    - It's important that ROOT, HepMC3, and Geant4 all be compiled with
-     the same version of the C++ compiler that
+     the a version of the C++ compiler that
      supports C++11 and above. The ROOT, HepMC3, cfitsio, and healpix_cxx packages from EPEL were compiled with
      the "native compiler" of CentOS 7, GCC 4.8.5,
      which does _not_ support C++11. 
+     
+     [This page](https://stackoverflow.com/questions/33394934/converting-std-cxx11string-to-stdstring) potentially offers a work-around by addung the following option as shown below when building both Geant4 and GramsSim, but it has not been tested for this package:
+```
+     cmake ../GramsSim -D_GLIBCXX_USE_CXX11_ABI=0
+```
+
 
 [13]: https://geant4.web.cern.ch/support/download
 
