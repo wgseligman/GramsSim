@@ -28,6 +28,8 @@ In the following documentation, names in __`this format`__ are parameters in the
 
 The input and output units for the parameters described below are determined by parameters __`LengthUnit`__ and __`EnergyUnit`__. Normally these options are in the `<global>` section of the options XML file. 
 
+- If the HepMC3 libraries are not found during the [build process](../DEPENDENCIES.md), then this package will not be compiled.
+
 ## The process of GramsSky generation
 
 ![Sky Diagram](SkyDiagram.jpg)
