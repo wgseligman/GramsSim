@@ -69,7 +69,7 @@ The number of events to generate comes from the __`events`__ parameter in the op
 
 These are the available generators for (x,y,z) as 11-Jan-2022. If option __`PositionGeneration`__ has the value: 
 
-### `"Fixed"`
+### `"Point"`
 
 The user must supply the option __`PointSource`__ with a vector of values (x,y,z). All the particles are generated with an initial vertex at that point, then undergo the geometric transformations described above. 
 
