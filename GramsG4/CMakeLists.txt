@@ -1,5 +1,10 @@
 # GramsG4
 
+if (NOT Geant4_FOUND)
+  message(STATUS "Geant4 not found; skipping GramsG4 compilation.")
+  return()
+endif()
+
 #----------------------------------------------------------------------------
 # Locate sources and headers for this project
 #
@@ -26,7 +31,6 @@ target_link_libraries(gramsg4 ${Geant4_LIBRARIES} )
 #message(STATUS "Geant4_LIBRARIES = ${Geant4_LIBRARIES}")
 #message(STATUS "ROOT_LIBRARIES = ${ROOT_LIBRARIES}")
 #message(STATUS "HEPMC3_LIBRARIES = ${HEPMC3_LIBRARIES}")
-
 
 # Put the compiled binary into the main GramsSim build directory.
 # Without this statement, the binary would be placed in

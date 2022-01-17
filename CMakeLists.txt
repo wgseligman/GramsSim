@@ -31,8 +31,9 @@ endif()
 #----------------------------------------------------------------------------
 # Setup Geant4 include directories and compile definitions
 #
-include(${Geant4_USE_FILE})
-
+if (Geant4_FOUND)
+   include(${Geant4_USE_FILE})
+endif()
 
 #----------------------------------------------------------------------------
 # Set up ROOT
@@ -56,13 +57,12 @@ endif()
 message(STATUS "rpath = ${CMAKE_INSTALL_RPATH}")
 
 #For debugging:
-#message(STATUS "XercesC_LIBRARIES = ${XercesC_LIBRARIES}")
-#message(STATUS "XercesC_LIBRARY = ${XercesC_LIBRARY}")
-#message(STATUS "HEPMC3_LIBRARIES = ${HEPMC3_LIBRARIES}")
-#message(STATUS "FITS_LDFLAGS = ${FITS_LDFLAGS}")
-#message(STATUS "FITS_LIBRARIES = ${FITS_LIBRARIES}")
-#message(STATUS "FITS_LIBRARY_DIRS = ${FITS_LIBRARY_DIRS}")
-#message(STATUS "Geant4_LIBRARIES = ${Geant4_LIBRARIES}")
+# Display all CMAKE variables
+#get_cmake_property(_variableNames VARIABLES)
+#list (SORT _variableNames)
+#foreach (_variableName ${_variableNames})
+#    message(STATUS "${_variableName}=${${_variableName}}")
+#endforeach()
 
 #----------------------------------------------------------------------------
 # Copy all configuration files to the build directory, i.e. the directory in which we

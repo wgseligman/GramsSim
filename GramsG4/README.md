@@ -25,6 +25,8 @@ If you want a formatted (or easier-to-read) version of this file, scroll to the 
 [1]: https://express.northeastern.edu/grams/
 [2]: http://geant4.web.cern.ch/
 
+- If the Geant4 libraries are not found during the [build process](../DEPENDENCIES.md), then this package will not be compiled.
+
 ## Running GramsG4
 
 Before running GramsG4 (or any of the GramsSim programs), please read
