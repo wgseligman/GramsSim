@@ -32,7 +32,7 @@ C++ programs I write.
 If you look at the file [`options.xml`](../options.xml), what you'll first notice that is that within the `<parameters>` tag there is
 more than one section. It looks something like this:
 
-```
+```XML 
 <parameters>
   <global>
     <option [...] />
@@ -64,7 +64,7 @@ purpose of these examples, we're using the name `gramsg4`. If you
 created a program with the name `myanalysis`, in the options XML
 file you'd have:
 
-```
+```XML
   <myanalysis>
     <option [...] />
     <option [...] />
@@ -97,7 +97,7 @@ Note that the options in this XML file can be overridden by command-line options
 However, the contents of this file _define_ those command-line options. For example, assume 
 this line appears in the XML file:
 
-```  
+```XML  
   <option name="energyCut" value="12.5" type="double" desc="muon energy cut [MeV]" />
 ```
 
@@ -130,7 +130,7 @@ turned on or off. Possible values are `true`, `false`, `on`, `off`,
 
 For example:
 
-```  
+```XML  
   <option name="recombination" type="boolean" value="on" desc="turn recombination on/off" />
 ```  
 
@@ -142,7 +142,7 @@ it isn't. Examples of a flag are `--verbose` and `--help`.
 
 For example, if this is in the XML file:
 
-```  
+```XML  
   <option name="makeHistograms" type="flag" desc="make my special hists"/>
 ```  
 
@@ -161,14 +161,14 @@ As far as Options are concerned, a "vector" is a sequence or tuple of numbers. H
 The number format is fairly flexible. 
 Any characters that are not part of a numeric format will be ignored. 
 All of the following are equivalent:
-
+```XML
     <option name="direction" value="(0.0,0.0,1.0)" type="vector" desc="initial direction"/>
     <option name="direction" value="<0;0;1>" type="vector" desc="initial direction"/>
     <option name="direction" value="[0E20 0 10E-1]" type="vector" desc="initial direction"/>
     <option name="direction" value="+0 -0 1" type="vector" desc="initial direction"/>
     <option name="direction" value="(0nowisthewinterofourdiscontent0,1)" type="vector" desc="initial direction"/>
     <option name="direction" value=".0 .0 .1e1" type="vector" desc="initial direction"/>
-
+```
 If you are going to supply a vector on the command line, you'll have
 to enclose it in quotes. For example:
 
@@ -178,7 +178,7 @@ to enclose it in quotes. For example:
 
 You can define one-character short options:
 
-```
+```XML
   <option name="energyCut" short="e" value="12.5" type="double" />
 ```
 Then you can do:
@@ -191,30 +191,31 @@ command line harder to understand.
 If you duplicate the short character between different options the behavior is
 unpredictable. However, case is significant; e.g., you can do this:
 
-```
+```XML
   <option name="energyMin" short="e" value="12.5" type="double" desc="min pion energy [MeV]"/>
   <option name="energyMax" short="E" value="125.0" type="double" desc="max pion energy [Mev]"/>
 ```  
 
-The usual UNIX shell flexibility is available with these options. Assume this line is in 
+The usual UNIX shell flexibility is available with these options. Assume these lines are in 
 the options XML file. 
 
-```
+```XML
+    <option name="verbose" short="v" type="flag" desc="display details"/>
     <option name="nthreads" short="t" value="0" type="integer" desc="number of threads"/>
 ```
 
 Then all of the following are equivalent:
 
-    ./gramsg4 --nthreads 5
-    ./gramsg4 --nthreads=5
-    ./gramsg4 -t 5
-    ./gramsg4 -t5
+    ./gramsg4 --nthreads 5 --verbose
+    ./gramsg4 -v --nthreads=5
+    ./gramsg4 -t 5 --verbose
+    ./gramsg4 -vt5
 
 #### Overriding &lt;global&gt;
 
 Suppose you had something like this in the options XML file:
 
-```
+```XML
 <parameters>
   <global>
     <option name="myoption" value="value1" ... />
@@ -248,7 +249,7 @@ The three arguments to `util::Options::ParseOptions` are:
          
 As noted above, here we use `gramsg4` as an example:
 
-```
+```C++
 #include "Options.h"
 #include <iostream> 
 // ...
@@ -276,7 +277,7 @@ int main( int argc, char** argv ) {
 
 After that one-time initialization in your `main` routine, you can access the value of a given option from any method:
 
-```
+```C++
 #include "Options.h" 
   
   // ...
@@ -290,7 +291,7 @@ After that one-time initialization in your `main` routine, you can access the va
 For example, assume there's a double-precision option defined with the name "energyCut"
 in the options XML File:
 
-```  
+```C++
 #include "Options.h" 
 #include <iostream> 
   // ...
@@ -312,7 +313,7 @@ in the options XML File:
 ```
 
 To fetch a vector, use `std::vector<double>`; e.g.,
-```
+```C++
 #include "Options.h" 
 #include "TVector3.h"
 #include <iostream> 
@@ -334,7 +335,7 @@ To fetch a vector, use `std::vector<double>`; e.g.,
 ### Implementing the `-h/--help` option
 
 The method `util::Options::PrintHelp()` can be used to implement the `-h` and `--help` options for your program:
-```
+```C++
   // Check for help message.
   bool help;
   options->GetOption("help",help);
@@ -386,7 +387,7 @@ if the `--verbose` or `-v` option is turned on:
 
 In the code:
 
-```
+```C++
   bool verbose;
   options->GetOption("verbose",verbose);
   if (verbose) {
@@ -430,9 +431,9 @@ Note that `Options` keeps track of which tag block was the source of a given opt
 #### Going through options one-by-one
 
 There are times when it's useful to "iterate" through the internal table of all available options;
-for example, to save the options in an ntuple for later reference. The following methods are available (these are the lines from `Option.h`):
+for example, to save the options in an ntuple for later reference. The following methods are available (these are the lines from [`Option.h`](include/Option.h)):
 
-```
+```C++
     /// Provide a way to access the "i-th" option stored by this
     /// class. Note that these routines are very inefficient (map
     /// iterators are not random-access) so don't use them inside
@@ -450,7 +451,7 @@ for example, to save the options in an ntuple for later reference. The following
 
 The utility method `WriteOptions` can be used to write the option to an ntuple in an output file in [ROOT](https://root.cern.ch/) format. This lets you record the values used to run the program that generated that particular file.
 
-```
+```C++
 #include "Options.h" // in util/ 
 // ... call ParseOptions ...
 // Define a ROOT output file, e.g.,:

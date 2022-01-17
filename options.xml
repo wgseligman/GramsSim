@@ -1,6 +1,6 @@
 <?xml version = "1.0" encoding = "UTF-8" ?>
 
-<!-- Please see README.md for documentation. -->
+<!-- Please see GramsSim/util/README.md for documentation. -->
 
 <parameters>
   
@@ -28,25 +28,26 @@
          individual programs to access these parameters and write
          their output in these units. (I'm looking at you, Geant4!).
 
-	 Length unit: as of Jan-2022, the only valid values are "cm" and "mm".
-
-
-	 Note that this does not directly affect the GDML file and
-	 Geant4 macro files, as any dimensioned quantities in those
-	 files have units specified explicitly.
+         Length unit: as of Jan-2022, the only valid values are "cm" and "mm".
+         Energy unit: as of Jan-2022, the only valid values are "MeV" and "GeV".
+     
+         Note that this does not directly affect the GDML file and
+         Geant4 macro files, as any dimensioned quantities in those
+         files have units specified explicitly.
 	 -->
     <option name="LengthUnit" type="string" value="cm" desc="length unit for program output" />
     <option name="EnergyUnit" type="string" value="MeV" desc="energy unit for program output" />
-
-  </global>
-
-  <gramssky>
 
     <option name="rngseed" short="s" value="-1" type="integer" desc="random number seed">
         The random number seed for the simulation. Use 0 if you want the
         program to start with a random value and you're not interested 
         in recreating the run.
     </option>
+
+
+  </global>
+
+  <gramssky>
 
     <!-- Number of sky events to generate -->
     <option name="events" short="n" value="1000" type="integer" desc="number of events" />
@@ -60,7 +61,7 @@
     <!-- The PDG (Particle Data Group) code of the primary
          particles. For a sky simulation, that will almost certainly
          be 22 (photon). -->
-    <option name="PrimaryPDG" value="22" type="integer" desc="primary particle PDG"/>    
+    <option name="PrimaryPDG" value="22" type="integer" desc="primary particle PDG code"/>    
     
     <!-- PositionGeneration = how to generate the primary particle
          positions. The following are allowed values:
@@ -144,11 +145,11 @@
          finite radius within the world volume, while the actual
          celestial sphere is actually at "infinity".
 	 
-	 To simulate this effect, we construct an imaginary disc
-	 tangent to the simulation sphere at the point of the
-	 particle's generation; see GramsSky/SkyDiagram.jpg and
-	 GramsSky/README.md for details. This routine randomly shifts
-	 the origin of the particle across the surface of that disc.
+	     To simulate this effect, we construct an imaginary disc
+	     tangent to the simulation sphere at the point of the
+	     particle's generation; see GramsSky/SkyDiagram.jpg and
+	     GramsSky/README.md for details. This routine randomly shifts
+	     the origin of the particle across the surface of that disc.
 
          It also adjusts for the direction of the sphere with respect
          to detector coordinates, and the center of the detector with
@@ -175,9 +176,9 @@
 
          Bear in mind that the origin of the coordinate system is
          determined by the GRAMS GDML file, and as Jan-2022 it is
-         _not_ the center of the detector. For GRAMS, the center of
-         the LArTPC is roughly (0,0,-15); the center of the overall
-         detector is at (0,0,45.217) as of Jan-2022 -->
+         _not_ the center of the detector. As of Jan-2022, the center
+         of the LArTPC is (0,0,-14.783); the center of the overall
+         detector is at (0,0,45.217). -->
     <option name="OriginSphere" value="(0,0,-15)" type="vector" 
         desc="detector center in detector coords"/> 
     
@@ -206,7 +207,7 @@
     <option name="gdmlout" value="" type="string" 
         desc="write parsed GDML to this file" />    
 
-    <!-- The file of Geant4 commands to be executed. If UI is on, this parameter
+    <!-- The file of Geant4 commands to be executed. If ui is on, this parameter
     is ignored. Take a look at the mac/ directory for some ideas. -->
     <option name="macrofile" short="m" value="mac/batch.mac" type="string" 
         desc="G4 macro file"/>
@@ -218,7 +219,7 @@
     <option name="uimacrofile" value="mac/vis-menus.mac" type="string" desc="G4 macro file for UI"/>
 
     <!-- The name of an input file containing events from some external
-    event generator.. If this option is present, this file will override
+    event generator. If this option is present, this file will override
     any particle-generation commands in the macrofile. The file must be in
     HepMC3 format (https://gitlab.cern.ch/hepmc/HepMC3). The internal format
     of the file is determined from its extension (the part after the final "."):
@@ -234,7 +235,7 @@
     of an event (e.g., HEPEVT, LHEF). In those cases the vertex of the event will be
     [TODO: Fill in an appropriate action.]
 
-    See README.md for a more detailed description.
+    See GramsSim/GramsG4/README.md for a more detailed description.
     -->
     <option name="inputgen" short="i" value="" type="string" desc="input generator events"/>
 
@@ -289,12 +290,6 @@
     <!-- Variables that have to do with Random Number Generation (RNG).
     You can leave these alone until you want to re-create a particular
     Monte Carlo event. -->
-
-    <option name="rngseed" short="s" value="-1" type="integer" desc="random number seed">
-        The random number seed for the simulation. Use 0 if you want the
-        program to start with a random value and you're not interested 
-        in recreating the run.
-    </option>
     <option name="rngdir" value="" type="string" desc="rng save/restore directory">
         The directory to save/restore the state of the random-number generation
         engine. If this is blank (value=""), do not save/restore the RNG state.

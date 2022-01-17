@@ -13,6 +13,12 @@ programming concepts for folks new to:
 
 For examples related to working with Geant4 and GramsG4, see [`GramsSim/mac`](../mac).
 
+- If you add scripts/programs to this directory that require [HepMC3][10], [cfitsio][17], or [healpix][18], be sure to edit the [CMakeLists.txt](./CMakeLists.txt) file. This is to prevent those programs from being compiled on systems that don't have these libraries installed.  
+
+[10]: https://gitlab.cern.ch/hepmc/HepMC3
+[17]: https://heasarc.gsfc.nasa.gov/fitsio/
+[18]: https://healpix.jpl.nasa.gov/
+
 ## Examples
 
 `SimpleAnalysis.C` - a very simple example of how to look at the

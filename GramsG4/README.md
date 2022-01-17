@@ -1,6 +1,6 @@
 # GramsG4
 
-If you want a formatted (or easier-to-read) version of this file, scroll to the bottom of `GramsSim/README.md` for instructions. If you're reading this on github, then it's already formatted. 
+If you want a formatted (or easier-to-read) version of this file, scroll to the bottom of [`GramsSim/README.md`](../README.md) for instructions. If you're reading this on github, then it's already formatted. 
 
 - [GramsG4](#gramsg4)
   * [Introduction](#introduction)
@@ -20,7 +20,10 @@ If you want a formatted (or easier-to-read) version of this file, scroll to the 
 
 ## Introduction
 
-**GramsG4** is a simulation of particle transport in the [GRAMS](https://express.northeastern.edu/grams/) detector. It is based on [Geant4](http://geant4.web.cern.ch/), a general-purpose particle-physics detector simulation.
+**GramsG4** is a simulation of particle transport in the [GRAMS][1] detector. It is based on [Geant4][2], a general-purpose particle-physics detector simulation.
+
+[1]: https://express.northeastern.edu/grams/
+[2]: http://geant4.web.cern.ch/
 
 ## Running GramsG4
 
@@ -43,9 +46,11 @@ display:
     
 ### Controlling the particle source
 
-GramsG4 uses the [Geant4 general particle source](http://geant4-userdoc.web.cern.ch/geant4-userdoc/UsersGuides/ForApplicationDeveloper/html/GettingStarted/generalParticleSource.html) (or "gps") to generate primary particles. The gps commands
+GramsG4 uses the [Geant4 general particle source][3] (or "gps") to generate primary particles. The gps commands
 can only be executed from Geant4 macro files. You can find examples in the [`GramsSim/mac`](../mac) directory. 
 See [`GramsSim/mac/README.md`](../mac/README.md) for a description of the examples. 
+
+[3]: http://geant4-userdoc.web.cern.ch/geant4-userdoc/UsersGuides/ForApplicationDeveloper/html/GettingStarted/generalParticleSource.html
 
 To use a particular Geant4 macro file, e.g.,  `mac/run.mac`:
 ```
@@ -83,21 +88,24 @@ The GPS commands may not be sufficient. For example, you may want to generate th
 oscillations are one such case), a shower of particles from a cosmic-ray simulation, or the output of GramsSky
 (see [`GramsSim/GramsSky/README.md`](../GramsSky/README.md)). 
 
-GramsG4 can read files of events in [HepMC3](https://gitlab.cern.ch/hepmc/HepMC3) format. A typical command to run the simulation with an input file would be:
+GramsG4 can read files of events in [HepMC3][10] format. A typical command to run the simulation with an input file would be:
 
     ./gramsg4 --macrofile mac/hepmc3.mac --inputgen scripts/example.hepmc3
 
 Note that HepMC3 can also read files in various formats. The format of the file is assumed to match the file's extension (the part after the final period ".") as follows:
 
-<table>
-<tr><th>Extension</th><th>Format</th></tr>
-<tr><td>.hepmc3</td><td>HepMC3 ASCII</td></tr>
-<tr><td>.hepmc2</td><td>HepMC2 ASCII</td></tr>
-<tr><td>.hpe</td><td><a href="https://cdcvs.fnal.gov/redmine/projects/minos-sim/wiki/HEPEVT_files">HEPEVT</a> (ASCII)</td></tr>
-<tr><td>.lhef</td><td><a href="http://home.thep.lu.se/~leif/LHEF/LHEF_8h_source.html">Les Houches Event File</a></td></tr>
-<tr><td>.root</td><td>HepMC3 ROOT</td></tr>
-<tr><td>.treeroot</td><td>HepMC3 ROOT TTree</td></tr>
-</table>
+|  Extension  |  Format                        |
+| ----------- | -----------------------------  |
+|  .hepmc3    |  HepMC3 ASCII                  |
+|  .hepmc2    |  HepMC2 ASCII                  |
+|  .hpe       |  [HEPEVT][15] (ASCII)          |
+|  .lhef      |  [Les Houches Event File][16]  |
+|  .root      |  HepMC3 ROOT                   |
+|  .treeroot  |  HepMC3 ROOT TTree             |
+
+[10]: https://gitlab.cern.ch/hepmc/HepMC3
+[15]: https://cdcvs.fnal.gov/redmine/projects/minos-sim/wiki/HEPEVT_files
+[16]: http://home.thep.lu.se/~leif/LHEF/LHEF_8h_source.html
 
 If you want to write HepMC3 files, there are a couple of simple examples in the [`GramsSim/scripts/`](../scripts) directory. More detailed examples can be found in the `examples/` directory within the HepMC3 distribution. 
 
@@ -130,7 +138,9 @@ To understand the structure of the ntuples, either view the contents using ROOT,
 
 For information about what the term "Identifier" means, see [`grams.gdml`](../grams.gdml). (It's explained there, instead of in this documentation, because it's in `grams.gdml` that Identifiers are defined and assigned.)
 
-If you don't know how to browse an ROOT ntuple, I suggest this [ROOT tutorial](https://www.nevis.columbia.edu/~seligman/root-class/).
+If you don't know how to browse an ROOT ntuple, I suggest this [ROOT tutorial][20].
+
+[20]: https://www.nevis.columbia.edu/~seligman/root-class/
 
 *Note:* The G4Track IDs will be in the order that Geant4 processes them, which is *not* in ascending numeric order (even if you don't run with multiple threads; see below). Also note that it's possible for an event to leave no energy deposits in an active TPC volume, so there may be information in `TrackInfo` with no corresponding information in `LArHits`. 
 
@@ -201,8 +211,11 @@ Unfortunately, at the time of this writing (May-2020) there isn't one
 single source that provides an answer. Here are some links to get you
 started:
 
-* [Short Guide to Choosing Your Physics List](https://indico.cern.ch/event/776050/contributions/3241826/attachments/1789270/2914266/ChoosingPhysLists.pdf) (PDF presentation)
-* [G4 Physics List Guide](http://geant4-userdoc.web.cern.ch/geant4-userdoc/UsersGuides/PhysicsListGuide/BackupVersions/V10.5-2.0/html/physicslistguide.html) (incomplete)
+   * [Short Guide to Choosing Your Physics List][50] (PDF presentation)
+   * [G4 Physics List Guide][51] (incomplete)
+
+[50]: https://indico.cern.ch/event/776050/contributions/3241826/attachments/1789270/2914266/ChoosingPhysLists.pdf
+[51]: http://geant4-userdoc.web.cern.ch/geant4-userdoc/UsersGuides/PhysicsListGuide/BackupVersions/V10.5-2.0/html/physicslistguide.html
 
 If you're just starting out, the Geant4 collaboration's recommendations for initial tests is `FTFP_BERT`. 
 Here it is set explicitly on the command line:
@@ -252,14 +265,25 @@ This will show you many places to get started!
 ## References
 
 Toolkits:
-   - [Geant4 Manual](http://geant4.web.cern.ch/geant4/UserDocumentation/UsersGuides/ForApplicationDeveloper/html/)
-   - [ROOT Tutorial](https://www.nevis.columbia.edu/~seligman/root-class/)
+   - [Geant4 Manual][55]
+   - [ROOT Tutorial][56]
+
+[55]: http://geant4.web.cern.ch/geant4/UserDocumentation/UsersGuides/ForApplicationDeveloper/html/
+[56]: https://www.nevis.columbia.edu/~seligman/root-class/
 
 GDML detector geometry description
-   - [GDML manual](http://lcgapp.cern.ch/project/simu/framework/GDML/doc/GDMLmanual.pdf)
-   - [Geant4 Applications Guide](http://geant4-userdoc.web.cern.ch/geant4-userdoc/UsersGuides/ForApplicationDeveloper/html/), especially the [geometry section](http://geant4-userdoc.web.cern.ch/geant4-userdoc/UsersGuides/ForApplicationDeveloper/html/Detector/Geometry/geometry.html) which explains the difference between solids, logical volumes, and physical volumes. 
+   - [GDML manual][57]
+   - [Geant4 Applications Guide][60], especially the [geometry section][61] which explains the difference between solids, logical volumes, and physical volumes. 
+
+[57]: http://lcgapp.cern.ch/project/simu/framework/GDML/doc/GDMLmanual.pdf
+[60]: http://geant4-userdoc.web.cern.ch/geant4-userdoc/UsersGuides/ForApplicationDeveloper/html/
+[61]: http://geant4-userdoc.web.cern.ch/geant4-userdoc/UsersGuides/ForApplicationDeveloper/html/Detector/Geometry/geometry.html
 
 Geant4 General Particle Source:
-   - [Documentation](http://geant4-userdoc.web.cern.ch/geant4-userdoc/UsersGuides/ForApplicationDeveloper/html/GettingStarted/generalParticleSource.html)
-   - [Examples](http://hurel.hanyang.ac.kr/Geant4/Geant4_GPS/reat.space.qinetiq.com/gps/examples/examples.html)
-   - [Concepts](https://www.google.com/url?sa=t&rct=j&q=&esrc=s&source=web&cd=&cad=rja&uact=8&ved=2ahUKEwiY15u9wP3qAhXFJt8KHQk7C1gQFjADegQIBRAB&url=https%3A%2F%2Findico.in2p3.fr%2Fevent%2F443%2Fcontributions%2F30793%2Fattachments%2F24858%2F30632%2FGSantin_Geant4_Annecy2008_GPS_v11.ppt&usg=AOvVaw0yJS5FTzA2-btA1ag7XCX9) (Microsoft Powerpoint document)
+   - [Documentation][62]
+   - [Examples][63]
+   - [Concepts][64] (Microsoft Powerpoint document)
+
+[62]: http://geant4-userdoc.web.cern.ch/geant4-userdoc/UsersGuides/ForApplicationDeveloper/html/GettingStarted/generalParticleSource.html
+[63]: http://hurel.hanyang.ac.kr/Geant4/Geant4_GPS/reat.space.qinetiq.com/gps/examples/examples.html
+[64]: https://www.google.com/url?sa=t&rct=j&q=&esrc=s&source=web&cd=&cad=rja&uact=8&ved=2ahUKEwiY15u9wP3qAhXFJt8KHQk7C1gQFjADegQIBRAB&url=https%3A%2F%2Findico.in2p3.fr%2Fevent%2F443%2Fcontributions%2F30793%2Fattachments%2F24858%2F30632%2FGSantin_Geant4_Annecy2008_GPS_v11.ppt&usg=AOvVaw0yJS5FTzA2-btA1ag7XCX9 
