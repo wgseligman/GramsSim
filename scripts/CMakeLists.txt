@@ -30,10 +30,9 @@ list(APPEND HepMC3_Programs
   "hepmc-convert.cc"
   "hepmc-grams-example.cc"
 )
-# As of 13-Jan-2012, there are no programs in this directory that
-# depend on cfitsio or healpix_cxx.
+
 list(APPEND FITS_Programs
-  ""
+  "healpix-maps.cc"
 )
 
 # For each such file...

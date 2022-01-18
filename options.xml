@@ -187,6 +187,10 @@
          imported celestial maps are usually aligned with the galactic
          coordinate system, while the physical detector will have
          typically have some other orientation for its z-axis.
+
+         If this vector has three elements, it's interpreted as
+         (x,y,z). If it has two elements (e.g., (0.707,0)) then it's
+         interpreted as (theta,phi).
     -->
     <option name="MapDirection" value="(0,0,1)" type="vector" 
         desc="map 'north pole' in detector coords"/> 
