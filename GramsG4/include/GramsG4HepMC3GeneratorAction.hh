@@ -14,6 +14,9 @@
 
 // Forward declarations
 class G4Event;
+namespace util {
+  class Options;
+}
 namespace HepMC3 {
   class Reader;
   class GenEvent;
@@ -55,6 +58,13 @@ namespace gramsg4 {
     // The input event information, to be converted
     // and passed on to Geant4.
     HepMC3::GenEvent* m_hepmcEvent;
+
+    // Pointer to instance of the Options class (see
+    // GramsSim/util/README.md).
+    util::Options* m_options;
+
+    // Units of time, from the options XML file.
+    double m_timeScale;
   };
 
 } // namespace gramsg4

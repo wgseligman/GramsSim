@@ -30,6 +30,7 @@
 
          Length unit: as of Jan-2022, the only valid values are "cm" and "mm".
          Energy unit: as of Jan-2022, the only valid values are "MeV" and "GeV".
+	 Time unit: as of Jan-2022, the only valid values are "ns", "ms", and "s".
      
          Note that this does not directly affect the GDML file and
          Geant4 macro files, as any dimensioned quantities in those
@@ -37,6 +38,7 @@
 	 -->
     <option name="LengthUnit" type="string" value="cm" desc="length unit for program output" />
     <option name="EnergyUnit" type="string" value="MeV" desc="energy unit for program output" />
+    <option name="TimeUnit"   type="string" value="ns" desc="time unit for program output" />
 
     <option name="rngseed" short="s" value="-1" type="integer" desc="random number seed">
         The random number seed for the simulation. Use 0 if you want the
