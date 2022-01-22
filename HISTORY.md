@@ -9,7 +9,8 @@ Jan-2022:
    - Added first pass for GramsSky.
    - Added links to the Markdown documentation in .md files. Now, when viewing files in a Markdown viewer such as the GitHub web page, the user can click on a link like [`GramsG4/README.md`](GramsG4/README.md) to view that file directly. 
    - Improved the build process so that it can continue if the libraries for Geant4, HepMC3, and/or FITSIO/HEALPix cannot be detected on the system. 
-   
+   - `healpix-maps.cc` is a simple bit of code that tests reading HEALPix maps from a FITS file.
+
 Dec-2021:
 
    - Created [`scripts/gdmlsearch.cc`](scripts/gdmlsearch.cc) to provide an example of how to search through the geometry of a ROOT-compatible GDML file. 
