@@ -334,8 +334,10 @@
          TTrees" in the ROOT documentation.  -->
     <option name="outputntuple" value="DetSim" type="string" desc="output ntuple"/>
 
-    Physics-model options. Note that ntuple units are the same as
-    Geant4: MeV, mm, ns.
+    <!-- Physics-model options. Note that the units associated with
+         these constants should be consistent with the "TimeUnit",
+         "LengthUnit", and "EnergyUnit" options defined above.
+    -->
 
     Options associated with modeling recombination effects.
     <option name="recombination" value="true" type="boolean" 
