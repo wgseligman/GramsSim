@@ -18,7 +18,9 @@ file(GLOB SkySrc src/*.cc
                     ${PROJECT_SOURCE_DIR}/util/src/*.cc
     )
 
+# Add an extension determined by GramsSim/CMakeLists.txt
 set (PROG "gramssky${EXE}")
+
 add_executable(${PROG} gramssky.cc ${SkySrc})
 target_link_libraries(${PROG} ${ROOT_LIBRARIES} )
 target_link_libraries(${PROG} ${XercesC_LIBRARIES} )

@@ -11,14 +11,14 @@ cmake_minimum_required(VERSION 3.6 FATAL_ERROR)
 # but not on Mac OS. 
 project(GramsSimProject)
 
-# The above advice extends to executables as well. Put in a test to
+# The above advice extends to subdirectories as well. Put in a test to
 # check if we're building on Mac OS X Darwin.
 if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
     set(MACOSX TRUE)
 endif()
 
 # For a Mac OS compilation, we have to avoid the program names having
-# the same names as the subidrectories; e.g., in UNIX we can have
+# the same names as the subidrectories; e.g., in Linux we can have
 # directory GramsSky and executable gramssky, but in Mac OS we
 # can't. So define an extension that will have a value for Mac OS
 # executables; e.g., gramssky.exe.

@@ -23,8 +23,9 @@ file(GLOB sources src/*.cc
 #----------------------------------------------------------------------------
 # Add the executables, and link them to the libraries
 
-# GramsG4
+# Add an extension determined by GramsSim/CMakeLists.txt
 set (PROG "gramsg4${EXE}")
+
 add_executable(${PROG} gramsg4.cc ${sources})
 target_link_libraries(${PROG} ${HEPMC3_LIBRARIES} )
 target_link_libraries(${PROG} ${ROOT_LIBRARIES} )

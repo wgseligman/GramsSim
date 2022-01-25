@@ -9,7 +9,9 @@ file(GLOB DetSimSrc src/*.cc
                     ${PROJECT_SOURCE_DIR}/util/src/*.cc
     )
 
+# Add an extension determined by GramsSim/CMakeLists.txt
 set (PROG "gramsdetsim${EXE}")
+
 add_executable(${PROG} gramsdetsim.cc ${DetSimSrc})
 target_link_libraries(${PROG} ${ROOT_LIBRARIES} )
 target_link_libraries(${PROG} ${XercesC_LIBRARY} )
