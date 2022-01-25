@@ -111,6 +111,8 @@ To run the programs:
 
 ...and so on. Consult the `README.md` in the individual program directories for details. 
 
+**Note**: On Mac OS X Darwin, the names of the programs will have `.exe` appended to them; e.g., `gramsg4.exe`. This is to avoid problems in the build procedure caused by Mac OS X being case-insensitive with respect to file and directory names; e.g., `GramsG4` and `gramsg4` are the same in OS X, so it's safer to make the executable `gramsg4.exe`.
+
 ## Making changes
 
 Obviously, you can make any changes you want to GramsSim for your own use. This section is for when you want to start making changes to be added to the official repository. Before you edit files for the first time:
