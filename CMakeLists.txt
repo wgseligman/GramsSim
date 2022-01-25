@@ -4,11 +4,28 @@
 #----------------------------------------------------------------------------
 # Setup the project
 cmake_minimum_required(VERSION 3.6 FATAL_ERROR)
+
 # Note: Do NOT make the project name the same as any executable
 # name, including case. When the project was GramsG4 and the 
 # main executable gramsg4, the build process would work on Linux
 # but not on Mac OS. 
 project(GramsSimProject)
+
+# The above advice extends to executables as well. Put in a test to
+# check if we're building on Mac OS X Darwin.
+if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
+    set(MACOSX TRUE)
+endif()
+
+# For a Mac OS compilation, we have to avoid the program names having
+# the same names as the subidrectories; e.g., in UNIX we can have
+# directory GramsSky and executable gramssky, but in Mac OS we
+# can't. So define an extension that will have a value for Mac OS
+# executables; e.g., gramssky.exe.
+set(EXE "")
+if (MACOSX)
+   set (EXE ".exe")
+endif()
 
 # Add this project's cmake/Module directory as a source of our own CMake modules
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/cmake/Modules)
