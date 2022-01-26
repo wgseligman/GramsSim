@@ -244,7 +244,7 @@ If you want to run `dEdxExample` to see what it does:
 
 **Q: I just updated GramsSim from the repository, and now I'm having trouble compiling the code.**
 
-Typically this happens after the `CMakeLists.txt` files are updated due to a change in the build procedure. The best way to fix this is to delete your build directory, create a new, and start the `cmake`/`make` procedure from scratch. 
+Typically this happens after the `CMakeLists.txt` files are updated due to a change in the build procedure. The best way to fix this is to delete your build directory, create a new one, and start the `cmake`/`make` procedure from scratch. 
 
 If that's inconvenient (e.g., you've created many useful outputs or work files in your build directory), try removing the `cmake` work files:
 ```
@@ -261,7 +261,7 @@ cmake ../GramsSim
 
 This is to avoid problems in the build procedure caused by Mac OS X being case-insensitive with respect to file and directory names; e.g., `GramsSky` and `gramssky` are the same in OS X; when the build procedure tries to create the executable `gramssky`, it fails (with a mysterious error message) because the directory `GramsSky` already exists. In this example, it's safer to make the name of the executable `gramssky.exe`.
 
-So when you see an example like this in the documentation:
+So if you see an example like this in the documentation:
 
 ```
 ./gramsg4 --ui --uimacrofile mac/vis-menus.mac
