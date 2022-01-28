@@ -118,8 +118,7 @@ Obviously, you can make any changes you want to GramsSim for your own use. This 
     cd $GSDIR/GramsSim
     git flow init 
 
-You'll be asked a bunch of questions. Each time you're prompted for an answer
-whose default is `master` please enter `develop`. Accept the defaults for everything else.
+You'll be asked a bunch of questions. Accept the defaults for all the questions.
 
 If you get a message that git flow is not recognized, it means that
 the gitflow package has to be installed on your machine.   
