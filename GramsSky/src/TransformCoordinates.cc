@@ -27,12 +27,34 @@ namespace gramssky {
 
     std::vector<double> coord;
     options->GetOption("OriginSphere",coord);
-    m_originSphere.SetXYZ(coord[0],coord[1],coord[2]);
+    if ( coord.size() == 3 )
+      m_originSphere.SetXYZ(coord[0],coord[1],coord[2]);
+    else {
+      std::cerr << "File " << __FILE__ << " Line " << __LINE__ << " " << std::endl
+		<< "'OriginSphere' must be a three-element vector"
+		<< std::endl;
+      exit(EXIT_FAILURE);
+    }
 
-    // The map direction has to be a unit vector.
     options->GetOption("MapDirection",coord);
-    m_mapDirection.SetXYZ(coord[0],coord[1],coord[2]);
-    m_mapDirection = m_mapDirection.Unit();
+    // If this vector has three elements, it's (x,y,z). If it has two
+    // elements, then it's (theta,phi).
+    if ( coord.size() == 3 ) {
+      m_mapDirection.SetXYZ(coord[0],coord[1],coord[2]);
+      // The map direction has to be a unit vector.
+      m_mapDirection = m_mapDirection.Unit();
+    }
+    else if ( coord.size() == 2 ) {
+      m_mapDirection.SetXYZ(0,0,1);
+      m_mapDirection.SetTheta( coord[0] );
+      m_mapDirection.SetPhi( coord[1] );
+    }
+    else {
+      std::cerr << "File " << __FILE__ << " Line " << __LINE__ << " " << std::endl
+		<< "'MapDirection' must be a two-element or three-element vector"
+		<< std::endl;
+      exit(EXIT_FAILURE);
+    }
   }
 
   TransformCoordinates::~TransformCoordinates()

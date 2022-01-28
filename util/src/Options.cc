@@ -664,7 +664,7 @@ namespace util {
     // Almost certainly, ROOT's current directory is the output file
     // to which we're writing the ntuple. But just in case, save the
     // current directory, and switch to the output directory.
-    auto saveDirectory = gROOT->CurrentDirectory();
+    TDirectory* saveDirectory = gROOT->CurrentDirectory();
     a_output->cd();
 
     // Create the ntuple in the output file.

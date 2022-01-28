@@ -18,19 +18,22 @@ file(GLOB SkySrc src/*.cc
                     ${PROJECT_SOURCE_DIR}/util/src/*.cc
     )
 
-add_executable(gramssky gramssky.cc ${SkySrc})
-target_link_libraries(gramssky ${ROOT_LIBRARIES} )
-target_link_libraries(gramssky ${XercesC_LIBRARIES} )
-target_link_libraries(gramssky ${HEPMC3_LIBRARIES} )
+# Add an extension determined by GramsSim/CMakeLists.txt
+set (PROG "gramssky${EXE}")
+
+add_executable(${PROG} gramssky.cc ${SkySrc})
+target_link_libraries(${PROG} ${ROOT_LIBRARIES} )
+target_link_libraries(${PROG} ${XercesC_LIBRARIES} )
+target_link_libraries(${PROG} ${HEPMC3_LIBRARIES} )
 if (FITS_FOUND)
-  target_link_libraries(gramssky ${FITS_LDFLAGS} )
+  target_link_libraries(${PROG} ${FITS_LDFLAGS} )
 endif()
 
 # Put the compiled binary into the main GramsSim build directory.
 # Without this statement, the binary would be placed in
 # <build-directory>/GramsSky/gramssky.
 
-set_target_properties( gramssky 
+set_target_properties( ${PROG} 
    PROPERTIES RUNTIME_OUTPUT_DIRECTORY 
    "${CMAKE_BINARY_DIR}" 
    )

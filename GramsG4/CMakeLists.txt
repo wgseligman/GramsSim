@@ -1,5 +1,10 @@
 # GramsG4
 
+if (NOT Geant4_FOUND)
+  message(STATUS "Geant4 not found; skipping GramsG4 compilation.")
+  return()
+endif()
+
 #----------------------------------------------------------------------------
 # Locate sources and headers for this project
 #
@@ -18,21 +23,22 @@ file(GLOB sources src/*.cc
 #----------------------------------------------------------------------------
 # Add the executables, and link them to the libraries
 
-# GramsG4
-add_executable(gramsg4 gramsg4.cc ${sources})
-target_link_libraries(gramsg4 ${HEPMC3_LIBRARIES} )
-target_link_libraries(gramsg4 ${ROOT_LIBRARIES} )
-target_link_libraries(gramsg4 ${Geant4_LIBRARIES} )
+# Add an extension determined by GramsSim/CMakeLists.txt
+set (PROG "gramsg4${EXE}")
+
+add_executable(${PROG} gramsg4.cc ${sources})
+target_link_libraries(${PROG} ${HEPMC3_LIBRARIES} )
+target_link_libraries(${PROG} ${ROOT_LIBRARIES} )
+target_link_libraries(${PROG} ${Geant4_LIBRARIES} )
 #message(STATUS "Geant4_LIBRARIES = ${Geant4_LIBRARIES}")
 #message(STATUS "ROOT_LIBRARIES = ${ROOT_LIBRARIES}")
 #message(STATUS "HEPMC3_LIBRARIES = ${HEPMC3_LIBRARIES}")
-
 
 # Put the compiled binary into the main GramsSim build directory.
 # Without this statement, the binary would be placed in
 # <build-directory>/GramsG4/gramsg4.
 
-set_target_properties( gramsg4 
+set_target_properties( ${PROG} 
    PROPERTIES RUNTIME_OUTPUT_DIRECTORY 
    "${CMAKE_BINARY_DIR}" 
    )

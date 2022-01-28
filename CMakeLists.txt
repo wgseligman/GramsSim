@@ -4,11 +4,28 @@
 #----------------------------------------------------------------------------
 # Setup the project
 cmake_minimum_required(VERSION 3.6 FATAL_ERROR)
+
 # Note: Do NOT make the project name the same as any executable
 # name, including case. When the project was GramsG4 and the 
 # main executable gramsg4, the build process would work on Linux
 # but not on Mac OS. 
 project(GramsSimProject)
+
+# The above advice extends to subdirectories as well. Put in a test to
+# check if we're building on Mac OS X Darwin.
+if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
+    set(MACOSX TRUE)
+endif()
+
+# For a Mac OS compilation, we have to avoid the program names having
+# the same names as the subidrectories; e.g., in Linux we can have
+# directory GramsSky and executable gramssky, but in Mac OS we
+# can't. So define an extension that will have a value for Mac OS
+# executables; e.g., gramssky.exe.
+set(EXE "")
+if (MACOSX)
+   set (EXE ".exe")
+endif()
 
 # Add this project's cmake/Module directory as a source of our own CMake modules
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/cmake/Modules)
@@ -23,16 +40,17 @@ include(macros)
 #
 option(WITH_GEANT4_VIS "Build example with Geant4 Vis drivers" ON)
 if(WITH_GEANT4_VIS)
-  find_package(Geant4 REQUIRED gdml vis_all)
+  find_package(Geant4 QUIET COMPONENTS gdml vis_all)
 else()
-  find_package(Geant4 REQUIRED gdml)
+  find_package(Geant4 QUIET COMPONENTS gdml)
 endif()
 
 #----------------------------------------------------------------------------
 # Setup Geant4 include directories and compile definitions
 #
-include(${Geant4_USE_FILE})
-
+if (Geant4_FOUND)
+   include(${Geant4_USE_FILE})
+endif()
 
 #----------------------------------------------------------------------------
 # Set up ROOT
@@ -56,13 +74,12 @@ endif()
 message(STATUS "rpath = ${CMAKE_INSTALL_RPATH}")
 
 #For debugging:
-#message(STATUS "XercesC_LIBRARIES = ${XercesC_LIBRARIES}")
-#message(STATUS "XercesC_LIBRARY = ${XercesC_LIBRARY}")
-#message(STATUS "HEPMC3_LIBRARIES = ${HEPMC3_LIBRARIES}")
-#message(STATUS "FITS_LDFLAGS = ${FITS_LDFLAGS}")
-#message(STATUS "FITS_LIBRARIES = ${FITS_LIBRARIES}")
-#message(STATUS "FITS_LIBRARY_DIRS = ${FITS_LIBRARY_DIRS}")
-#message(STATUS "Geant4_LIBRARIES = ${Geant4_LIBRARIES}")
+# Display all CMAKE variables
+#get_cmake_property(_variableNames VARIABLES)
+#list (SORT _variableNames)
+#foreach (_variableName ${_variableNames})
+#    message(STATUS "${_variableName}=${${_variableName}}")
+#endforeach()
 
 #----------------------------------------------------------------------------
 # Copy all configuration files to the build directory, i.e. the directory in which we
