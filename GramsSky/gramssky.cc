@@ -121,6 +121,11 @@ int main(int argc, char** argv) {
   if ( energyText.compare("gev") == 0 )
     energyUnit = HepMC3::Units::GEV;
 
+  // Note that the HepMC3 format does not allow for an internal
+  // specification of time units. Therefore, subsequent programs in
+  // the simulation chain will assume that the time units are whatever
+  // is in the Options XML file.
+
   // For each event:
   for ( int e = 0; e != numberOfEvents; ++e ) {
 

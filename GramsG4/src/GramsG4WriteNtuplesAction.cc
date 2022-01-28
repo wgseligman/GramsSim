@@ -8,6 +8,7 @@
 #include "GramsG4WriteNtuplesAction.hh"
 #include "GramsG4LArHit.hh"
 #include "GramsG4ScintillatorHit.hh"
+#include "G4SystemOfUnits.hh"
 
 #include "Options.h" // in util/
 #include "UserAction.h" // in g4util/
@@ -19,6 +20,8 @@
 #include "G4SDManager.hh"
 #include "G4Threading.hh"
 #include "G4AutoLock.hh"
+
+#include <string>
 
 namespace gramsg4 {
 
@@ -39,7 +42,27 @@ namespace gramsg4 {
     : UserAction()
     , m_LArHitCollectionID(-1)
     , m_ScintillatorHitCollectionID(-1)
-  {}
+  {
+    // Fetch the units from the Options XML file.
+    m_options = util::Options::GetInstance();
+
+    // Unit definitions from G4SystemOfUnits.hh.
+    std::string units;
+
+    m_options->GetOption("TimeUnit",units);
+    m_timeScale = ns;
+    if ( units == "s" ) m_timeScale = second;
+    if ( units == "ms" ) m_timeScale = millisecond;
+
+    m_options->GetOption("LengthUnit",units);
+    m_lengthScale = millimeter;
+    if ( units == "cm" ) m_lengthScale = centimeter;
+
+    m_options->GetOption("EnergyUnit",units);
+    m_energyScale = MeV;
+    if ( units == "GeV" ) m_energyScale = GeV;
+
+  }
 
   //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
@@ -55,11 +78,10 @@ namespace gramsg4 {
     // Access (maybe create) the G4AnalysisManager.
     auto analysisManager = G4AnalysisManager::Instance();
 
-    auto options = util::Options::GetInstance();
-    options->GetOption("debug",m_debug);
+    m_options->GetOption("debug",m_debug);
 
     G4bool verbose;
-    options->GetOption("verbose",verbose);
+    m_options->GetOption("verbose",verbose);
     if (verbose)
       analysisManager->SetVerboseLevel(1);
 
@@ -72,7 +94,7 @@ namespace gramsg4 {
 
     // Open the output file.
     G4String filename;
-    options->GetOption("outputfile",filename);
+    m_options->GetOption("outputfile",filename);
 
     if (m_debug)
       G4cout << "WriteNtuplesAction::BeginOfRunAction() - "
@@ -153,7 +175,7 @@ namespace gramsg4 {
     // 4-vectors directly, so store each components of these 4-vectors
     // in a separate std::vector.
 
-    // Reminder: G4's units are MeV, mm, ns
+    // Reminder: Units are defined via the Options XML file.
     analysisManager->CreateNtupleIColumn("Run");                      // id 0         
     analysisManager->CreateNtupleIColumn("Event");                    // id 1
     analysisManager->CreateNtupleIColumn("TrackID");                  // id 2
@@ -219,7 +241,7 @@ namespace gramsg4 {
 	 threadID == 0 ) {
 
       // Write the options to the ntuple.
-      auto numOptions = options->NumberOfOptions();
+      auto numOptions = m_options->NumberOfOptions();
       if (m_debug) 
 	G4cout << "WriteNtuplesAction::BeginOfRunAction() - "
 	       << "number of options = " << numOptions
@@ -229,12 +251,12 @@ namespace gramsg4 {
 	  G4cout << "WriteNtuplesAction::BeginOfRunAction() - "
 		 << "filling for option number = " << i
 		 << G4endl;
-	analysisManager->FillNtupleSColumn(m_optionsNTID, 0, options->GetOptionName(i));
-	analysisManager->FillNtupleSColumn(m_optionsNTID, 1, options->GetOptionValue(i));
-	analysisManager->FillNtupleSColumn(m_optionsNTID, 2, options->GetOptionType(i));
-	analysisManager->FillNtupleSColumn(m_optionsNTID, 3, options->GetOptionBrief(i));
-	analysisManager->FillNtupleSColumn(m_optionsNTID, 4, options->GetOptionDescription(i));
-	analysisManager->FillNtupleSColumn(m_optionsNTID, 5, options->GetOptionSource(i));
+	analysisManager->FillNtupleSColumn(m_optionsNTID, 0, m_options->GetOptionName(i));
+	analysisManager->FillNtupleSColumn(m_optionsNTID, 1, m_options->GetOptionValue(i));
+	analysisManager->FillNtupleSColumn(m_optionsNTID, 2, m_options->GetOptionType(i));
+	analysisManager->FillNtupleSColumn(m_optionsNTID, 3, m_options->GetOptionBrief(i));
+	analysisManager->FillNtupleSColumn(m_optionsNTID, 4, m_options->GetOptionDescription(i));
+	analysisManager->FillNtupleSColumn(m_optionsNTID, 5, m_options->GetOptionSource(i));
 	analysisManager->AddNtupleRow(m_optionsNTID);  
       }
     } // if sequential or worker thread
@@ -295,15 +317,15 @@ namespace gramsg4 {
       analysisManager->FillNtupleIColumn(m_LArNTID, 2, hit->GetTrackID() );
       analysisManager->FillNtupleIColumn(m_LArNTID, 3, hit->GetPDGCode() );
       analysisManager->FillNtupleIColumn(m_LArNTID, 4, hit->GetNumPhotons() );
-      analysisManager->FillNtupleDColumn(m_LArNTID, 5, hit->GetEnergy() );
-      analysisManager->FillNtupleDColumn(m_LArNTID, 6, hit->GetStartTime() );
-      analysisManager->FillNtupleFColumn(m_LArNTID, 7, (hit->GetStartPosition()).x() );
-      analysisManager->FillNtupleFColumn(m_LArNTID, 8, (hit->GetStartPosition()).y() );
-      analysisManager->FillNtupleFColumn(m_LArNTID, 9, (hit->GetStartPosition()).z() );
-      analysisManager->FillNtupleDColumn(m_LArNTID,10, hit->GetEndTime() );
-      analysisManager->FillNtupleFColumn(m_LArNTID,11, (hit->GetEndPosition()).x() );
-      analysisManager->FillNtupleFColumn(m_LArNTID,12, (hit->GetEndPosition()).y() );
-      analysisManager->FillNtupleFColumn(m_LArNTID,13, (hit->GetEndPosition()).z() );
+      analysisManager->FillNtupleDColumn(m_LArNTID, 5, hit->GetEnergy() / m_energyScale );
+      analysisManager->FillNtupleDColumn(m_LArNTID, 6, hit->GetStartTime() / m_timeScale );
+      analysisManager->FillNtupleFColumn(m_LArNTID, 7, (hit->GetStartPosition()).x() / m_lengthScale );
+      analysisManager->FillNtupleFColumn(m_LArNTID, 8, (hit->GetStartPosition()).y() / m_lengthScale );
+      analysisManager->FillNtupleFColumn(m_LArNTID, 9, (hit->GetStartPosition()).z() / m_lengthScale );
+      analysisManager->FillNtupleDColumn(m_LArNTID,10, hit->GetEndTime() / m_timeScale);
+      analysisManager->FillNtupleFColumn(m_LArNTID,11, (hit->GetEndPosition()).x() / m_lengthScale );
+      analysisManager->FillNtupleFColumn(m_LArNTID,12, (hit->GetEndPosition()).y() / m_lengthScale );
+      analysisManager->FillNtupleFColumn(m_LArNTID,13, (hit->GetEndPosition()).z() / m_lengthScale );
       analysisManager->FillNtupleIColumn(m_LArNTID,14, hit->GetIdentifier() );
 
       if (m_debug) 
@@ -335,15 +357,15 @@ namespace gramsg4 {
       analysisManager->FillNtupleIColumn(m_ScintNTID, 1, a_event->GetEventID() );
       analysisManager->FillNtupleIColumn(m_ScintNTID, 2, hit->GetTrackID() );
       analysisManager->FillNtupleIColumn(m_ScintNTID, 3, hit->GetPDGCode() );
-      analysisManager->FillNtupleDColumn(m_ScintNTID, 4, hit->GetEnergy() );
-      analysisManager->FillNtupleDColumn(m_ScintNTID, 5, hit->GetStartTime() );
-      analysisManager->FillNtupleFColumn(m_ScintNTID, 6, (hit->GetStartPosition()).x() );
-      analysisManager->FillNtupleFColumn(m_ScintNTID, 7, (hit->GetStartPosition()).y() );
-      analysisManager->FillNtupleFColumn(m_ScintNTID, 8, (hit->GetStartPosition()).z() );
-      analysisManager->FillNtupleDColumn(m_ScintNTID, 9, hit->GetEndTime() );
-      analysisManager->FillNtupleFColumn(m_ScintNTID,10, (hit->GetEndPosition()).x() );
-      analysisManager->FillNtupleFColumn(m_ScintNTID,11, (hit->GetEndPosition()).y() );
-      analysisManager->FillNtupleFColumn(m_ScintNTID,12, (hit->GetEndPosition()).z() );
+      analysisManager->FillNtupleDColumn(m_ScintNTID, 4, hit->GetEnergy() / m_energyScale );
+      analysisManager->FillNtupleDColumn(m_ScintNTID, 5, hit->GetStartTime() / m_timeScale );
+      analysisManager->FillNtupleFColumn(m_ScintNTID, 6, (hit->GetStartPosition()).x() / m_lengthScale );
+      analysisManager->FillNtupleFColumn(m_ScintNTID, 7, (hit->GetStartPosition()).y() / m_lengthScale );
+      analysisManager->FillNtupleFColumn(m_ScintNTID, 8, (hit->GetStartPosition()).z() / m_lengthScale );
+      analysisManager->FillNtupleDColumn(m_ScintNTID, 9, hit->GetEndTime() / m_timeScale );
+      analysisManager->FillNtupleFColumn(m_ScintNTID,10, (hit->GetEndPosition()).x() / m_lengthScale );
+      analysisManager->FillNtupleFColumn(m_ScintNTID,11, (hit->GetEndPosition()).y() / m_lengthScale );
+      analysisManager->FillNtupleFColumn(m_ScintNTID,12, (hit->GetEndPosition()).z() / m_lengthScale );
       analysisManager->FillNtupleIColumn(m_ScintNTID,13, hit->GetIdentifier() );
 
       if (m_debug) {
@@ -513,14 +535,14 @@ namespace gramsg4 {
 
     // Add the components of our two 4-vectors (t,x,y,z) (E,px,py,pz)
     // to the individual std::vectors.
-    m_time.push_back( a_track->GetGlobalTime() );
-    m_xpos.push_back( a_track->GetPosition().x() );
-    m_ypos.push_back( a_track->GetPosition().y() );
-    m_zpos.push_back( a_track->GetPosition().z() );
-    m_energy.push_back( a_track->GetTotalEnergy() );
-    m_xmom.push_back( a_track->GetMomentum().x() );
-    m_ymom.push_back( a_track->GetMomentum().y() );
-    m_zmom.push_back( a_track->GetMomentum().z() );
+    m_time.push_back( a_track->GetGlobalTime() / m_timeScale );
+    m_xpos.push_back( a_track->GetPosition().x() / m_lengthScale );
+    m_ypos.push_back( a_track->GetPosition().y() / m_lengthScale );
+    m_zpos.push_back( a_track->GetPosition().z() / m_lengthScale );
+    m_energy.push_back( a_track->GetTotalEnergy() / m_energyScale );
+    m_xmom.push_back( a_track->GetMomentum().x() / m_energyScale );
+    m_ymom.push_back( a_track->GetMomentum().y() / m_energyScale );
+    m_zmom.push_back( a_track->GetMomentum().z() / m_energyScale );
     m_identifier.push_back( a_track->GetVolume()->GetCopyNo() );
   }
 

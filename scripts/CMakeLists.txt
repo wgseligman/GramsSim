@@ -30,10 +30,9 @@ list(APPEND HepMC3_Programs
   "hepmc-convert.cc"
   "hepmc-grams-example.cc"
 )
-# As of 13-Jan-2012, there are no programs in this directory that
-# depend on cfitsio or healpix_cxx.
+
 list(APPEND FITS_Programs
-  ""
+  "healpix-maps.cc"
 )
 
 # For each such file...
@@ -59,8 +58,10 @@ foreach(_filename ${script_progs})
    endif()
 
    # Derive the executable program name by
-   # stripping the ".cc" from the end.
+   # stripping the ".cc" from the end. 
    string(REGEX REPLACE "\\.cc" "" _prog "${_filename}")
+   # Add an extension determined by GramsSim/CMakeLists.txt.
+   string(APPEND _prog ${EXE})
 
    # Tell CMake to compile <whatever.cc> to make
    # the executable <whatever>, using the libraries

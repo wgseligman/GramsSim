@@ -30,6 +30,7 @@
 
          Length unit: as of Jan-2022, the only valid values are "cm" and "mm".
          Energy unit: as of Jan-2022, the only valid values are "MeV" and "GeV".
+	 Time unit: as of Jan-2022, the only valid values are "ns", "ms", and "s".
      
          Note that this does not directly affect the GDML file and
          Geant4 macro files, as any dimensioned quantities in those
@@ -37,6 +38,7 @@
 	 -->
     <option name="LengthUnit" type="string" value="cm" desc="length unit for program output" />
     <option name="EnergyUnit" type="string" value="MeV" desc="energy unit for program output" />
+    <option name="TimeUnit"   type="string" value="ns" desc="time unit for program output" />
 
     <option name="rngseed" short="s" value="-1" type="integer" desc="random number seed">
         The random number seed for the simulation. Use 0 if you want the
@@ -187,6 +189,10 @@
          imported celestial maps are usually aligned with the galactic
          coordinate system, while the physical detector will have
          typically have some other orientation for its z-axis.
+
+         If this vector has three elements, it's interpreted as
+         (x,y,z). If it has two elements (e.g., (0.707,0)) then it's
+         interpreted as (theta,phi).
     -->
     <option name="MapDirection" value="(0,0,1)" type="vector" 
         desc="map 'north pole' in detector coords"/> 
@@ -328,8 +334,10 @@
          TTrees" in the ROOT documentation.  -->
     <option name="outputntuple" value="DetSim" type="string" desc="output ntuple"/>
 
-    Physics-model options. Note that ntuple units are the same as
-    Geant4: MeV, mm, ns.
+    <!-- Physics-model options. Note that the units associated with
+         these constants should be consistent with the "TimeUnit",
+         "LengthUnit", and "EnergyUnit" options defined above.
+    -->
 
     Options associated with modeling recombination effects.
     <option name="recombination" value="true" type="boolean" 

@@ -22,18 +22,18 @@ You will need recent versions of:
 
    - [Cmake](https://cmake.org/) (verified to work with version 3.14 and higher)
    - [ROOT](https://root.cern.ch/) (verified to work with ROOT 6.16 and higher)
-   - [Geant4](http://geant4.web.cern.ch/) (verified to work with Geant4 10.7 and higher)
-   
-The following libraries are optional. If one or more are not present, then GramsSim will compile without the corresponding features. For example, if HepMC3 is not installed, then [GramsSky](GramsSky) will not be compiled.
-   
-   - [HepMC3](https://gitlab.cern.ch/hepmc/HepMC3) (verified to work with HepMC3 3.2.2)
-   - [CFITSIO](https://heasarc.gsfc.nasa.gov/fitsio/) (verified to work with cfitsio 4.0.0)
-   - [HEALPix](https://healpix.sourceforge.io/) (verified to work with healpix_cxx 3.8.0)
   
 You will also need the development libraries for:
 
    - [GNU C++](https://gcc.gnu.org/) (version 6.2 or higher, though the compilation might work with [clang](https://clang.llvm.org/); requires C++11 or higher)
    - [Xerces-C](https://xerces.apache.org/xerces-c/)
+   
+The following libraries are optional. If one or more are not present, then GramsSim will compile without the corresponding features. For example, if HepMC3 is not installed, then [GramsSky](GramsSky) will not be compiled; if Geant4 is not installed, [GramsG4](GramsG4) won't be compiled.
+   
+   - [Geant4](http://geant4.web.cern.ch/) (verified to work with Geant4 10.7 and higher)
+   - [HepMC3](https://gitlab.cern.ch/hepmc/HepMC3) (verified to work with HepMC3 3.2.2)
+   - [CFITSIO](https://heasarc.gsfc.nasa.gov/fitsio/) (verified to work with cfitsio 4.0.0)
+   - [HEALPix](https://healpix.sourceforge.io/) (verified to work with healpix_cxx 3.8.0)
    
 The following optional development libraries are needed for Geant4 visualization:
 

@@ -15,6 +15,7 @@
 #include "G4TransportationManager.hh"
 #include "G4VPhysicalVolume.hh"
 #include "G4Exception.hh"
+#include "G4SystemOfUnits.hh"
 
 #include "Options.h" // in util/
  
@@ -43,6 +44,17 @@ namespace gramsg4 {
     , m_reader(nullptr)
     , m_hepmcEvent(nullptr)
   {
+    // Access the set of program options.
+    m_options = util::Options::GetInstance();
+
+    // Get the units of time. (The length and energy units are read in
+    // on an event-by-event basis in the "HepMC2G4" method.)
+    std::string units;
+    m_options->GetOption("TimeUnit",units);
+    m_timeScale = ns;
+    if ( units == "s" ) m_timeScale = second;
+    if ( units == "ms" ) m_timeScale = millisecond;
+
     OpenFile();
   }
 
@@ -95,9 +107,8 @@ namespace gramsg4 {
     
     extension.toLower();
 
-    auto options = util::Options::GetInstance();
     G4bool debug;
-    options->GetOption("debug",debug);
+    m_options->GetOption("debug",debug);
     if ( debug ) {
       G4cout << "GramsG4HepMC3GeneratorAction::OpenFile - "
 	     << "extension='" << extension << "'" 
@@ -195,14 +206,15 @@ namespace gramsg4 {
     // whatever program generates these primary events uses the same
     // units.  Even so, make some attempt to adjust units; this
     // assumes that the creating program specified the units for the
-    // HepMC3 event.
+    // HepMC3 event. "mm", "cm", "MeV", and "GeV" are defined in
+    // G4SystemOfUnits.hh.
 
-    auto pscale = 1.0;
+    auto lengthScale = mm;
     if ( a_hepmc->length_unit() == HepMC3::Units::CM )
-      pscale = 10.;
-    auto escale = 1.0;
+      lengthScale = cm;
+    auto energyScale = MeV;
     if ( a_hepmc->momentum_unit() == HepMC3::Units::GEV )
-      escale = 1000.;
+      energyScale = GeV;
 
     // Set up a G4 world-volume test.
     G4Navigator* navigator = G4TransportationManager::GetTransportationManager()
@@ -223,9 +235,9 @@ namespace gramsg4 {
     for (auto vertex: a_hepmc->vertices()) {
 
       auto position = vertex->position();
-      G4ThreeVector xyz(position.x() * pscale, 
-			position.y() * pscale, 
-			position.z() * pscale );
+      G4ThreeVector xyz(position.x() * lengthScale, 
+			position.y() * lengthScale, 
+			position.z() * lengthScale );
  
       if ( debug ) {
 	G4cout << "GramsG4HepMC3GeneratorAction::HepMC2G4 - "
@@ -256,7 +268,7 @@ namespace gramsg4 {
 	       << G4endl;
       }
 
-      auto g4vertex = new G4PrimaryVertex( xyz, position.t() );
+      auto g4vertex = new G4PrimaryVertex( xyz, position.t()*m_timeScale );
       a_event->AddPrimaryVertex(g4vertex);
  
       if ( debug ) {
@@ -276,10 +288,10 @@ namespace gramsg4 {
 
 	auto g4particle 
 	  = new G4PrimaryParticle(pdgCode,
-				  momentum.px() * escale,
-				  momentum.py() * escale,
-				  momentum.pz() * escale,
-				  momentum.e () * escale );
+				  momentum.px() * energyScale,
+				  momentum.py() * energyScale,
+				  momentum.pz() * energyScale,
+				  momentum.e () * energyScale );
  
 	if ( debug ) {
 	  G4cout << "GramsG4HepMC3GeneratorAction::HepMC2G4 - "
