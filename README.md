@@ -113,7 +113,16 @@ To run the programs:
 
 ## Making changes
 
-Obviously, you can make any changes you want to GramsSim for your own use. This section is for when you want to start making changes to be added to the official repository. Before you edit files for the first time:
+Obviously, you can make any changes you want to GramsSim for your own use. This section is for when you want to start making changes to be added to the official repository. 
+
+I strongly suggest becoming familiar with [git][46], at least to the extent of understanding what a [branch][4] is. I also suggest using [git flow][47] to organize your branches, mainly because that approach seems to work for [LArSoft][5]. 
+
+[4]: https://git-scm.com/book/en/v2/Git-Branching-Branches-in-a-Nutshell
+[5]: https://larsoft.org/
+[46]: https://git-scm.com/doc
+[47]: http://danielkummer.github.io/git-flow-cheatsheet/
+
+Before you edit files for the first time:
 
     cd $GSDIR/GramsSim
     git flow init 
@@ -124,7 +133,7 @@ If you get a message that git flow is not recognized, it means that
 the gitflow package has to be installed on your machine.   
 
 You only have to type `git flow init` once, the first time you edit
-code in that directory. Don't type it again, unless you git clone a
+code in that directory. Don't type it again, unless you `git clone` a
 brand-new repository.
 
 When you want to start on a new task:
@@ -139,23 +148,49 @@ To "bookmark" changes you've made to your copy of the `$GSDIR/GramsSim` director
     git add my_file.cc # if you create a new file
     git commit -a -m "Comment about your changes"
 
-To incorporate changes that other people have made and checked into
-the repository:
-
-    git fetch origin
-    git rebase origin develop
-
 When you've finished working on your task (after testing it, putting
 in the comments, writing the documentation, discussing it at a group
 meeting, etc.):
 
-    git flow feature finish
+    git flow feature finish $USER_MyMagnificentFeatureName
     git push origin develop
+    
+These two commands delete your local `feature/$USER_MyMagnificentFeatureName`
+branch and merge your changes into the develop branch. Please take care not to push
+changes to the develop branch until you want all the other developers to see it (and 
+perhaps notice that you didn't write comments or documentation for your changes).
 
-If you want other people to see your feature work without making
-changes to the develop branch:
+### Advanced git commands 
+
+To incorporate changes that other people have made and checked into
+the repository:
+
+    git fetch origin
+    git pull origin develop
+
+If you want other people to see your feature work, you want to save your work in a 
+remote repository, or you want to test if you have remote write
+access to the repository: 
 
     git flow feature publish $USER_MyMagnificentFeatureName
+
+If you discover that you don't have remote write access, contact wgseligman
+and let him know your [github account name][6].
+
+[6]: https://docs.github.com/en/account-and-profile/setting-up-and-managing-your-github-user-account/managing-email-preferences/remembering-your-github-username-or-email 
+
+Afterwards you can continue to update that remote feature branch with:
+
+    git commit -a -m "Comment about what's changed"
+    git push origin feature/$USER_MyMagnificentFeatureName
+
+If you pushed your feature branch to the remote repository, and there's no point in
+saving it for archival purposes (because you documented all the changes you made to the 
+develop branch, right?), you can remove the remote branch with:
+
+    git push origin :feature/$USER_MyMagnificentFeatureName
+    
+Note the `:` before the branch name, which is what forces the deletion. 
 
 ### Work files
 
@@ -208,7 +243,7 @@ When you've made your changes and wish to "bookmark" them:
 ## Detector geometry
 
 The detector geometry is defined via [GDML file](grams.gdml)a geometry-definition language [GDML][15]
-original designed for Geant4.
+originally designed for Geant4.
 
 [15]: https://gdml.web.cern.ch/GDML/doc/GDMLmanual.pdf
 
@@ -278,8 +313,8 @@ Understanding UNIX:
    - [Learn UNIX](https://www.tutorialspoint.com/unix/index.htm)
 
 Version control system:
-   - git: <https://git-scm.com/doc> 
-   - git flow: <http://danielkummer.github.io/git-flow-cheatsheet/>
+   - [git][46]
+   - [git flow][47]
 
 Some git tips from other collaborations:  
    - [git flow quick start guide](https://cdcvs.fnal.gov/redmine/projects/cet-is-public/wiki/Git_flow_quick_start)
