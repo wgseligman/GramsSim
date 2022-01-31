@@ -8,6 +8,7 @@ If you want a formatted (or easier-to-read) version of this file, scroll to the 
     + [Working with github](#working-with-github)
   * [Setting up GramsSim](#setting-up-gramssim)
   * [Making changes](#making-changes)
+    + [Advanced git commands](#advanced-git-commands)
     + [Work files](#work-files)
     + [Development "flow"](#development--flow-)
   * [Detector geometry](#detector-geometry)
