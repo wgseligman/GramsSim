@@ -127,7 +127,7 @@ There are problems with this approach:
      
      [This page](https://stackoverflow.com/questions/33394934/converting-std-cxx11string-to-stdstring) potentially offers a work-around to C++11 incompatibility with older software by adding the following option as shown below when building both Geant4 and GramsSim, but this has not been tested:
 ```
-     cmake ../GramsSim -D_GLIBCXX_USE_CXX11_ABI=0
+     cmake3 ../GramsSim -D_GLIBCXX_USE_CXX11_ABI=0
 ```
 
 [13]: https://geant4.web.cern.ch/support/download
