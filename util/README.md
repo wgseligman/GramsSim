@@ -155,9 +155,9 @@ In this example, if `--makeHistograms` is present on the command line, the value
 ##### Vectors
 
 As far as Options are concerned, a "vector" is a sequence or tuple of numbers. Here's an example:
-
+```XML
     <option name="direction" value="(0,0,1)" type="vector" desc="initial direction"/>
-
+```
 The number format is fairly flexible. 
 Any characters that are not part of a numeric format will be ignored. 
 All of the following are equivalent:
@@ -240,7 +240,7 @@ Perhaps you are focussed on a particular set of options associated with one prog
 program's options. Or perhaps the default [`options.xml`](../options.xml) file seems too long and scrolling through it
 takes a long time. 
 
-In these cases, you can include a section of one XML file within another using [XInclude][70]. There's an example of this in [`xinclude.xml`](../xinclude.xml). The basic recipe is:
+In these cases, you can include a section of one XML file within another using [XInclude][70]. There's an example of this in [`GramsSim/xinclude.xml`](../xinclude.xml). The basic recipe is:
 
 [70]: https://www.xml.com/pub/a/2002/07/31/xinclude.html
 
@@ -258,7 +258,7 @@ In these cases, you can include a section of one XML file within another using [
                     
    - For the file whose contents will be included:
    
-      - In the program-options sections you want to include, add an `xml:id` attribute with the id you supplied as the value of the `element` attribute in the main file, e.g.,
+      - In the program-options section you want to include, add an `xml:id` attribute with the id you supplied as the value of the `element` attribute in the main file, e.g.,
       
           `<gramssky xml:id="gramssky">`
           
