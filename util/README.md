@@ -12,6 +12,7 @@ C++ programs I write.
         * [Vectors](#vectors)
       - [Abbreviating options](#abbreviating-options)
       - [Overriding &lt;global&gt;](#overriding--lt-global-gt-)
+      - [Including one XML file from within another](#including-one-xml-file-from-within-another)
     + [Accessing options from within your program](#accessing-options-from-within-your-program)
     + [Implementing the `-h/--help` option](#implementing-the---h---help--option)
     + [Other `Options` methods](#other--options--methods)
@@ -21,7 +22,6 @@ C++ programs I write.
       - [Restoring options from a ROOT file](#restoring-options-from-a-root-file)
 
 <small><i><a href='http://ecotrust-canada.github.io/markdown-toc/'>Table of contents generated with markdown-toc</a></i></small>
-
 
 ## Options - parse XML file and command line
 
@@ -233,6 +233,38 @@ This is not a good practice. It's probably better to use the command line for th
 ```
 ./myprogram --myoption=value2
 ```
+
+#### Including one XML file from within another
+
+Perhaps you are focussed on a particular set of options associated with one program and don't care about any other
+program's options. Or perhaps the default [`options.xml`](../options.xml) file seems too long and scrolling through it
+takes a long time. 
+
+In these cases, you can include a section of one XML file within another using [XInclude][70]. There's an example of this in [`xinclude.xml`](../xinclude.xml). The basic recipe is:
+
+[70]: https://www.xml.com/pub/a/2002/07/31/xinclude.html
+
+   - For the main file (the one that's doing the including):
+
+      - Include the xinclude specification in the opening `<parameters>` tag:
+   
+          `<parameters xmlns:xi="http://www.w3.org/2001/XInclude">`
+          
+      - Specify the file and the id of the tag to be included. In this example, the
+      section with the tag `gramssky` in file [`GramsSky/options.xml`](../GramsSky/options.xml)
+      is to be included.
+      
+          `<xi:include href="GramsSky/options.xml" element="gramssky"/>`
+                    
+   - For the file whose contents will be included:
+   
+      - In the program-options sections you want to include, add an `xml:id` attribute with the id you supplied as the value of the `element` attribute in the main file, e.g.,
+      
+          `<gramssky xml:id="gramssky">`
+          
+      - This may not be necessary if the value of the `element` attribute in the main file is the same as the tag
+      with the program's game (`gramssky` in this example). 
+
 
 ### Accessing options from within your program
 
