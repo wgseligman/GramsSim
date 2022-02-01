@@ -1,0 +1,104 @@
+<?xml version = "1.0" encoding = "UTF-8" ?>
+
+<!-- This is an Options XML that could be used solely for running GramsDetSim.
+     It's also part of an example of how to include one XML file within another.
+     Please see GramsSim/util/README.md for more. -->
+
+<parameters>
+  
+  <global>
+
+    <!-- The parameters in this section are meant to apply to all the
+         programs. However, you can ovverride them within the
+         individual program blocks, though it's probably more useful
+         to override them on the command line. Be careful about what
+         you're overriding, especially the unit options. -->
+  
+    <!-- The following line does nothing! It's there for documentation:
+    the default value of the 'options' option is "options.xml" -->
+    <option name="options" value="options.xml" type="string" desc="XML file of options">
+        If you want to, you can include text like this within an option
+        tag. You can use this for additional documentation. The program
+        does not read or interpret it. 
+    </option>
+
+    <option name="verbose" short="v" type="flag" desc="display details"/>
+    <option name="debug" short="d" type="flag" />
+    <option name="help" short="h" type="flag" desc="show help then exit" />
+
+    <!-- Define a consistent set of units. Note that it's up to the
+         individual programs to access these parameters and write
+         their output in these units. (I'm looking at you, Geant4!).
+
+         Length unit: as of Jan-2022, the only valid values are "cm" and "mm".
+         Energy unit: as of Jan-2022, the only valid values are "MeV" and "GeV".
+	 Time unit: as of Jan-2022, the only valid values are "ns", "ms", and "s".
+     
+         Note that this does not directly affect the GDML file and
+         Geant4 macro files, as any dimensioned quantities in those
+         files have units specified explicitly.
+	 -->
+    <option name="LengthUnit" type="string" value="cm" desc="length unit for program output" />
+    <option name="EnergyUnit" type="string" value="MeV" desc="energy unit for program output" />
+    <option name="TimeUnit"   type="string" value="ns" desc="time unit for program output" />
+
+    <option name="rngseed" short="s" value="-1" type="integer" desc="random number seed">
+        The random number seed for the simulation. Use 0 if you want the
+        program to start with a random value and you're not interested 
+        in recreating the run.
+    </option>
+
+
+  </global>
+
+  <gramsdetsim xml:id="gramsdetsim">
+
+    <!-- Input ROOT file from GramsG4 (or at least contains a LArHits-compatible ntuple -->
+    <option name="inputfile" short="i" value="gramsg4.root" type="string" 
+        desc="input file"/>    
+
+    <!-- Name of ntuple in the input file that contains the hit information. -->
+    <option name="inputntuple" value="LArHits" type="string" desc="input ntuple"/>
+
+    <!-- Output ROOT file -->
+    <option name="outputfile" short="o" value="gramsdetsim.root" type="string" 
+        desc="output file"/>    
+
+    <!-- Name of ntuple in the output file that contains the
+         detector-response information. This ntuple will be a
+         row-for-row match with the input ntuple, and can therefore be
+         used as a "friend ntuple" with the input intuple (see "friend
+         TTrees" in the ROOT documentation.  -->
+    <option name="outputntuple" value="DetSim" type="string" desc="output ntuple"/>
+
+    <!-- Physics-model options. Note that the units associated with
+         these constants should be consistent with the "TimeUnit",
+         "LengthUnit", and "EnergyUnit" options defined above.
+    -->
+
+    Options associated with modeling recombination effects.
+    <option name="recombination" value="true" type="boolean" 
+	    desc="model recombination effects"/>
+
+    Electric field on the cloud of ionized particles, varies with
+    position due to space charge, which we don't have a model for yet.
+    <option name="field"  value="1.0" type="double"
+	    desc="electric field [kV/cm]"/>
+
+    Average of the a value for 20 to 90 degrees angle bins for proton
+    sample detection in ArgoNeuT, unitless value.
+    <option name="a" value="0.930" type="double"
+	    desc="recombination constant"/>
+
+    Average of the B value for 20 to 90 degrees angle bins for proton
+    sample detection in ArgoNeuT, units of (kV*g)/(MeV*cm^3)
+    <option name="b" value="0.212" type="double"
+	    desc="recombination constant [(kV*g)/(MeV*cm^3)]"/>
+
+    Density of liquid argon, from Brookhaven LAr page, units of (g/cm^3)
+    <option name="rho" value="1.3973" type="double"
+	    desc="LAr density [g/cm^3]"/>
+
+  </gramsdetsim>
+
+</parameters>
