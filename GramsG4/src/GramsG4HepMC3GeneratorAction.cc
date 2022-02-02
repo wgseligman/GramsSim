@@ -1,4 +1,4 @@
-/// \file persistency/gdml/GramsG4/src/GramsG4HepMC3GeneratorAction.cc
+/// \file GramsG4/src/GramsG4HepMC3GeneratorAction.cc
 /// \brief Implementation of the GramsG4HepMC3GeneratorAction class
 //
 // Portions of this code were copied from Beam Delivery Simulation

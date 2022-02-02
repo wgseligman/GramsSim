@@ -23,6 +23,10 @@
 #include "PowerLawEnergyGenerator.h"
 #include "HistogramEnergyGenerator.h"
 
+#ifdef FITS_FOUND
+#include "MapPowerLawGenerator.h"
+#endif
+
 // ROOT includes
 #include "TRandom.h"
 
@@ -48,6 +52,9 @@ namespace gramssky {
     // TRandom3.
     gRandom->SetSeed(seed);
 
+    // Not all the generators require a separate energy generator.
+    bool energyGeneratorNeeded = true;
+
     // Determine which position generator we're going to use.
     std::string positionName;
     options->GetOption("PositionGeneration",positionName);
@@ -63,6 +70,20 @@ namespace gramssky {
       m_generator = std::make_shared<PointPositionGenerator>();
     else if ( positionName.compare("iso") == 0 )
       m_generator = std::make_shared<IsotropicPositionGenerator>();
+    else if ( positionName.compare("mappowerlaw") == 0 )
+      {
+#ifdef FITS_FOUND
+	m_generator = std::make_shared<MapPowerLawGenerator>();
+	energyGeneratorNeeded = false;
+#else
+	std::cerr << "File " << __FILE__ << " Line " << __LINE__ << " " << std::endl
+		  << "The generator option '" << positionInput
+		  << "' not recognized, since this program was compiled "
+		  << "without the HEALPix libraries."
+		  << std::endl;
+	exit(EXIT_FAILURE);
+#endif
+      }
     else {
       std::cerr << "File " << __FILE__ << " Line " << __LINE__ << ":" << std::endl
 		<< " Did not recognize PositionGenerator option '" << positionInput
@@ -71,47 +92,49 @@ namespace gramssky {
       exit(EXIT_FAILURE);
     }
 
-    // Determine which energy generator we're going to use.
-    std::string energyName;
-    options->GetOption("EnergyGeneration",energyName);
-    // Save the original text for the error message.
-    std::string energyInput(energyName);
-
-    // Again, convert to lower case.
-    std::transform(energyName.begin(), energyName.end(), energyName.begin(), lowC);
-
-    if ( energyName.compare("fixed") == 0 ) {
-      auto energyGenerator = new FixedEnergyGenerator();
-      m_generator->AdoptEnergyGenerator( energyGenerator );
-    } 
-    else if ( energyName.compare("gaus") == 0 ) {
-      auto energyGenerator = new GaussianEnergyGenerator();
-      m_generator->AdoptEnergyGenerator( energyGenerator );
-    } 
-    else if ( energyName.compare("flat") == 0 ) {
-      auto energyGenerator = new UniformEnergyGenerator();
-      m_generator->AdoptEnergyGenerator( energyGenerator );
-    } 
-    else if ( energyName.compare("blackbody") == 0 ) {
-      auto energyGenerator = new BlackBodyEnergyGenerator();
-      m_generator->AdoptEnergyGenerator( energyGenerator );
-    } 
-    else if ( energyName.compare("powerlaw") == 0 ) {
-      auto energyGenerator = new PowerLawEnergyGenerator();
-      m_generator->AdoptEnergyGenerator( energyGenerator );
-    } 
-    else if ( energyName.compare("hist") == 0 ) {
-      auto energyGenerator = new HistogramEnergyGenerator();
-      m_generator->AdoptEnergyGenerator( energyGenerator );
-    } 
-    else {
-      std::cerr << "File " << __FILE__ << " Line " << __LINE__ << ":" << std::endl
-		<< " Did not recognize EnergyGenerator option '" << energyInput
-		<< "'; Aborting job"
-		<< std::endl;
-      exit(EXIT_FAILURE);
-    }
-  }
+    if ( energyGeneratorNeeded ) {
+      // Determine which energy generator we're going to use.
+      std::string energyName;
+      options->GetOption("EnergyGeneration",energyName);
+      // Save the original text for the error message.
+      std::string energyInput(energyName);
+      
+      // Again, convert to lower case.
+      std::transform(energyName.begin(), energyName.end(), energyName.begin(), lowC);
+      
+      if ( energyName.compare("fixed") == 0 ) {
+	auto energyGenerator = new FixedEnergyGenerator();
+	m_generator->AdoptEnergyGenerator( energyGenerator );
+      } 
+      else if ( energyName.compare("gaus") == 0 ) {
+	auto energyGenerator = new GaussianEnergyGenerator();
+	m_generator->AdoptEnergyGenerator( energyGenerator );
+      } 
+      else if ( energyName.compare("flat") == 0 ) {
+	auto energyGenerator = new UniformEnergyGenerator();
+	m_generator->AdoptEnergyGenerator( energyGenerator );
+      } 
+      else if ( energyName.compare("blackbody") == 0 ) {
+	auto energyGenerator = new BlackBodyEnergyGenerator();
+	m_generator->AdoptEnergyGenerator( energyGenerator );
+      } 
+      else if ( energyName.compare("powerlaw") == 0 ) {
+	auto energyGenerator = new PowerLawEnergyGenerator();
+	m_generator->AdoptEnergyGenerator( energyGenerator );
+      } 
+      else if ( energyName.compare("hist") == 0 ) {
+	auto energyGenerator = new HistogramEnergyGenerator();
+	m_generator->AdoptEnergyGenerator( energyGenerator );
+      } 
+      else {
+	std::cerr << "File " << __FILE__ << " Line " << __LINE__ << ":" << std::endl
+		  << " Did not recognize EnergyGenerator option '" << energyInput
+		  << "'; Aborting job"
+		  << std::endl;
+	exit(EXIT_FAILURE);
+      }
+    } // if energy generator needed
+  } // end constructor
 
   // Destructor
   ParticleGeneration::~ParticleGeneration() {}
