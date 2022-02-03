@@ -1,22 +1,7 @@
+// MapPowerLawGenerator.h
 // 01-Feb-2022 WGS 
 
-// Based on code written by Naomi Tsuji and Hiroki Yoneda, within the
-// ComptonSoft framework written by Hirokazu Odaka.
-
-// Generate energy and position of primary particles based on HEALPix
-// maps of the power-law functional parameters.
-
-// In other words, assume a power-law functional form of:
-
-// 𝑓(𝐸) = 𝑁 * ( 𝐸 / 𝐸_𝑟𝑒𝑓 )^(−𝛼)
-
-// The input file will have three HEALPix maps, one each for 𝑁, 𝐸_𝑟𝑒𝑓,
-// and 𝛼. Each map will contain its corresponding parameter as a
-// function of (z,phi) on the inside of the celestial sphere.
-
-// This program will generate the position randomly on the celestrial
-// sphere, then randomly generate the energy according to above
-// functional form.
+// See comments in GramsSky/src/MapPowerLawGenerator.cc
 
 #ifndef Grams_MapPowerLawGenerator_h
 #define Grams_MapPowerLawGenerator_h
@@ -50,6 +35,10 @@ namespace gramssky {
     virtual std::shared_ptr<ParticleInfo> Generate();
 
   private:
+    // Potential flags from the command line.
+    bool m_verbose;
+    bool m_debug;
+
     // The PDG code and mass of the primary particle.
     int m_PDG;
     double m_mass;
@@ -71,8 +60,8 @@ namespace gramssky {
     Healpix_Map<double> imageEnergyRef_; // reference energy map, 𝐸_𝑟𝑒𝑓
 
     // For random-value generation using the rejection method, we'll
-    // need the integrals of the power-law function in both energy,
-    // value, and position.
+    // need the integrals of the power-law function in position, energy,
+    // and map pixel.
     std::vector<double> imageIntegratedPhotonFlux_; 
     std::vector<double> imageIntegratedEnergyFlux_; 
     std::vector<double> pixelIntegral_;

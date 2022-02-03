@@ -70,6 +70,7 @@
 
 	 "Point": Specify an (x,y,z) fixed position.
 	 "Iso": Generate particles isotropically on a (theta,phi) region of the celestial sphere.
+	 "MapPowerLaw": Use HEALPix maps to generate a power-law distribution for each pixel.
 
          See the <global> section above for units.
     -->
@@ -103,7 +104,7 @@
     <option name="EnergyGeneration" value="Fixed" type="string" 
 	    desc="how to generate primary energies"/>    
 
-    <!-- Common to all energy distributions -->
+    <!-- Common to all energy and map distributions -->
     <option name="EnergyMin" value="0" type="double" 
 	    desc="Minimum for energy distribution"/>
     <option name="EnergyMax" value="1000" type="double" 
@@ -140,6 +141,26 @@
     <!-- This can be a path to the histogram within the file. -->
     <option name="HistName" value="example" type="string" 
 	    desc="Name of histogram in input file"/>
+
+    <!-- The option(s) for "MapPowerLaw". Note that this method
+         generates both position and energy. -->
+    <option name="MapPowerLawFile" type="string"
+	    value="AliceSprings_Australia_2021_3_21_alt30000m_powerlaw_photon.fits"
+	    desc="FITS file with power-law HEALPix maps"/>    
+    <!--
+    HDU = "Header Data Unit". For more on what an HDU is, see
+    https://heasarc.gsfc.nasa.gov/docs/software/fitsio/user_f/node17.html
+    I found this value experimentally, and it probably only applies to file
+    AliceSprings_Australia_2021_3_21_alt30000m_powerlaw_photon.fits
+    -->
+    <option name="MapPowerLawHDU" value="2" type="integer" 
+	    desc="Header Data Unit for power-law maps"/>    
+    <option name="MapPowerLawColumnNorm" value="1" type="integer" 
+	    desc="Column number of parameter N HEALPix map"/>    
+    <option name="MapPowerLawColumnIndex" value="2" type="integer" 
+	    desc="Column number of parameter alpha HEALPix map"/>    
+    <option name="MapPowerLawColumnEref" value="3" type="integer" 
+	    desc="Column number of parameter Eref HEALPix map"/>    
 
     <!-- In GramsSky, we generate a particle coming from the celestial
          sphere according to some energy/position
