@@ -40,7 +40,7 @@ To run the simulation:
     # in the build directory:
     ./gramsg4
 
-If no one has changed the defaults (see *Program Options* below), the Geant4 simulation
+If no one has changed the [defaults](../options.xml), the Geant4 simulation
 will generate 1000 1 *MeV* gammas. If you'd like to see an interactive
 display:
 
