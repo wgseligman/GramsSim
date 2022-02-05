@@ -157,8 +157,39 @@ namespace gramssky {
     // Use the values from the Options XML file.
     particle->SetPDG(m_PDG);
 
-    // Stub.
-    double energy = 1.0;
+    // Pick a random pixel from the HEALPix map.
+    const double r = gRandom->Uniform();
+    auto it = std::upper_bound(pixelIntegral_.cbegin(), pixelIntegral_.cend(), r);
+    const int pixel = it - pixelIntegral_.cbegin() - 1;
+
+    // Get (theta,phi) from pixel coordinates.
+    const double theta = imageDec_[pixel];
+    const double phi = imageRA_[pixel];
+
+    // Construct a unit vector for particle position with direction
+    // from (theta,phi). The Transform method below will tranlate that
+    // vector to the inner surface of the celestial sphere.
+    particle->SetX( std::sin(theta) * std::cos(phi) );
+    particle->SetY( std::sin(theta) * std::sin(phi) );
+    particle->SetZ( std::cos(theta) );
+
+    // Generate energy randomly from power-law distribution.
+    double energy = 0.0;
+    const double photonIndex = imageIndex_[pixel];
+    
+    // If the photon index is too close to 1, the exponent will blow
+    // up. Treat that as a special case.
+    if ( photonIndex > 0.999 && photonIndex < 1.001 ) {
+      energy = m_energyMin * std::pow(m_energyMax/m_energyMin, gRandom->Uniform());
+    }
+    else {
+      const double s = 1.0 - photonIndex;
+      const double a0 = std::pow(m_energyMin, s);
+      const double a1 = std::pow(m_energyMax, s);
+      const double a = a0 + gRandom->Uniform()*(a1-a0);
+      energy = std::pow(a, 1./s);
+    }
+
     particle->SetE(energy);
 
     // We don't have to set the correct particle direction here, since
@@ -208,15 +239,6 @@ namespace gramssky {
     for (auto& v: pixelIntegral_) {
       v /= norm;
     }
-  }
-
-  // Randomly select a pixel for the maps using the rejection method.
-  int MapPowerLawGenerator::samplePixel()
-  {
-    const double r = gROOT->Uniform();
-    auto it = std::upper_bound(pixelIntegral_.cbegin(), pixelIntegral_.cend(), r);
-    const int r0 = it - pixelIntegral_.cbegin() - 1;
-    return r0 ;
   }
 
   // Calculate the integrals of the power-law function for each pixel. 
