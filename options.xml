@@ -150,11 +150,12 @@
     <!--
     HDU = "Header Data Unit". For more on what an HDU is, see
     https://heasarc.gsfc.nasa.gov/docs/software/fitsio/user_f/node17.html
-    I found this value experimentally, and it probably only applies to file
+    I found this value experimentally, and it may only apply to file
     AliceSprings_Australia_2021_3_21_alt30000m_powerlaw_photon.fits
     -->
     <option name="MapPowerLawHDU" value="2" type="integer" 
-	    desc="Header Data Unit for power-law maps"/>    
+	    desc="Header Data Unit for power-law maps"/>
+    <!-- Within a header, the images are organized in columns. -->
     <option name="MapPowerLawColumnNorm" value="1" type="integer" 
 	    desc="Column number of parameter N HEALPix map"/>    
     <option name="MapPowerLawColumnIndex" value="2" type="integer" 
@@ -168,11 +169,11 @@
          finite radius within the world volume, while the actual
          celestial sphere is actually at "infinity".
 	 
-	     To simulate this effect, we construct an imaginary disc
-	     tangent to the simulation sphere at the point of the
-	     particle's generation; see GramsSky/SkyDiagram.jpg and
-	     GramsSky/README.md for details. This routine randomly shifts
-	     the origin of the particle across the surface of that disc.
+	 To simulate this effect, we construct an imaginary disc
+	 tangent to the simulation sphere at the point of the
+	 particle's generation; see GramsSky/SkyDiagram.jpg and
+	 GramsSky/README.md for details. This routine randomly shifts
+	 the origin of the particle across the surface of that disc.
 
          It also adjusts for the direction of the sphere with respect
          to detector coordinates, and the center of the detector with
