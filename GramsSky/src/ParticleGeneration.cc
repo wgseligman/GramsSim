@@ -23,7 +23,7 @@
 #include "PowerLawEnergyGenerator.h"
 #include "HistogramEnergyGenerator.h"
 
-#ifdef FITS_FOUND
+#ifdef HEALPIX_INSTALLED
 #include "MapPowerLawGenerator.h"
 #endif
 
@@ -72,7 +72,7 @@ namespace gramssky {
       m_generator = std::make_shared<IsotropicPositionGenerator>();
     else if ( positionName.compare("mappowerlaw") == 0 )
       {
-#ifdef FITS_FOUND
+#ifdef HEALPIX_INSTALLED
 	m_generator = std::make_shared<MapPowerLawGenerator>();
 	energyGeneratorNeeded = false;
 #else

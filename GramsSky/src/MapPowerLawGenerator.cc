@@ -1,5 +1,5 @@
 // Have the HEALPix libraries been found on this system?
-#ifdef FITS_FOUND
+#ifdef HEALPIX_INSTALLED
 
 // MapPowerLawGenerator.cc
 // 01-Feb-2022 WGS
@@ -70,14 +70,14 @@ namespace gramssky {
     m_mass = 0.;
     if ( particle != NULL ) {
       m_mass = particle->Mass();
-      if (debug) {
+      if (m_debug) {
 	std::cout << "MapPowerLawGenerator: PDG code "
 		  << m_PDG << " found in ROOT particle database, mass = "
 		  << m_mass << std::endl;
       }
     }
     else {
-      if (debug) {
+      if (m_debug) {
 	std::cout << "MapPowerLawGenerator: PDG code "
 		  << m_PDG << " not found in ROOT particle database! "
 		  << " mass set to 0" << std::endl;
@@ -125,14 +125,14 @@ namespace gramssky {
 	= calcIntegratedPhotonFlux( imageNorm_[ipix], 
 				    imageIndex_[ipix], 
 				    imageEnergyRef_[ipix] , 
-				    m_energyMin_, 
+				    m_energyMin, 
 				    m_energyMax ) ;
       imageIntegratedEnergyFlux_[ipix] 
 	= calcIntegratedEnergyFlux( imageNorm_[ipix], 
 				    imageIndex_[ipix], 
 				    imageEnergyRef_[ipix] , 
-				    m_energyMin_, 
-				    m_energyMax_ ) ;
+				    m_energyMin, 
+				    m_energyMax ) ;
     } // loop over pixels
 
     // Precompute pixel->(theta,phi).
@@ -243,11 +243,11 @@ namespace gramssky {
 
   // Calculate the integrals of the power-law function for each pixel. 
 
-  double calcIntegratedEnergyFlux( double norm_, 
-				   double photonIndex_, 
-				   double energy, 
-				   double E_min, 
-				   double E_max ) {
+  double MapPowerLawGenerator::calcIntegratedEnergyFlux( double norm_, 
+							 double photonIndex_, 
+							 double energy, 
+							 double E_min, 
+							 double E_max ) {
     double intg_1 ;
     double intg_2 ;
     double intg_ ;
@@ -263,7 +263,7 @@ namespace gramssky {
     return intg_ ; 
   }
 
-  double calcIntegratedPhotonFlux( double norm_, double photonIndex_, double energy, double E_min, double E_max ){
+  double MapPowerLawGenerator::calcIntegratedPhotonFlux( double norm_, double photonIndex_, double energy, double E_min, double E_max ) {
     double intg_1 ;
     double intg_2 ;
     double intg_ ;

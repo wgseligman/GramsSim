@@ -66,6 +66,9 @@ namespace gramssky {
     std::vector<double> imageIntegratedEnergyFlux_; 
     std::vector<double> pixelIntegral_;
 
+    double calcIntegratedPhotonFlux( double, double, double, double, double);
+    double calcIntegratedEnergyFlux( double, double, double, double, double);
+
     int npix_; // Number of pixels in the HEALPix map
 
     // Pre-compute a conversion between pixel number and coordinates

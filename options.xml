@@ -85,7 +85,7 @@
     <!-- The option(s) for "Iso"; units are radians -->
     <option name="ThetaMinMax" value="(0,1.571)" type="vector" 
 	    desc="theta (min,max) for Iso generation"/>    
-    <option name="PhiMinMax" value="(0,6.283)" type="vector" 
+    <option name="PhiMinMax" value="(0,6.282)" type="vector" 
 	    desc="phi (min,max) for Iso generation"/>    
     
     <!-- How to generate the primary particle energies. The following
@@ -105,9 +105,9 @@
 	    desc="how to generate primary energies"/>    
 
     <!-- Common to all energy and map distributions -->
-    <option name="EnergyMin" value="0" type="double" 
+    <option name="EnergyMin" value="0.1" type="double" 
 	    desc="Minimum for energy distribution"/>
-    <option name="EnergyMax" value="1000" type="double" 
+    <option name="EnergyMax" value="2" type="double" 
 	    desc="Maximum for energy distribution"/>
 
     <!-- Option(s) for "Fixed" energy distribution. -->
@@ -192,7 +192,7 @@
     
     <!-- The radius of the tangent disc. If this is <= 0, then
          RadiusSphere is used. -->
-    <option name="RadiusDisc" value="0" type="double" 
+    <option name="RadiusDisc" value="0.1" type="double" 
         desc="radius of tangent disc"/> 
 
     <!-- The center of the simulated sphere in detector
