@@ -1,8 +1,6 @@
 #include "PowerLawEnergyGenerator.h"
+#include "SampleFromPowerLaw.h"
 #include "Options.h" // in util
-
-// ROOT includes
-#include "TRandom.h"
 
 // C++ includes
 #include <cmath>
@@ -28,25 +26,8 @@ namespace gramssky {
 
   double PowerLawEnergyGenerator::Generate()
   {
-    // Copied from
-    // https://github.com/odakahirokazu/ComptonSoft/blob/master/anlgeant4/src/BasicPrimaryGen.cc
-
     // Generate a random value from a power-law spectrum.
-    double energy = 0.0;
-    
-    // If the photon index is too close to 1, the exponent will blow
-    // up. Treat that as a special case.
-    if ( m_photonIndex > 0.999 && m_photonIndex < 1.001 ) {
-      energy = m_energyMin * std::pow(m_energyMax/m_energyMin, gRandom->Uniform());
-    }
-    else {
-      const double s = 1.0 - m_photonIndex;
-      const double a0 = std::pow(m_energyMin, s);
-      const double a1 = std::pow(m_energyMax, s);
-      const double a = a0 + gRandom->Uniform()*(a1-a0);
-      energy = std::pow(a, 1./s);
-    }
-
+    double energy = SampleFromPowerLaw(m_photonIndex, m_energyMin, m_energyMax);
     return energy;
   }
 

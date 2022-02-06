@@ -25,6 +25,7 @@
 #include "MapPowerLawGenerator.h"
 #include "PositionGenerator.h" // For GetTransform
 #include "TransformCoordinates.h"
+#include "SampleFromPowerLaw.h"
 #include "Options.h" // in util
 
 // ROOT includes
@@ -174,22 +175,7 @@ namespace gramssky {
     particle->SetZ( std::cos(theta) );
 
     // Generate energy randomly from power-law distribution.
-    double energy = 0.0;
-    const double photonIndex = imageIndex_[pixel];
-    
-    // If the photon index is too close to 1, the exponent will blow
-    // up. Treat that as a special case.
-    if ( photonIndex > 0.999 && photonIndex < 1.001 ) {
-      energy = m_energyMin * std::pow(m_energyMax/m_energyMin, gRandom->Uniform());
-    }
-    else {
-      const double s = 1.0 - photonIndex;
-      const double a0 = std::pow(m_energyMin, s);
-      const double a1 = std::pow(m_energyMax, s);
-      const double a = a0 + gRandom->Uniform()*(a1-a0);
-      energy = std::pow(a, 1./s);
-    }
-
+    double energy = SampleFromPowerLaw( imageIndex_[pixel], m_energyMin, m_energyMax );
     particle->SetE(energy);
 
     // We don't have to set the correct particle direction here, since
