@@ -25,6 +25,7 @@
 
 #ifdef HEALPIX_INSTALLED
 #include "MapPowerLawGenerator.h"
+#include "MapEnergyBands.h"
 #endif
 
 // ROOT includes
@@ -74,6 +75,20 @@ namespace gramssky {
       {
 #ifdef HEALPIX_INSTALLED
 	m_generator = std::make_shared<MapPowerLawGenerator>();
+	energyGeneratorNeeded = false;
+#else
+	std::cerr << "File " << __FILE__ << " Line " << __LINE__ << " " << std::endl
+		  << "The generator option '" << positionInput
+		  << "' not recognized, since this program was compiled "
+		  << "without the HEALPix libraries."
+		  << std::endl;
+	exit(EXIT_FAILURE);
+#endif
+      }
+    else if ( positionName.compare("mapenergybands") == 0 )
+      {
+#ifdef HEALPIX_INSTALLED
+	m_generator = std::make_shared<MapEnergyBands>();
 	energyGeneratorNeeded = false;
 #else
 	std::cerr << "File " << __FILE__ << " Line " << __LINE__ << " " << std::endl
