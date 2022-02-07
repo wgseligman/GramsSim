@@ -7,8 +7,10 @@
 #ifndef SampleFromPowerLaw_H
 #define SampleFromPowerLaw_H
 
-extern double SampleFromPowerLaw(const double photonIndex, 
-				 const double energyMin,
-				 const double energyMax);
+namespace gramssky {
+  extern double SampleFromPowerLaw(const double photonIndex, 
+				   const double energyMin,
+				   const double energyMax);
+}
 
 #endif // SampleFromPowerLaw_H

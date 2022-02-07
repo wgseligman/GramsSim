@@ -9,13 +9,15 @@
 // Randomly sample from a function of the form f(E) = std::pow(E,a)
 // where "E" is the energy and "a" is the "photon index".
 
-double SampleFromPowerLaw(const double photonIndex, 
-			  const double energyMin,
-			  const double energyMax)
-{
+namespace gramssky {
+
+  double SampleFromPowerLaw(const double photonIndex, 
+			    const double energyMin,
+			    const double energyMax)
+  {
     // Copied from
     // https://github.com/odakahirokazu/ComptonSoft/blob/master/anlgeant4/src/BasicPrimaryGen.cc
-
+    
     // Generate a random value from a power-law spectrum.
     double energy = 0.0;
     
@@ -31,6 +33,9 @@ double SampleFromPowerLaw(const double photonIndex,
       const double a = a0 + gRandom->Uniform()*(a1-a0);
       energy = std::pow(a, 1./s);
     }
-
+    
     return energy;
-}
+  }
+} // namespace gramssky
+
+  
