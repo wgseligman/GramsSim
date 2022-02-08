@@ -93,7 +93,7 @@ namespace gramssky {
     // HDU = "Header Data Unit". For more on what an HDU is, see
     // https://heasarc.gsfc.nasa.gov/docs/software/fitsio/user_f/node17.html
     // I found this value experimentally, and it probably only applies to file
-    // AliceSprings_Australia_2021_3_21_alt30000m_map_photon.fits
+    // AliceSprings_Australia_2021_3_21_alt30000m_powerlaw_photon.fits
 
     int hduNumber, columnNorm, columnIndex, columnEref;
     options->GetOption("MapPowerLawHDU",hduNumber);

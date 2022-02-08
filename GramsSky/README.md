@@ -19,7 +19,7 @@ GramsSky is a simulation of particles coming from spherical (sky) distributions 
 
 [10]: https://gitlab.cern.ch/hepmc/HepMC3
 
-This is similar to the [General Particle Source][62] available in [Geant4][60]. The principle difference is in the random "translation" of the generated particle to simulate that it was generated at "infinity" (or at least several light-years away). Understanding that process is crucial to supply meaningful [options](../util/README.md) to the program, so it will be addressed first.
+This is similar to the [General Particle Source][62] available in [Geant4][60]. The principle difference is in the random "translation" of the generated particle to simulate that it was generated at "infinity" (or at least several light-years away). Understanding that process is crucial to supplying meaningful [options](../util/README.md) to the program, so it will be addressed first.
 
 [60]: https://geant4.web.cern.ch/
 [62]: http://geant4-userdoc.web.cern.ch/geant4-userdoc/UsersGuides/ForApplicationDeveloper/html/GettingStarted/generalParticleSource.html

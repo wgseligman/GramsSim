@@ -47,34 +47,36 @@ namespace gramssky {
     double m_energyMin;
     double m_energyMax;
 
-    // Private routines required for random position generation.
+    // Private routines required for random position generation and
+    // map selection.
     void setCoordinate();
-    void buildPixelIntegral();
-    int samplePixel();
+    void buildEnergyPixelIntegral();
+    int sampleEnergyBandIndex();
+    int samplePixel(int energyBandIndex);
+    void calcIntegratedPhotonFluxInEnergyBand( const Healpix_Map<double>& photonfluxmap1, 
+					       const Healpix_Map<double>& photonfluxmap2, 
+					       const double e1, 
+					       const double e2, 
+					       const int imap);
 
-    // Variables required for random position/energy generation from
-    // the HEALPix maps. First, the maps for the power-law function
-    // parameters.
-    Healpix_Map<double> imageNorm_; // normalization map, 𝑁
-    Healpix_Map<double> imageIndex_; // index map, 𝛼
-    Healpix_Map<double> imageEnergyRef_; // reference energy map, 𝐸_𝑟𝑒𝑓
+    // Variables required for random map selection. 
+    // To save on memory, make this a vector of pointers.
+    std::vector< std::shared_ptr<Healpix_Map<double> > > m_differentialPhotonFluxMap;
+    std::vector< double > m_energyBand; // normalization map
 
-    // For random-value generation using the rejection method, we'll
-    // need the integrals of the power-law function in position, energy,
-    // and map pixel.
-    std::vector<double> imageIntegratedPhotonFlux_; 
-    std::vector<double> imageIntegratedEnergyFlux_; 
-    std::vector<double> pixelIntegral_;
+    std::vector< std::vector<double> > m_indexMap;
+    std::vector< std::vector<double> > m_integratedPhotonFluxMap;
 
-    double calcIntegratedPhotonFlux( double, double, double, double, double);
-    double calcIntegratedEnergyFlux( double, double, double, double, double);
+    std::vector<double> m_energyIntegral;
+    std::vector< std::vector<double> > m_pixelIntegral;
 
-    int npix_; // Number of pixels in the HEALPix map
+    int m_numberMaps; // Number of maps in the input file that pass the energy cuts
+    int m_numPixels; // Number of pixels in the HEALPix maps
 
     // Pre-compute a conversion between pixel number and coordinates
     // on the celestial sphere.
-    std::vector<double> imageRA_; // l in Galactic coordinate.
-    std::vector<double> imageDec_; // b in Galactic coordinate.
+    std::vector<double> m_imageRA; // l in Galactic coordinate.
+    std::vector<double> m_imageDec; // b in Galactic coordinate.
   };
 
 } // namespace gramssky

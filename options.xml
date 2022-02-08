@@ -163,6 +163,29 @@
     <option name="MapPowerLawColumnEref" value="3" type="integer" 
 	    desc="Column number of parameter Eref HEALPix map"/>    
 
+    <!-- The option(s) for "MapEnergyBands". Note that this method
+         generates both position and energy. Also note that the energy
+         bands are limited to between EnergyMin and EnergyMax defined
+         above.-->
+    <option name="MapEnergyBandsFile" type="string"
+	    value="AliceSprings_Australia_2021_3_21_alt30000m_map_photon.fits"
+	    desc="FITS file with HEALPix energy maps"/>    
+    <!-- HDU for energy maps in the above file.  It may only apply to file
+         AliceSprings_Australia_2021_3_21_alt30000m_map_photon.fits
+    -->
+    <option name="MapEnergyBandsHDU" value="2" type="integer" 
+	    desc="Header Data Unit for energy-band maps"/>
+    <!-- Within a header, there is a map for different energy
+         bands. This is the header key for the number of maps. -->
+    <option name="MapNumberEnergyBandsKey" value="NMAP" type="string" 
+	    desc="The key for the number of maps in the HEALPix file"/>
+    <!-- The key for each map is formed by the following string,
+         suffixed by a number. For example, if MapNumberEnergyBandsKey
+         is "NMAP" and the following string is "ENE", the individual
+         maps have keys "ENEnn" where nn is 01 through NMAP. -->
+    <option name="MapEnergyBandsPrefix" value="ENE" type="string" 
+	    desc="The prefix string to the key for the individual maps"/>    
+
     <!-- In GramsSky, we generate a particle coming from the celestial
          sphere according to some energy/position
          distribution. However, the simulation's sphere has some
