@@ -71,6 +71,8 @@
 	 "Point": Specify an (x,y,z) fixed position.
 	 "Iso": Generate particles isotropically on a (theta,phi) region of the celestial sphere.
 	 "MapPowerLaw": Use HEALPix maps to generate a power-law distribution for each pixel.
+	 "MapEnergyBands": Use HEALPix maps for different energy bands to generate 
+	                   energy and position. 
 
          See the <global> section above for units.
     -->
