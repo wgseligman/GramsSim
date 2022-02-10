@@ -122,7 +122,7 @@ The black-body radiation function is of the form:
 where _kT_ is the "radiation temperature". _E_ is generated according to a black-body distribution with _kT_ given by parameter __`RadTemp`__. 
 
    - Again, the limits in parameters __`EnergyMin`__ and __`EnergyMax`__ still apply to this generator.
-   - The units of _kT_ must be the same as that of __`EnergyMin`__ and __`EnergyMax`__; i.e., the value of the global option `LengthUnit`.
+   - The units of _kT_ must be the same as that of __`EnergyMin`__ and __`EnergyMax`__; i.e., the value of the global parameter `EnergyUnit`.
    
 ### `"PowerLaw"`
 
@@ -136,7 +136,7 @@ where
    - _E<sub>ref</sub>_ is the "reference energy"
    - _&alpha;_ is the "photon index"
 
-_E_ is generated according to a power-law distribution with a photon index _&alpha;_ given by parameter __`PhotonIndex`__.
+_E_ is generated according to a power-law distribution with _&alpha;_ given by parameter __`PhotonIndex`__.
 
    - The limits in parameters __`EnergyMin`__ and __`EnergyMax`__ still apply to this generator.
    
