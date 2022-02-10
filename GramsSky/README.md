@@ -1,17 +1,20 @@
 # GramsSky
 
 - [GramsSky](#gramssky)
-  * [The geometry of GramsSky generation](#the-geometry-of-gramssky-generation)
+  * [The process of GramsSky generation](#the-process-of-gramssky-generation)
   * [Position generators](#position-generators)
-    + [`Fixed`](#-fixed-)
-    + [`Iso`](#-iso-)
+    + [`"Point"`](#--point--)
+    + [`"Iso"`](#--iso--)
   * [Energy generators](#energy-generators)
-    + [`Fixed`](#-fixed--1)
-    + [`Flat`](#-flat-)
-    + [`Gaus`](#-gaus-)
-    + [`BlackBody`](#-blackbody-)
-    + [`PowerLaw`](#-powerlaw-)
-    + [`Hist`](#-hist-)
+    + [`"Fixed"`](#--fixed--)
+    + [`"Flat"`](#--flat--)
+    + [`"Gaus"`](#--gaus--)
+    + [`"BlackBody"`](#--blackbody--)
+    + [`"PowerLaw"`](#--powerlaw--)
+    + [`"Hist"`](#--hist--)
+  * [Combined position and energy generators](#combined-position-and-energy-generators)
+    + [`"MapPowerLaw"`](#--mappowerlaw--)
+    + [`"MapEnergyBands"`](#--mapenergybands--)
 
 <small><i><a href='http://ecotrust-canada.github.io/markdown-toc/'>Table of contents generated with markdown-toc</a></i></small>
 
@@ -30,9 +33,13 @@ The input and output units for the parameters described below are determined by 
 
 - If the HepMC3 libraries are not found during the [build process](../DEPENDENCIES.md), then this package will not be compiled.
 
+- If the [FITSIO][20] and [HEALPix][21] libraries are not found during the build process, then any generators involving HEALPix maps won't be compiled. 
+
 ## The process of GramsSky generation
 
-![Sky Diagram](SkyDiagram.jpg)
+|                                          |
+| :--------------------------------------: | 
+| <img src="SkyDiagram.jpg" width="75%" /> |
 
 The number of events to generate comes from the __`events`__ parameter in the options file. For each such event: 
 
@@ -98,19 +105,38 @@ _E_ is generated uniformly between the values of parameters __`EnergyMin`__ and 
 
 ### `"Gaus"`
 
-_E_ is generated according to a Gaussian distribution with mean of __`GausMean`__ and width __`GausWidth`__. 
+The gaussian distribution is of the form:
+
+<img src="gaussian.png" width="18%"/>
+
+where _&mu;_ is the mean of the distribution and _&sigma;_ is the width. _E_ is generated with _&mu;_ given by __`GausMean`__ and _&sigma;_ given by __`GausWidth`__. 
 
    - Note that the limits in parameters __`EnergyMin`__ and __`EnergyMax`__ still apply to this generator. This is to keep the value of _E_ from going negative, which would cause problems in both `gramssky` and `gramsg4`.
    
 ### `"BlackBody"`
 
-_E_ is generated according to a black-body distribution with radiation temperature (kT) given by parameter __`RadTemp`__. 
+The black-body radiation function is of the form:
+
+<img src="black-body.png" width="20%"/>
+
+where _kT_ is the "radiation temperature". _E_ is generated according to a black-body distribution with _kT_ given by parameter __`RadTemp`__. 
 
    - Again, the limits in parameters __`EnergyMin`__ and __`EnergyMax`__ still apply to this generator.
+   - The units of _kT_ must be the same as that of __`EnergyMin`__ and __`EnergyMax`__; i.e., the value of the global option `LengthUnit`.
    
 ### `"PowerLaw"`
 
-_E_ is generated according to a power-law distribution with a photon index given by __`PhotonIndex`__.
+The power-law function is of the form:
+
+<img src="power-law.png" width="15%"/>
+
+where
+
+   - _N_ is a normalization
+   - _E<sub>ref</sub>_ is the "reference energy"
+   - _&alpha;_ is the "photon index"
+
+_E_ is generated according to a power-law distribution with a photon index _&alpha;_ given by parameter __`PhotonIndex`__.
 
    - The limits in parameters __`EnergyMin`__ and __`EnergyMax`__ still apply to this generator.
    
@@ -122,3 +148,28 @@ The program expects two parameters: __`HistFile`__ with the name of a ROOT file,
    
    - For this generator, the values of __`EnergyMin`__ and __`EnergyMax`__ are ignored. Instead, the energy limits effectively come from the bin limits of the histogram. 
    
+## Combined position and energy generators
+
+As of Feb-2022, all the generators in this category make use of the [FITSIO][20] and [HEALPix][21] libraries.
+
+[20]: https://heasarc.gsfc.nasa.gov/fitsio/ 
+[21]: https://healpix.jpl.nasa.gov/ 
+
+   - FITS is a file format intended for both images and multi-dimensional data.
+
+   - HEALPix is a pixelization for evenly subdividing a sphere. 
+   
+   |                                       |
+   | :-----------------------------------: | 
+   | <img src="healpix.png" width="50%" /> |
+   | Courtesy NASA/JPL-Caltech             |
+   
+   - Credit to Naomi Tsuji and Hiroki Yoneda, who provided me with the code and files to incorporate the following into GramsSky. 
+
+   - As noted above, if the `healpix_cxx` libraries are not installed on your system, the following generators will not be compiled into GramsSky. 
+
+If option __`PositionGeneration`__ has the value: 
+
+### `"MapPowerLaw"`
+
+### `"MapEnergyBands"`
