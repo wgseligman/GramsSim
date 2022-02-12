@@ -168,8 +168,34 @@ As of Feb-2022, all the generators in this category make use of the [FITSIO][20]
 
    - As noted above, if the `healpix_cxx` libraries are not installed on your system, the following generators will not be compiled into GramsSky. 
 
-If option __`PositionGeneration`__ has the value: 
+For the following options, the value of __`EnergyGeneration`__ is ignored. If option __`PositionGeneration`__ has the value: 
 
 ### `"MapPowerLaw"`
+
+This method uses three HEALPix maps, one for each parameter in a [power-law](#--powerlaw--) distribution:
+
+   |                                       |
+   | :-----------------------------------: | 
+   | <img src="power-law%20map%20diagram.png" width="75%" /> |
+   
+The procedure is to randomly generate a position, then randomly generate the energy according to the power-law distribution at that position. 
+
+This approach is intended as a simple simulation for stellar sources.
+
+The parameters for `"MapPowerLaw"` are:
+
+   - `"MapPowerLawFile"` = the name of the HEALPix file containing the maps. 
+   
+   - `"MapPowerLawHDU"` = the [HDU][20] for the HEALPix maps within the file.
+
+[20]: https://heasarc.gsfc.nasa.gov/docs/software/fitsio/user_f/node17.html
+
+   - `"MapPowerLawColumnNorm"` = the "column number" of the map for parameter _N_ within the HDU.
+   
+   - `"MapPowerLawColumnIndex"` = the "column number" of the map for parameter _&alpha;_ within the HDU.
+   
+   - `"MapPowerLawColumnEref"` = the "column number" of the map for parameter _E<sub>ref</sub>_ within the HDU.
+
+Note that this HDU/column structure may not be permanent, depending on the evolution of the process as determined by Naomi Tsuji and Hiroki Yoneda.
 
 ### `"MapEnergyBands"`
