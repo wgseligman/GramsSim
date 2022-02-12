@@ -184,7 +184,7 @@ This approach is intended as a simple simulation for stellar sources.
 
 The parameters for `"MapPowerLaw"` are:
 
-   - `"MapPowerLawFile"` = the name of the HEALPix file containing the maps. 
+   - `"MapPowerLawFile"` = the name of the HEALPix file containing the power-law maps. 
    
    - `"MapPowerLawHDU"` = the [HDU][20] for the HEALPix maps within the file.
 
@@ -199,3 +199,26 @@ The parameters for `"MapPowerLaw"` are:
 Note that this HDU/column structure may not be permanent, depending on the evolution of the process as determined by Naomi Tsuji and Hiroki Yoneda.
 
 ### `"MapEnergyBands"`
+
+This method uses a series of HEALPix maps, one for each of an increasing set of energies. 
+
+   |                                       |
+   | :-----------------------------------: | 
+   | <img src="energy-band%20map%20diagram.png" width="75%" /> |
+
+
+The procedure is to randomly select an energy band, then randomly generate a position from the flux in that band.
+
+This approach is intended to simulate the diffuse sky background.
+
+The parameters for `"MapEnergyBands"` are:
+
+   - `"MapEnergyBandsFile"` = the name of the HEALPix file containing the energy-band maps. 
+   
+   - `"MapEnergyBandsHDU"` = the [HDU][20] for the HEALPix maps within the file.
+   
+   - `"MapNumberEnergyBandsKey"` = within the HDU, this is a key whose value is the number of energy-band maps in the file. 
+   
+   - `"MapEnergyBandsPrefix"` = The key for each map is formed by this string, suffixed by a number. For example, if `MapNumberEnergyBandsKey` is `"NMAP"` and `MapEnergyBandsPrefix` is `"ENE"`, the individual maps have keys `"ENEnn"` where nn is 1 through `NMAP`.
+   
+Note that this HDU/column structure may not be permanent, depending on the evolution of the process as determined by Naomi Tsuji and Hiroki Yoneda.
