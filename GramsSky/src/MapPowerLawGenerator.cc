@@ -91,7 +91,7 @@ namespace gramssky {
     options->GetOption("MapPowerLawFile",healpixFile);
     
     // HDU = "Header Data Unit". For more on what an HDU is, see
-    // https://heasarc.gsfc.nasa.gov/docs/software/fitsio/user_f/node17.html
+    // https://heasarc.gsfc.nasa.gov/fitsio/c/c_user/node21.html
     // I found this value experimentally, and it probably only applies to file
     // AliceSprings_Australia_2021_3_21_alt30000m_powerlaw_photon.fits
 

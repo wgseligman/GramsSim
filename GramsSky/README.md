@@ -188,7 +188,7 @@ The parameters for `"MapPowerLaw"` are:
    
    - `"MapPowerLawHDU"` = the [HDU][20] for the HEALPix maps within the file.
 
-[20]: https://heasarc.gsfc.nasa.gov/docs/software/fitsio/user_f/node17.html
+[20]: https://heasarc.gsfc.nasa.gov/fitsio/c/c_user/node21.html
 
    - `"MapPowerLawColumnNorm"` = the "column number" of the map for parameter _N_ within the HDU.
    
