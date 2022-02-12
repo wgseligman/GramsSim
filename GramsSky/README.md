@@ -178,7 +178,7 @@ This method uses three HEALPix maps, one for each parameter in a [power-law](#--
    | :-----------------------------------: | 
    | <img src="power-law%20map%20diagram.png" width="75%" /> |
    
-The procedure is to randomly generate a position, then randomly generate the energy according to the power-law distribution at that position. 
+The procedure is to randomly select a pixel, then randomly generate the energy according to the power-law distribution at that position. 
 
 This approach is intended as a simple simulation for stellar sources.
 
@@ -207,7 +207,7 @@ This method uses a series of HEALPix maps, one for each of an increasing set of 
    | <img src="energy-band%20map%20diagram.png" width="75%" /> |
 
 
-The procedure is to randomly select an energy band, then randomly generate a position from the flux in that band.
+The procedure is to randomly select an energy band, then randomly select a pixel from the flux in that band, and finally generate an energy distribution for that particular pixel from a power-law distribution. 
 
 This approach is intended to simulate the diffuse sky background.
 
