@@ -145,18 +145,18 @@ namespace gramssky {
     m_indexMap.resize(m_numberMaps - 1);
     m_integratedPhotonFluxMap.resize(m_numberMaps - 1);
     for (int imap = 0; imap < m_numberMaps - 1; ++imap) {
-      calcIntegratedPhotonFluxInEnergyBand(*(m_differentialPhotonFluxMap[imap]), 
-					   *(m_differentialPhotonFluxMap[imap+1]),
-					   m_energyBand[imap], 
-					   m_energyBand[imap+1], 
-					   imap);
+      m_calcIntegratedPhotonFluxInEnergyBand(*(m_differentialPhotonFluxMap[imap]), 
+					     *(m_differentialPhotonFluxMap[imap+1]),
+					     m_energyBand[imap], 
+					     m_energyBand[imap+1], 
+					     imap);
     }
 
     // Precompute pixel->(theta,phi).
-    setCoordinate();
+    m_setCoordinate();
 
     // Create pixel integral for random-number generation.
-    buildEnergyPixelIntegral();
+    m_buildEnergyPixelIntegral();
 
     // Clean up.
     input->close();
@@ -175,9 +175,9 @@ namespace gramssky {
     particle->SetPDG(m_PDG);
 
     // Randomly pick an energy map.
-    const int energyIndex = sampleEnergyBandIndex();
+    const int energyIndex = m_sampleEnergyBandIndex();
     // Randomly pick a pixel within that energy map.
-    const int pixel = samplePixel(energyIndex);
+    const int pixel = m_samplePixel(energyIndex);
 
     // Get the photon index (power-law exponent) from the current pixel. 
     const double pindex = m_indexMap[energyIndex][pixel]; 
@@ -187,8 +187,8 @@ namespace gramssky {
 					      m_energyBand[energyIndex+1] );
 
     // Get (theta,phi) from pixel coordinates.
-    const double theta = m_imageDec[pixel];
-    const double phi = m_imageRA[pixel];
+    const double theta = m_imageTheta[pixel];
+    const double phi = m_imagePhi[pixel];
 
     // Construct a unit vector for particle position with direction
     // from (theta,phi). The Transform method below will tranlate that
@@ -215,28 +215,28 @@ namespace gramssky {
   }
 
   // Pre-compute the translation from pixel number to (theta,phi)
-  void MapEnergyBands::setCoordinate()
+  void MapEnergyBands::m_setCoordinate()
   {
     double z_ ;
     double phi_ ;
 
-    m_imageRA.resize(m_numPixels);
-    m_imageDec.resize(m_numPixels);
+    m_imagePhi.resize(m_numPixels);
+    m_imageTheta.resize(m_numPixels);
 
     for (int i = 0; i < m_numPixels; ++i) {
       // ang = ( theta in radian, phi = zenith angle)
       // z = cos(theta), phi = zenith
       (*m_differentialPhotonFluxMap[0]).pix2zphi( i, z_, phi_ );
 
-      m_imageRA[i] = phi_;
-      m_imageDec[i] = std::acos( z_ );
+      m_imagePhi[i] = phi_;
+      m_imageTheta[i] = std::acos( z_ );
     }
   }
 
   // Create integral over the power-law function for random pixel
   // selection.
 
-  void MapEnergyBands::buildEnergyPixelIntegral()
+  void MapEnergyBands::m_buildEnergyPixelIntegral()
   {
     m_energyIntegral.resize(m_numberMaps);
     m_energyIntegral[0] = 0.0;
@@ -271,7 +271,7 @@ namespace gramssky {
 
   // Select a random energy map using the rejection method against the
   // energy maps.
-  int MapEnergyBands::sampleEnergyBandIndex()
+  int MapEnergyBands::m_sampleEnergyBandIndex()
   {
     const double r = gRandom->Uniform();
     auto it = std::upper_bound(m_energyIntegral.cbegin(), 
@@ -282,7 +282,7 @@ namespace gramssky {
 
   // Select a random pixel using the rejection method against the
   // pixels within an energy map.
-  int MapEnergyBands::samplePixel(int energyBandIndex)
+  int MapEnergyBands::m_samplePixel(int energyBandIndex)
   {
     const double r = gRandom->Uniform();
     auto it = std::upper_bound(m_pixelIntegral[energyBandIndex].cbegin(), 
@@ -291,7 +291,7 @@ namespace gramssky {
     return r0 ;
   }
 
-  void MapEnergyBands::calcIntegratedPhotonFluxInEnergyBand
+  void MapEnergyBands::m_calcIntegratedPhotonFluxInEnergyBand
   ( const Healpix_Map<double>& photonfluxmap1,
     const Healpix_Map<double>& photonfluxmap2,
     const double e1, 

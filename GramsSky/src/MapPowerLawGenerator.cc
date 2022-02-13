@@ -109,38 +109,38 @@ namespace gramssky {
     
     // Read the maps. Each map is stored in its own column within a
     // data table identified by the HDU.
-    read_Healpix_map_from_fits( *input, imageNorm_, columnNorm ) ;
-    read_Healpix_map_from_fits( *input, imageIndex_, columnIndex ) ;
-    read_Healpix_map_from_fits( *input, imageEnergyRef_, columnEref ) ;
+    read_Healpix_map_from_fits( *input, m_imageNorm, columnNorm ) ;
+    read_Healpix_map_from_fits( *input, m_imageIndex, columnIndex ) ;
+    read_Healpix_map_from_fits( *input, m_imageEnergyRef, columnEref ) ;
 
     // Number of pixels in the HEALPix maps. All the maps in the file
     // are assumed to be the same size. .
-    npix_ = imageNorm_.Npix();
+    m_npix = m_imageNorm.Npix();
 
     // Integrate over position and energy for random-number
     // generation.
-    imageIntegratedPhotonFlux_.resize( npix_ );
-    imageIntegratedEnergyFlux_.resize( npix_ );
-    for(int ipix = 0; ipix < npix_; ++ipix){
-      imageIntegratedPhotonFlux_[ipix] 
-	= calcIntegratedPhotonFlux( imageNorm_[ipix], 
-				    imageIndex_[ipix], 
-				    imageEnergyRef_[ipix] , 
-				    m_energyMin, 
-				    m_energyMax ) ;
-      imageIntegratedEnergyFlux_[ipix] 
-	= calcIntegratedEnergyFlux( imageNorm_[ipix], 
-				    imageIndex_[ipix], 
-				    imageEnergyRef_[ipix] , 
-				    m_energyMin, 
-				    m_energyMax ) ;
+    m_imageIntegratedPhotonFlux.resize( m_npix );
+    m_imageIntegratedEnergyFlux.resize( m_npix );
+    for(int ipix = 0; ipix < m_npix; ++ipix){
+      m_imageIntegratedPhotonFlux[ipix] 
+	= m_calcIntegratedPhotonFlux( m_imageNorm[ipix], 
+				      m_imageIndex[ipix], 
+				      m_imageEnergyRef[ipix] , 
+				      m_energyMin, 
+				      m_energyMax ) ;
+      m_imageIntegratedEnergyFlux[ipix] 
+	= m_calcIntegratedEnergyFlux( m_imageNorm[ipix], 
+				      m_imageIndex[ipix], 
+				      m_imageEnergyRef[ipix] , 
+				      m_energyMin, 
+				      m_energyMax ) ;
     } // loop over pixels
 
     // Precompute pixel->(theta,phi).
-    setCoordinate();
+    m_setCoordinate();
 
     // Create pixel integral for random-number generation.
-    buildPixelIntegral();
+    m_buildPixelIntegral();
 
     // Clean up.
     input->close();
@@ -160,12 +160,12 @@ namespace gramssky {
 
     // Pick a random pixel from the HEALPix map.
     const double r = gRandom->Uniform();
-    auto it = std::upper_bound(pixelIntegral_.cbegin(), pixelIntegral_.cend(), r);
-    const int pixel = it - pixelIntegral_.cbegin() - 1;
+    auto it = std::upper_bound(m_pixelIntegral.cbegin(), m_pixelIntegral.cend(), r);
+    const int pixel = it - m_pixelIntegral.cbegin() - 1;
 
     // Get (theta,phi) from pixel coordinates.
-    const double theta = imageDec_[pixel];
-    const double phi = imageRA_[pixel];
+    const double theta = m_imageTheta[pixel];
+    const double phi = m_imagePhi[pixel];
 
     // Construct a unit vector for particle position with direction
     // from (theta,phi). The Transform method below will tranlate that
@@ -175,7 +175,7 @@ namespace gramssky {
     particle->SetZ( std::cos(theta) );
 
     // Generate energy randomly from power-law distribution.
-    double energy = SampleFromPowerLaw( imageIndex_[pixel], m_energyMin, m_energyMax );
+    double energy = SampleFromPowerLaw( m_imageIndex[pixel], m_energyMin, m_energyMax );
     particle->SetE(energy);
 
     // We don't have to set the correct particle direction here, since
@@ -194,46 +194,48 @@ namespace gramssky {
   }
 
   // Pre-compute the translation from pixel number to (theta,phi)
-  void MapPowerLawGenerator::setCoordinate()
+  void MapPowerLawGenerator::m_setCoordinate()
   {
     double z_ ;
     double phi_ ;
 
-    imageRA_.resize(npix_);
-    imageDec_.resize(npix_);
+    m_imagePhi.resize(m_npix);
+    m_imageTheta.resize(m_npix);
 
-    for(int i = 0; i < npix_; ++i){
+    for(int i = 0; i < m_npix; ++i){
       // ang = ( theta in radian, phi = zenith angle)
       // z = cos(theta), phi = zenith
-      imageNorm_.pix2zphi( i, z_, phi_ );
+      m_imageNorm.pix2zphi( i, z_, phi_ );
 
-      imageRA_[i] = phi_;
-      imageDec_[i] = std::acos( z_ );
+      m_imagePhi[i] = phi_;
+      m_imageTheta[i] = std::acos( z_ );
     }
   }
 
   // Create integral over the power-law function for random pixel
   // selection.
-  void MapPowerLawGenerator::buildPixelIntegral()
+  void MapPowerLawGenerator::m_buildPixelIntegral()
   {
-    pixelIntegral_.resize(npix_+1);
-    pixelIntegral_[0] = 0.0;
-    for(int ipix = 0; ipix < npix_; ++ipix){
-      pixelIntegral_[ipix+1] = pixelIntegral_[ipix] + imageIntegratedPhotonFlux_[ipix];
+    m_pixelIntegral.resize(m_npix+1);
+    m_pixelIntegral[0] = 0.0;
+    for(int ipix = 0; ipix < m_npix; ++ipix){
+      m_pixelIntegral[ipix+1] = m_pixelIntegral[ipix] + m_imageIntegratedPhotonFlux[ipix];
     }
-    const double norm = pixelIntegral_.back();
-    for (auto& v: pixelIntegral_) {
+    const double norm = m_pixelIntegral.back();
+    for (auto& v: m_pixelIntegral) {
       v /= norm;
     }
   }
 
   // Calculate the integrals of the power-law function for each pixel. 
 
-  double MapPowerLawGenerator::calcIntegratedEnergyFlux( double norm_, 
-							 double photonIndex_, 
-							 double energy, 
-							 double E_min, 
-							 double E_max ) {
+  double MapPowerLawGenerator::m_calcIntegratedEnergyFlux
+  ( double norm_, 
+    double photonIndex_, 
+    double energy, 
+    double E_min, 
+    double E_max ) 
+  {
     double intg_1 ;
     double intg_2 ;
     double intg_ ;
@@ -249,7 +251,13 @@ namespace gramssky {
     return intg_ ; 
   }
 
-  double MapPowerLawGenerator::calcIntegratedPhotonFlux( double norm_, double photonIndex_, double energy, double E_min, double E_max ) {
+  double MapPowerLawGenerator::m_calcIntegratedPhotonFlux
+  ( double norm_, 
+    double photonIndex_, 
+    double energy, 
+    double E_min, 
+    double E_max ) 
+  {
     double intg_1 ;
     double intg_2 ;
     double intg_ ;

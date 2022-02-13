@@ -49,15 +49,15 @@ namespace gramssky {
 
     // Private routines required for random position generation and
     // map selection.
-    void setCoordinate();
-    void buildEnergyPixelIntegral();
-    int sampleEnergyBandIndex();
-    int samplePixel(int energyBandIndex);
-    void calcIntegratedPhotonFluxInEnergyBand( const Healpix_Map<double>& photonfluxmap1, 
-					       const Healpix_Map<double>& photonfluxmap2, 
-					       const double e1, 
-					       const double e2, 
-					       const int imap);
+    void m_setCoordinate();
+    void m_buildEnergyPixelIntegral();
+    int m_sampleEnergyBandIndex();
+    int m_samplePixel(int energyBandIndex);
+    void m_calcIntegratedPhotonFluxInEnergyBand( const Healpix_Map<double>& photonfluxmap1, 
+						 const Healpix_Map<double>& photonfluxmap2, 
+						 const double e1, 
+						 const double e2, 
+						 const int imap);
 
     // Variables required for random map selection. 
     // To save on memory, make this a vector of pointers.
@@ -75,8 +75,8 @@ namespace gramssky {
 
     // Pre-compute a conversion between pixel number and coordinates
     // on the celestial sphere.
-    std::vector<double> m_imageRA; // l in Galactic coordinate.
-    std::vector<double> m_imageDec; // b in Galactic coordinate.
+    std::vector<double> m_imagePhi; // l in Galactic coordinate.
+    std::vector<double> m_imageTheta; // b in Galactic coordinate.
   };
 
 } // namespace gramssky

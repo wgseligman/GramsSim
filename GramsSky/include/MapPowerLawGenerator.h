@@ -48,33 +48,32 @@ namespace gramssky {
     double m_energyMax;
 
     // Private routines required for random position generation.
-    void setCoordinate();
-    void buildPixelIntegral();
-    int samplePixel();
+    void m_setCoordinate();
+    void m_buildPixelIntegral();
 
     // Variables required for random position/energy generation from
     // the HEALPix maps. First, the maps for the power-law function
     // parameters.
-    Healpix_Map<double> imageNorm_; // normalization map, 𝑁
-    Healpix_Map<double> imageIndex_; // index map, 𝛼
-    Healpix_Map<double> imageEnergyRef_; // reference energy map, 𝐸_𝑟𝑒𝑓
+    Healpix_Map<double> m_imageNorm; // normalization map, 𝑁
+    Healpix_Map<double> m_imageIndex; // index map, 𝛼
+    Healpix_Map<double> m_imageEnergyRef; // reference energy map, 𝐸_𝑟𝑒𝑓
 
     // For random-value generation using the rejection method, we'll
     // need the integrals of the power-law function in position, energy,
     // and map pixel.
-    std::vector<double> imageIntegratedPhotonFlux_; 
-    std::vector<double> imageIntegratedEnergyFlux_; 
-    std::vector<double> pixelIntegral_;
+    std::vector<double> m_imageIntegratedPhotonFlux; 
+    std::vector<double> m_imageIntegratedEnergyFlux; 
+    std::vector<double> m_pixelIntegral;
 
-    double calcIntegratedPhotonFlux( double, double, double, double, double);
-    double calcIntegratedEnergyFlux( double, double, double, double, double);
+    double m_calcIntegratedPhotonFlux( double, double, double, double, double);
+    double m_calcIntegratedEnergyFlux( double, double, double, double, double);
 
-    int npix_; // Number of pixels in the HEALPix map
+    int m_npix; // Number of pixels in the HEALPix map
 
     // Pre-compute a conversion between pixel number and coordinates
     // on the celestial sphere.
-    std::vector<double> imageRA_; // l in Galactic coordinate.
-    std::vector<double> imageDec_; // b in Galactic coordinate.
+    std::vector<double> m_imagePhi;
+    std::vector<double> m_imageTheta;
   };
 
 } // namespace gramssky
