@@ -196,6 +196,8 @@ The parameters for `"MapPowerLaw"` are:
    
    - `"MapPowerLawColumnEref"` = the "column number" of the map for parameter _E<sub>ref</sub>_ within the HDU.
 
+   - The limits in parameters __`EnergyMin`__ and __`EnergyMax`__ are applied to the power-law distribution within each pixel.
+
 Note that this HDU/column structure may not be permanent, depending on the evolution of the process as determined by Naomi Tsuji and Hiroki Yoneda.
 
 ### `"MapEnergyBands"`
@@ -221,4 +223,6 @@ The parameters for `"MapEnergyBands"` are:
    
    - `"MapEnergyBandsPrefix"` = The key for each map is formed by this string, suffixed by a number. For example, if `MapNumberEnergyBandsKey` is `"NMAP"` and `MapEnergyBandsPrefix` is `"ENE"`, the individual maps have keys `"ENEnn"` where nn is 1 through `NMAP`.
    
+   - Only those energy bands with energies beween __`EnergyMin`__ and __`EnergyMax`__ are used in the above procedure.
+
 Note that this HDU/column structure may not be permanent, depending on the evolution of the process as determined by Naomi Tsuji and Hiroki Yoneda.
