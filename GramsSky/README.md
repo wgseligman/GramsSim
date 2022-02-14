@@ -71,6 +71,14 @@ The number of events to generate comes from the __`events`__ parameter in the op
    - The vector with origin (x',y',z') and vector (px,py,pz) is translated along the plane of the disc to a random (r,&theta;) in the _disc's_ coordinate system. These translated values are what's written as the particle's information in the `gramssky` output. 
      
       - Note that `gramssky` does _not_ check to make sure that the translated vertex is within the world volume defined by the [GDML](../grams.gdml) file. If a particle's vertex is outside the world volume, [`gramsg4`](../GramsG4) will not crash, but it will skip over the particle with a warning message. It's a good idea to verify that the celestial sphere and any potential tangent discs do not lie wholly or partially outside the world volume. One possible fix is to increase the size of the world volume in [the GDML file](../grams.gdml), at a cost of a modest increase in the execution time of `gramsg4` as it propagates particles through a larger world.
+      
+   - If you are running multiple jobs to generate events, by default they'll all run with the same random number seed;
+   i.e., in the options XML file there is a parameter `rngseed` which is set to -1 by default. To generate a different set
+   of events for each job, you will want to vary the seed for each job. 
+   
+      For example, if the job has a unique process ID in the variable `${Process}`, then you probably want something like this:
+      
+      `./gramssky --rngseed ${Process}`
 
 ## Position generators
 
