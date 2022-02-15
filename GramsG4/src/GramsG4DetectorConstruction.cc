@@ -4,6 +4,7 @@
 #include "GramsG4LArSensitiveDetector.hh"
 #include "Options.h"
 
+#include "G4Version.hh"
 #include "G4Exception.hh"
 #include "G4SDManager.hh"
 #include "G4LogicalVolumeStore.hh"
@@ -199,9 +200,11 @@ namespace gramsg4 {
     options->GetOption("gdmlout",gdmlOutput);
     if ( ! gdmlOutput.empty() ) {
       G4cout << "Writing geometry to '" << gdmlOutput << "'" << G4endl;
+#if G4VERSION_NUMBER>=1070
       // Added in Geant4.10.7: If the GDML output file already exists,
       // overwrite it. 
       fGDMLparser.SetOutputFileOverwrite(true);
+#endif
       fGDMLparser.Write(gdmlOutput, fGDMLparser.GetWorldVolume());
     } // write gdml
   }
