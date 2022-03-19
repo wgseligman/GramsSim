@@ -10,6 +10,7 @@
 #include "Options.h" // in util
  
 #include "HepMC3/Attribute.h"
+#include "HepMC3/GenRunInfo.h"
 #include "HepMC3/GenEvent.h"
 #include "HepMC3/GenVertex.h"
 #include "HepMC3/GenParticle.h"
@@ -89,6 +90,24 @@ int main(int argc, char** argv) {
   int numberOfEvents;
   options->GetOption("events",numberOfEvents);
 
+  // Run number assigned to events.
+  int runNumber;
+  result = options->GetOption("run",runNumber);
+  if ( !result  ||  runNumber < 0 ) runNumber = 0;
+
+  // In HepMC3, the primary purpose of GenRunInfo is to document
+  // weights and tools used to create a run. However, there's no
+  // provision for a run number! Therefore, we have to add our own
+  // custom attribute to GenRunInfo.
+  auto runInfo = std::make_shared<HepMC3::GenRunInfo>();
+  auto runNumberAttribute = std::make_shared<HepMC3::IntAttribute>(runNumber);
+  runInfo->add_attribute("RunNumber",runNumberAttribute);
+
+  // Starting event number, incremented by 1 for each event.
+  int startingEventNumber;
+  result = options->GetOption("startEvent",startingEventNumber);
+  if ( !result  ||  startingEventNumber < 0 ) startingEventNumber = 0;
+
   // The ParticleGeneration class will select which procedure we'll
   // use to generate particles. 
   auto pg = std::make_shared<gramssky::ParticleGeneration>();
@@ -153,10 +172,15 @@ int main(int argc, char** argv) {
       // Make sure we set the correct units.
       HepMC3::GenEvent event(energyUnit,lengthUnit);
 
-      // Assign an event number. Strictly speaking you don't have to
-      // do this, but then each event would have an ID of zero, which
-      // would make this program's output harder to analyze by hand.
-      event.set_event_number( e );
+      // Assign a run number via GenRunInfo. Note that only the
+      // GenRunInfo assigned to the first event is actually written to
+      // the output file. If (for some reason) you change the contents
+      // of runInfo after that first event is written, it won't change
+      // anything in the output file.
+      event.set_run_info( runInfo );
+
+      // Assign an event number. 
+      event.set_event_number( e + startingEventNumber );
 
       // If we had more than one vertex in this event we'd call this
       // once per vertex.
