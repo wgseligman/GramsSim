@@ -126,6 +126,26 @@ int main(int argc,char **argv)
   G4int nThreads;
   options->GetOption("nthreads",nThreads);
   if ( nThreads <= 0 ) nThreads = 1;
+
+  // A sanity check: If we're reading a file of generated events, then
+  // the number of threads has to be set to 1. Otherwise each
+  // individual thread will read the entire input file.
+  std::string inputFile;
+  result = options->GetOption("inputgen",inputFile);
+  if ( result  &&  !inputFile.empty()  &&  nThreads > 1 ) {
+    G4ExceptionDescription description;
+    description << "File " << __FILE__ << " Line " << __LINE__ << " " << std::endl
+		<< "GramsG4: the number of execution threads is "
+		<< nThreads << G4endl
+		<< "and we're also reading events from file '" << inputFile
+		<< "'." << G4endl
+		<< "Each individual thread would read the same events from the same file."
+		<< G4endl
+		<< "Setting number of threads to 1";
+    G4Exception("GramsG4 main()","reading file of events with more than one thread",
+		JustWarning, description);
+    nThreads = 1;
+  }
   if (verbose) G4cout << "GramsG4::main(): Setting number of worker threads to "
 		      << nThreads << G4endl;
   runManager->SetNumberOfThreads(nThreads);
