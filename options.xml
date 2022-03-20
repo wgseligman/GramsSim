@@ -54,6 +54,14 @@
     <!-- Number of sky events to generate -->
     <option name="events" short="n" value="1000" type="integer" desc="number of events" />
 
+    <!-- Run number stored in each event. If < 0, set to default (0) -->
+    <option name="run" short="r" value="-1" type="integer" desc="run number" />
+
+    <!-- Starting event number, incremented by 1 for each event. 
+	 If < 0, set to default (0) -->
+    <option name="startEvent" short="e" value="-1" type="integer" 
+	    desc="starting event number" />
+
     <!-- Output HepMC3 file. If you omit an extension to this file
          name, then the program will append ".hepmc3" to the end of
          this parameter. -->
@@ -291,6 +299,22 @@
     See GramsSim/GramsG4/README.md for a more detailed description.
     -->
     <option name="inputgen" short="i" value="" type="string" desc="input generator events"/>
+
+    <!-- Run number stored in each event. If < 0, set to default
+         (0). Note that if this is set to default _and_ there's an
+         HepMC3 file used for input (see above), then the value in the
+         HepMC3 file takes precedence. Otherwise, the value below
+         overrides the value in the HepMC3 file. -->
+    <option name="run" short="r" value="-1" type="integer" desc="run number" />
+
+    <!-- Starting event number, incremented by 1 for each event.  If <
+         0, set to default (0). Note that if this is set to default
+         _and_ there's an HepMC3 file used for input (see above), then
+         the values in the events in the HepMC3 file take
+         precedence. Otherwise, the value below overrides the values
+         in the HepMC3 file. -->
+    <option name="startEvent" short="e" value="-1" type="integer" 
+	    desc="starting event number" />
 
     <!-- The name of the output file. The G4 Analysis Manager will automatically
     append '.root' to this name.-->
