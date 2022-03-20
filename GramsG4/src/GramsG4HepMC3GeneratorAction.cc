@@ -248,9 +248,9 @@ namespace gramsg4 {
 	auto runNumber = runInfo->attribute<HepMC3::IntAttribute>("RunNumber");
 	// If that attribute is present, set the G4 Run number. Note
 	// that we set the new run number in both the G4RunManager and
-	// G4Run; just in case the user has multiple /run/beamOn
-	// commands in the .mac file, the incremented run numbers will
-	// be consistent.
+	// G4Run; primarily because in multi-threaded applications the
+	// relationship between the G4MTRunManager and the run number
+	// is not well defined.
 	if ( runNumber ) {
 	  auto run = runNumber->value();
 	  G4RunManager::GetRunManager()->SetRunIDCounter( run );

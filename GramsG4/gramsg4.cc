@@ -25,6 +25,10 @@
 #include "UserAction.h"        // in g4util/
 #include "UserActionManager.h" // in g4util/
 
+// The user-action class that will set any user-assigned run and event
+// numbers..
+#include "GramsG4NumbersAction.hh"
+
 // The user-action class that will write output.
 #include "GramsG4WriteNtuplesAction.hh"
 
@@ -292,6 +296,7 @@ int main(int argc,char **argv)
   g4util::UserAction* uam = (g4util::UserAction*) uaManager;
 
   // Add this application's user actions to our user-action manager.
+  uaManager->AddAndAdoptAction( new gramsg4::NumbersAction() );
   uaManager->AddAndAdoptAction( new gramsg4::WriteNtuplesAction() );
 
   // Pass the g4util::UserActionManager to Geant4's user-action initializer.
