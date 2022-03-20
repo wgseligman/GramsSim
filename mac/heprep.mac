@@ -8,7 +8,7 @@
 # are in XML format and contain a great deal of
 # hit and trajectory information, and so can be
 # quite large. Don't do this for a run of 1000 events
-# unless you've plan your disk space carefully!
+# unless you've planned your disk space carefully!
 
 /vis/open HepRepFile 
 /vis/drawVolume 
