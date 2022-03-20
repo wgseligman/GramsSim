@@ -13,6 +13,7 @@ If you want a formatted (or easier-to-read) version of this file, scroll to the 
     + [Development "flow"](#development--flow-)
   * [Detector geometry](#detector-geometry)
   * [Program options](#program-options)
+    + [Setting run/event numbers](#setting-run-event-numbers)
   * [FAQ](#faq)
   * [References](#references)
   * [Credits](#credits)
@@ -243,7 +244,7 @@ When you've made your changes and wish to "bookmark" them:
 
 ## Detector geometry
 
-The detector geometry is defined via [GDML file](grams.gdml)a geometry-definition language [GDML][15]
+The detector geometry is defined via a [file](grams.gdml) written in [GDML][15], which is a geometry-definition language 
 originally designed for Geant4.
 
 [15]: https://gdml.web.cern.ch/GDML/doc/GDMLmanual.pdf
@@ -259,6 +260,24 @@ There's more about GDML in the [References](#references) section below.
 Short version: look at [`options.xml`](options.xml). 
 
 For a complete description, see [the Options XML file documentation](util/README.md).
+
+### Setting run/event numbers
+
+Most of the time, the default run number (0) and the default starting event number (0) in both GramsSky and GramsG4 will be sufficient. However, there are cases (e.g., merging events) when it's helpful to be able to set the run number and the starting event number for a sequence of simulated events.
+
+For those cases, it's possible to override the defaults in both GramsSky and GramsSim. The options are given in the [`options.xml`](options.xml) file, or can be supplied on the command line. 
+
+For example, to set the run number to 4402 and the starting event number to 2044 in GramsSky:
+
+    ./gramssky -r 4402 -e 2044 -o myEvents.hepmc3
+    
+All of the events in the output file `myEvents.hepmc3` will have run number 4402, and the events will have numbers 2044, 2045, 2046...
+
+The same options apply to GramsG4:
+
+    ./gramsg4 -r 1234 -e 4321 -i myEvents.hepmc3 -m mac/hepmc3.mac
+    
+Note that if the `gramsg4` options `-r` (or `--run`) or `-e` (or `--startEvent`) are set, they will override any values that are in an HepMC3 input file specified with the `-i` or `--inputgen` option; see [`GramsSky/README.md`](GramsSky/README.md) for more information about HepMC3 files.
 
 ## FAQ
 
