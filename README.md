@@ -263,7 +263,7 @@ For a complete description, see [the Options XML file documentation](util/README
 
 ### Setting run/event numbers
 
-Most of the time, the default run number (0) and the default starting event number (0) in both GramsSky and GramsG4 will be sufficient. However, there are cases (e.g., merging events) when it's helpful to be able to set the run number and the starting event number for a sequence of simulated events.
+Most of the time, the default run number (0) and the default starting event number (0) in both GramsSky and GramsG4 will be sufficient. However, there are cases (e.g., merging events for overlays) when it's helpful to be able to set the run number and the starting event number for a sequence of simulated events.
 
 For those cases, it's possible to override the defaults in both GramsSky and GramsSim. The options are given in the [`options.xml`](options.xml) file, or can be supplied on the command line. 
 
