@@ -4,6 +4,10 @@ A description of major development milestones. The most recent are at
 the top. For a detailed list of all changes (basically, every time
 someone typed "git commit"), see the output of "git log".
 
+Mar-2022:
+
+   - Added --run and --startEvent options to both GramsSky and GramsG4. These options let the user set the run number and the starting event number for the respective output files. 
+
 Jan-2022:
 
    - Added first pass for GramsSky.
