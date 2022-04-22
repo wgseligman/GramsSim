@@ -29,6 +29,7 @@ file(GLOB script_progs RELATIVE ${PROJECT_SOURCE_DIR}/scripts CONFIGURE_DEPENDS
 list(APPEND HepMC3_Programs
   "hepmc-convert.cc"
   "hepmc-grams-example.cc"
+  "hepmc-ntuple.cc"
 )
 
 list(APPEND FITS_Programs
