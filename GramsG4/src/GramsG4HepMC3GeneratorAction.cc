@@ -11,6 +11,9 @@
 
 #include "GramsG4HepMC3GeneratorAction.hh"
 
+// Accommodate different Geant4 versions.
+#include "G4Version.hh"
+
 #include "G4Event.hh"
 #include "G4RunManager.hh"
 #include "G4Run.hh"
@@ -146,8 +149,12 @@ namespace gramsg4 {
 	     << "extension='" << extension << "'" 
 	     << G4endl;
     }
-    
+
+#if G4VERSION_NUMBER<1100
     extension.toLower();
+#else
+    G4StrUtil::to_lower(extension);
+#endif
 
     if ( extension == "hepmc2" ) 
       m_reader = new HepMC3::ReaderAsciiHepMC2(m_inputFile);

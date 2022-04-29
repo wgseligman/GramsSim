@@ -6,6 +6,9 @@
 //      GEANT 4 - gramsg4
 // --------------------------------------------------------------
 
+// Accommodate different versions of Geant4. 
+#include "G4Version.hh"
+
 // For processing command-line and XML file options.
 #include "Options.h" // in util/
 
@@ -210,22 +213,42 @@ int main(int argc,char **argv)
     // options to allow for greater control. For now, duplicate the
     // defaults used by artg4tk in LArSoft.
 
-    opticalPhysics->SetScintillationStackPhotons(false);
     G4bool isScint;
     options->GetOption("scint",isScint);
-    if (isScint) {
+    if (verbose) {
+      if (isScint)
+	G4cout << "GramsG4::main(): Scintillation is on" << G4endl;
+      else 
+	G4cout << "GramsG4::main(): Scintillation is off" << G4endl;
+    }
+
+#if G4VERSION_NUMBER<1070
+    // The following optical photon controls were eliminated in Geant4.11.0 and higher.
+    opticalPhysics->SetScintillationStackPhotons(false);
+    if (isScint)
       opticalPhysics->Configure(kScintillation,true);
-      if (verbose) G4cout << "GramsG4::main(): Scintillation is on" << G4endl;
-    }
-    else {
+    else
       opticalPhysics->Configure(kScintillation,false);
-      if (verbose) G4cout << "GramsG4::main(): Scintillation is of" << G4endl;
-    }
 
     // For now, make absolutely sure that the Cerenkov process is
     // turned off.
     opticalPhysics->Configure(kCerenkov,false);
     opticalPhysics->SetCerenkovStackPhotons(false);
+#else
+    // These methods of controlling optical physics were introduced
+    // in Geant4.7.
+    auto opticalParams = G4OpticalParameters::Instance();
+    opticalParams->SetScintStackPhotons(false);
+    if (isScint)
+      opticalParams->SetProcessActivation("Scintillation",true);
+    else
+      opticalParams->SetProcessActivation("Scintillation",false);
+
+    // For now, make absolutely sure that the Cerenkov process is
+    // turned off.
+    opticalParams->SetProcessActivation("Cerenkov",false);
+    opticalParams->SetCerenkovStackPhotons(false);
+#endif
     
   } // if opticalphysics
  

@@ -4,6 +4,10 @@ A description of major development milestones. The most recent are at
 the top. For a detailed list of all changes (basically, every time
 someone typed "git commit"), see the output of "git log".
 
+Apr-2022
+
+   - GramsG4 will now compile for both the latest Geant4 11.0, and earlier G4 versions such as Geant4.10.5 and 4.10.7. This requires several `#if G4VERSION_NUMBER...` several statements in the code; let's hope this doesn't get too confusing. 
+
 Mar-2022:
 
    - Added --run and --startEvent options to both GramsSky and GramsG4. These options let the user set the run number and the starting event number for the respective output files. 

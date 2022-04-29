@@ -72,7 +72,11 @@ namespace gramsg4 {
 	      {
 		G4String str=iaux->type;
 		G4String val=iaux->value;
+#if G4VERSION_NUMBER<1100
 		str.toLower();
+#else
+		G4StrUtil::to_lower(str);
+#endif
 
 		// Check for any step limits.
 		if ( str == "steplimit" ) {
@@ -99,7 +103,11 @@ namespace gramsg4 {
 
 		// Check for any visibility changes.
 		if ( str == "color" || str == "colour" ) {
+#if G4VERSION_NUMBER<1100
 		  val.toLower();
+#else
+		  G4StrUtil::to_lower(val);
+#endif
 		  if ( val == "none" ) {
 		    logVol->SetVisAttributes(G4VisAttributes::GetInvisible());
 		    if (verbose)
