@@ -40,7 +40,7 @@ To run the simulation:
     # in the build directory:
     ./gramsg4
 
-If no one has changed the defaults (see *Program Options* below), the Geant4 simulation
+If no one has changed the [defaults](../options.xml), the Geant4 simulation
 will generate 1000 1 *MeV* gammas. If you'd like to see an interactive
 display:
 
@@ -86,7 +86,7 @@ See [`GramsSim/mac/README.md`](../mac/README.md) for a description of the visual
 
 ### Events from an external generator
 
-The GPS commands may not be sufficient. For example, you may want to generate the primary particles from an initial nuclear interaction (*n-<span style="text-decoration:overline">n</span>*
+The GPS commands may not be sufficient. For example, you may want to generate the primary particles from an initial nuclear interaction (*n-n&#773;*
 oscillations are one such case), a shower of particles from a cosmic-ray simulation, or the output of GramsSky
 (see [`GramsSim/GramsSky/README.md`](../GramsSky/README.md)). 
 

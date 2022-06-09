@@ -2,6 +2,7 @@
 
 # Set up variables for the cfitsio and healpix libraries.  They're
 # mainly needed for GramsSky, which needs to read in sky maps.
+find_package(PkgConfig)
 pkg_check_modules(FITS QUIET cfitsio healpix_cxx)
 
 if (FITS_FOUND)

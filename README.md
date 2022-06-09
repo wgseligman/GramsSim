@@ -8,10 +8,12 @@ If you want a formatted (or easier-to-read) version of this file, scroll to the 
     + [Working with github](#working-with-github)
   * [Setting up GramsSim](#setting-up-gramssim)
   * [Making changes](#making-changes)
+    + [Advanced git commands](#advanced-git-commands)
     + [Work files](#work-files)
     + [Development "flow"](#development--flow-)
   * [Detector geometry](#detector-geometry)
   * [Program options](#program-options)
+    + [Setting run/event numbers](#setting-run-event-numbers)
   * [FAQ](#faq)
   * [References](#references)
   * [Credits](#credits)
@@ -113,19 +115,27 @@ To run the programs:
 
 ## Making changes
 
-Obviously, you can make any changes you want to GramsSim for your own use. This section is for when you want to start making changes to be added to the official repository. Before you edit files for the first time:
+Obviously, you can make any changes you want to GramsSim for your own use. This section is for when you want to start making changes to be added to the official repository. 
+
+I strongly suggest becoming familiar with [git][46], at least to the extent of understanding what a [branch][4] is. I also suggest using [git flow][47] to organize your branches, mainly because that approach seems to work for [LArSoft][5]. 
+
+[4]: https://git-scm.com/book/en/v2/Git-Branching-Branches-in-a-Nutshell
+[5]: https://larsoft.org/
+[46]: https://git-scm.com/doc
+[47]: http://danielkummer.github.io/git-flow-cheatsheet/
+
+Before you edit files for the first time:
 
     cd $GSDIR/GramsSim
     git flow init 
 
-You'll be asked a bunch of questions. Each time you're prompted for an answer
-whose default is `master` please enter `develop`. Accept the defaults for everything else.
+You'll be asked a bunch of questions. Accept the defaults for all the questions.
 
 If you get a message that git flow is not recognized, it means that
 the gitflow package has to be installed on your machine.   
 
 You only have to type `git flow init` once, the first time you edit
-code in that directory. Don't type it again, unless you git clone a
+code in that directory. Don't type it again, unless you `git clone` a
 brand-new repository.
 
 When you want to start on a new task:
@@ -140,23 +150,49 @@ To "bookmark" changes you've made to your copy of the `$GSDIR/GramsSim` director
     git add my_file.cc # if you create a new file
     git commit -a -m "Comment about your changes"
 
-To incorporate changes that other people have made and checked into
-the repository:
-
-    git fetch origin
-    git rebase origin develop
-
 When you've finished working on your task (after testing it, putting
 in the comments, writing the documentation, discussing it at a group
 meeting, etc.):
 
-    git flow feature finish
+    git flow feature finish $USER_MyMagnificentFeatureName
     git push origin develop
+    
+These two commands delete your local `feature/$USER_MyMagnificentFeatureName`
+branch and merge your changes into the develop branch. Please take care not to push
+changes to the develop branch until you want all the other developers to see it (and 
+perhaps notice that you didn't write comments or documentation for your changes).
 
-If you want other people to see your feature work without making
-changes to the develop branch:
+### Advanced git commands 
+
+To incorporate changes that other people have made and checked into
+the repository:
+
+    git fetch origin
+    git pull origin develop
+
+If you want other people to see your feature work, you want to save your work in a 
+remote repository, or you want to test if you have remote write
+access to the repository: 
 
     git flow feature publish $USER_MyMagnificentFeatureName
+
+If you discover that you don't have remote write access, contact wgseligman
+and let him know your [github account name][6].
+
+[6]: https://docs.github.com/en/account-and-profile/setting-up-and-managing-your-github-user-account/managing-email-preferences/remembering-your-github-username-or-email 
+
+Afterwards you can continue to update that remote feature branch with:
+
+    git commit -a -m "Comment about what's changed"
+    git push origin feature/$USER_MyMagnificentFeatureName
+
+If you pushed your feature branch to the remote repository, and there's no point in
+saving it for archival purposes (because you documented all the changes you made to the 
+develop branch, right?), you can remove the remote branch with:
+
+    git push origin :feature/$USER_MyMagnificentFeatureName
+    
+Note the `:` before the branch name, which is what forces the deletion. 
 
 ### Work files
 
@@ -208,8 +244,8 @@ When you've made your changes and wish to "bookmark" them:
 
 ## Detector geometry
 
-The detector geometry is defined via [GDML file](grams.gdml)a geometry-definition language [GDML][15]
-original designed for Geant4.
+The detector geometry is defined via a [file](grams.gdml) written in [GDML][15], which is a geometry-definition language 
+originally designed for Geant4.
 
 [15]: https://gdml.web.cern.ch/GDML/doc/GDMLmanual.pdf
 
@@ -224,6 +260,24 @@ There's more about GDML in the [References](#references) section below.
 Short version: look at [`options.xml`](options.xml). 
 
 For a complete description, see [the Options XML file documentation](util/README.md).
+
+### Setting run/event numbers
+
+Most of the time, the default run number (0) and the default starting event number (0) in both GramsSky and GramsG4 will be sufficient. However, there are cases (e.g., merging events for overlays) when it's helpful to be able to set the run number and the starting event number for a sequence of simulated events.
+
+For those cases, it's possible to override the defaults in both GramsSky and GramsSim. The options are given in the [`options.xml`](options.xml) file, or can be supplied on the command line. 
+
+For example, to set the run number to 4402 and the starting event number to 2044 in GramsSky:
+
+    ./gramssky -r 4402 -e 2044 -o myEvents.hepmc3
+    
+All of the events in the output file `myEvents.hepmc3` will have run number 4402, and the events will have numbers 2044, 2045, 2046...
+
+The same options apply to GramsG4:
+
+    ./gramsg4 -r 1234 -e 4321 -i myEvents.hepmc3 -m mac/hepmc3.mac
+    
+Note that if the `gramsg4` options `-r` (or `--run`) or `-e` (or `--startEvent`) are set, they will override any values that are in an HepMC3 input file specified with the `-i` or `--inputgen` option; see [`GramsSky/README.md`](GramsSky/README.md) for more information about HepMC3 files.
 
 ## FAQ
 
@@ -279,8 +333,8 @@ Understanding UNIX:
    - [Learn UNIX](https://www.tutorialspoint.com/unix/index.htm)
 
 Version control system:
-   - git: <https://git-scm.com/doc> 
-   - git flow: <http://danielkummer.github.io/git-flow-cheatsheet/>
+   - [git][46]
+   - [git flow][47]
 
 Some git tips from other collaborations:  
    - [git flow quick start guide](https://cdcvs.fnal.gov/redmine/projects/cet-is-public/wiki/Git_flow_quick_start)

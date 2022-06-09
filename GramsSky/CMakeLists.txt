@@ -38,6 +38,14 @@ set_target_properties( ${PROG}
    "${CMAKE_BINARY_DIR}" 
    )
 
-# Copy the README.md and diagram file for the convenience of the user.
-configure_file(README.md README.md COPYONLY)
-configure_file(SkyDiagram.jpg SkyDiagram.jpg COPYONLY)
+# Copy a few files for the convenience of the user.
+set(GramsSky_FILES README.md SkyDiagram.jpg options.xml)
+
+foreach(_file ${GramsSky_FILES})
+  configure_file(
+    ${_file}
+    ${_file}
+    COPYONLY
+    )
+endforeach()
+

@@ -15,22 +15,36 @@
 /vis/scene/add/trajectories 
 /vis/scene/add/hits
 
+# Set the verbosity on the terminal output.
+/tracking/verbose 1
+/control/verbose 1
+/run/verbose 2
+
+# Accumulate events. Instead of getting a drawing after each event,
+# the following command will display one drawing with all of the
+# event from the run.
+/vis/scene/endOfEventAction accumulate
+
+# Note: Since the following statements are all commented out,
+# in its current form this G4 macro file will not display
+# any meaningful events.
+
 # To make the HepRep displays more interesting,
 # let's look at 200 MeV anti-deuterons. 
-/gps/particle anti_deuteron
-/gps/ene/type Mono
-/gps/ene/mono 200 MeV
+#/gps/particle anti_deuteron
+#/gps/ene/type Mono
+#/gps/ene/mono 200 MeV
 
 # Aim a little off from the center of the detector (so we don't aim
 # precisely at a PTFE sheet). (Remember that z=0 is set at the
 # location of the induction plane.)  
-/gps/ang/type focused
-/gps/ang/focuspoint 0.5 0.5 -100 cm
+#/gps/ang/type focused
+#/gps/ang/focuspoint 0.5 0.5 -100 cm
 
 # Shoot along Z direction downwards from above
-/gps/pos/centre 0.5 0.5 200 cm
+#/gps/pos/centre 0.5 0.5 200 cm
 
-# This means "run Geant4 and generate 10 events"
-/run/beamOn 10
+# This means "run Geant4 and generate 20 events"
+/run/beamOn 20
 
 exit

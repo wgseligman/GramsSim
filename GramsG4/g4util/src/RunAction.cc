@@ -43,8 +43,6 @@ namespace g4util {
     if (debug)
       std::cout << "g4util::~RunAction - final deletion of Analysis Manager"
 		<< std::endl;
-
-    delete G4AnalysisManager::Instance();  
   }
 
   void RunAction::BeginOfRunAction(const G4Run* a_run)

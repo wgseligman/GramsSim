@@ -25,5 +25,14 @@ set_target_properties( ${PROG}
    "${CMAKE_BINARY_DIR}" 
    )
 
-# Copy the README.md file for the convenience of the user.
-configure_file(README.md README.md COPYONLY)
+# Copy a few files for the convenience of the user.
+set(GramsDetSim_FILES README.md options.xml)
+
+foreach(_file ${GramsDetSim_FILES})
+  configure_file(
+    ${_file}
+    ${_file}
+    COPYONLY
+    )
+endforeach()
+

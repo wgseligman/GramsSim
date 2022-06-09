@@ -1,4 +1,4 @@
-/// \file persistency/gdml/GramsG4/src/GramsG4HepMC3GeneratorAction.cc
+/// \file GramsG4/src/GramsG4HepMC3GeneratorAction.cc
 /// \brief Implementation of the GramsG4HepMC3GeneratorAction class
 //
 // Portions of this code were copied from Beam Delivery Simulation
@@ -11,7 +11,12 @@
 
 #include "GramsG4HepMC3GeneratorAction.hh"
 
+// Accommodate different Geant4 versions.
+#include "G4Version.hh"
+
 #include "G4Event.hh"
+#include "G4RunManager.hh"
+#include "G4Run.hh"
 #include "G4TransportationManager.hh"
 #include "G4VPhysicalVolume.hh"
 #include "G4Exception.hh"
@@ -20,6 +25,7 @@
 #include "Options.h" // in util/
  
 #include "HepMC3/Attribute.h"
+#include "HepMC3/GenRunInfo.h"
 #include "HepMC3/GenEvent.h"
 #include "HepMC3/GenVertex.h"
 #include "HepMC3/Reader.h"
@@ -47,6 +53,9 @@ namespace gramsg4 {
     // Access the set of program options.
     m_options = util::Options::GetInstance();
 
+    m_options->GetOption("debug",m_debug);
+    m_options->GetOption("verbose",m_verbose);
+
     // Get the units of time. (The length and energy units are read in
     // on an event-by-event basis in the "HepMC2G4" method.)
     std::string units;
@@ -54,6 +63,36 @@ namespace gramsg4 {
     m_timeScale = ns;
     if ( units == "s" ) m_timeScale = second;
     if ( units == "ms" ) m_timeScale = millisecond;
+
+    // Do we override the run/event numbers normally assigned by
+    // Geant4 with the values in the input file? The answer: If the
+    // user has supplied default values for run and starting event
+    // number in the GramsG4 section of the options file, then the
+    // values in the input file take precedence. If the user has
+    // explicitly defined values for the run and starting event number
+    // for GramsG4, then the values in the options file override any
+    // values in the HepMC3 file.
+    m_useHepMC3RunNumber=false;
+    m_useHepMC3EventNumber=false;
+
+    int runNumber, startingEventNumber;
+    bool result = m_options->GetOption("run",runNumber);
+    if ( !result  ||  runNumber < 0 ) {
+      m_useHepMC3RunNumber=true;
+      if (m_verbose)
+	G4cout << "GramsG4HepMC3GeneratorAction::GramsG4HepMC3GeneratorAction() - "
+	       << "Override run number with value from HepMC3 file" 
+	       << G4endl;
+    }
+
+    result = m_options->GetOption("startEvent",startingEventNumber);
+    if ( !result  ||  startingEventNumber < 0 ) {
+      m_useHepMC3EventNumber=true;
+      if (m_verbose) 
+	G4cout << "GramsG4HepMC3GeneratorAction::GramsG4HepMC3GeneratorAction() - "
+	       << "Override event numbers with values from HepMC3 file" 
+	       << G4endl;
+    }
 
     OpenFile();
   }
@@ -104,16 +143,18 @@ namespace gramsg4 {
       G4Exception("gramsg4::HepMC3GeneratorAction::OpenFile","invalid file name",
                   FatalException, description);
     }
-    
-    extension.toLower();
 
-    G4bool debug;
-    m_options->GetOption("debug",debug);
-    if ( debug ) {
+    if ( m_debug ) {
       G4cout << "GramsG4HepMC3GeneratorAction::OpenFile - "
 	     << "extension='" << extension << "'" 
 	     << G4endl;
     }
+
+#if G4VERSION_NUMBER<1100
+    extension.toLower();
+#else
+    G4StrUtil::to_lower(extension);
+#endif
 
     if ( extension == "hepmc2" ) 
       m_reader = new HepMC3::ReaderAsciiHepMC2(m_inputFile);
@@ -202,6 +243,44 @@ namespace gramsg4 {
     G4bool debug;
     options->GetOption("debug",debug);
 
+    // If the input file has a run number, and we're going to use that
+    // number in Geant4, then that run information is associated only
+    // with the first event in the input file.
+    if ( m_useHepMC3RunNumber ) {
+      // Does the event have a GenRunInfo attached to it?
+      auto runInfo = a_hepmc->run_info();
+      if ( runInfo ) {
+	// In HepMC3, there is no dedicated field for run number. In GramsSky,
+	// the run number is attached to GenRunInfo as an attribute.
+	auto runNumber = runInfo->attribute<HepMC3::IntAttribute>("RunNumber");
+	// If that attribute is present, set the G4 Run number. Note
+	// that we set the new run number in both the G4RunManager and
+	// G4Run; primarily because in multi-threaded applications the
+	// relationship between the G4MTRunManager and the run number
+	// is not well defined.
+	if ( runNumber ) {
+	  auto run = runNumber->value();
+	  G4RunManager::GetRunManager()->SetRunIDCounter( run );
+	  G4RunManager::GetRunManager()->GetNonConstCurrentRun()->SetRunID( run );
+	  if (m_verbose)
+	    G4cout << "GramsG4HepMC3GeneratorAction::G4HepMC2G4 - "
+		   << "Set run number to " << run
+		   << G4endl;
+	}
+      }
+      m_useHepMC3RunNumber = false;
+    }
+
+    // Do we want Geant4 to use the event number from the HepMC3 file?
+    if ( m_useHepMC3EventNumber ) {
+      auto eventNumber = a_hepmc->event_number();
+      a_event->SetEventID( eventNumber );
+      if (m_verbose)
+	G4cout << "GramsG4HepMC3GeneratorAction::G4HepMC2G4 - "
+	       << "Set event number to " << eventNumber
+	       << G4endl;
+    }    
+
     // Note that Geant4 and CLHEP use MeV/mm/ns. Make sure that
     // whatever program generates these primary events uses the same
     // units.  Even so, make some attempt to adjust units; this
@@ -222,7 +301,7 @@ namespace gramsg4 {
     G4VPhysicalVolume* world = navigator->GetWorldVolume();
     G4VSolid* worldSolid = world->GetLogicalVolume()->GetSolid();
  
-    if ( debug ) {
+    if ( m_debug ) {
       G4cout << "GramsG4HepMC3GeneratorAction::HepMC2G4 - " 
 	     << " Event number from '" << m_inputFile 
 	     << "' = " << a_hepmc->event_number() 
@@ -239,7 +318,7 @@ namespace gramsg4 {
 			position.y() * lengthScale, 
 			position.z() * lengthScale );
  
-      if ( debug ) {
+      if ( m_debug ) {
 	G4cout << "GramsG4HepMC3GeneratorAction::HepMC2G4 - "
 	       << "vertex (" << xyz.x() << "," << xyz.y() << "," << xyz.z()
 	       << ")" << G4endl;
@@ -262,7 +341,7 @@ namespace gramsg4 {
 	  continue;
       }
  
-      if ( debug ) {
+      if ( m_debug ) {
 	G4cout << "GramsG4HepMC3GeneratorAction::HepMC2G4 - "
 	       << "adding vertex" 
 	       << G4endl;
@@ -271,7 +350,7 @@ namespace gramsg4 {
       auto g4vertex = new G4PrimaryVertex( xyz, position.t()*m_timeScale );
       a_event->AddPrimaryVertex(g4vertex);
  
-      if ( debug ) {
+      if ( m_debug ) {
 	G4cout << "GramsG4HepMC3GeneratorAction::HepMC2G4 - " 
 	       << "   Number of particles in this vertex = " 
 	       << (a_hepmc->particles()).size()
@@ -293,7 +372,7 @@ namespace gramsg4 {
 				  momentum.pz() * energyScale,
 				  momentum.e () * energyScale );
  
-	if ( debug ) {
+	if ( m_debug ) {
 	  G4cout << "GramsG4HepMC3GeneratorAction::HepMC2G4 - "
 		 << "   PDG ID = " << pdgCode
 		 << " momentum = (" 
@@ -337,7 +416,7 @@ namespace gramsg4 {
 	// It's not clear that there's a general way to interpret
 	// this, so leave weights alone for now.
 
-	if ( debug ) {
+	if ( m_debug ) {
 	  G4cout << "GramsG4HepMC3GeneratorAction::HepMC2G4 - "
 		 << "   Adding particle" 
 		 << G4endl;

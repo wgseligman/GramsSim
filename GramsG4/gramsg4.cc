@@ -6,6 +6,9 @@
 //      GEANT 4 - gramsg4
 // --------------------------------------------------------------
 
+// Accommodate different versions of Geant4. 
+#include "G4Version.hh"
+
 // For processing command-line and XML file options.
 #include "Options.h" // in util/
 
@@ -24,6 +27,10 @@
 // why it's useful. 
 #include "UserAction.h"        // in g4util/
 #include "UserActionManager.h" // in g4util/
+
+// The user-action class that will set any user-assigned run and event
+// numbers..
+#include "GramsG4NumbersAction.hh"
 
 // The user-action class that will write output.
 #include "GramsG4WriteNtuplesAction.hh"
@@ -126,6 +133,26 @@ int main(int argc,char **argv)
   G4int nThreads;
   options->GetOption("nthreads",nThreads);
   if ( nThreads <= 0 ) nThreads = 1;
+
+  // A sanity check: If we're reading a file of generated events, then
+  // the number of threads has to be set to 1. Otherwise each
+  // individual thread will read the entire input file.
+  std::string inputFile;
+  result = options->GetOption("inputgen",inputFile);
+  if ( result  &&  !inputFile.empty()  &&  nThreads > 1 ) {
+    G4ExceptionDescription description;
+    description << "File " << __FILE__ << " Line " << __LINE__ << " " << std::endl
+		<< "GramsG4: the number of execution threads is "
+		<< nThreads << G4endl
+		<< "and we're also reading events from file '" << inputFile
+		<< "'." << G4endl
+		<< "Each individual thread would read the same events from the same file."
+		<< G4endl
+		<< "Setting number of threads to 1";
+    G4Exception("GramsG4 main()","reading file of events with more than one thread",
+		JustWarning, description);
+    nThreads = 1;
+  }
   if (verbose) G4cout << "GramsG4::main(): Setting number of worker threads to "
 		      << nThreads << G4endl;
   runManager->SetNumberOfThreads(nThreads);
@@ -186,22 +213,42 @@ int main(int argc,char **argv)
     // options to allow for greater control. For now, duplicate the
     // defaults used by artg4tk in LArSoft.
 
-    opticalPhysics->SetScintillationStackPhotons(false);
     G4bool isScint;
     options->GetOption("scint",isScint);
-    if (isScint) {
+    if (verbose) {
+      if (isScint)
+	G4cout << "GramsG4::main(): Scintillation is on" << G4endl;
+      else 
+	G4cout << "GramsG4::main(): Scintillation is off" << G4endl;
+    }
+
+#if G4VERSION_NUMBER<1070
+    // The following optical photon controls were eliminated in Geant4.11.0 and higher.
+    opticalPhysics->SetScintillationStackPhotons(false);
+    if (isScint)
       opticalPhysics->Configure(kScintillation,true);
-      if (verbose) G4cout << "GramsG4::main(): Scintillation is on" << G4endl;
-    }
-    else {
+    else
       opticalPhysics->Configure(kScintillation,false);
-      if (verbose) G4cout << "GramsG4::main(): Scintillation is of" << G4endl;
-    }
 
     // For now, make absolutely sure that the Cerenkov process is
     // turned off.
     opticalPhysics->Configure(kCerenkov,false);
     opticalPhysics->SetCerenkovStackPhotons(false);
+#else
+    // These methods of controlling optical physics were introduced
+    // in Geant4.7.
+    auto opticalParams = G4OpticalParameters::Instance();
+    opticalParams->SetScintStackPhotons(false);
+    if (isScint)
+      opticalParams->SetProcessActivation("Scintillation",true);
+    else
+      opticalParams->SetProcessActivation("Scintillation",false);
+
+    // For now, make absolutely sure that the Cerenkov process is
+    // turned off.
+    opticalParams->SetProcessActivation("Cerenkov",false);
+    opticalParams->SetCerenkovStackPhotons(false);
+#endif
     
   } // if opticalphysics
  
@@ -272,6 +319,7 @@ int main(int argc,char **argv)
   g4util::UserAction* uam = (g4util::UserAction*) uaManager;
 
   // Add this application's user actions to our user-action manager.
+  uaManager->AddAndAdoptAction( new gramsg4::NumbersAction() );
   uaManager->AddAndAdoptAction( new gramsg4::WriteNtuplesAction() );
 
   // Pass the g4util::UserActionManager to Geant4's user-action initializer.

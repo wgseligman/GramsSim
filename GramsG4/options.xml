@@ -1,0 +1,169 @@
+<?xml version = "1.0" encoding = "UTF-8" ?>
+
+<!-- This is an Options XML that could be used solely for running GramsG4.
+     It's also part of an example of how to include one XML file within another.
+     Please see GramsSim/util/README.md for more. -->
+
+<parameters>
+  
+  <global>
+
+    <!-- The parameters in this section are meant to apply to all the
+         programs. However, you can ovverride them within the
+         individual program blocks, though it's probably more useful
+         to override them on the command line. Be careful about what
+         you're overriding, especially the unit options. -->
+  
+    <!-- The following line does nothing! It's there for documentation:
+    the default value of the 'options' option is "options.xml" -->
+    <option name="options" value="options.xml" type="string" desc="XML file of options">
+        If you want to, you can include text like this within an option
+        tag. You can use this for additional documentation. The program
+        does not read or interpret it. 
+    </option>
+
+    <option name="verbose" short="v" type="flag" desc="display details"/>
+    <option name="debug" short="d" type="flag" />
+    <option name="help" short="h" type="flag" desc="show help then exit" />
+
+    <!-- Define a consistent set of units. Note that it's up to the
+         individual programs to access these parameters and write
+         their output in these units. (I'm looking at you, Geant4!).
+
+         Length unit: as of Jan-2022, the only valid values are "cm" and "mm".
+         Energy unit: as of Jan-2022, the only valid values are "MeV" and "GeV".
+	 Time unit: as of Jan-2022, the only valid values are "ns", "ms", and "s".
+     
+         Note that this does not directly affect the GDML file and
+         Geant4 macro files, as any dimensioned quantities in those
+         files have units specified explicitly.
+	 -->
+    <option name="LengthUnit" type="string" value="cm" desc="length unit for program output" />
+    <option name="EnergyUnit" type="string" value="MeV" desc="energy unit for program output" />
+    <option name="TimeUnit"   type="string" value="ns" desc="time unit for program output" />
+
+    <option name="rngseed" short="s" value="-1" type="integer" desc="random number seed">
+        The random number seed for the simulation. Use 0 if you want the
+        program to start with a random value and you're not interested 
+        in recreating the run.
+    </option>
+
+
+  </global>
+
+  <gramsg4 xml:id="gramsg4">
+
+    <!-- The file that contains the GDML description of the detector -->
+    <option name="gdmlfile" short="g" value="grams.gdml" type="string" 
+        desc="input GDML detector desc"/>    
+
+    <!-- If not blank, write a parsed version of the GDML input file.
+    This can be used as input to ROOT, since ROOT doesn't accept the
+    GDML <loop> tags. Note that prior to Geant4.10.7, a G4 application
+    (like gramsg4) will crash if it tries to write to a GDML file 
+    that already exists. -->
+    <option name="gdmlout" value="" type="string" 
+        desc="write parsed GDML to this file" />    
+
+    <!-- The file of Geant4 commands to be executed. If ui is on, this parameter
+    is ignored. Take a look at the mac/ directory for some ideas. -->
+    <option name="macrofile" short="m" value="mac/batch.mac" type="string" 
+        desc="G4 macro file"/>
+
+    <!-- If this flag is turned on, gramsg4 will start in an
+    interactive graphical mode. It will then execute the contents
+    of the Geant4 macro file specified by option 'uimacrofile' -->
+    <option name="ui" type="flag" desc="start UI session"/>
+    <option name="uimacrofile" value="mac/vis-menus.mac" type="string" desc="G4 macro file for UI"/>
+
+    <!-- The name of an input file containing events from some external
+    event generator. If this option is present, this file will override
+    any particle-generation commands in the macrofile. The file must be in
+    HepMC3 format (https://gitlab.cern.ch/hepmc/HepMC3). The internal format
+    of the file is determined from its extension (the part after the final "."):
+
+    .hepmc2 = HepMC2 text format
+    .hepmc3 = HepMC3 text format
+    .hep    = HEPEVT text format (https://cdcvs.fnal.gov/redmine/projects/minos-sim/wiki/HEPEVT_files)
+    .root   = HepMC3 ROOT format
+    .treeroot = HepMC3 TTree ROOT format
+    .lhef     = LHEF format (arXiv:hep-ph/0609017)
+
+    Some of these formats do not provide a way to specify the (x,y,z,t) vertex
+    of an event (e.g., HEPEVT, LHEF). In those cases the vertex of the event will be
+    [TODO: Fill in an appropriate action.]
+
+    See GramsSim/GramsG4/README.md for a more detailed description.
+    -->
+    <option name="inputgen" short="i" value="" type="string" desc="input generator events"/>
+
+    <!-- The name of the output file. The G4 Analysis Manager will automatically
+    append '.root' to this name.-->
+    <option name="outputfile" short="o" value="gramsg4" type="string" desc="output file"/>
+
+    <!-- The physics list to be used by the detector simulation. --> 
+    <option name="physicslist" short= "p" value="FTFP_BERT_LIV+OPTICAL+STEPLIMIT" type="string" 
+        desc="physics list">
+        Here are few options. There are many, many others. Note that to simulate
+        voxels/pixels, you want to include +STEPLIMIT; to include scintillation
+        photons you want to include +OPTICAL. 
+        "FTFP_BERT" - typical for HEP applications
+        "QGSP_BIC_HP" - typical medical applications
+        "QGSP_BIC_HP_LIV+OPTICAL+STEPLIMIT" - Gave this a try. Needs review.
+        See README.md for references.
+    </option>
+
+    <!-- Do we want to turn on this optical physics? Note that if you don't include
+    OPTICAL (or G4OpticalPhysics) in the physics list above, these processes
+    won't happen anyway. -->
+    <option name="scint" value="true" type="boolean" 
+	    desc="turn on/off scintillation" /> 
+
+    <!-- Display available physics lists. --> 
+    <option name="showphysicslists" short="l" type="flag" 
+        desc="show physics lists then exit" />
+
+    <option name="larstepsize" value="0.02" type="double" 
+        desc="LAr TPC step size" >
+      This is the step size for charged particles in the LAr TPC.
+      It has no effect until the step-limit physics is turned on
+      ("G4StepLimiterPhysics" or simply STEPLIMIT) in the physicslist
+      option above. 
+
+      It should be the size of the voxels or pixels in the readout.
+
+      Units are mm (default G4 length unit). 
+
+      If this is commented out, the program will use the step size
+      in the GDML file for "volTPCActive".
+    </option>
+
+    <!-- If # threads > 0, enable multi-threaded execution. 
+    Note that this does not magically make your program thread-safe.
+    While the current version of gramsg4 is thread-safe, turning this
+    option on means the order of rows in the output ntuples can't be
+    predicted. -->
+    <option name="nthreads" short = "t" value="0" type="integer" desc="number of threads"/>
+
+    <!-- Variables that have to do with Random Number Generation (RNG).
+    You can leave these alone until you want to re-create a particular
+    Monte Carlo event. -->
+    <option name="rngdir" value="" type="string" desc="rng save/restore directory">
+        The directory to save/restore the state of the random-number generation
+        engine. If this is blank (value=""), do not save/restore the RNG state.
+    </option>
+    <option name="rngperevent" value="0" type="integer" desc="rng save per event">
+        value="0" - Do not save per-event RNG state in 'rngdir'.
+        value="1" - Save RNG state before primary-particle generation.
+        value="2" - Save RNG state before event processing (after primary generation)
+        value="3" - Both are stored.
+    </option>
+    <option name="rngrestorefile" value="" type="string" desc="restore rng from file">
+        Restore the RNG at the start of the job from this file within 'rngdir'. 
+        Use the value of 'rngseed' if this is blank; otherwise get the state from
+        'rngdir/rngrestorefile'. 
+    </option>
+    
+  </gramsg4>
+
+</parameters>

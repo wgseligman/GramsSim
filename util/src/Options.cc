@@ -753,9 +753,12 @@ namespace util {
     // until we have a need to validate.)
     auto parser = new xercesc::XercesDOMParser();
     parser->setValidationScheme(xercesc::XercesDOMParser::Val_Never);
-    parser->setDoNamespaces(false);
-    parser->setDoSchema(false);
+    parser->setDoNamespaces(true);
+    parser->setDoSchema(true);
     parser->setValidationConstraintFatal(false);
+    // Allow the XML file to include another XML file; see util/README.md
+    // for the XML syntax to make this work. 
+    parser->setDoXInclude(true);
 
     // Set up error handling. (Otherwise we'd have even more
     // exception tests than the ones we have below.)

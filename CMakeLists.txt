@@ -40,9 +40,9 @@ include(macros)
 #
 option(WITH_GEANT4_VIS "Build example with Geant4 Vis drivers" ON)
 if(WITH_GEANT4_VIS)
-  find_package(Geant4 QUIET COMPONENTS gdml vis_all)
+  find_package(Geant4 COMPONENTS gdml vis_all)
 else()
-  find_package(Geant4 QUIET COMPONENTS gdml)
+  find_package(Geant4 COMPONENTS gdml)
 endif()
 
 #----------------------------------------------------------------------------
@@ -86,7 +86,7 @@ message(STATUS "rpath = ${CMAKE_INSTALL_RPATH}")
 # build GramsSim. This is so that we can run the executables directly because they
 # relies on these scripts being in the current working directory.
 #
-set(GramsSim_SCRIPTS grams.gdml options.xml README.md)
+set(GramsSim_SCRIPTS grams.gdml options.xml xinclude.xml README.md)
 
 foreach(_script ${GramsSim_SCRIPTS})
   configure_file(
