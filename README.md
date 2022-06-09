@@ -250,7 +250,7 @@ originally designed for Geant4.
 [15]: https://gdml.web.cern.ch/GDML/doc/GDMLmanual.pdf
 
 If you want to make changes to the detector geometry (including the colors used for
-the `gramsg4 --ui` interactive display), edit `grams.gdml` or supply a different GDML file using the `--gdmfile` option.
+the `gramsg4 --ui` interactive display), edit `grams.gdml` or supply a different GDML file using the `--gdmlfile` option.
 If you're having trouble 
 understanding the contents of the `grams.gdml`, start by reading the comments within the file.
 There's more about GDML in the [References](#references) section below. 
