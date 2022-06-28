@@ -30,7 +30,7 @@ getting options and parameters into a program. The purpose of the
 `Options` utility is to provide a systematic interface for:
 
    - Defining and documenting options (handled via the `options.xml` file)
-   - Supplying or overridding options using the command line
+   - Supplying or overriding options using the command line
    - Accessing the options from within a C++ program
    - Saving the options used in particular run of a program
 
