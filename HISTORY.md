@@ -4,6 +4,10 @@ A description of major development milestones. The most recent are at
 the top. For a detailed list of all changes (basically, every time
 someone typed "git commit"), see the output of "git log".
 
+Aug-2022
+
+   - Fixed a tricky issue in Options.cc when compiled on a Macintosh. 
+
 Apr-2022
 
    - GramsG4 will now compile for both the latest Geant4 11.0, and earlier G4 versions such as Geant4.10.5 and 4.10.7. This requires several `#if G4VERSION_NUMBER...` several statements in the code; let's hope this doesn't get too confusing. 
