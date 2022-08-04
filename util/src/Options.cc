@@ -62,6 +62,18 @@ namespace util {
     std::string tagName(a_programName);
     if ( tagName.empty() ) {
       tagName = m_progPath.substr(m_progPath.find_last_of("/\\") + 1);
+      // On a Mac, we have to add a ".exe" suffix to keep the program
+      // names from conflicting with directory names. If we've done this
+      // (in GramsSim/CMakeLists.txt), remove the suffix from the end 
+      // of tagName.
+#ifdef EXE_SUFFIX
+      // Convert the value of EXE_SUFFIX into a C string; see
+      // https://www.tutorialspoint.com/cplusplus/cpp_preprocessor.htm
+#define SUFFIX #EXE_SUFFIX
+      std::string suffix(SUFFIX);
+      // Remove the suffix from tagName.
+      tagName = tagName.substr(0, tagName.length() - suffix.length());
+#endif
     }
     if (debug)
       std::cout << "Debug: tagName=" << tagName << std::endl;

@@ -20,11 +20,16 @@ endif()
 # For a Mac OS compilation, we have to avoid the program names having
 # the same names as the subidrectories; e.g., in Linux we can have
 # directory GramsSky and executable gramssky, but in Mac OS we
-# can't. So define an extension that will have a value for Mac OS
-# executables; e.g., gramssky.exe.
+# can't. 
+#
+# So define an extension that will have a value for Mac OS
+# executables; e.g., gramssky.exe. Pass that extension as a C++
+# processor directive, so that anything that depends on the program name
+# (see GramsSim/util/src/Options.cc) can be aware of it. 
 set(EXE "")
 if (MACOSX)
    set (EXE ".exe")
+   add_definitions(-DEXE_SUFFIX=.exe)
 endif()
 
 # Add this project's cmake/Module directory as a source of our own CMake modules
