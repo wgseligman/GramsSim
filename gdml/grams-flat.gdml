@@ -129,7 +129,6 @@ source of interactions (e.g., the cryostat walls.)
     
     <!-- 5-May-2020 WGS: All length units are cm. Many of the dimensions
     used below are 'constant' or 'variable' so they can be used in calculations. -->
-    <constant name="ZOffset" value = "100" />
 
     <!-- ************** LArTPC section ************** -->
     
@@ -139,11 +138,9 @@ source of interactions (e.g., the cryostat walls.)
     isn't realistic, but you have to start somewhere. -->
     <constant name="fidVolGap" value="0" />
 
-    <!-- 10-June-2022 MS: Changed dimensions of LArTPC to be cubic -->
-
-    <constant name="lArTPCXSize" value="70" />
-    <constant name="lArTPCYSize" value="70" />
-    <constant name="lArTPCZSize" value="80" />
+    <constant name="lArTPCXSize" value="140 + 2*fidVolGap" />
+    <constant name="lArTPCYSize" value="140 + 2*fidVolGap" />
+    <constant name="lArTPCZSize" value=" 30 + 2*fidVolGap" />
 
     <!-- 5-May-2020 WGS: For all I know the cryostat will be made of insulating foam.
     With no other information, I'm assuming a steel cryostat of 1cm thickness. -->
@@ -168,6 +165,7 @@ source of interactions (e.g., the cryostat walls.)
     
     For "compatibility" with LArSoft, the bottom of the tile plane (the anode)
     will define z=0 for our coordinate system. 
+    
     -->
     
     <constant name="silicaThickness" value="0.06" />
@@ -198,18 +196,16 @@ source of interactions (e.g., the cryostat walls.)
     separates the cells optically will be PTFE or something else. For
     now, leave the material to be PTFE but call them "Separator sheets"
     instead of PTFE sheets so that swapping the material will be easier. -->
-    <!-- 10-June-2022 MS: Changed number of cells to be 7x7x4 instead of 14x14x1-->
-    <constant name="numberActiveCellsY" value="7" />
-    <constant name="numberSepSheetsY" value="numberActiveCellsY - 1" />
-    <constant name="numberActiveCellsX" value="7" />
-    <constant name="numberSepSheetsX" value="numberActiveCellsX - 1" />
-    <constant name="numberActiveCellsZ" value="4" />
-    <constant name="numberSepSheetsZ" value="numberActiveCellsX - 1" />
     
+    <constant name="numberActiveCellsY" value="14" />
+    <constant name="numberSepSheetsY" value="numberActiveCellsY - 1" />
+    <constant name="numberActiveCellsX" value="14" />
+    <constant name="numberSepSheetsX" value="numberActiveCellsX - 1" />
+   
     <!-- 5-May-2020 WGS: How thick will the separator sheets be? I don't know, so 
     assume 1mm. For the sheets' z-size, leave some room for the tiles and the 
     cathode plate. -->
-    <constant name="sepThickness" value="0.0000001" />
+    <constant name="sepThickness" value="0.1" />
 
     <!-- 16-Jul-2020 WGS: Define the groups of cells we'll place along x. 
     Allow for additional spacing for a fiducial volume cut. -->
@@ -250,9 +246,8 @@ source of interactions (e.g., the cryostat walls.)
     putting in the Identifier code now, I'll include a zLayerIndex which,
     for now, is always 000. -->
     <variable name="zLayerIndex" value="0" />
-    <variable name="sepIndexZ" value="0" />
-
-<!-- 05-May-2020 WGS: How big is a SIPM? I don't know. Make a guess. -->
+    
+    <!-- 05-May-2020 WGS: How big is a SIPM? I don't know. Make a guess. -->
     <!-- 06-Oct-2021 WGS: With a plate as a cathode and a tile as the anode,
     the location of the SiPMs is now a complete unknown. I'm going to arbitrarily
     place them in the center of the high-x side of each cell, magically
@@ -289,9 +284,9 @@ source of interactions (e.g., the cryostat walls.)
     are slightly different. 
     -->
     
-    <constant name="outerVolumeXSize" value="280" />
-    <constant name="outerVolumeYSize" value="280" />
-    <constant name="outerVolumeZSize" value="250" />
+    <constant name="outerVolumeXSize" value="350" />
+    <constant name="outerVolumeYSize" value="350" />
+    <constant name="outerVolumeZSize" value="200" />
 
     <!-- 5-May-2020 WGS: The sole reason I've defined the scintillator 
     width and thickness with these values is that they fit exactly in the crude
@@ -346,9 +341,9 @@ source of interactions (e.g., the cryostat walls.)
     <variable name="indexOuterXwallZstrips" value="0" />
 
 
-    <constant name="innerVolumeXSize" value="90 + 2*fidVolGap" />
-    <constant name="innerVolumeYSize" value="90 + 2*fidVolGap" />
-    <constant name="innerVolumeZSize" value="100 + 2*fidVolGap" />
+    <constant name="innerVolumeXSize" value="150 + 2*fidVolGap" />
+    <constant name="innerVolumeYSize" value="150 + 2*fidVolGap" />
+    <constant name="innerVolumeZSize" value="40 + 2*fidVolGap" />
 
     <constant name="lengthInnerZwallXstrips" value="innerVolumeXSize" />
     <constant name="lengthInnerYwallXstrips" value="(innerVolumeXSize - 2*scintillatorThickness)" />
