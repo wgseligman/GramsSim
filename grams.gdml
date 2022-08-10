@@ -204,12 +204,12 @@ source of interactions (e.g., the cryostat walls.)
     <constant name="numberActiveCellsX" value="7" />
     <constant name="numberSepSheetsX" value="numberActiveCellsX - 1" />
     <constant name="numberActiveCellsZ" value="4" />
-    <constant name="numberSepSheetsZ" value="numberActiveCellsX - 1" />
+    <constant name="numberSepSheetsZ" value="numberActiveCellsZ - 1" />
     
     <!-- 5-May-2020 WGS: How thick will the separator sheets be? I don't know, so 
     assume 1mm. For the sheets' z-size, leave some room for the tiles and the 
     cathode plate. -->
-    <constant name="sepThickness" value="0.0000001" />
+    <constant name="sepThickness" value="0.1" />
 
     <!-- 16-Jul-2020 WGS: Define the groups of cells we'll place along x. 
     Allow for additional spacing for a fiducial volume cut. -->
