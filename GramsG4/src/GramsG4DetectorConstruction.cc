@@ -14,6 +14,7 @@
 #include "G4GDMLParser.hh"
 #include "G4String.hh"
 #include "G4ios.hh"
+#include "G4SystemOfUnits.hh"
 
 //#include <cstdio> // for std::remove
 //#include <sys/stat.h> // for stat()
@@ -28,7 +29,14 @@ namespace gramsg4 {
     G4bool verbose;
     options->GetOption("verbose",verbose);
 
-    // Uncomment the following if wish to avoid names stripping
+    // Get the units for any dimensioned parameters.
+    std::string units;
+    options->GetOption("LengthUnit",units);
+    // millimeter and centimeter are defined in G4SystemOfUnits.hh.
+    G4double lengthScale = millimeter;
+    if ( units == "cm" ) lengthScale = centimeter;
+
+    // Uncomment the following if we wish to avoid names stripping
     // fGDMLparser.SetStripFlag(false);
   
     // Fetch the GDML file with the detector description. 
@@ -48,11 +56,16 @@ namespace gramsg4 {
     // Assign properties (like visibility and colors) to volumes.
     //
 
-    // Set up any special conditions for LAr TPC volumes. For now,
-    // that's just the step size within the LAr TPC.
+    // Set up any special conditions for LAr TPC volumes. 
+
+    // For now, that's just the step size within the LAr TPC. If the
+    // step size is set to zero (it's omitted from the options XML
+    // file) then Geant4's default is used automatically. 
     G4double larTPCStepSize(0.);
     bool haveTPCStepSize = options->GetOption("larstepsize",larTPCStepSize);
-    auto stepLimit( new G4UserLimits(larTPCStepSize)) ;
+    // Convert the length unit from the one used in the options XML
+    // file to the one used internally in Geant4. 
+    auto stepLimit( new G4UserLimits(larTPCStepSize * lengthScale)) ;
 
     G4cout << G4endl;
    
@@ -78,11 +91,11 @@ namespace gramsg4 {
 		G4StrUtil::to_lower(str);
 #endif
 
-		// Check for any step limits.
+		// Check for any step limits in the GDML file.
 		if ( str == "steplimit" ) {
 		  try {
 		    double stepSize = std::stod(val);
-		    auto volStepLimit( new G4UserLimits(stepSize) );
+		    auto volStepLimit( new G4UserLimits(stepSize * lengthScale) );
 		    logVol->SetUserLimits(volStepLimit);
 		    if (verbose)
 		      G4cout << "Set maximum step size of '" 

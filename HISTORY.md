@@ -8,6 +8,8 @@ Aug-2022
 
    - Switch to using the "cube" geometry (the LAr TPC is roughly cube-shaped)
      instead of the "flat" geometry; the latter is archived in gdml/grams-flat.gdml. 
+   - The units for LAr TPC step size in GramsG4 now from the LengthUnit parameter
+     in options.xml.
    - Fixed a tricky issue in Options.cc when compiled on a Macintosh. 
 
 Apr-2022

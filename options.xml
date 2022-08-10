@@ -30,7 +30,7 @@
 
          Length unit: as of Jan-2022, the only valid values are "cm" and "mm".
          Energy unit: as of Jan-2022, the only valid values are "MeV" and "GeV".
-	 Time unit: as of Jan-2022, the only valid values are "ns", "ms", and "s".
+         Time unit: as of Jan-2022, the only valid values are "ns", "ms", and "s".
      
          Note that this does not directly affect the GDML file and
          Geant4 macro files, as any dimensioned quantities in those
@@ -349,9 +349,10 @@
       ("G4StepLimiterPhysics" or simply STEPLIMIT) in the physicslist
       option above. 
 
-      It should be the size of the voxels or pixels in the readout.
+      A first approximation of this value might be 1/10th the size of
+      the voxels or pixels in the readout.
 
-      Units are mm (default G4 length unit). 
+      Units are set in LengthUnit above.
 
       If this is commented out, the program will use the step size
       in the GDML file for "volTPCActive".
