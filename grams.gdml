@@ -395,7 +395,11 @@ source of interactions (e.g., the cryostat walls.)
     1.5m. We have to adjust a bit to make this the offset of the center of the 
     inner detector from the center of the outer detector. -->
     <!-- 23-Jun-2021 WGS: 150->140 to offset increased in z-height of LArTPC -->
-    <constant name="innerDetectorOffsetInOuter" value ="(outerVolumeZSize - innerVolumeZSize)/2 - (140 - 2*fidVolGap)" />
+    <!-- 16-Aug-2022 WGS: Since we're playing around with the LArTPC
+         geometry, a better reference location is to place the bottom of the
+         inner detector 20cm from the bottom of the outer
+         detector. -->
+    <constant name="innerDetectorOffsetInOuter" value ="-(outerVolumeZSize/2) + (innerVolumeZSize/2) + 20" />
 
     <!-- 10-May-2020 WGS: This is the offset of the outer detector from the center of
     of the world volume. This is tricky, because (to follow the LArSoft convention,
@@ -1248,7 +1252,7 @@ source of interactions (e.g., the cryostat walls.)
         <position name="negOuterXwall" unit="cm" x="-(outerVolumeXSize - outerXwallXSize)/2" y="0" z="0" />
       </physvol>
 
-       <!-- 10-May-2020 WGS: The place the inner detector -->
+       <!-- 10-May-2020 WGS: Then place the inner detector -->
       <physvol>
         <volumeref ref="volInnerDetector" />
         <position name="posInnerDetector" unit="cm" x="0" y="0" z="innerDetectorOffsetInOuter"/>
