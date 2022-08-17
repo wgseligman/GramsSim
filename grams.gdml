@@ -118,6 +118,11 @@ source of interactions (e.g., the cryostat walls.)
 
     <position name="posCenter" unit="cm" x="0" y="0" z="0"/>
 
+    <!-- 17-Aug-2022 WGS: Index variables for our loops. -->
+    <variable name="i" value="0" />
+    <variable name="j" value="0" />
+    <variable name="k" value="0" />
+
     <!-- 5-May-2020 WGS: Everything will eventually get placed into a large
     world volume. Typically you want a volume that's big enough to contain 
     everything you're modeling, plus some space to both inject incoming
@@ -232,26 +237,7 @@ source of interactions (e.g., the cryostat walls.)
     <constant name="sepXSize" value="cellGroupXSize" />
     <constant name="sepYSize" value="sepThickness" />
     <constant name="sepZSize" value="cellGroupZSize" />
-   
-    <!-- 16-Jul-2020 WGS: First we're going to place the cell groups along x within
-    the LArTPC. Then we're going to place the active cells within a cell group
-    along y. -->
-    <!-- 10-Mar-2021 WGS: When I defined the Identifiers, I switched the
-    scheme for placing the cells to a nested loop in x and y (and potentially
-    z if we include layers in the future.)  -->
-    <variable name="activeCellIndexX" value="0" />
-    <variable name="sepIndexX" value="0" />
-    <variable name="activeCellIndexY" value="0" />
-    <variable name="sepIndexY" value="0" />
     
-    <!-- 10-Mar-2021 WGS: As of now, there's just a single z-layer of cells
-    within the TPC. But it's possible that we'll have to need more. Most of the
-    statements below ignore the possibility of multiple z-layers, but since I'm
-    putting in the Identifier code now, I'll include a zLayerIndex which,
-    for now, is always 000. -->
-    <variable name="zLayerIndex" value="0" />
-    <variable name="sepIndexZ" value="0" />
-
 <!-- 05-May-2020 WGS: How big is a SIPM? I don't know. Make a guess. -->
     <!-- 06-Oct-2021 WGS: With a plate as a cathode and a tile as the anode,
     the location of the SiPMs is now a complete unknown. I'm going to arbitrarily
@@ -262,6 +248,7 @@ source of interactions (e.g., the cryostat walls.)
     <constant name="sipmXSize" value="sipmThickness" />
     <constant name="sipmYSize" value="1.0" />
     <constant name="sipmZSize" value="1.0" />
+
     <!-- 17-Jul-2020 WGS: How many SIPMs within each cell? What will their
     arrangement be? I don't know. Start with evenly spacing the SIPMs within
     each cell evenly and identicially. (This will become more complex if we
@@ -269,7 +256,6 @@ source of interactions (e.g., the cryostat walls.)
     but they are not used (yet) in this GDML file. The code to implement anything 
     with them must wait until we until we do some optical physics studies. -->
     <constant name="numberSIPMsInCell" value="6" />
-    <variable name="indexSIPMsInCell" value="0" />
     <constant name="sipmXseparation" value="activeCellXSize/numberSIPMsInCell" />
 
     <!-- ************** Scintillator walls section **************
@@ -304,9 +290,27 @@ source of interactions (e.g., the cryostat walls.)
     arithmetic used in later sections doesn't work out. I'd need a 
     detailed description of how the strips in the different walls fit
     together. Without such a description, stick with 10mm. -->
-    <constant name="scintillatorThickness" value="1.0" />
+    <!-- 17-Aug-2022 WGS: We fix the thickness issue with a rounding offset
+         correction; see below. Now we can have non-integer thicknesses,
+         provided we correct for them. -->
+    <constant name="scintillatorThickness" value="0.5" />
     <constant name="scintillatorWidth"     value="2.0" />
+
+    <!-- 17-Aug-2022 WGS: This is a work-around needed because GDML
+         expressions (which use the CLHEP Evaluator class) don't have
+         an "int" function available (see
+         https://gitlab.cern.ch/CLHEP/CLHEP/-/blob/master/Evaluator/Evaluator/Evaluator.h). In
+         GDML, loops require integer arguments. So if a computation of
+         a loop limit does not evaluate to an integer, the Geant4 GDML
+         interpreter will crash.
+
+         To work around this, stick in this "rounding offset" in those
+         calculations that would otherwise result in a
+         non-integer. This is an ad-hoc value: You have to figure out
+         what it should be to make the calculations work out. -->
     
+    <constant name="roundingOffset" value="-0.5" />
+
     <!-- 15-Jun-2020 WGS: Each wall contains a single layer of strips (in an
     earlier version of this file, each wall had two layers of strips criss-crossing
     each other). Assume the direction of the strips is such that strips will be
@@ -319,8 +323,8 @@ source of interactions (e.g., the cryostat walls.)
     <constant name="lengthOuterXwallZstrips" value="(outerVolumeZSize - 2*scintillatorThickness)" />
     
     <constant name="numberOuterZwallXstrips" value="outerVolumeYSize / scintillatorWidth" />
-    <constant name="numberOuterYwallXstrips" value="(outerVolumeZSize - 2*scintillatorThickness) / scintillatorWidth" />
-    <constant name="numberOuterXwallZstrips" value="(outerVolumeYSize - 2*scintillatorThickness) / scintillatorWidth" />
+    <constant name="numberOuterYwallXstrips" value="(outerVolumeZSize - 2*scintillatorThickness) / scintillatorWidth + roundingOffset" />
+    <constant name="numberOuterXwallZstrips" value="(outerVolumeYSize - 2*scintillatorThickness) / scintillatorWidth + roundingOffset" />
 
     <!-- 7-May-2020 WGS: Define "walls" in which to place the scintillator strips. This extra
     layer of geometry will make things easier in the long run; e.g., for placing the strips
@@ -338,13 +342,6 @@ source of interactions (e.g., the cryostat walls.)
     <constant name="outerXwallYSize" value="outerVolumeYSize" />
     <constant name="outerXwallZSize" value="outerVolumeZSize - 2*scintillatorThickness" />
 
-    <!-- 7-May-2020 WGS: Create variables for loop statements
-    when we place the scintillator strips in the walls; see the <structure> section. -->
-    
-    <variable name="indexOuterZwallXstrips" value="0" />
-    <variable name="indexOuterYwallXstrips" value="0" />
-    <variable name="indexOuterXwallZstrips" value="0" />
-
 
     <constant name="innerVolumeXSize" value="90 + 2*fidVolGap" />
     <constant name="innerVolumeYSize" value="90 + 2*fidVolGap" />
@@ -355,8 +352,8 @@ source of interactions (e.g., the cryostat walls.)
     <constant name="lengthInnerXwallZstrips" value="(innerVolumeZSize - 2*scintillatorThickness)" />
     
     <constant name="numberInnerZwallXstrips" value="innerVolumeYSize / scintillatorWidth" />
-    <constant name="numberInnerYwallXstrips" value="(innerVolumeZSize - 2*scintillatorThickness) / scintillatorWidth" />
-    <constant name="numberInnerXwallZstrips" value="(innerVolumeYSize - 2*scintillatorThickness) / scintillatorWidth" />
+    <constant name="numberInnerYwallXstrips" value="(innerVolumeZSize - 2*scintillatorThickness) / scintillatorWidth + roundingOffset" />
+    <constant name="numberInnerXwallZstrips" value="(innerVolumeYSize - 2*scintillatorThickness) / scintillatorWidth + roundingOffset" />
  
     <!-- 7-May-2020 WGS: Define "walls" in which to place the scintillator strips. This extra
     layer of geometry will make things easier in the long run; e.g., for placing the strips
@@ -374,13 +371,7 @@ source of interactions (e.g., the cryostat walls.)
     <constant name="InnerXwallYSize" value="innerVolumeYSize" />
     <constant name="InnerXwallZSize" value="innerVolumeZSize - 2*scintillatorThickness" />
 
-    <!-- 7-May-2020 WGS: Create variables for loop statements
-    when we place the scintillator strips in the walls; see the <structure> section. -->
 
-    <variable name="indexInnerZwallXstrips" value="0" />
-    <variable name="indexInnerYwallXstrips" value="0" />
-    <variable name="indexInnerXwallZstrips" value="0" />
-    
     <!-- 8-May-2020 WGS: The above walls are defined for the positive axes (x,y,z)>0.
     Assume the negative-axis walls are the mirror images of the positive ones,
     and can be defined in terms of a simple rotations. -->
@@ -396,10 +387,10 @@ source of interactions (e.g., the cryostat walls.)
     inner detector from the center of the outer detector. -->
     <!-- 23-Jun-2021 WGS: 150->140 to offset increased in z-height of LArTPC -->
     <!-- 16-Aug-2022 WGS: Since we're playing around with the LArTPC
-         geometry, a better reference location is to place the bottom of the
+         geometry, a better location is to place the bottom of the
          inner detector 20cm from the bottom of the outer
          detector. -->
-    <constant name="innerDetectorOffsetInOuter" value ="-(outerVolumeZSize/2) + (innerVolumeZSize/2) + 20" />
+    <constant name="innerDetectorOffsetInOuter" value ="-outerVolumeZSize/2 + innerVolumeZSize/2 + 20" />
 
     <!-- 10-May-2020 WGS: This is the offset of the outer detector from the center of
     of the world volume. This is tricky, because (to follow the LArSoft convention,
@@ -917,18 +908,30 @@ source of interactions (e.g., the cryostat walls.)
         <volumeref ref="volTilePlane"/>
         <position name="posXplane" unit="cm" x="0" y="0" z="(lArTPCZSize/2) - (tilePlaneZSize/2)" />
       </physvol>
-      
+
+      <!-- 16-Jul-2020 WGS: First we're going to place the cell groups
+           along x within the LArTPC. Then we're going to place the
+           active cells within a cell group along y. -->
+      <!-- 10-Mar-2021 WGS: When I defined the Identifiers, I switched
+           the scheme for placing the cells to a nested loop in x and
+           y (and potentially z if we include layers in the future.)
+           -->
+      <!-- 10-Mar-2021 WGS: As of now, there's just a single z-layer
+           of cells within the TPC. But it's possible that we'll have
+           to need more. Most of the statements below ignore the
+           possibility of multiple z-layers. -->
+
       <!-- Place the separator sheets that go along the entire y-length of the TPC area. -->
-      <loop for="sepIndexX" from="0" to="numberSepSheetsX - 1" step="1">
+      <loop for="i" from="0" to="numberSepSheetsX - 1" step="1">
         <physvol copynumber="3000000">
             <volumeref ref="volSeparatorGroupSheet"/>
-            <position name="posSeparatorGroupSheet" unit="cm" x="-(cellGroupXRegion/2) + cellGroupXSize + sepGroupXSize/2 + sepIndexX*(cellGroupXSize + sepGroupXSize)" y="0" z="0"/>
+            <position name="posSeparatorGroupSheet" unit="cm" x="-(cellGroupXRegion/2) + cellGroupXSize + sepGroupXSize/2 + i*(cellGroupXSize + sepGroupXSize)" y="0" z="0"/>
         </physvol>
       </loop> <!-- over sheets in x -->
 
       <!-- 15-Mar-2021 WGS: Place TPC cells in x and y. -->
 
-      <loop for="activeCellIndexX" from="0" to="numberActiveCellsX - 1" step="1">
+      <loop for="i" from="0" to="numberActiveCellsX - 1" step="1">
 
       <!-- 8-May-2020 WGS: For each active cell, we have to place a volume representing that
       cell, and the separator sheet that separates the cells. This gets a bit tricky, since
@@ -936,18 +939,18 @@ source of interactions (e.g., the cryostat walls.)
       there's one fewer sheet along along x than there are cells.  -->
       
         <!-- First, place the separator sheets that go along x. -->
-        <loop for="sepIndexY" from="0" to="numberSepSheetsY - 1" step="1">
+        <loop for="j" from="0" to="numberSepSheetsY - 1" step="1">
           <physvol copynumber="3000000">
               <volumeref ref="volSeparatorSheet"/>
-              <position name="posSeparatorSheet" unit="cm" x="-(cellGroupXRegion/2) + cellGroupXSize/2 + activeCellIndexX*(cellGroupXSize + sepGroupXSize)" y="-(cellGroupYSize/2) + activeCellYSize + sepYSize/2 + sepIndexY*(activeCellYSize + sepYSize)" z="0"/>
+              <position name="posSeparatorSheet" unit="cm" x="-(cellGroupXRegion/2) + cellGroupXSize/2 + i*(cellGroupXSize + sepGroupXSize)" y="-(cellGroupYSize/2) + activeCellYSize + sepYSize/2 + j*(activeCellYSize + sepYSize)" z="0"/>
           </physvol>
         </loop> <!-- over y-sheets -->
       
         <!--  Now place the active TPC cells -->
-        <loop for="activeCellIndexY" from="0" to="numberActiveCellsY - 1" step="1">
-          <physvol copynumber="1000000 + (zLayerIndex*10000) + (activeCellIndexY*100) + activeCellIndexX">
+        <loop for="j" from="0" to="numberActiveCellsY - 1" step="1">
+          <physvol copynumber="1000000 + (k*10000) + (j*100) + i">
               <volumeref ref="volTPCActive"/>
-              <position name="posTPCActive" unit="cm" x="-(cellGroupXRegion/2) + cellGroupXSize/2 + activeCellIndexX*(cellGroupXSize + sepGroupXSize)" y="-(cellGroupYSize/2) + activeCellYSize/2 + activeCellIndexY*(activeCellYSize + sepYSize)" z="0"/>
+              <position name="posTPCActive" unit="cm" x="-(cellGroupXRegion/2) + cellGroupXSize/2 + i*(cellGroupXSize + sepGroupXSize)" y="-(cellGroupYSize/2) + activeCellYSize/2 + j*(activeCellYSize + sepYSize)" z="0"/>
           </physvol>
         </loop> <!-- over y-cells -->  
 
@@ -995,18 +998,20 @@ source of interactions (e.g., the cryostat walls.)
     <!-- 8-May-2020 WGS: Place the scintillator 
     strips in the x, y, and z detector walls. -->
     
-    <!-- 11-Mar-2021 WGS: In an earlier version of this file, I just defined the high-axis volumes
-    (high-x, high-y, high-z) then defined the low-axis volumes by flipping the high-axis ones. I can't
-    do that anymore, because the identifiers for the high-axis volumes are different from the low-axis
-    volumes. -->
+    <!-- 11-Mar-2021 WGS: In an earlier version of this file, I just
+         defined the high-axis volumes (high-x, high-y, high-z) then
+         defined the low-axis volumes by flipping the high-axis
+         ones. I can't do that anymore, because the identifiers for
+         the high-axis volumes are different from the low-axis
+         volumes. -->
 
     <volume name="volInnerHighZwall">
       <materialref ref="Air"/>
       <solidref ref="InnerZwall"/>
-      <loop for="indexInnerZwallXstrips" to="numberInnerZwallXstrips - 1" step="1">
-        <physvol copynumber="2050000 + indexInnerZwallXstrips">
+      <loop for="i" from="0" to="numberInnerZwallXstrips - 1" step="1">
+        <physvol copynumber="2050000 + i">
             <volumeref ref="volInnerZwallXstrip"/>
-            <position name="InnerHighZwallXstrip" unit="cm" x="0" y="-InnerZwallYSize/2 + scintillatorWidth/2 + indexInnerZwallXstrips*scintillatorWidth" z="0"/>
+            <position name="InnerHighZwallXstrip" unit="cm" x="0" y="-InnerZwallYSize/2 + scintillatorWidth/2 + i*scintillatorWidth" z="0"/>
         </physvol>
       </loop>
       <auxiliary auxtype="Color" auxvalue="cyan" />
@@ -1015,10 +1020,10 @@ source of interactions (e.g., the cryostat walls.)
     <volume name="volInnerHighYwall">
       <materialref ref="Air"/>
       <solidref ref="InnerYwall"/>
-      <loop for="indexInnerYwallXstrips" to="numberInnerYwallXstrips - 1" step="1">
-        <physvol copynumber="2030000 + indexInnerYwallXstrips">
+      <loop for="i" from="0" to="numberInnerYwallXstrips - 1" step="1">
+        <physvol copynumber="2030000 + i">
             <volumeref ref="volInnerYwallXstrip"/>
-            <position name="InnerHighYwallXstrip" unit="cm" x="0" y="0" z="-InnerYwallZSize/2 + scintillatorWidth/2 + indexInnerYwallXstrips*scintillatorWidth"/>
+            <position name="InnerHighYwallXstrip" unit="cm" x="0" y="0" z="-InnerYwallZSize/2 + scintillatorWidth/2 + i*scintillatorWidth"/>
         </physvol>
       </loop>
       <auxiliary auxtype="Color" auxvalue="cyan" />
@@ -1027,10 +1032,10 @@ source of interactions (e.g., the cryostat walls.)
     <volume name="volInnerHighXwall">
       <materialref ref="Air"/>
       <solidref ref="InnerXwall"/>
-      <loop for="indexInnerXwallZstrips" to="numberInnerXwallZstrips - 1" step="1">
-        <physvol copynumber="2010000 + indexInnerXwallZstrips">
+      <loop for="i" from="0" to="numberInnerXwallZstrips - 1" step="1">
+        <physvol copynumber="2010000 + i">
             <volumeref ref="volInnerXwallZstrip"/>
-            <position name="InnerHighXwallZstrip" unit="cm" x="0" y="-InnerXwallYSize/2 + scintillatorWidth/2 + indexInnerXwallZstrips*scintillatorWidth" z="0"/>
+            <position name="InnerHighXwallZstrip" unit="cm" x="0" y="-InnerXwallYSize/2 + scintillatorWidth/2 + i*scintillatorWidth" z="0"/>
         </physvol>
       </loop>
       <auxiliary auxtype="Color" auxvalue="cyan" />
@@ -1039,10 +1044,10 @@ source of interactions (e.g., the cryostat walls.)
     <volume name="volInnerLowZwall">
       <materialref ref="Air"/>
       <solidref ref="InnerZwall"/>
-      <loop for="indexInnerZwallXstrips" to="numberInnerZwallXstrips - 1" step="1">
-        <physvol copynumber="2040000 + indexInnerZwallXstrips">
+      <loop for="i" from="0" to="numberInnerZwallXstrips - 1" step="1">
+        <physvol copynumber="2040000 + i">
             <volumeref ref="volInnerZwallXstrip"/>
-            <position name="InnerLowZwallXstrip" unit="cm" x="0" y="-InnerZwallYSize/2 + scintillatorWidth/2 + indexInnerZwallXstrips*scintillatorWidth" z="0"/>
+            <position name="InnerLowZwallXstrip" unit="cm" x="0" y="-InnerZwallYSize/2 + scintillatorWidth/2 + i*scintillatorWidth" z="0"/>
         </physvol>
       </loop>
       <auxiliary auxtype="Color" auxvalue="cyan" />
@@ -1051,10 +1056,10 @@ source of interactions (e.g., the cryostat walls.)
     <volume name="volInnerLowYwall">
       <materialref ref="Air"/>
       <solidref ref="InnerYwall"/>
-      <loop for="indexInnerYwallXstrips" to="numberInnerYwallXstrips - 1" step="1">
-        <physvol copynumber="2020000 + indexInnerYwallXstrips">
+      <loop for="i" from="0" to="numberInnerYwallXstrips - 1" step="1">
+        <physvol copynumber="2020000 + i">
             <volumeref ref="volInnerYwallXstrip"/>
-            <position name="InnerLowYwallXstrip" unit="cm" x="0" y="0" z="-InnerYwallZSize/2 + scintillatorWidth/2 + indexInnerYwallXstrips*scintillatorWidth"/>
+            <position name="InnerLowYwallXstrip" unit="cm" x="0" y="0" z="-InnerYwallZSize/2 + scintillatorWidth/2 + i*scintillatorWidth"/>
         </physvol>
       </loop>
       <auxiliary auxtype="Color" auxvalue="cyan" />
@@ -1063,10 +1068,10 @@ source of interactions (e.g., the cryostat walls.)
     <volume name="volInnerLowXwall">
       <materialref ref="Air"/>
       <solidref ref="InnerXwall"/>
-      <loop for="indexInnerXwallZstrips" to="numberInnerXwallZstrips - 1" step="1">
-        <physvol copynumber="2000000 + indexInnerXwallZstrips">
+      <loop for="i" from="0" to="numberInnerXwallZstrips - 1" step="1">
+        <physvol copynumber="2000000 + i">
             <volumeref ref="volInnerXwallZstrip"/>
-            <position name="InnerLowXwallZstrip" unit="cm" x="0" y="-InnerXwallYSize/2 + scintillatorWidth/2 + indexInnerXwallZstrips*scintillatorWidth" z="0"/>
+            <position name="InnerLowXwallZstrip" unit="cm" x="0" y="-InnerXwallYSize/2 + scintillatorWidth/2 + i*scintillatorWidth" z="0"/>
         </physvol>
       </loop>
       <auxiliary auxtype="Color" auxvalue="cyan" />
@@ -1143,18 +1148,20 @@ source of interactions (e.g., the cryostat walls.)
     <!-- 8-May-2020 WGS: Place the scintillator 
     strips in the x, y, and z detector walls.  -->
     
-    <!-- 11-Mar-2021 WGS: In an earlier version of this file, I just defined the high-axis volumes
-    (high-x, high-y, high-z) then defined the low-axis volumes by flipping the high-axis ones. I can't
-    do that anymore, because the identifiers for the high-axis volumes are different from the low-axis
-    volumes. -->
-    
+    <!-- 11-Mar-2021 WGS: In an earlier version of this file, I just
+         defined the high-axis volumes (high-x, high-y, high-z) then
+         defined the low-axis volumes by flipping the high-axis
+         ones. I can't do that anymore, because the identifiers for
+         the high-axis volumes are different from the low-axis
+         volumes. -->
+
     <volume name="volOuterHighZwall">
       <materialref ref="Air"/>
       <solidref ref="OuterZwall"/>
-      <loop for="indexOuterZwallXstrips" to="numberOuterZwallXstrips - 1" step="1">
-        <physvol copynumber="2150000 + indexOuterZwallXstrips">
+      <loop for="i" from="0" to="numberOuterZwallXstrips - 1" step="1">
+        <physvol copynumber="2150000 + i">
             <volumeref ref="volOuterZwallXstrip"/>
-            <position name="OuterHighZwallXstrip" unit="cm" x="0" y="-outerZwallYSize/2 + scintillatorWidth/2 + indexOuterZwallXstrips*scintillatorWidth" z="0"/>
+            <position name="OuterHighZwallXstrip" unit="cm" x="0" y="-outerZwallYSize/2 + scintillatorWidth/2 + i*scintillatorWidth" z="0"/>
         </physvol>
       </loop>
       <auxiliary auxtype="Color" auxvalue="cyan" />
@@ -1163,10 +1170,10 @@ source of interactions (e.g., the cryostat walls.)
     <volume name="volOuterHighYwall">
       <materialref ref="Air"/>
       <solidref ref="OuterYwall"/>
-      <loop for="indexOuterYwallXstrips" to="numberOuterYwallXstrips - 1" step="1">
-        <physvol copynumber="2130000 + indexOuterYwallXstrips">
+      <loop for="i" from="0" to="numberOuterYwallXstrips - 1" step="1">
+        <physvol copynumber="2130000 + i">
             <volumeref ref="volOuterYwallXstrip"/>
-            <position name="OuterHighYwallXstrip" unit="cm" x="0" y="0" z="-outerYwallZSize/2 + scintillatorWidth/2 + indexOuterYwallXstrips*scintillatorWidth"/>
+            <position name="OuterHighYwallXstrip" unit="cm" x="0" y="0" z="-outerYwallZSize/2 + scintillatorWidth/2 + i*scintillatorWidth"/>
         </physvol>
       </loop>
      <auxiliary auxtype="Color" auxvalue="cyan" />
@@ -1175,10 +1182,10 @@ source of interactions (e.g., the cryostat walls.)
     <volume name="volOuterHighXwall">
       <materialref ref="Air"/>
       <solidref ref="OuterXwall"/>
-      <loop for="indexOuterXwallZstrips" to="numberOuterXwallZstrips - 1" step="1">
-        <physvol copynumber="2110000 + indexOuterXwallZstrips">
+      <loop for="i" from="0" to="numberOuterXwallZstrips - 1" step="1">
+        <physvol copynumber="2110000 + i">
             <volumeref ref="volOuterXwallZstrip"/>
-            <position name="OuterHighXwallZstrip" unit="cm" x="0" y="-outerXwallYSize/2 + scintillatorWidth/2 + indexOuterXwallZstrips*scintillatorWidth" z="0"/>
+            <position name="OuterHighXwallZstrip" unit="cm" x="0" y="-outerXwallYSize/2 + scintillatorWidth/2 + i*scintillatorWidth" z="0"/>
         </physvol>
       </loop>
      <auxiliary auxtype="Color" auxvalue="cyan" />
@@ -1187,10 +1194,10 @@ source of interactions (e.g., the cryostat walls.)
     <volume name="volOuterLowZwall">
       <materialref ref="Air"/>
       <solidref ref="OuterZwall"/>
-      <loop for="indexOuterZwallXstrips" to="numberOuterZwallXstrips - 1" step="1">
-        <physvol copynumber="2140000 + indexOuterZwallXstrips">
+      <loop for="i" from="0" to="numberOuterZwallXstrips - 1" step="1">
+        <physvol copynumber="2140000 + i">
             <volumeref ref="volOuterZwallXstrip"/>
-            <position name="OuterLowZwallXstrip" unit="cm" x="0" y="-outerZwallYSize/2 + scintillatorWidth/2 + indexOuterZwallXstrips*scintillatorWidth" z="0"/>
+            <position name="OuterLowZwallXstrip" unit="cm" x="0" y="-outerZwallYSize/2 + scintillatorWidth/2 + i*scintillatorWidth" z="0"/>
         </physvol>
       </loop>
       <auxiliary auxtype="Color" auxvalue="cyan" />
@@ -1199,10 +1206,10 @@ source of interactions (e.g., the cryostat walls.)
     <volume name="volOuterLowYwall">
       <materialref ref="Air"/>
       <solidref ref="OuterYwall"/>
-      <loop for="indexOuterYwallXstrips" to="numberOuterYwallXstrips - 1" step="1">
-        <physvol copynumber="2120000 + indexOuterYwallXstrips">
+      <loop for="i" from="0" to="numberOuterYwallXstrips - 1" step="1">
+        <physvol copynumber="2120000 + i">
             <volumeref ref="volOuterYwallXstrip"/>
-            <position name="OuterLowYwallXstrip" unit="cm" x="0" y="0" z="-outerYwallZSize/2 + scintillatorWidth/2 + indexOuterYwallXstrips*scintillatorWidth"/>
+            <position name="OuterLowYwallXstrip" unit="cm" x="0" y="0" z="-outerYwallZSize/2 + scintillatorWidth/2 + i*scintillatorWidth"/>
         </physvol>
       </loop>
      <auxiliary auxtype="Color" auxvalue="cyan" />
@@ -1211,10 +1218,10 @@ source of interactions (e.g., the cryostat walls.)
     <volume name="volOuterLowXwall">
       <materialref ref="Air"/>
       <solidref ref="OuterXwall"/>
-      <loop for="indexOuterXwallZstrips" to="numberOuterXwallZstrips - 1" step="1">
-        <physvol copynumber="2100000 + indexOuterXwallZstrips">
+      <loop for="i" from="0" to="numberOuterXwallZstrips - 1" step="1">
+        <physvol copynumber="2100000 + i">
             <volumeref ref="volOuterXwallZstrip"/>
-            <position name="OuterLowXwallZstrip" unit="cm" x="0" y="-outerXwallYSize/2 + scintillatorWidth/2 + indexOuterXwallZstrips*scintillatorWidth" z="0"/>
+            <position name="OuterLowXwallZstrip" unit="cm" x="0" y="-outerXwallYSize/2 + scintillatorWidth/2 + i*scintillatorWidth" z="0"/>
         </physvol>
       </loop>
      <auxiliary auxtype="Color" auxvalue="cyan" />

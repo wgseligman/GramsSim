@@ -6,6 +6,9 @@ someone typed "git commit"), see the output of "git log".
 
 Aug-2022
 
+   - Fixed bugs in GDML file (the low-z scintillators were not being placed).
+     Also simplified the GDML code to not require lots of different
+     index variables. 
    - Switch to using the "cube" geometry (the LAr TPC is roughly cube-shaped)
      instead of the "flat" geometry; the latter is archived in gdml/grams-flat.gdml. 
    - The units for LAr TPC step size in GramsG4 now from the LengthUnit parameter
