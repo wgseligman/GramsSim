@@ -35,6 +35,10 @@ namespace gramsdetsim {
     options->GetOption("b",m_b);
     options->GetOption("rho",m_rho);
 
+    options->GetOption("recom_model", m_recom_model);
+    options->GetOption("A_B", m_A_B);
+    options->GetOption("kB", m_kB);
+
     if (m_verbose) {
       std::cout << "gramsdetsim::RecombinationModel - "
 		<< "field= " << m_field
@@ -43,9 +47,14 @@ namespace gramsdetsim {
 		<< " rho= " << m_rho << std::endl;
     }
 
+    // The above variables are in Geant4 units (MeV, mm, ns). But the
+    // recombination constants use cm.
+    m_b *= 10.0;
+
+    m_kB *= 10.0;
+
     // These are the columns in the ntuple that we'll require for our
-    // calculation. Note: I may have misunderstood Luke's code; if we
-    // don't have to calculate dEdx then these are not needed.
+    // calculation. 
 
     // The names of the columns, and which columns are available, come
     // from GramsG4/src/GramsG4WriteNtuplesAction.cc.
@@ -71,7 +80,7 @@ namespace gramsdetsim {
   // Note that the "a_" prefix is a convention to remind us that the
   // variable was an argument in this method.
 
-  double RecombinationModel::Calculate( double a_energy ) {
+  Double_t RecombinationModel::Calculate( double a_energy ) {
 
     // The TTreeReaderValue variables are "in sync" with the
     // TTreeReader. So as the main routine uses TTreeReader to go
@@ -98,28 +107,36 @@ namespace gramsdetsim {
 			   std::pow(**m_zStart - **m_zEnd, 2) );
     double dEdx = a_energy / dx;
 
-    // The above variables are in Geant4 units (MeV, mm, ns). But the
-    // recombination constants use cm.
-    dEdx *= 10.;
     
     // The following calculations are based off of the modified box
     // model used in the ICARUS experiment, with constant values taken
     // from the Brookhaven page on liquid argon TPCs. Be very specific in
     // where this equation is from (what paper), what it is finding,
     // what it is talking about.
-    double sigma = (m_b * dEdx) / (m_field * m_rho);
-    double effect = std::log(m_a + sigma) / sigma;
 
-    if (m_debug)
-      std::cout << "gramsdetsim::RecombinationModel - "
-		<< "dx= " << dx
-		<< " dEdx= " << dEdx
-		<< " sigma= " << sigma
-		<< " effect= " << effect << std::endl;
+    double effect = 1.0;
 
-    // Note to Luke: Check the units! Check that "effect" is a
-    // multiplication factor on the energy! If it's not, fix my
-    // equation!
+    if (m_recom_model==0){
+        double sigma = (m_b * dEdx) / (m_field * m_rho);
+        effect = std::max(std::log(m_a + sigma) / sigma, 1.0e-6);
+
+        if (m_debug)
+          std::cout << "gramsdetsim::RecombinationModel - "
+	    	<< "dx= " << dx
+	    	<< " dEdx= " << dEdx
+	    	<< " sigma= " << sigma
+	    	<< " effect= " << effect << std::endl;
+
+    }   else if(m_recom_model==1){
+        effect = m_A_B * 1.0 / (1 + m_kB * dEdx / (m_field * m_rho));
+
+        if (m_debug)
+          std::cout << "gramsdetsim::RecombinationModel - "
+	    	<< "dx= " << dx
+	    	<< " dEdx= " << dEdx
+	    	<< " effect= " << effect << std::endl;
+    }
+
     return a_energy * effect;
   }
 

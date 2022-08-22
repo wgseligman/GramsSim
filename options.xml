@@ -415,10 +415,19 @@
     <option name="recombination" value="true" type="boolean" 
 	    desc="model recombination effects"/>
 
+    <option name="absorption" value="true" type="boolean" 
+	    desc="model absorption effects"/>
+
+    <option name="diffusion" value="true" type="boolean"
+        desc="model diffusion effects"/>
+
     Electric field on the cloud of ionized particles, varies with
     position due to space charge, which we don't have a model for yet.
     <option name="field"  value="1.0" type="double"
 	    desc="electric field [kV/cm]"/>
+
+    <option name="recom_model" value="0" type="integer"
+        desc="reconbination model" />
 
     Average of the a value for 20 to 90 degrees angle bins for proton
     sample detection in ArgoNeuT, unitless value.
@@ -433,6 +442,39 @@
     Density of liquid argon, from Brookhaven LAr page, units of (g/cm^3)
     <option name="rho" value="1.3973" type="double"
 	    desc="LAr density [g/cm^3]"/>
+
+    <option name="A_B" value="0.806" type="double"
+        desc="factor for Birk's model"/>
+
+    <option name="kB" value="0.052" type="double"
+        desc="factor for Birk's model [(kV/cm)(g/cm^2)/MeV]"/>
+
+    <option name="LifeTimeCorr_const" value="50000.0" type="double"
+        desc="mean life of electrons (ns)"/>
+
+    <option name="DriftVel" value="0.001" type="double"
+        desc="drift velocity (mm/ns)"/>
+
+    <option name="MeVToElectrons" value="4.237e4" type="double"
+        desc="the number of generated electrons per 1MeV"/>
+
+    <option name="LongitudinalDiffusion" value="6.2e-9" type="double"
+        desc="[cm^2/ns]"/>
+
+    <option name="TransverseDiffusion" value="16.3e-9" type="double"
+        desc="[cm^2/ns]"/>
+
+    <option name="ElectronClusterSize" value="5.0" type="double"
+        desc=""/>
+
+    <option name="pixel_plane_offset" value="2.17" type="double"
+        desc="offset of a pixel readout plane"/>
+
+    <option name="MinNumberOfElCluster" value="2.0" type="double"
+        desc=""/>
+
+    <option name="DriftCoordinate" value="2" type="int"
+        desc="x:0 y:1 z:2"/>
 
   </gramsdetsim>
 

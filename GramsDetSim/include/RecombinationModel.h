@@ -6,6 +6,8 @@
 #ifndef RecombinationModel_h
 #define RecombinationModel_h
 
+#include <vector>
+
 // ROOT includes
 #include "TTreeReader.h"
 #include "TTreeReaderValue.h"
@@ -53,6 +55,10 @@ namespace gramsdetsim {
     double m_a;
     double m_b;
     double m_rho;
+
+    int m_recom_model;
+    double m_A_B;
+    double m_kB;
 
     // Save the verbose and debug options.
     bool m_verbose;
