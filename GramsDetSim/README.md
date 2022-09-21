@@ -18,7 +18,17 @@ run this program with
 
 ### Recombination
 
-Based off the modified box model used by MicroBooNE, among others
+As of Sep-2022, the recombination models used in GramsDetSim are based
+on the paper [A study of electron recombination using highly ionizing
+particles in the ArgoNeuT Liquid Argon TPC][10]. The models
+implemented are:
+
+[10]: https://arxiv.org/abs/1306.1712
+
+<img src="RecombinationModel.png" width="20%"/>
+
+See the [options XML](../options.xml) file for a description of the
+individual parameters.
 
 ### Absorption
 
@@ -28,5 +38,4 @@ Based off the modified box model used by MicroBooNE, among others
 
 See `GramsSim/util/README.md` for a description of how to control the
 operation of `gramsdetsim` through the `options.xml` file and the
-command line. The file `GramsSim/options.xml` contains an example
-section to get you started.
+command line.

@@ -29,14 +29,14 @@ namespace gramsdetsim {
     options->GetOption("verbose",m_verbose);
     options->GetOption("debug",m_debug);
 
-    options->GetOption("field",m_field);
-    options->GetOption("alpha",m_alpha);
-    options->GetOption("beta",m_beta);
-    options->GetOption("rho",m_rho);
+    options->GetOption("ElectricField",m_field);
+    options->GetOption("box_alpha",m_alpha);
+    options->GetOption("box_beta",m_beta);
+    options->GetOption("LArDensity",m_rho);
 
-    options->GetOption("recombination_model", m_recom_model);
-    options->GetOption("A_B", m_A_B);
-    options->GetOption("kB", m_kB);
+    options->GetOption("RecombinationModel", m_recom_model);
+    options->GetOption("birks_AB", m_A_B);
+    options->GetOption("birks_kB", m_kB);
 
     if (m_verbose) {
       std::cout << "gramsdetsim::RecombinationModel - "
@@ -119,21 +119,23 @@ namespace gramsdetsim {
       // as not having the technical difficulties that arise when
       // applying the Birk's model to highly ionizing particles.
       {
-	double sigma = (m_beta * dEdx) / (m_field * m_rho);
-	effect = std::max(std::log(m_alpha + sigma) / sigma, 1.0e-6);
+	double effective_efield = (m_beta * dEdx) / (m_field * m_rho);
+	effect = std::max(
+			  std::log(m_alpha + effective_efield) / effective_efield, 
+			  1.0e-6);
 	
 	if (m_debug)
 	  std::cout << "gramsdetsim::RecombinationModel - "
 		    << "dx= " << dx
 		    << " dEdx= " << dEdx
-		    << " sigma= " << sigma
+		    << " effective_efield= " << effective_efield
 		    << " effect= " << effect << std::endl;
       }
       break;
 
     case 1 :
       {
-	effect = m_A_B * 1.0 / (1 + m_kB * dEdx / (m_field * m_rho));
+	effect = m_A_B / (1 + m_kB * dEdx / (m_field * m_rho));
 
 	if (m_debug)
 	  std::cout << "gramsdetsim::RecombinationModel - "
