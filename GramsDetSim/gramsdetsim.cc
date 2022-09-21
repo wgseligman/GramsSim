@@ -13,6 +13,7 @@
 // ROOT includes
 #include "TFile.h"
 #include "TTreeReader.h"
+#include "TRandom.h"
 
 // C++ includes
 #include <iostream>
@@ -69,12 +70,22 @@ int main(int argc,char **argv)
 	      << "', input ntuple = '" << inputNtupleName
 	      << "'" << std::endl;
 
+  // For any model that requires random-number generation (as of
+  // Sep-2022, only DiffusionModel), Get and set the random number
+  // seed.
+  int seed;
+  options->GetOption("rngseed",seed);
+  // Note that the default random-number generator in ROOT is
+  // TRandom3.
+  gRandom->SetSeed(seed);
+
+  // Parameters for computing hit projections onto the readout plane.
   double m_readout_plane_offset;
   double m_DriftVel;
   double m_MeVToElectrons;
-  options->GetOption("readout_plane_offset", m_readout_plane_offset);  
-  options->GetOption("DriftVel",             m_DriftVel);
-  options->GetOption("MeVToElectrons",       m_MeVToElectrons);
+  options->GetOption("ReadoutPlaneOffset",    m_readout_plane_offset);  
+  options->GetOption("ElectronDriftVelocity", m_DriftVel);
+  options->GetOption("MeVToElectrons",        m_MeVToElectrons);
 
   // Open the input file. For historical reasons, ROOT methods can't
   // handle the type std::string, so we use the c_str() method to
@@ -144,13 +155,13 @@ int main(int argc,char **argv)
   Int_t run;
   Int_t event;
   Int_t trackID;
+  Int_t numPhotons;
   Int_t pdgCode;
   Int_t identifier;
 
-  // In anticipation of future work, write out per-hit values as
-  // vectors. (It's possible that we'll want to restructure the input
-  // as one line per track, with each hit as an entry in a vector.)
-  std::vector<Int_t>    numPhotons;
+  // DiffusionModel will break up the ionization into electron
+  // clusters. Define the vectors for the cluster energies and
+  // (x,y,z,t) of each cluster.
   std::vector<Double_t> energyAtAnode;
   std::vector<Double_t> electronAtAnode;
   std::vector<Double_t> xPosAtAnode;
@@ -223,13 +234,17 @@ int main(int argc,char **argv)
   // For each row in the input ntuple:
   while ( (*reader).Next() ) {
 
+    // Remember that given the TTreeReaderValue definitions above, a
+    // variable read from the input ntuple must be accessed like a
+    // pointer.
+
     run = *Run;
     event = *Event;
     trackID = *TrackID;
+    numPhotons = *NumPhotons;
     pdgCode = *PDGCode;
     identifier = *Identifier;
     
-    numPhotons.clear();
     energyAtAnode.clear();
     electronAtAnode.clear();
     xPosAtAnode.clear();
@@ -239,12 +254,7 @@ int main(int argc,char **argv)
 
     if (debug)
       std::cout << "gramsdetsim: at entry " << reader->GetCurrentEntry() << std::endl;
-
-    // Remember that given the TTreeReaderValue definitions above, a
-    // variable read from the input ntuple must be accessed like a
-    // pointer.
     
-    numPhotons.push_back(*NumPhotons);
     energy_sca = *energy;
     energyAtAnode.push_back(energy_sca);
     electronAtAnode.push_back(energy_sca * m_MeVToElectrons);

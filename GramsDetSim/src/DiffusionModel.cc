@@ -1,5 +1,4 @@
-// 26-Nov-2021 WGS
-
+// 21-Sep-2022 Satoshi Takashima, William Seligman
 // Implement a diffusion model calculation.
 
 #include "DiffusionModel.h"
@@ -10,11 +9,11 @@
 // ROOT includes
 #include "TTreeReader.h"
 #include "TTreeReaderValue.h"
+#include "TRandom.h"
 
 // C++ includes
 #include <iostream>
 #include <cmath>
-#include <random>
 #include <vector>
 #include <tuple>
 
@@ -40,8 +39,8 @@ namespace gramsdetsim {
       options->GetOption("TransverseDiffusion",   m_TransverseDiffusion);
 
       options->GetOption("ElectronClusterSize",   m_ElectronClusterSize);
-      options->GetOption("pixel_plane_offset",    m_pixel_plane_offset);
-      options->GetOption("DriftVel",        m_DriftVel);
+      options->GetOption("ReadoutPlaneOffset",    m_readout_plane_offset);
+      options->GetOption("ElectronDriftVelocity", m_DriftVel);
       options->GetOption("MinNumberOfElCluster",  m_MinNumberOfElCluster);
 
       m_RecipDriftVel = 1.0 / m_DriftVel;
@@ -82,21 +81,10 @@ namespace gramsdetsim {
   // Note that the "a_" prefix is a convention to remind us that the
   // variable was an argument in this method.
 
+  // Also note that this method returns a tuple of six vectors.
+
 std::tuple<std::vector<double>, std::vector<double>, std::vector<double>, std::vector<double>, std::vector<double>, std::vector<double> >
   DiffusionModel::Calculate(double a_energy) {
-
-    double z_mean = 0.5 * (**m_zStart + **m_zEnd);
-    //A/I z_offset should be defined later;
-    double DriftDistance = m_pixel_plane_offset - z_mean;
-    double mean_TDrift = std::abs(DriftDistance * m_RecipDriftVel);
-    double SqrtT = std::sqrt(mean_TDrift);
-
-    double fLDiff_const = std::sqrt(2. * m_LongitudinalDiffusion);
-    double fTDiff_const = std::sqrt(2. * m_TransverseDiffusion);
-
-    double LDiffSig = (1.0e-3 * SqrtT) * fLDiff_const;
-    double TDiffSig = (1.0e-3 * SqrtT) * fTDiff_const;
-
 
     // The TTreeReaderValue variables are "in sync" with the
     // TTreeReader. So as the main routine uses TTreeReader to go
@@ -107,8 +95,22 @@ std::tuple<std::vector<double>, std::vector<double>, std::vector<double>, std::v
     // This is a tricky part: Normally a TTreeReaderValue acts like a
     // pointer, e.g., if you have "TTreeReaderValue<double> energy"
     // then you refer to its value as "*energy". But in this routine,
-    // m_xStart (for example) is a pointer itself, so to get its value
-    // you need "**m_xStart" (a pointer to a pointer). 
+    // m_zStart (for example) is a pointer itself, so to get its value
+    // you need "**m_zStart" (a pointer to a pointer). 
+
+    double z_mean = 0.5 * (**m_zStart + **m_zEnd);
+    //A/I z_offset should be defined later;
+    double DriftDistance = m_readout_plane_offset - z_mean;
+    double mean_TDrift = std::abs(DriftDistance * m_RecipDriftVel);
+    double SqrtT = std::sqrt(mean_TDrift);
+
+    double fLDiff_const = std::sqrt(2. * m_LongitudinalDiffusion);
+    double fTDiff_const = std::sqrt(2. * m_TransverseDiffusion);
+
+    double LDiffSig = (1.0e-3 * SqrtT) * fLDiff_const;
+    double TDiffSig = (1.0e-3 * SqrtT) * fTDiff_const;
+
+    // Break up the ionization energy into separate electron clusters.
 
     const double nElectrons = a_energy * m_MeVToElectrons;
     double electronclsize = m_ElectronClusterSize;
@@ -119,7 +121,6 @@ std::tuple<std::vector<double>, std::vector<double>, std::vector<double>, std::v
         if (electronclsize < 1.0) { electronclsize = 1.0; }
         nClus = (int)std::ceil(nElectrons / electronclsize);
     }
-
 
     // Empty and resize the electron-cluster vectors.
     m_LongDiff.clear();
@@ -144,45 +145,35 @@ std::tuple<std::vector<double>, std::vector<double>, std::vector<double>, std::v
         m_nEnDiff[xx] = 0.;
     }
 
-    std::random_device seed_gen;
-    std::default_random_engine engine(seed_gen());
-
     double averagetransversePos1  = 0.5 * (**m_xStart + **m_xEnd);
     double averagetransversePos2  = 0.5 * (**m_yStart + **m_yEnd);
     double averagelongitudinalPos = 0.5 * (**m_zStart + **m_zEnd);
 
-    std::normal_distribution<> dist_gauss_LongDiff(0.0,  LDiffSig);
-    std::normal_distribution<> dist_gauss_TransDiff1(averagetransversePos1, TDiffSig);
-    std::normal_distribution<> dist_gauss_TransDiff2(averagetransversePos2, TDiffSig);
-
-
-    if (TDiffSig > 0.0){
-        for(int i=0;i<nClus;i++){
-            m_TransDiff1[i] = dist_gauss_TransDiff1(engine);
-            m_TransDiff2[i] = dist_gauss_TransDiff2(engine);
+    // Transverse diffusion of the electron clusters.
+    if (TDiffSig > 0.0) {
+        for(int i=0;i<nClus;i++) {
+	  m_TransDiff1[i] = gRandom->Gaus(averagetransversePos1, TDiffSig);
+	  m_TransDiff2[i] = gRandom->Gaus(averagetransversePos2, TDiffSig);
         }
     }
-    else{
+    else {
         m_TransDiff1.assign(nClus, averagetransversePos1);
         m_TransDiff2.assign(nClus, averagetransversePos2);
     }
 
-    if (LDiffSig > 0.0){
+    // Longitudinal diffusion of the electron clusters. 
+    if (LDiffSig > 0.0) {
         double sample_sigL = 0.0;
 
-        for(int i=0;i<nClus;i++){
-            sample_sigL = dist_gauss_LongDiff(engine);
-            m_ArrivalTime[i] = (DriftDistance + sample_sigL) * m_RecipDriftVel;
-            m_LongDiff[i]  = averagelongitudinalPos + sample_sigL;
+        for(int i=0;i<nClus;i++) {
+	  sample_sigL = gRandom->Gaus(0.0,  LDiffSig);
+	  m_ArrivalTime[i] = (DriftDistance + sample_sigL) * m_RecipDriftVel;
+	  m_LongDiff[i]  = averagelongitudinalPos + sample_sigL;
         }   
     }
-    else{
+    else {
         m_LongDiff.assign(nClus, DriftDistance);
         m_ArrivalTime.assign(nClus, DriftDistance * m_RecipDriftVel);
-    }
-
-    
-    for (int k = 0; k < nClus; ++k) {
     }
 
     // energy, xyzt

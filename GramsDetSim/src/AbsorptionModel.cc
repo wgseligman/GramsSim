@@ -1,5 +1,4 @@
-// 26-Nov-2021 WGS
-
+// 21-Sep-2022 Satoshi Takashima, William Seligman
 // Implement a absorption model calculation.
 
 #include "AbsorptionModel.h"
@@ -30,9 +29,9 @@ namespace gramsdetsim {
     options->GetOption("verbose",m_verbose);
     options->GetOption("debug",m_debug);
 
-    options->GetOption("electronLifeTimeCorr",m_LifeTimeCorr_const);
-    options->GetOption("electronDriftVelocity", m_DriftVel);
-    options->GetOption("readout_plane_offset", m_readout_plane_offset);
+    options->GetOption("ElectronLifeTimeCorr",m_LifeTimeCorr_const);
+    options->GetOption("ElectronDriftVelocity", m_DriftVel);
+    options->GetOption("ReadoutPlaneOffset", m_readout_plane_offset);
 
     if (m_verbose) {
       std::cout << "gramsdetsim::AbsorptionModel - "

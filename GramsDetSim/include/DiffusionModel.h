@@ -57,10 +57,10 @@ namespace gramsdetsim {
     double m_MeVToElectrons;
     double m_LongitudinalDiffusion;
     double m_TransverseDiffusion;
-    double m_pixel_plane_offset;
-    double m_ElectronClusterSize;
+    double m_readout_plane_offset;
     double m_DriftVel;
     double m_RecipDriftVel;
+    int m_ElectronClusterSize;
     int m_MinNumberOfElCluster;
 
     std::vector<Double_t> m_LongDiff;

@@ -413,7 +413,7 @@
 
     <!-- The distance between the readout plane in the detector from
          the anode. -->
-    <option name="readout_plane_offset" value="2.17" type="double"
+    <option name="ReadoutPlaneOffset" value="2.17" type="double"
         desc="offset of readout from the anode"/>
 
     <!-- Options associated with modeling recombination effects. -->
@@ -462,10 +462,10 @@
     <option name="absorption" value="true" type="boolean" 
 	    desc="model absorption effects"/>
 
-    <option name="electronLifeTimeCorr" value="50000.0" type="double"
+    <option name="ElectronLifeTimeCorr" value="50000.0" type="double"
         desc="mean life of electrons (ns)"/>
 
-    <option name="electronDriftVelocity" value="0.01" type="double"
+    <option name="ElectronDriftVelocity" value="0.01" type="double"
         desc="drift velocity (cm/ns)"/>
 
     Options associated with the diffusion model.
@@ -483,7 +483,7 @@
 
     The number of electrons in a cluster. The clusters are drifted in
     the LAr, as opposed to drifting each electron individually.
-    <option name="ElectronClusterSize" value="5.0" type="double"
+    <option name="ElectronClusterSize" value="5" type="int"
         desc="number of electrons in a cluster"/>
 
     <option name="MinNumberOfElCluster" value="2.0" type="double"
