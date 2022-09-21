@@ -32,7 +32,7 @@ individual parameters.
 
 ### Absorption
 
-### Pair production
+### Diffusion
 
 ## Program options
 
