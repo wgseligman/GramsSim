@@ -1,5 +1,4 @@
-// 26-Nov-2021 WGS
-
+// 21-Sep-2022 Satoshi Takashima, Luke Zerrer, William Seligman
 // Implement a recombination model calculation.
 
 #include "RecombinationModel.h"
@@ -14,6 +13,7 @@
 // C++ includes
 #include <iostream>
 #include <cmath>
+#include <numeric>
 
 namespace gramsdetsim {
 
@@ -25,33 +25,26 @@ namespace gramsdetsim {
     // from options.xml and the command line.
     auto options = util::Options::GetInstance();
 
-    // Fetch the options we want from the class. 
-
+    // Fetch the options we want via the options class.. 
     options->GetOption("verbose",m_verbose);
     options->GetOption("debug",m_debug);
 
     options->GetOption("field",m_field);
-    options->GetOption("a",m_a);
-    options->GetOption("b",m_b);
+    options->GetOption("alpha",m_alpha);
+    options->GetOption("beta",m_beta);
     options->GetOption("rho",m_rho);
 
-    options->GetOption("recom_model", m_recom_model);
+    options->GetOption("recombination_model", m_recom_model);
     options->GetOption("A_B", m_A_B);
     options->GetOption("kB", m_kB);
 
     if (m_verbose) {
       std::cout << "gramsdetsim::RecombinationModel - "
 		<< "field= " << m_field
-		<< " a= " << m_a
-		<< " b= " << m_b
+		<< " a= " << m_alpha
+		<< " b= " << m_beta
 		<< " rho= " << m_rho << std::endl;
     }
-
-    // The above variables are in Geant4 units (MeV, mm, ns). But the
-    // recombination constants use cm.
-    m_b *= 10.0;
-
-    m_kB *= 10.0;
 
     // These are the columns in the ntuple that we'll require for our
     // calculation. 
@@ -94,50 +87,73 @@ namespace gramsdetsim {
     // m_xStart (for example) is a pointer itself, so to get its value
     // you need "**m_xStart" (a pointer to a pointer). 
 
-    // Takes input of the change in energy across the distance travelled
-    // in a single step by the particle source for this equation is eqn
-    // 2.4 in the 2013 paper "A study of electron recombination using
-    // highly ionizing particles in the ArgoNeuT Liquid ArgonTPC". This
-    // modified box model is used because it works for all ranges of
-    // dE/dx as well as not having the technical difficulties that arise
-    // when applying the birks model to highly ionizing particles.
+    // Physics: The following models come from "A study of electron
+    // recombination using highly ionizing particles in the ArgoNeuT
+    // Liquid Argon TPC", arXiv:1306.1712
 
+    // The models take as input of the change in energy across the
+    // distance traveled in a single step by the particle.
     double dx = std::sqrt( std::pow(**m_xStart - **m_xEnd, 2) + 
 			   std::pow(**m_yStart - **m_yEnd, 2) + 
 			   std::pow(**m_zStart - **m_zEnd, 2) );
     double dEdx = a_energy / dx;
 
-    
+    // It's possible for dx to be so small that the value of dEdx
+    // becomes NaN (for "not a number"). If this happens, skip the
+    // calculation.
+    if ( isnan(dEdx) ) 
+      return (0.0);
+
     // The following calculations are based off of the modified box
     // model used in the ICARUS experiment, with constant values taken
-    // from the Brookhaven page on liquid argon TPCs. Be very specific in
-    // where this equation is from (what paper), what it is finding,
-    // what it is talking about.
+    // from the Brookhaven page on liquid argon TPCs.
 
     double effect = 1.0;
 
-    if (m_recom_model==0){
-        double sigma = (m_b * dEdx) / (m_field * m_rho);
-        effect = std::max(std::log(m_a + sigma) / sigma, 1.0e-6);
+    // Calculate the effect based on our choice of recombination
+    // model.
+    switch (m_recom_model) {
 
-        if (m_debug)
-          std::cout << "gramsdetsim::RecombinationModel - "
-	    	<< "dx= " << dx
-	    	<< " dEdx= " << dEdx
-	    	<< " sigma= " << sigma
-	    	<< " effect= " << effect << std::endl;
+    case 0 :
+      // This modified box model works for all ranges of dE/dx as well
+      // as not having the technical difficulties that arise when
+      // applying the Birk's model to highly ionizing particles.
+      {
+	double sigma = (m_beta * dEdx) / (m_field * m_rho);
+	effect = std::max(std::log(m_alpha + sigma) / sigma, 1.0e-6);
+	
+	if (m_debug)
+	  std::cout << "gramsdetsim::RecombinationModel - "
+		    << "dx= " << dx
+		    << " dEdx= " << dEdx
+		    << " sigma= " << sigma
+		    << " effect= " << effect << std::endl;
+      }
+      break;
 
-    }   else if(m_recom_model==1){
-        effect = m_A_B * 1.0 / (1 + m_kB * dEdx / (m_field * m_rho));
+    case 1 :
+      {
+	effect = m_A_B * 1.0 / (1 + m_kB * dEdx / (m_field * m_rho));
 
-        if (m_debug)
-          std::cout << "gramsdetsim::RecombinationModel - "
-	    	<< "dx= " << dx
-	    	<< " dEdx= " << dEdx
-	    	<< " effect= " << effect << std::endl;
-    }
+	if (m_debug)
+	  std::cout << "gramsdetsim::RecombinationModel - "
+		    << "dx= " << dx
+		    << " dEdx= " << dEdx
+		    << " effect= " << effect << std::endl;
+      }
+      break;
 
-    return a_energy * effect;
-  }
+    default :
+      {
+	std::cerr << "File " << __FILE__ << " Line " << __LINE__ << " " << std::endl
+		  << "gramsdetsim::RecombinationModel: Invalid value " << m_recom_model 
+		  << " for recombination_model"
+		  << std::endl;
+	exit(EXIT_FAILURE);
+      }
+    } // switch on recombination model
+
+  return a_energy * effect;
+}
 
 } // namespace gramsdetsim

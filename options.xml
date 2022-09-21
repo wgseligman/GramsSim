@@ -412,31 +412,32 @@
     -->
 
     Options associated with modeling recombination effects.
+    Reference: "A study of electron recombination using highly
+    ionizing particles in the ArgoNeuT Liquid Argon TPC",
+    arXiv:1306.1712
     <option name="recombination" value="true" type="boolean" 
 	    desc="model recombination effects"/>
 
-    <option name="absorption" value="true" type="boolean" 
-	    desc="model absorption effects"/>
-
-    <option name="diffusion" value="true" type="boolean"
-        desc="model diffusion effects"/>
-
-    Electric field on the cloud of ionized particles, varies with
-    position due to space charge, which we don't have a model for yet.
+    Electric field in the LArTPC, which affects the cloud of ionized
+    particles. This varies with position due to space charge, which we
+    don't have a model for yet.
     <option name="field"  value="1.0" type="double"
 	    desc="electric field [kV/cm]"/>
 
-    <option name="recom_model" value="0" type="integer"
-        desc="reconbination model" />
+    Choice of recombination model:
+    0 = Modified Box Model
+    1 = Birk's Model
+    <option name="recombination_model" value="0" type="integer"
+        desc="recombination model" />
 
-    Average of the a value for 20 to 90 degrees angle bins for proton
+    Average of the alpha value for 20 to 90 degrees angle bins for proton
     sample detection in ArgoNeuT, unitless value.
-    <option name="a" value="0.930" type="double"
+    <option name="alpha" value="0.930" type="double"
 	    desc="recombination constant"/>
 
-    Average of the B value for 20 to 90 degrees angle bins for proton
+    Average of the beta value for 20 to 90 degrees angle bins for proton
     sample detection in ArgoNeuT, units of (kV*g)/(MeV*cm^3)
-    <option name="b" value="0.212" type="double"
+    <option name="beta" value="0.212" type="double"
 	    desc="recombination constant [(kV*g)/(MeV*cm^3)]"/>
 
     Density of liquid argon, from Brookhaven LAr page, units of (g/cm^3)
@@ -448,6 +449,14 @@
 
     <option name="kB" value="0.052" type="double"
         desc="factor for Birk's model [(kV/cm)(g/cm^2)/MeV]"/>
+
+    Options associated with the absorption model.
+    <option name="absorption" value="true" type="boolean" 
+	    desc="model absorption effects"/>
+
+    Options associated with the diffusion model.
+    <option name="diffusion" value="true" type="boolean"
+        desc="model diffusion effects"/>
 
     <option name="LifeTimeCorr_const" value="50000.0" type="double"
         desc="mean life of electrons (ns)"/>
@@ -467,8 +476,10 @@
     <option name="ElectronClusterSize" value="5.0" type="double"
         desc=""/>
 
-    <option name="pixel_plane_offset" value="2.17" type="double"
-        desc="offset of a pixel readout plane"/>
+    <!-- The distance between the readout plane in the detector from
+         the anode. -->
+    <option name="readout_plane_offset" value="2.17" type="double"
+        desc="offset of readout from the anode"/>
 
     <option name="MinNumberOfElCluster" value="2.0" type="double"
         desc=""/>

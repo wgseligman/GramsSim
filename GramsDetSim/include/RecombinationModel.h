@@ -1,5 +1,4 @@
-// 26-Nov-2021 WGS 
-
+// 21-Sep-2022 Satoshi Takashima, Luke Zerrer, William Seligman
 // Implement a model of recombination in the LAr for the GRAMS
 // detector.
 
@@ -52,8 +51,8 @@ namespace gramsdetsim {
     // The constants required for the calculation. We'll get those as
     // program options.
     double m_field;
-    double m_a;
-    double m_b;
+    double m_alpha;
+    double m_beta;
     double m_rho;
 
     int m_recom_model;

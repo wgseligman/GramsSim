@@ -1,6 +1,6 @@
 // gramsdetsim.cc
 // Take the hit output from GramsG4 and apply detector-response effects.
-// 25-Nov-2011 William Seligman
+// 21-Sep-2022 Satoshi Takashima and William Seligman
 
 // Our function(s) for the detector response.
 #include "RecombinationModel.h"
@@ -27,12 +27,6 @@ int main(int argc,char **argv)
   // Initialize the options from the XML file and the
   // command line. Make sure this happens first!
   auto options = util::Options::GetInstance();
-
-  // Here, we omit the third argument to ParseOptions as an example:
-  // the ParseOptions method will look for the program name in argv[0]
-  // and search for the tag-block in the XML file with that name for
-  // this program's options. See options.xml and/or util/README.md to
-  // see how this works.
   auto result = options->ParseOptions(argc, argv, "gramsdetsim");
 
   // Abort if we couldn't parse the job options.
@@ -43,13 +37,12 @@ int main(int argc,char **argv)
     exit(EXIT_FAILURE);
   }
 
-  // We may not be debugging this at this moment, but if we
-  // want to use the debug flag later in this routine,
-  // let's have it ready.
+  // Fetch the debug flag if it's on the command line.
   bool debug;
   options->GetOption("debug",debug);
 
-  // Check for help message.
+  // If the user included "-h" or "--help" on the command line, print
+  // a help message and exit.
   bool help;
   options->GetOption("help",help);
   if (help) {
@@ -71,18 +64,17 @@ int main(int argc,char **argv)
   std::string inputNtupleName;
   options->GetOption("inputntuple",inputNtupleName);
 
-
   if (verbose)
     std::cout << "gramsdetsim: input file = '" << inputFileName
 	      << "', input ntuple = '" << inputNtupleName
 	      << "'" << std::endl;
 
-  double m_pixel_plane_offset;
+  double m_readout_plane_offset;
   double m_DriftVel;
   double m_MeVToElectrons;
-  options->GetOption("pixel_plane_offset",  m_pixel_plane_offset);  
-  options->GetOption("DriftVel",            m_DriftVel);
-  options->GetOption("MeVToElectrons",      m_MeVToElectrons);
+  options->GetOption("readout_plane_offset", m_readout_plane_offset);  
+  options->GetOption("DriftVel",             m_DriftVel);
+  options->GetOption("MeVToElectrons",       m_MeVToElectrons);
 
   // Open the input file. For historical reasons, ROOT methods can't
   // handle the type std::string, so we use the c_str() method to
@@ -152,10 +144,13 @@ int main(int argc,char **argv)
   Int_t run;
   Int_t event;
   Int_t trackID;
-  Int_t pDGCode;
-  Int_t numPhotons;
+  Int_t pdgCode;
   Int_t identifier;
 
+  // In anticipation of future work, write out per-hit values as
+  // vectors. (It's possible that we'll want to restructure the input
+  // as one line per track, with each hit as an entry in a vector.)
+  std::vector<Int_t>    numPhotons;
   std::vector<Double_t> energyAtAnode;
   std::vector<Double_t> electronAtAnode;
   std::vector<Double_t> xPosAtAnode;
@@ -163,24 +158,17 @@ int main(int argc,char **argv)
   std::vector<Double_t> zPosAtAnode;
   std::vector<Double_t> timeAtAnode;
 
-  std::vector<Double_t>* penergyAtAnode = 0;
-  std::vector<Double_t>* pelectronAtAnode = 0;
-  std::vector<Double_t>* pxPosAtAnode = 0;
-  std::vector<Double_t>* pyPosAtAnode = 0;
-  std::vector<Double_t>* pzPosAtAnode = 0;
-  std::vector<Double_t>* ptimeAtAnode = 0;
-
   outputNtuple->Branch("Run",           &run);
   outputNtuple->Branch("Event",         &event);
   outputNtuple->Branch("TrackID",       &trackID);
-  outputNtuple->Branch("PDGCode",       &pDGCode);
+  outputNtuple->Branch("PDGCode",       &pdgCode);
   outputNtuple->Branch("numPhotons",    &numPhotons);
-  outputNtuple->Branch("energy",        &penergyAtAnode);
-  outputNtuple->Branch("numElectrons",  &pelectronAtAnode);
-  outputNtuple->Branch("x",             &pxPosAtAnode);
-  outputNtuple->Branch("y",             &pyPosAtAnode);
-  outputNtuple->Branch("z",             &pzPosAtAnode);
-  outputNtuple->Branch("timeAtAnode",   &ptimeAtAnode);
+  outputNtuple->Branch("energy",        &energyAtAnode);
+  outputNtuple->Branch("numElectrons",  &electronAtAnode);
+  outputNtuple->Branch("x",             &xPosAtAnode);
+  outputNtuple->Branch("y",             &yPosAtAnode);
+  outputNtuple->Branch("z",             &zPosAtAnode);
+  outputNtuple->Branch("timeAtAnode",   &timeAtAnode);
   outputNtuple->Branch("identifier",    &identifier);
 
   // Are we using this particular model?
@@ -238,10 +226,10 @@ int main(int argc,char **argv)
     run = *Run;
     event = *Event;
     trackID = *TrackID;
-    pDGCode = *PDGCode;
-    numPhotons = *NumPhotons;
+    pdgCode = *PDGCode;
     identifier = *Identifier;
     
+    numPhotons.clear();
     energyAtAnode.clear();
     electronAtAnode.clear();
     xPosAtAnode.clear();
@@ -251,27 +239,19 @@ int main(int argc,char **argv)
 
     if (debug)
       std::cout << "gramsdetsim: at entry " << reader->GetCurrentEntry() << std::endl;
-    
-    // Start with the approximation that the energy at the anode will
-    // be the same as the hit energy, then apply corrections to it.
-    
+
     // Remember that given the TTreeReaderValue definitions above, a
     // variable read from the input ntuple must be accessed like a
     // pointer.
     
-    energyAtAnode.resize(1);
-    electronAtAnode.resize(1);
-    xPosAtAnode.resize(1);
-    yPosAtAnode.resize(1);
-    zPosAtAnode.resize(1);
-    timeAtAnode.resize(1);
+    numPhotons.push_back(*NumPhotons);
     energy_sca = *energy;
-    energyAtAnode[0]   = energy_sca;
-    electronAtAnode[0] = energy_sca * m_MeVToElectrons;
-    xPosAtAnode[0]     = 0.5 * (*xStart + *xEnd);
-    yPosAtAnode[0]     = 0.5 * (*yStart + *yEnd);
-    zPosAtAnode[0]     = 0.5 * (*zStart + *zEnd);
-    timeAtAnode[0]     = (m_pixel_plane_offset - zPosAtAnode[0]) / m_DriftVel;
+    energyAtAnode.push_back(energy_sca);
+    electronAtAnode.push_back(energy_sca * m_MeVToElectrons);
+    xPosAtAnode.push_back(0.5 * (*xStart + *xEnd));
+    yPosAtAnode.push_back(0.5 * (*yStart + *yEnd));
+    zPosAtAnode.push_back(0.5 * (*zStart + *zEnd));
+    timeAtAnode.push_back((m_readout_plane_offset - zPosAtAnode[0]) / m_DriftVel);
 
     if (debug)
         std::cout << "gramsdetsim: before model corrections, energyAtAnode=" 
@@ -313,14 +293,6 @@ int main(int argc,char **argv)
     if (debug)
       std::cout << "gramsdetsim: after diffusion model corrections, energyAtAnode.size()=" 
 	  	<< energyAtAnode.size() << std::endl;
-
-    penergyAtAnode   = &energyAtAnode;
-    pelectronAtAnode = &electronAtAnode;
-    pxPosAtAnode     = &xPosAtAnode;
-    pyPosAtAnode     = &yPosAtAnode;
-    pzPosAtAnode     = &zPosAtAnode;
-    ptimeAtAnode     = &timeAtAnode;
-
 
     // After all the model effects have been applied, write the
     // detector-response value(s).
