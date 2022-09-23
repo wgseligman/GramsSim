@@ -57,20 +57,21 @@ namespace gramsdetsim {
     double m_MeVToElectrons;
     double m_LongitudinalDiffusion;
     double m_TransverseDiffusion;
-    double m_readout_plane_offset;
+    double m_readout_plane_coord;
     double m_DriftVel;
     double m_RecipDriftVel;
     int m_ElectronClusterSize;
     int m_MinNumberOfElCluster;
 
-    std::vector<Double_t> m_LongDiff;
-    std::vector<Double_t> m_TransDiff1;
-    std::vector<Double_t> m_TransDiff2;
-    std::vector<Double_t> m_nElDiff;
-    std::vector<Double_t> m_nEnDiff;
-    std::vector<Double_t> m_ArrivalTime;
-    //std::vector<Doublt_t> m_DriftClusterPos;
-
+    // The output arrays from this model. These vectors contain one
+    // entry for each electron cluster. Units ultimately come from the
+    // options XML file. 
+    std::vector<Double_t> m_LongDiff;    // Amount of longitudinal diffusion.
+    std::vector<Double_t> m_TransDiff1;  // Amount of cluster diffusion along the "1-axis"
+    std::vector<Double_t> m_TransDiff2;  // Amount of cluster diffusion along the "2-axis"
+    std::vector<Double_t> m_nElDiff;     // Number of electrons in each cluster.
+    std::vector<Double_t> m_nEnDiff;     // Amount of energy in each cluster. 
+    std::vector<Double_t> m_ArrivalTime; // The arrival time of a cluster at the anode.
 
     // Save the verbose and debug options.
     bool m_verbose;

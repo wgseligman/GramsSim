@@ -1,6 +1,9 @@
 // 21-Sep-2022 Satoshi Takashima, William Seligman
 // Implement a diffusion model calculation.
 
+// Most of this code originally came from LArSoft:
+// https://github.com/LArSoft/larsim/blob/develop/larsim/ElectronDrift/SimDriftElectrons_module.cc
+
 #include "DiffusionModel.h"
 
 // For processing command-line and XML file options.
@@ -39,7 +42,7 @@ namespace gramsdetsim {
       options->GetOption("TransverseDiffusion",   m_TransverseDiffusion);
 
       options->GetOption("ElectronClusterSize",   m_ElectronClusterSize);
-      options->GetOption("ReadoutPlaneOffset",    m_readout_plane_offset);
+      options->GetOption("ReadoutPlaneCoord",     m_readout_plane_coord);
       options->GetOption("ElectronDriftVelocity", m_DriftVel);
       options->GetOption("MinNumberOfElCluster",  m_MinNumberOfElCluster);
 
@@ -99,23 +102,30 @@ std::tuple<std::vector<double>, std::vector<double>, std::vector<double>, std::v
     // you need "**m_zStart" (a pointer to a pointer). 
 
     double z_mean = 0.5 * (**m_zStart + **m_zEnd);
-    //A/I z_offset should be defined later;
-    double DriftDistance = m_readout_plane_offset - z_mean;
+
+    double DriftDistance = m_readout_plane_coord - z_mean;
     double mean_TDrift = std::abs(DriftDistance * m_RecipDriftVel);
     double SqrtT = std::sqrt(mean_TDrift);
 
     double fLDiff_const = std::sqrt(2. * m_LongitudinalDiffusion);
     double fTDiff_const = std::sqrt(2. * m_TransverseDiffusion);
 
-    double LDiffSig = (1.0e-3 * SqrtT) * fLDiff_const;
-    double TDiffSig = (1.0e-3 * SqrtT) * fTDiff_const;
+    double LDiffSig = SqrtT * fLDiff_const;
+    double TDiffSig = SqrtT * fTDiff_const;
 
     // Break up the ionization energy into separate electron clusters.
 
+    // Compute total number of electrons.
     const double nElectrons = a_energy * m_MeVToElectrons;
     double electronclsize = m_ElectronClusterSize;
 
+    // Compute the number of electron clusters. This will depend on
+    // m_ElectronClusterSize, the number of electrons per cluster,
+    // which comes from the options XML file.
     int nClus = (int)std::ceil(nElectrons / m_ElectronClusterSize);
+
+    // Adjust values if the number of electron cluster calculated
+    // above is less than the user-supplied minimum number.
     if (nClus < m_MinNumberOfElCluster) {
         electronclsize = nElectrons / m_MinNumberOfElCluster;
         if (electronclsize < 1.0) { electronclsize = 1.0; }
@@ -136,8 +146,15 @@ std::tuple<std::vector<double>, std::vector<double>, std::vector<double>, std::v
     m_nEnDiff.resize(nClus);
     m_ArrivalTime.resize(nClus);
 
+    // m_nElDiff is the number of electrons in each cluster. For the
+    // most part, this will be value of electronclsize. However, the
+    // last entry in the array will be the "leftover" electrons after
+    // dividing the total number of electrons by the electron-cluster
+    // size.
     m_nElDiff.back() = nElectrons - (nClus - 1) * electronclsize;
 
+    // m_nEnDiff is the amount of energy in each cluster. Distribute
+    // the total ionization energy of this hit between the clusters.
     for (size_t xx = 0; xx < m_nElDiff.size(); ++xx) {
       if (nElectrons > 0)
         m_nEnDiff[xx] = a_energy / nElectrons * m_nElDiff[xx];
@@ -145,6 +162,12 @@ std::tuple<std::vector<double>, std::vector<double>, std::vector<double>, std::v
         m_nEnDiff[xx] = 0.;
     }
 
+    // Note that we're drifting along the z-axis, so the cluster
+    // positions on the 1 and 2 axes (the x and y axes) are diffused
+    // using "transverse" rules, while the cluster position on the
+    // z-axis is drifting with "longitudinal" diffusion. For other
+    // detector setups or coordinate systems, the following code must
+    // be adjusted.
     double averagetransversePos1  = 0.5 * (**m_xStart + **m_xEnd);
     double averagetransversePos2  = 0.5 * (**m_yStart + **m_yEnd);
     double averagelongitudinalPos = 0.5 * (**m_zStart + **m_zEnd);
@@ -176,8 +199,14 @@ std::tuple<std::vector<double>, std::vector<double>, std::vector<double>, std::v
         m_ArrivalTime.assign(nClus, DriftDistance * m_RecipDriftVel);
     }
 
-    // energy, xyzt
-    return std::make_tuple(m_nEnDiff, m_nElDiff, m_TransDiff1, m_TransDiff2, m_LongDiff, m_ArrivalTime);
+    // Return the vectors containing the per-cluster values for (units
+    // defined in the options XML file):
+    return std::make_tuple(m_nEnDiff,      // Number of electrons in each cluster.
+			   m_nElDiff,      // Amount of energy in each cluster. 
+			   m_TransDiff1,   // Amount of cluster diffusion along the "1-axis"
+			   m_TransDiff2,   // Amount of cluster diffusion along the "2-axis"
+			   m_LongDiff,     // Amount of longitudinal diffusion. 
+			   m_ArrivalTime); // The arrival time of a cluster at the anode.
   }
 
 } // namespace gramsdetsim

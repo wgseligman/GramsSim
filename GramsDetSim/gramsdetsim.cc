@@ -80,10 +80,10 @@ int main(int argc,char **argv)
   gRandom->SetSeed(seed);
 
   // Parameters for computing hit projections onto the readout plane.
-  double m_readout_plane_offset;
+  double m_readout_plane_coord;
   double m_DriftVel;
   double m_MeVToElectrons;
-  options->GetOption("ReadoutPlaneOffset",    m_readout_plane_offset);  
+  options->GetOption("ReadoutPlaneCoord",    m_readout_plane_coord);  
   options->GetOption("ElectronDriftVelocity", m_DriftVel);
   options->GetOption("MeVToElectrons",        m_MeVToElectrons);
 
@@ -255,13 +255,15 @@ int main(int argc,char **argv)
     if (debug)
       std::cout << "gramsdetsim: at entry " << reader->GetCurrentEntry() << std::endl;
     
+    // Set up some preliminary default values, which will be recalculated
+    // below. 
     energy_sca = *energy;
     energyAtAnode.push_back(energy_sca);
     electronAtAnode.push_back(energy_sca * m_MeVToElectrons);
     xPosAtAnode.push_back(0.5 * (*xStart + *xEnd));
     yPosAtAnode.push_back(0.5 * (*yStart + *yEnd));
     zPosAtAnode.push_back(0.5 * (*zStart + *zEnd));
-    timeAtAnode.push_back((m_readout_plane_offset - zPosAtAnode[0]) / m_DriftVel);
+    timeAtAnode.push_back((m_readout_plane_coord - zPosAtAnode[0]) / m_DriftVel);
 
     if (debug)
         std::cout << "gramsdetsim: before model corrections, energyAtAnode=" 
@@ -296,6 +298,8 @@ int main(int argc,char **argv)
     
     //diffusion
     if ( doDiffusion  &&  ! isnan(energy_sca) ) {
+      // This an "STL trick" to return a number of different vectors
+      // at once from a single method.
       std::tie(energyAtAnode, electronAtAnode, xPosAtAnode, yPosAtAnode, zPosAtAnode, timeAtAnode)
 	= diffusionModel->Calculate(energy_sca);
     }

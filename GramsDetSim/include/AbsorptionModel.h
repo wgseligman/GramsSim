@@ -48,7 +48,7 @@ namespace gramsdetsim {
     double m_LifeTimeCorr_const;
     double m_DriftVel;
     double m_RecipDriftVel;
-    double m_readout_plane_offset;
+    double m_readout_plane_coord;
 
     // Save the verbose and debug options.
     bool m_verbose;

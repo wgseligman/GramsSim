@@ -406,15 +406,17 @@
          TTrees" in the ROOT documentation.  -->
     <option name="outputntuple" value="DetSim" type="string" desc="output ntuple"/>
 
-    <!-- Physics-model options. Note that the units associated with
-         these constants should be consistent with the "TimeUnit",
+    <!-- Physics-model options. 
+
+         IMPORTANT: Note that the units associated with these
+         constants should be consistent with the "TimeUnit",
          "LengthUnit", and "EnergyUnit" options defined above.
     -->
 
-    <!-- The distance between the readout plane in the detector from
-         the anode. -->
-    <option name="ReadoutPlaneOffset" value="2.17" type="double"
-        desc="offset of readout from the anode"/>
+    <!-- The location of the readout plane in the detector coordinate
+         system. -->
+    <option name="ReadoutPlaneCoord" value="0" type="double"
+        desc="location of readout plane"/>
 
     <!-- Options associated with modeling recombination effects. -->
 
@@ -458,7 +460,9 @@
     <option name="birks_kB" value="0.052" type="double"
         desc="factor for Birk's model [(kV/cm)(g/cm^2)/MeV]"/>
 
-    Options associated with the absorption model.
+    Options associated with the absorption model. As of Sep-2022, all
+    these values are preliminary.
+
     <option name="absorption" value="true" type="boolean" 
 	    desc="model absorption effects"/>
 
@@ -468,7 +472,11 @@
     <option name="ElectronDriftVelocity" value="0.01" type="double"
         desc="drift velocity (cm/ns)"/>
 
-    Options associated with the diffusion model.
+    Options associated with the diffusion model. These values come
+    from MicroBooNE:
+    https://github.com/LArSoft/larsim/blob/develop/larsim/Simulation/simulationservices.fcl
+    https://github.com/MicroBooNE/uboonecode/blob/develop/uboone/Simulation/simulationservices_microboone.fcl
+
     <option name="diffusion" value="true" type="boolean"
         desc="model diffusion effects"/>
 
@@ -483,11 +491,11 @@
 
     The number of electrons in a cluster. The clusters are drifted in
     the LAr, as opposed to drifting each electron individually.
-    <option name="ElectronClusterSize" value="5" type="int"
+    <option name="ElectronClusterSize" value="20" type="int"
         desc="number of electrons in a cluster"/>
 
-    <option name="MinNumberOfElCluster" value="2.0" type="double"
-        desc=""/>
+    <option name="MinNumberOfElCluster" value="0" type="integer"
+        desc="minimum number of clusters per hit"/>
 
     The direction of the electron drift (x, y, or z).
     x:0 y:1 z:2

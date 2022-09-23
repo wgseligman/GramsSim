@@ -31,7 +31,7 @@ namespace gramsdetsim {
 
     options->GetOption("ElectronLifeTimeCorr",m_LifeTimeCorr_const);
     options->GetOption("ElectronDriftVelocity", m_DriftVel);
-    options->GetOption("ReadoutPlaneOffset", m_readout_plane_offset);
+    options->GetOption("ReadoutPlaneCoord", m_readout_plane_coord);
 
     if (m_verbose) {
       std::cout << "gramsdetsim::AbsorptionModel - "
@@ -74,8 +74,8 @@ namespace gramsdetsim {
     // you need "**m_zStart" (a pointer to a pointer). 
 
     double z_mean = 0.5 * ( **m_zStart + **m_zEnd );
-    //A/I z_offset should be defined later;
-    double DriftDistance = m_readout_plane_offset - z_mean;
+
+    double DriftDistance = m_readout_plane_coord - z_mean;
     double TDrift = std::abs(DriftDistance * m_RecipDriftVel);
 
     double effect = std::exp( -1.0 * TDrift / m_LifeTimeCorr_const);
