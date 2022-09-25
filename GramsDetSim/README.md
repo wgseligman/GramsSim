@@ -1,5 +1,15 @@
 # GramsDetSim
 
+- [GramsDetSim](#gramsdetsim)
+  * [Overview](#overview)
+  * [Running `GramsDetSim`](#running--gramsdetsim-)
+  * [Detector-response functions](#detector-response-functions)
+    + [Recombination](#recombination)
+    + [Absorption](#absorption)
+    + [Diffusion](#diffusion)
+
+<small><i><a href='http://ecotrust-canada.github.io/markdown-toc/'>Table of contents generated with markdown-toc</a></i></small>
+
 [`GramsG4`](../GramsG4) propagates particles as they pass through the
 detector, recording the amount of ionization they deposit in the
 liquid argon. The next step in modeling the detector is to propagate
@@ -9,6 +19,8 @@ In theory, one might set up Geant4 to transport each individual
 electron liberated by ionization to the readout plane. In practice,
 this would take too long. Instead, we use `GramsDetSim` to model the
 drifting of the ionization electrons in the LArTPC.
+
+Note that this program does _not_ model the effects of the readout geometry or electronics. That's handled in a subsequent step. 
 
 ## Overview
 
@@ -37,9 +49,15 @@ simulation and create a "friend ntuple" to the `GramsG4`'s "hits"
 ntuple. In other words, the ntuple created by this program will
 contain, row-by-row, the hit energy adjusted by the detector response.
 
+See `GramsSim/util/README.md` for a description of how to control the
+operation of `gramsdetsim` through the [`options.xml`](../options.xml) file and the
+command line.
+
 ## Detector-response functions
 
 ### Recombination
+
+Recombination models the effects of electrons returning to atoms after being liberated through ionization. 
 
 As of Sep-2022, the recombination models and parameters used in GramsDetSim are based
 on these papers:
@@ -82,10 +100,26 @@ individual parameters.
 
 ### Absorption
 
+Absorption models the effects of ionized electrons being absorbed by impurities in the liquid argon and they drift towards the anode of the TPC. 
+
+As of Sep-2022, the absorption model in the code is:
+
+<img src="absorption.png" width="20%"/>
+
+where
+
+- s<sub>drift</sub> = the drift distance between the ionization hit in the TPC to the anode;
+
+- v<sub>drift</sub> = the drift velocity;
+
+- t<sub>elec</sub> = the electron lifetime in the liquid argon. 
+
+v<sub>drift</sub> and t<sub>elec</sub> are detector- and material-dependent parameters.
+
 ### Diffusion
 
-## Program options
+Diffusion models the spread of the ionization electrons as they drift towards the anode. 
 
-See `GramsSim/util/README.md` for a description of how to control the
-operation of `gramsdetsim` through the `options.xml` file and the
-command line.
+The procedure is to convert the ionization energy to the number electrons. The electrons are grouped into clusters, to save time. Then each cluster is randomly shifted in both the transverse and longitudinal directions of the drift. 
+
+The output ntuple contains the energy, arrival time, and shifted (x,y,z) of each individual cluster. 
