@@ -1,5 +1,4 @@
-// 26-Nov-2021 WGS
-
+// 21-Sep-2022 Satoshi Takashima, Luke Zerrer, William Seligman
 // Implement a recombination model calculation.
 
 #include "RecombinationModel.h"
@@ -14,6 +13,7 @@
 // C++ includes
 #include <iostream>
 #include <cmath>
+#include <numeric>
 
 namespace gramsdetsim {
 
@@ -25,27 +25,29 @@ namespace gramsdetsim {
     // from options.xml and the command line.
     auto options = util::Options::GetInstance();
 
-    // Fetch the options we want from the class. 
-
+    // Fetch the options we want via the options class.. 
     options->GetOption("verbose",m_verbose);
     options->GetOption("debug",m_debug);
 
-    options->GetOption("field",m_field);
-    options->GetOption("a",m_a);
-    options->GetOption("b",m_b);
-    options->GetOption("rho",m_rho);
+    options->GetOption("ElectricField",m_field);
+    options->GetOption("box_alpha",m_alpha);
+    options->GetOption("box_beta",m_beta);
+    options->GetOption("LArDensity",m_rho);
+
+    options->GetOption("RecombinationModel", m_recom_model);
+    options->GetOption("birks_AB", m_A_B);
+    options->GetOption("birks_kB", m_kB);
 
     if (m_verbose) {
       std::cout << "gramsdetsim::RecombinationModel - "
 		<< "field= " << m_field
-		<< " a= " << m_a
-		<< " b= " << m_b
+		<< " a= " << m_alpha
+		<< " b= " << m_beta
 		<< " rho= " << m_rho << std::endl;
     }
 
     // These are the columns in the ntuple that we'll require for our
-    // calculation. Note: I may have misunderstood Luke's code; if we
-    // don't have to calculate dEdx then these are not needed.
+    // calculation. 
 
     // The names of the columns, and which columns are available, come
     // from GramsG4/src/GramsG4WriteNtuplesAction.cc.
@@ -71,7 +73,7 @@ namespace gramsdetsim {
   // Note that the "a_" prefix is a convention to remind us that the
   // variable was an argument in this method.
 
-  double RecombinationModel::Calculate( double a_energy ) {
+  Double_t RecombinationModel::Calculate( double a_energy ) {
 
     // The TTreeReaderValue variables are "in sync" with the
     // TTreeReader. So as the main routine uses TTreeReader to go
@@ -85,42 +87,75 @@ namespace gramsdetsim {
     // m_xStart (for example) is a pointer itself, so to get its value
     // you need "**m_xStart" (a pointer to a pointer). 
 
-    // Takes input of the change in energy across the distance travelled
-    // in a single step by the particle source for this equation is eqn
-    // 2.4 in the 2013 paper "A study of electron recombination using
-    // highly ionizing particles in the ArgoNeuT Liquid ArgonTPC". This
-    // modified box model is used because it works for all ranges of
-    // dE/dx as well as not having the technical difficulties that arise
-    // when applying the birks model to highly ionizing particles.
+    // Physics: The following models come from "A study of electron
+    // recombination using highly ionizing particles in the ArgoNeuT
+    // Liquid Argon TPC", arXiv:1306.1712
 
+    // The models take as input of the change in energy across the
+    // distance traveled in a single step by the particle.
     double dx = std::sqrt( std::pow(**m_xStart - **m_xEnd, 2) + 
 			   std::pow(**m_yStart - **m_yEnd, 2) + 
 			   std::pow(**m_zStart - **m_zEnd, 2) );
     double dEdx = a_energy / dx;
 
-    // The above variables are in Geant4 units (MeV, mm, ns). But the
-    // recombination constants use cm.
-    dEdx *= 10.;
-    
+    // It's possible for dx to be so small that the value of dEdx
+    // becomes NaN (for "not a number"). If this happens, skip the
+    // calculation.
+    if ( isnan(dEdx) ) 
+      return (0.0);
+
     // The following calculations are based off of the modified box
     // model used in the ICARUS experiment, with constant values taken
-    // from the Brookhaven page on liquid argon TPCs. Be very specific in
-    // where this equation is from (what paper), what it is finding,
-    // what it is talking about.
-    double sigma = (m_b * dEdx) / (m_field * m_rho);
-    double effect = std::log(m_a + sigma) / sigma;
+    // from the Brookhaven page on liquid argon TPCs.
 
-    if (m_debug)
-      std::cout << "gramsdetsim::RecombinationModel - "
-		<< "dx= " << dx
-		<< " dEdx= " << dEdx
-		<< " sigma= " << sigma
-		<< " effect= " << effect << std::endl;
+    double effect = 1.0;
 
-    // Note to Luke: Check the units! Check that "effect" is a
-    // multiplication factor on the energy! If it's not, fix my
-    // equation!
-    return a_energy * effect;
-  }
+    // Calculate the effect based on our choice of recombination
+    // model.
+    switch (m_recom_model) {
+
+    case 0 :
+      // This modified box model works for all ranges of dE/dx as well
+      // as not having the technical difficulties that arise when
+      // applying the Birk's model to highly ionizing particles.
+      {
+	double effective_efield = (m_beta * dEdx) / (m_field * m_rho);
+	effect = std::max(
+			  std::log(m_alpha + effective_efield) / effective_efield, 
+			  1.0e-6);
+	
+	if (m_debug)
+	  std::cout << "gramsdetsim::RecombinationModel - "
+		    << "dx= " << dx
+		    << " dEdx= " << dEdx
+		    << " effective_efield= " << effective_efield
+		    << " effect= " << effect << std::endl;
+      }
+      break;
+
+    case 1 :
+      {
+	effect = m_A_B / (1 + m_kB * dEdx / (m_field * m_rho));
+
+	if (m_debug)
+	  std::cout << "gramsdetsim::RecombinationModel - "
+		    << "dx= " << dx
+		    << " dEdx= " << dEdx
+		    << " effect= " << effect << std::endl;
+      }
+      break;
+
+    default :
+      {
+	std::cerr << "File " << __FILE__ << " Line " << __LINE__ << " " << std::endl
+		  << "gramsdetsim::RecombinationModel: Invalid value " << m_recom_model 
+		  << " for recombination_model"
+		  << std::endl;
+	exit(EXIT_FAILURE);
+      }
+    } // switch on recombination model
+
+  return a_energy * effect;
+}
 
 } // namespace gramsdetsim

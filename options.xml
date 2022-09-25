@@ -7,7 +7,7 @@
   <global>
 
     <!-- The parameters in this section are meant to apply to all the
-         programs. However, you can ovverride them within the
+         programs. However, you can override them within the
          individual program blocks, though it's probably more useful
          to override them on the command line. Be careful about what
          you're overriding, especially the unit options. -->
@@ -406,33 +406,101 @@
          TTrees" in the ROOT documentation.  -->
     <option name="outputntuple" value="DetSim" type="string" desc="output ntuple"/>
 
-    <!-- Physics-model options. Note that the units associated with
-         these constants should be consistent with the "TimeUnit",
+    <!-- Physics-model options. 
+
+         IMPORTANT: Note that the units associated with these
+         constants should be consistent with the "TimeUnit",
          "LengthUnit", and "EnergyUnit" options defined above.
     -->
 
-    Options associated with modeling recombination effects.
+    <!-- The location of the readout plane in the detector coordinate
+         system. -->
+    <option name="ReadoutPlaneCoord" value="0" type="double"
+        desc="location of readout plane"/>
+
+    <!-- Options associated with modeling recombination effects. -->
+
+    Reference: "A study of electron recombination using highly
+    ionizing particles in the ArgoNeuT Liquid Argon TPC",
+    arXiv:1306.1712
+
     <option name="recombination" value="true" type="boolean" 
 	    desc="model recombination effects"/>
 
-    Electric field on the cloud of ionized particles, varies with
-    position due to space charge, which we don't have a model for yet.
-    <option name="field"  value="1.0" type="double"
+    Electric field in the LArTPC, which affects the cloud of ionized
+    particles. This varies with position due to space charge, which we
+    don't have a model for yet.
+    <option name="ElectricField"  value="1.0" type="double"
 	    desc="electric field [kV/cm]"/>
 
-    Average of the a value for 20 to 90 degrees angle bins for proton
+    Choice of recombination model:
+    0 = Modified Box Model
+    1 = Birk's Model
+    <option name="RecombinationModel" value="0" type="integer"
+        desc="recombination model" />
+
+    Average of the alpha value for 20 to 90 degrees angle bins for proton
     sample detection in ArgoNeuT, unitless value.
-    <option name="a" value="0.930" type="double"
+    <option name="box_alpha" value="0.930" type="double"
 	    desc="recombination constant"/>
 
-    Average of the B value for 20 to 90 degrees angle bins for proton
+    Average of the beta value for 20 to 90 degrees angle bins for proton
     sample detection in ArgoNeuT, units of (kV*g)/(MeV*cm^3)
-    <option name="b" value="0.212" type="double"
+    <option name="box_beta" value="0.212" type="double"
 	    desc="recombination constant [(kV*g)/(MeV*cm^3)]"/>
 
     Density of liquid argon, from Brookhaven LAr page, units of (g/cm^3)
-    <option name="rho" value="1.3973" type="double"
+    <option name="LArDensity" value="1.3973" type="double"
 	    desc="LAr density [g/cm^3]"/>
+
+    Birk's model parameters from the ArgoNeut paper referenced above. 
+    <option name="birks_AB" value="0.806" type="double"
+        desc="factor for Birk's model"/>
+
+    <option name="birks_kB" value="0.052" type="double"
+        desc="factor for Birk's model [(kV/cm)(g/cm^2)/MeV]"/>
+
+    Options associated with the absorption model. As of Sep-2022, all
+    these values are preliminary.
+
+    <option name="absorption" value="true" type="boolean" 
+	    desc="model absorption effects"/>
+
+    <option name="ElectronLifeTimeCorr" value="50000.0" type="double"
+        desc="mean life of electrons (ns)"/>
+
+    <option name="ElectronDriftVelocity" value="0.01" type="double"
+        desc="drift velocity (cm/ns)"/>
+
+    Options associated with the diffusion model. These values come
+    from MicroBooNE:
+    https://github.com/LArSoft/larsim/blob/develop/larsim/Simulation/simulationservices.fcl
+    https://github.com/MicroBooNE/uboonecode/blob/develop/uboone/Simulation/simulationservices_microboone.fcl
+
+    <option name="diffusion" value="true" type="boolean"
+        desc="model diffusion effects"/>
+
+    <option name="MeVToElectrons" value="4.237e4" type="double"
+        desc="the number of generated electrons per 1MeV"/>
+
+    <option name="LongitudinalDiffusion" value="6.2e-9" type="double"
+        desc="[cm^2/ns]"/>
+
+    <option name="TransverseDiffusion" value="16.3e-9" type="double"
+        desc="[cm^2/ns]"/>
+
+    The number of electrons in a cluster. The clusters are drifted in
+    the LAr, as opposed to drifting each electron individually.
+    <option name="ElectronClusterSize" value="20" type="int"
+        desc="number of electrons in a cluster"/>
+
+    <option name="MinNumberOfElCluster" value="0" type="integer"
+        desc="minimum number of clusters per hit"/>
+
+    The direction of the electron drift (x, y, or z).
+    x:0 y:1 z:2
+    <option name="DriftCoordinate" value="2" type="int"
+        desc="direction of electron drift"/>
 
   </gramsdetsim>
 
