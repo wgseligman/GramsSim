@@ -57,7 +57,8 @@ command line.
 
 ### Recombination
 
-Recombination models the effects of electrons returning to atoms after being liberated through ionization. 
+"Recombination" is a model of the effects of electrons returning to
+atoms after being liberated through ionization.
 
 As of Sep-2022, the recombination models and parameters used in GramsDetSim are based
 on these papers:
@@ -70,12 +71,11 @@ particles in the ArgoNeuT Liquid Argon TPC][10]
 [10]: https://arxiv.org/abs/1306.1712
 [11]: https://www.sciencedirect.com/science/article/pii/S0168900204000506
 
-There of recombination model used is selected by the parameter `RecombinationModel` in [`options.xml`](../options.xml). The functional forms of these models are:
+The specific recombination model is selected by the parameter `RecombinationModel` in [`options.xml`](../options.xml). That parameters selects between two functional forms:
 
 - Modified box model
 
 <img src="BoxModel.png" width="25%"/>
-
 
 - Birk's model
 
@@ -100,7 +100,9 @@ individual parameters.
 
 ### Absorption
 
-Absorption models the effects of ionized electrons being absorbed by impurities in the liquid argon and they drift towards the anode of the TPC. 
+Absorption models the effects of ionized electrons being absorbed by
+impurities in the liquid argon (such as oxygen and water) as the
+electrons drift towards the anode of the TPC.
 
 As of Sep-2022, the absorption model in the code is:
 
@@ -120,6 +122,10 @@ v<sub>drift</sub> and t<sub>elec</sub> are detector- and material-dependent para
 
 Diffusion models the spread of the ionization electrons as they drift towards the anode. 
 
-The procedure is to convert the ionization energy to the number electrons. The electrons are grouped into clusters, to save time. Then each cluster is randomly shifted in both the transverse and longitudinal directions of the drift. 
+The procedure is to convert the ionization energy to a number of
+electrons. The electrons are grouped into clusters, to save time. Then
+each cluster is randomly shifted in both the transverse and
+longitudinal directions of the drift.
 
-The output ntuple contains the energy, arrival time, and shifted (x,y,z) of each individual cluster. 
+The output ntuple contains the energy, arrival time, and shifted
+(x,y,z) of each individual cluster.
