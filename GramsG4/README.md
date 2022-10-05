@@ -152,21 +152,18 @@ If you're looking for a place to start in accessing the ntuples for analysis, lo
 
 Some things to consider:
 
-   - You can speed up the simulation considerably by turning on multi-threaded running. To do this,
-   supply the number of threads to use via the `-t` or `--nthreads` option; e.g.,
+   - You can speed up the simulation considerably by turning on multi-threaded running. To do this, supply the number of threads to use via the `-t` or `--nthreads` option; e.g.,
    
-      `./gramsg4 --nthreads 4`
+         ./gramsg4 --nthreads 4
       
-       will run with 4 simultaneous threads. The potential disadvantage of this is that the information in the output
-       ntuples will *not* be in ascending order. 
+     will run with 4 simultaneous threads. The potential disadvantage of this is that the information in the output ntuples will *not* be in ascending order; while all the rows associated with a particular event will be adjacent to each other, the events will be written in a random order to the output ntuple. 
        
-   - If you are running multiple jobs to generate events, by default they'll all run with the same random number seed;
-   i.e., in the options XML file there is a parameter `rngseed` which is set to -1 by default. To generate a different set
+   - If you are running multiple jobs to generate events, by default they'll all run with the same random number seed;i.e., in the options XML file there is a parameter `rngseed` which is set to -1 by default. To generate a different set
    of events for each job, you will want to vary the seed for each job. 
    
       For example, if the job has a unique process ID in the variable `${Process}`, then you probably want something like this:
       
-      `./gramsg4 --rngseed ${Process}`
+         ./gramsg4 --rngseed ${Process}
 
 ## Physics lists and how to extend them
 

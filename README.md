@@ -13,6 +13,7 @@ If you want a formatted (or easier-to-read) version of this file, scroll to the 
     + [Development "flow"](#development--flow-)
   * [Detector geometry](#detector-geometry)
   * [Program options](#program-options)
+    + [Random numbers](#random-numbers)
     + [Setting run/event numbers](#setting-run-event-numbers)
   * [FAQ](#faq)
   * [References](#references)
@@ -260,6 +261,14 @@ There's more about GDML in the [References](#references) section below.
 Short version: look at [`options.xml`](options.xml). 
 
 For a complete description, see [the Options XML file documentation](util/README.md).
+
+### Random numbers
+       
+If you are running multiple jobs to generate events, by default they'll all run with the same random number seed; i.e., in the options XML file there is a parameter `rngseed` which is set to -1 by default. To generate a different set of events for each job, you will want to vary the seed for each job. 
+   
+For example, if the job has a unique process ID in the variable `${Process}`, then you probably want something like this:
+      
+      ./gramsg4 --rngseed ${Process}
 
 ### Setting run/event numbers
 
