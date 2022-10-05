@@ -272,7 +272,7 @@ In these cases, you can include a section of one XML file within another using [
           `<gramssky xml:id="gramssky">`
           
       - This may not be necessary if the value of the `element` attribute in the main file is the same as the tag
-      with the program's game (`gramssky` in this example). 
+      with the program's name (`gramssky` in this example). 
 
 
 ### Accessing options from within your program
