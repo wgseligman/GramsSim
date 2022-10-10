@@ -47,7 +47,14 @@ subdirectory's README.md file:
 
    - [**scripts**](scripts): Examples of how to work with GramsSim components and files.
    
-   - [**mac**](mac): Geant4 macro files for use with GramsG4.
+   - [**mac**](mac): Geant4 macro files for use with [GramsG4](GramsG4).
+   
+This is a diagram of the overall structure of the GramsSim modules. Note that as of Oct-2022, many of these modules have not yet been formally installed in this packages; these are denoted in gray text in the figure.
+
+|                                                 |
+| :---------------------------------------------: | 
+| <img src="GramsSim_modules.pdf" width="100%" /> |
+
 
 Before installing GramsSim, please read [DEPENDENCIES.md](DEPENDENCIES.md) for a list of packages that must be installed for GramsSim to compile.
 
