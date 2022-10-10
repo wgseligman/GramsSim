@@ -53,7 +53,7 @@ This is a diagram of the overall structure of the GramsSim modules. Note that as
 
 |                                                 |
 | :---------------------------------------------: | 
-| <img src="GramsSim_modules.pdf" width="100%" /> |
+| <img src="GramsSim_modules.png" width="100%" /> |
 
 
 Before installing GramsSim, please read [DEPENDENCIES.md](DEPENDENCIES.md) for a list of packages that must be installed for GramsSim to compile.
