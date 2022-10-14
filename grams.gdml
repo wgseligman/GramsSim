@@ -403,9 +403,13 @@ source of interactions (e.g., the cryostat walls.)
     for now, and let the collaboration decide an appropriate coordinate system. -->
     <constant name="outerDetectorOffsetInWorld" value ="-(lArTPCZSize/2) + tilePlaneZSize - innerDetectorOffsetInOuter" />
 
+    <!-- Understanding these properties: These matrices define properties that will
+        be used in the <materials> section below. -->
+
     <!-- 07-Jul-2020 WGS: Material optical properties -->
     <!-- From https://cdcvs.fnal.gov/redmine/projects/larg4/wiki -->
     <!-- Unit constants for Geant4 (mm, ns, MeV) -->
+
     <matrix name="SY"  coldim="1" values="51282/MeV" />
     <matrix name="RS"  coldim="1" values="1.0" />
     <matrix name="FTC" coldim="1" values="7.*ns" />
@@ -661,6 +665,19 @@ source of interactions (e.g., the cryostat walls.)
       <fraction n="0.7298" ref="iron"/>
       <fraction n="0.0900" ref="nickel"/>
     </material>
+    
+    <!-- Understanding optical properties: 
+    The property names below correspond to strings found in
+    source/materials/src/G4MaterialPropertiesTable.cc
+    Note that no spell-checking is done, so it's possible to misspell
+    a property below that does nothing in the materials property
+    table (this is called the "RNIDEX" problem).
+    
+    The properties refer to matrices defined above. The matrices
+    themselves have two columns, with each row corresponding to the 
+    photon energy and the value of the property at that energy. 
+    -->
+    
     <!-- 07-Jul-2020 WGS:
 	 Additional LAr optical properties from 
 	 https://cdcvs.fnal.gov/redmine/projects/larg4/wiki 
