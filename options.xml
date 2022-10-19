@@ -373,7 +373,7 @@
         engine. If this is blank (value=""), do not save/restore the RNG state.
     </option>
     <option name="rngperevent" value="0" type="integer" desc="rng save per event">
-        value="0" - Do not save per-event RNG state in 'rngdir'.
+        value="0" - Save only the per-run RNG state in 'rngdir'.
         value="1" - Save RNG state before primary-particle generation.
         value="2" - Save RNG state before event processing (after primary generation)
         value="3" - Both are stored.

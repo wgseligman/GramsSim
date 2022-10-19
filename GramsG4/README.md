@@ -168,6 +168,19 @@ Some things to consider:
    - You can save and restore random-number sequences; this can be
      used to re-create the random numbers associated with a particular
      event. The list of relevant parameters in the [`options.xml`](../options.xml) is: 
+     
+     - `rngdir`: The state of the random-number generator (RNG) must be saved and restored from a named directory. If this parameter is `""`, saving and restoring the RNG state is disabled. If you want to save the random-number state in the current directory, set this to `"."`.
+     
+     - `rngperevent`: This is a Geant4 run-manager code that specifies how often the RNG state is saved. For an up-to-date list, see `$G4INSTALL/include/Geant4/G4RunManager.hh`. As of Oct-2022, the allowed values are:
+     
+            value="0" - Save only the per-run RNG state in 'rngdir'.
+            value="1" - Save the RNG state before primary-particle generation.
+            value="2" - Save the RNG state before event processing (after primary generation)
+            value="3" - Both are stored.
+            
+     - `rngrestorefile`: This is the name of the file within `rngdir` that will be used to restore the RNG at the start of the simulation. 
+     
+     If you are running `gramsg4` as a multi-threaded application (see the `nthreads` option), then each individual thread will write its own RNG state. The RNG state files are always preceded with `G4WorkerN_`, where N is the G4-assigned thread number. Keep this in mind as you examine the per-event RNG state files. For example, event 500's state may be in `G4Worker4_run0evt500.rndm` while event 501's state may be in `G4Worker2_run0evt501.rndm`; the two files will not be next to each other in a standard directory listing (`ls`). 
 
 ## Physics lists and how to extend them
 
