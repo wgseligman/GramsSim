@@ -233,11 +233,11 @@ namespace gramsg4 {
     // not in the main thread. If we try to fill the options ntuple in
     // the master thread, we get lots of annoying (but harmless) error
     // messages. The following test makes sure we only fill the ntuple
-    // if there are no threads (SEQUENTIAL_ID), or for a single worker
-    // thread (ID == 0) in a multi-threaded application.
+    // if there are no threads, or for a single worker thread (ID ==
+    // 0) in a multi-threaded application.
 
     auto threadID = G4Threading::G4GetThreadId();
-    if ( threadID == G4Threading::SEQUENTIAL_ID  ||  
+    if ( ( ! G4Threading::IsMultithreadedApplication() )  ||  
 	 threadID == 0 ) {
 
       // Write the options to the ntuple.

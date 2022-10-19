@@ -29,11 +29,14 @@
 #include "UserActionManager.h" // in g4util/
 
 // The user-action class that will set any user-assigned run and event
-// numbers..
+// numbers.
 #include "GramsG4NumbersAction.hh"
 
 // The user-action class that will write output.
 #include "GramsG4WriteNtuplesAction.hh"
+
+// Setting up the random-number engine.
+#include "GramsG4RandomSeedAction.hh"
 
 #ifdef G4MULTITHREADED
 #include "G4MTRunManager.hh"
@@ -45,7 +48,6 @@
 #include "G4VisExecutive.hh"
 #include "G4UIExecutive.hh"
 #include "G4TransportationManager.hh"
-#include "Randomize.hh"
 
 // Refer to examples/extended/physicslists/extensibleFactory within
 // the Geant4 installation for details about the physics-list
@@ -251,60 +253,6 @@ int main(int argc,char **argv)
 #endif
     
   } // if opticalphysics
- 
-  /// NOTE: Almost certainly this code is not structured correctly
-  /// for a multi-threaded application. 
-
-  // Working with random numbers. First, define a RNG (Random Number
-  // Generator). (For a list of engines, see
-  // http://geant4.web.cern.ch/ooaandd/analysis/class_spec/global/randommisstat)
-  // Note that I have no reason to expect that RanecuEngine is better
-  // or worse than any of the other flat distributions.
-  auto rngEngine = new CLHEP::RanecuEngine();
-
-  // Did the user supply a random-number seed?
-  // (Note that if they requested that the RNG
-  // be restored from a file, this will be ignored.)
-  G4int rngSeed;
-  options->GetOption("rngseed",rngSeed);
-  if ( rngSeed != 0 ) {
-    if (verbose) G4cout << "GramsG4::main(): Setting RNG seed to " 
-			<< rngSeed << G4endl;
-    rngEngine->setSeed(rngSeed);
-  }
-
-  // Save the engine.
-  G4Random::setTheEngine(rngEngine);
-
-  // Working with random-number generator (RNG) states.
-  G4String rngDirectory;
-  options->GetOption("rngdir",rngDirectory);
-  if ( ! rngDirectory.empty() ) {
-    // The user wants to save/restore the RNG state.
-    runManager->SetRandomNumberStoreDir(rngDirectory);
-    runManager->SetRandomNumberStore(true);
-    if (verbose) G4cout << "GramsG4::main(): Saving/restoring RNG states from "
-			<< rngDirectory << G4endl;
-
-    // For the meaning of 'rngPerEvent', see either
-    // options.xml or $G4INSTALL/include/Geant4/G4RunManager.hh.
-    G4int rngPerEvent;
-    options->GetOption("rngperevent",rngPerEvent);
-    if ( rngPerEvent != 0 ) {
-      runManager->SetRandomNumberStorePerEvent(true);
-      runManager->StoreRandomNumberStatusToG4Event(rngPerEvent);
-    }
-
-    // Does the user want to restore the RNG
-    // state from a file?
-    G4String rngRestoreFile;
-    options->GetOption("rngrestorefile",rngRestoreFile);
-    if ( ! rngRestoreFile.empty() ) {
-      if (verbose) G4cout << "GramsG4::main(): restoring RNG state from "
-			  << rngRestoreFile << G4endl;
-      runManager->RestoreRandomNumberStatus(rngRestoreFile);
-    }
-  }
 
   // Usual initializations: detector, physics, and user actions.
   runManager->SetUserInitialization(new gramsg4::DetectorConstruction());
@@ -319,6 +267,7 @@ int main(int argc,char **argv)
   g4util::UserAction* uam = (g4util::UserAction*) uaManager;
 
   // Add this application's user actions to our user-action manager.
+  uaManager->AddAndAdoptAction( new gramsg4::RandomSeedAction() );
   uaManager->AddAndAdoptAction( new gramsg4::NumbersAction() );
   uaManager->AddAndAdoptAction( new gramsg4::WriteNtuplesAction() );
 
