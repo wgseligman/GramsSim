@@ -4,6 +4,10 @@ A description of major development milestones. The most recent are at
 the top. For a detailed list of all changes (basically, every time
 someone typed "git commit"), see the output of "git log".
 
+Oct-2022
+
+   - Multi-threaded saving and restoring of random numbers now works properly. 
+
 Sep-2022
 
    - GramsDetSim functionally complete and documented (though the

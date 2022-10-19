@@ -165,6 +165,10 @@ Some things to consider:
       
          ./gramsg4 --rngseed ${Process}
 
+   - You can save and restore random-number sequences; this can be
+     used to re-create the random numbers associated with a particular
+     event. The list of relevant parameters in the [`options.xml`](../options.xml) is: 
+
 ## Physics lists and how to extend them
 
 If you looked at [`options.xml`](../options.xml) you saw an intriguing option (the list may not be `FTFP_BERT`):
