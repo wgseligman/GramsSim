@@ -13,6 +13,10 @@
 
 #include <vector>
 
+// Forward declarations
+namespace util {
+  class Options;
+}
 class G4Run;
 class G4Event;
 
@@ -93,6 +97,16 @@ namespace gramsg4 {
     std::vector<G4float> m_ymom;
     std::vector<G4float> m_zmom;
     std::vector<int> m_identifier;
+
+
+    // Pointer to instance of the Options class (see
+    // GramsSim/util/README.md).
+    util::Options* m_options;
+
+    // Units, from the options XML file.
+    double m_timeScale;
+    double m_lengthScale;
+    double m_energyScale;
   };
 
 } // namespace gramsg4

@@ -6,38 +6,49 @@ If you want a formatted (or easier-to-read) version of this file, scroll to the 
   * [Introduction](#introduction)
   * [Installing GramsSim](#installing-gramssim)
     + [Working with github](#working-with-github)
-    + [Prerequisites](#prerequisites)
-      - [conda](#conda)
-      - [CentOS packages](#centos-packages)
-    + [Prepare your local computer](#prepare-your-local-computer)
-  * [Running GramsSim](#running-gramssim)
+  * [Setting up GramsSim](#setting-up-gramssim)
   * [Making changes](#making-changes)
+    + [Advanced git commands](#advanced-git-commands)
     + [Work files](#work-files)
     + [Development "flow"](#development--flow-)
   * [Detector geometry](#detector-geometry)
   * [Program options](#program-options)
+    + [Setting run/event numbers](#setting-run-event-numbers)
+  * [FAQ](#faq)
   * [References](#references)
   * [Credits](#credits)
   * [Viewing a Markdown document](#viewing-a-markdown-document)
 
 <small><i><a href='http://ecotrust-canada.github.io/markdown-toc/'>Table of contents generated with markdown-toc</a></i></small>
 
-
 ## Introduction
 
 **GramsSim** is a simulation of the detector for the
-[GRAMS](https://express.northeastern.edu/grams/) experiment
+[GRAMS][1] experiment
 (Gamma-Ray and AntiMatter Survey). For more on GRAMS, see the
-[initial paper](https://inspirehep.net/literature/1713393).
+[initial paper][2].
+
+[1]: https://express.northeastern.edu/grams/
+[2]: https://inspirehep.net/literature/1713393
 
 This document assumes that you're familiar with basic UNIX concepts. If you don't know what "`cd ..`" means (for example), please see the [UNIX references](#references) below for some tutorials. 
 
 GramsSim consists of several components. Each is described in its own
 subdirectory's README.md file:
 
-   - **GramsG4**: A Geant4 simulation of particle transport in the GRAMS detector. 
+   - [**GramsSky**](GramsSky): A simulation of particles coming from a spherical (sky) source around the GRAMS detector. 
 
-   - **GramsDetSim**: Models the detector response to the energy deposits recorded by GramsG4. 
+   - [**GramsG4**](GramsG4): A Geant4 simulation of particle transport in the GRAMS detector. 
+
+   - [**GramsDetSim**](GramsDetSim): Models the GRAMS detector response to the energy deposits recorded by GramsG4. 
+
+   - [**util**](util): Common utilities (e.g., options processing) shared by all components. 
+
+   - [**scripts**](scripts): Examples of how to work with GramsSim components and files.
+   
+   - [**mac**](mac): Geant4 macro files for use with GramsG4.
+
+Before installing GramsSim, please read [DEPENDENCIES.md](DEPENDENCIES.md) for a list of packages that must be installed for GramsSim to compile.
 
 ## Installing GramsSim
     
@@ -46,9 +57,11 @@ subdirectory's README.md file:
 Visit <https://github.com/> and sign up for an account if you don't already have one.
 
 I strongly advise you to use SSH as the means to access a repository, 
-and to [set up an SSH key](https://help.github.com/articles/generating-an-ssh-key/),
+and to [set up an SSH key][3],
 otherwise you'll have to type in a password every time you issue a git
 request against the repository. 
+
+[3]: https://help.github.com/articles/generating-an-ssh-key/
 
 Once this is done, you can download a copy of the GramsSim repository:
 
@@ -59,111 +72,6 @@ Once this is done, you can download a copy of the GramsSim repository:
     cd ..
 
 *Note:* For now, it is important that you download the `develop` branch *and not the `master` branch*.
-
-### Prerequisites
-
-If you're working on a system of the [Nevis Linux cluster](https://twiki.nevis.columbia.edu/twiki/bin/view/Main/LinuxCluster), type
-
-    module load cmake root geant4 hepmc3
-
-and skip to the next section. Otherwise, read on.
-
-You will need recent versions of:
-
-   - [Cmake](https://cmake.org/) (verified to work with version 3.14 and higher)
-   - [ROOT](https://root.cern.ch/) (verified to work with ROOT 6.16 and higher)
-   - [Geant4](http://geant4.web.cern.ch/) (verified to work with Geant4 10.7 and higher)
-   - [HepMC3](https://gitlab.cern.ch/hepmc/HepMC3) 
-   
-You will also need the development libraries for:
-
-   - [GNU C++](https://gcc.gnu.org/) (version 6.2 or higher, though the compilation might work with [clang](https://clang.llvm.org/); requires C++11 or higher)
-   - [Xerces-C](https://xerces.apache.org/xerces-c/)
-   - [OpenGL](https://www.opengl.org/)
-   - [QT4](https://www.qt.io/)
-
-At Nevis, the approach that fully worked on [CentOS 7](https://www.centos.org/download/) was to install recent versions of C++, cmake,
-ROOT, Geant4, and HepMC3 by compiling them from source. There was no need to recompile 
-xerces-c, OpenGL, and QT4; the CentOS 7 development packages were sufficient:
-
-    sudo yum -y install freeglut-devel xerces-c-devel \
-       qt-devel mesa-libGLw-devel
-       
-Note that compiling Geant4 from source may be the only way to reliably use the [OpenGL visualizer](https://conferences.fnal.gov/g4tutorial/g4cd/Documentation/Visualization/G4OpenGLTutorial/G4OpenGLTutorial.html). 
-
-#### conda
-
-You can try to fulfill these requirements using [conda](https://docs.conda.io/projects/conda/en/latest/). This *mostly* works,
-though it does not include ROOT I/O in HepMC3 and there are some issues with the Geant4
-OpenGL display. 
-
-On [RHEL](https://www.redhat.com/en/technologies/linux-platforms/enterprise-linux)-derived systems, this is the one-time setup; 
-visit the [EPEL](https://fedoraproject.org/wiki/EPEL) web site for releases other than CentOS 7:
-
-     # Install conda
-     sudo yum -y install https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
-     sudo yum -y install conda
-     
-On any system with conda installed (including [anaconda3](https://www.anaconda.com/products/individual) and [miniconda](https://docs.conda.io/en/latest/miniconda.html)), the following will set up a suitable development environment:
-     
-     # Add the conda-forge repository
-     conda config --add channels conda-forge
-     conda config --set channel_priority strict
-
-     # Create a conda environment. The name "grams-devel" is arbitrary.
-     conda create -y --name grams-devel compilers cmake root geant4 hepmc3
-
-Afterwards, the following must be executed once per login session:
-
-     # Activate the environment to modify $PATH and other variables.
-     conda activate grams-devel
-
-#### CentOS packages
-
-Another potential solution is to use RPM packages for RHEL-derived
-Linux distributions (e.g., Scientific Linux, CentOS). In addition to the EPEL repository,
-you will need a more recent version of the GCC compiler than comes with CentOS 7. One
-solution is to use the [SCL](https://www.softwarecollections.org/en/scls/rhscl/devtoolset-7/) 
-tools (but see the cautions below).
-
-    sudo yum -7 install https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
-    sudo yum -y install root HepMC3-devel HepMC3-rootIO-devel 
-    sudo yum -y install gcc-c++ glibc-devel cmake3
-    sudo yum -y install centos-release-scl
-    
-    # Note that as of Sep-2021 the devtoolsets range from from 7 to 10,
-    # which corresponds to the major version of GCC they include. 
-    sudo yum -y install devtoolset-7-gcc*
-    
-To enable the SCL version of the GCC compiler installed above:
-
-    scl enable devtoolset-7 bash
-       
-There are problems with this approach:
-
-   - In the following instructions, you will want to use `cmake3` instead of just `cmake`.
-
-   - You will still have to
-     [download](https://geant4.web.cern.ch/support/download) and
-     build/install Geant4 on your own.
-
-   - It's important that ROOT, HepMC3, and Geant4 all be compiled with
-     the same version of the C++ compiler that
-     supports C++11 and above. The ROOT and HepMC3 packages from EPEL were compiled with
-     the "native compiler" of CentOS 7, GCC 4.8.5,
-     which does _not_ support C++11. 
-
-(If you determine the installation commands needed for
-Debian-style distributions (including Ubuntu), please let
-wgseligman know so he can update this documentation.)
- 
-### Prepare your local computer 
-   
-If you are working remotely (e.g., on a laptop), and you want to use
-the GramsG4 interactive display, you may also need to
-install and/or activate both X-Windows and OpenGL for your local
-computer. You can find instructions
-[here](https://twiki.nevis.columbia.edu/twiki/bin/view/Main/X11OnLaptops).
 
 ## Setting up GramsSim
 
@@ -176,11 +84,11 @@ of this command in one of your shell startup files:
     # be the directory you're in now ($PWD = "print working directory")
     export GSDIR=$PWD
 
-To build/compile:
+To build/compile:[^make]
 
     # Set up the tools as appropriate for your system
     # For example, at Nevis type
-    module load cmake root geant4 hepmc3
+    module load cmake root geant4 hepmc3 healpix
     
     # Create a separate build/work directory. This directory should
     # not be the GramsG4 directory or a sub-directory of it. This
@@ -193,10 +101,13 @@ To build/compile:
     cmake $GSDIR/GramsSim
     make
 
+[^make]: To speed up the build process, consider using `make -jN` where N is two more than the number of processors you have on your computer. Something like `make -j16` will compile all of GramsSim in under a minute. 
+
 To run the programs:
 
     # After succesfully making the executables, e.g., `gramsg4`, you can
     # run them in the build directory:
+    ./gramssky
     ./gramsg4
     ./gramsdetsim
 
@@ -204,20 +115,27 @@ To run the programs:
 
 ## Making changes
 
-Obviously, you can make any changes you want to GramsSim for your own use. This section is for when you want to start making changes to be added to the official repository. Before you edit files for the first time:
+Obviously, you can make any changes you want to GramsSim for your own use. This section is for when you want to start making changes to be added to the official repository. 
+
+I strongly suggest becoming familiar with [git][46], at least to the extent of understanding what a [branch][4] is. I also suggest using [git flow][47] to organize your branches, mainly because that approach seems to work for [LArSoft][5]. 
+
+[4]: https://git-scm.com/book/en/v2/Git-Branching-Branches-in-a-Nutshell
+[5]: https://larsoft.org/
+[46]: https://git-scm.com/doc
+[47]: http://danielkummer.github.io/git-flow-cheatsheet/
+
+Before you edit files for the first time:
 
     cd $GSDIR/GramsSim
     git flow init 
 
-You'll be asked a bunch of questions. The answer to the first one
-"Branch name for production releases:" is 'develop' (without the
-quotes). Accept the defaults for everything else.
+You'll be asked a bunch of questions. Accept the defaults for all the questions.
 
 If you get a message that git flow is not recognized, it means that
 the gitflow package has to be installed on your machine.   
 
 You only have to type `git flow init` once, the first time you edit
-code in that directory. Don't type it again, unless you git clone a
+code in that directory. Don't type it again, unless you `git clone` a
 brand-new repository.
 
 When you want to start on a new task:
@@ -232,27 +150,53 @@ To "bookmark" changes you've made to your copy of the `$GSDIR/GramsSim` director
     git add my_file.cc # if you create a new file
     git commit -a -m "Comment about your changes"
 
-To incorporate changes that other people have made and checked into
-the repository:
-
-    git fetch origin
-    git rebase origin develop
-
 When you've finished working on your task (after testing it, putting
 in the comments, writing the documentation, discussing it at a group
 meeting, etc.):
 
-    git flow feature finish
+    git flow feature finish $USER_MyMagnificentFeatureName
     git push origin develop
+    
+These two commands delete your local `feature/$USER_MyMagnificentFeatureName`
+branch and merge your changes into the develop branch. Please take care not to push
+changes to the develop branch until you want all the other developers to see it (and 
+perhaps notice that you didn't write comments or documentation for your changes).
 
-If you want other people to see your feature work without making
-changes to the develop branch:
+### Advanced git commands 
+
+To incorporate changes that other people have made and checked into
+the repository:
+
+    git fetch origin
+    git pull origin develop
+
+If you want other people to see your feature work, you want to save your work in a 
+remote repository, or you want to test if you have remote write
+access to the repository: 
 
     git flow feature publish $USER_MyMagnificentFeatureName
 
+If you discover that you don't have remote write access, contact wgseligman
+and let him know your [github account name][6].
+
+[6]: https://docs.github.com/en/account-and-profile/setting-up-and-managing-your-github-user-account/managing-email-preferences/remembering-your-github-username-or-email 
+
+Afterwards you can continue to update that remote feature branch with:
+
+    git commit -a -m "Comment about what's changed"
+    git push origin feature/$USER_MyMagnificentFeatureName
+
+If you pushed your feature branch to the remote repository, and there's no point in
+saving it for archival purposes (because you documented all the changes you made to the 
+develop branch, right?), you can remove the remote branch with:
+
+    git push origin :feature/$USER_MyMagnificentFeatureName
+    
+Note the `:` before the branch name, which is what forces the deletion. 
+
 ### Work files
 
-The GramsSim programs require several shared input files (e.g., `grams.gdml`, `options.xml`).
+The GramsSim programs require several shared input files (e.g., [`grams.gdml`](grams.gdml), [`options.xml`](options.xml)).
 These are copied from the GramsSim directory to your work/build directory when you executed 
 the `cmake` command. Go ahead and make any changes you want to these work files; they won't 
 affect the original files in `$GSDIR/GramsSim`. 
@@ -264,13 +208,13 @@ repository, be sure to copy the changed work files to `$GSDIR/GramsSim` and
 ### Development "flow"
 
 What may not be clear from the above is that you'll typically "sit" in your
-work/build directory. You'll run programs, make changes, then run it again. 
+work/build directory. You'll run programs, make changes, then run them again. 
 
 If you want to change the program code, edit the C++ files in `$GSDIR/GramsSim`;
 e.g.,
 
     cd $GSDIR/GramsSim-work
-    emacs ../GramsG4/include/MyPhysicsList.hh
+    emacs ../GramsSim/GramsG4/include/MyPhysicsList.hh
     make
     ./gramsg4 
     
@@ -300,19 +244,87 @@ When you've made your changes and wish to "bookmark" them:
 
 ## Detector geometry
 
-A version of the detector geometry is defined in `grams.gdml`. As the extension implies,
-it is written in the geometry-definition language [GDML](http://lcgapp.cern.ch/project/simu/framework/GDML/doc/GDMLmanual.pdf).
+The detector geometry is defined via a [file](grams.gdml) written in [GDML][15], which is a geometry-definition language 
+originally designed for Geant4.
+
+[15]: https://gdml.web.cern.ch/GDML/doc/GDMLmanual.pdf
 
 If you want to make changes to the detector geometry (including the colors used for
-the `gramsg4 --ui` interactive display), edit `grams.gdml`. If you're having trouble 
-understanding the contents of the file, start by reading the comments within the file.
+the `gramsg4 --ui` interactive display), edit `grams.gdml` or supply a different GDML file using the `--gdmfile` option.
+If you're having trouble 
+understanding the contents of the `grams.gdml`, start by reading the comments within the file.
 There's more about GDML in the [References](#references) section below. 
 
 ## Program options
 
-Short version: look at `options.xml`. 
+Short version: look at [`options.xml`](options.xml). 
 
-For a complete description, see `GramsSim/util/README.md`.
+For a complete description, see [the Options XML file documentation](util/README.md).
+
+### Setting run/event numbers
+
+Most of the time, the default run number (0) and the default starting event number (0) in both GramsSky and GramsG4 will be sufficient. However, there are cases (e.g., merging events for overlays) when it's helpful to be able to set the run number and the starting event number for a sequence of simulated events.
+
+For those cases, it's possible to override the defaults in both GramsSky and GramsSim. The options are given in the [`options.xml`](options.xml) file, or can be supplied on the command line. 
+
+For example, to set the run number to 4402 and the starting event number to 2044 in GramsSky:
+
+    ./gramssky -r 4402 -e 2044 -o myEvents.hepmc3
+    
+All of the events in the output file `myEvents.hepmc3` will have run number 4402, and the events will have numbers 2044, 2045, 2046...
+
+The same options apply to GramsG4:
+
+    ./gramsg4 -r 1234 -e 4321 -i myEvents.hepmc3 -m mac/hepmc3.mac
+    
+Note that if the `gramsg4` options `-r` (or `--run`) or `-e` (or `--startEvent`) are set, they will override any values that are in an HepMC3 input file specified with the `-i` or `--inputgen` option; see [`GramsSky/README.md`](GramsSky/README.md) for more information about HepMC3 files.
+
+## FAQ
+
+**Q: Why are some programs compiled directly into the build directory, and others into the `bin/` sub-directory of the build directory?**
+
+The main GramsSim programs (e.g., `gramssky`, `gramsg4`, `gramsdetsim`) are compiled directly into the build directory for convenience. They are the programs that are assumed to be used most often. 
+
+The programs in [`GramsSim/scripts`](scripts) are intended to be short examples or single-use programs. For example, no one expects that a program with a name like [`dEdxExample.cc`](scripts/dEdxExample.cc) will be used as part of a regular analysis. Those programs are placed in the `bin/` directory so they're available for tests, but don't clutter the build directory with programs that might never be used. 
+
+So if you want to run `gramsdetsim`, within your build directory you just type
+```
+./gramsdetsim
+```
+If you want to run `dEdxExample` to see what it does:
+```
+./bin/dEdxExample
+```
+
+**Q: I just updated GramsSim from the repository, and now I'm having trouble compiling the code.**
+
+Typically this happens after the `CMakeLists.txt` files are updated due to a change in the build procedure. The best way to fix this is to delete your build directory, create a new one, and start the `cmake`/`make` procedure from scratch. 
+
+If that's inconvenient (e.g., you've created many useful outputs or work files in your build directory), try removing the `cmake` work files:
+```
+rm -rf CMake* cmake*
+cmake ../GramsSim
+```
+In rare cases that might not be enough. It might be necessary to force the rebuild of `cmake` work directories within each major sub-directory:
+```
+find . -iname cmake\* -exec rm -rf {} \;
+cmake ../GramsSim
+```
+
+**Q. On Mac OS X, the program names end in `.exe`. Why?**
+
+This is to avoid problems in the build procedure caused by Mac OS X being case-insensitive with respect to file and directory names; e.g., `GramsSky` and `gramssky` are the same in OS X; when the build procedure tries to create the executable `gramssky`, it fails (with a mysterious error message) because the directory `GramsSky` already exists. In this example, it's safer to make the name of the executable `gramssky.exe`.
+
+So if you see an example like this in the documentation:
+
+```
+./gramsg4 --ui --uimacrofile mac/vis-menus.mac
+```
+In Mac OS X, this is
+
+```
+./gramsg4.exe --ui --uimacrofile mac/vis-menus.mac
+```
 
 ## References
 
@@ -321,8 +333,8 @@ Understanding UNIX:
    - [Learn UNIX](https://www.tutorialspoint.com/unix/index.htm)
 
 Version control system:
-   - git: <https://git-scm.com/doc> 
-   - git flow: <http://danielkummer.github.io/git-flow-cheatsheet/>
+   - [git][46]
+   - [git flow][47]
 
 Some git tips from other collaborations:  
    - [git flow quick start guide](https://cdcvs.fnal.gov/redmine/projects/cet-is-public/wiki/Git_flow_quick_start)
@@ -333,8 +345,11 @@ Toolkits:
    - [ROOT Tutorial](https://www.nevis.columbia.edu/~seligman/root-class/)
 
 GDML detector geometry description
-   - [GDML manual](http://lcgapp.cern.ch/project/simu/framework/GDML/doc/GDMLmanual.pdf)
-   - [Geant4 Applications Guide](http://geant4-userdoc.web.cern.ch/geant4-userdoc/UsersGuides/ForApplicationDeveloper/html/), especially the [geometry section](http://geant4-userdoc.web.cern.ch/geant4-userdoc/UsersGuides/ForApplicationDeveloper/html/Detector/Geometry/geometry.html) which explains the difference between solids, logical volumes, and physical volumes. 
+   - [GDML manual][15]
+   - [Geant4 Applications Guide][48], especially the [geometry section][49] which explains the difference between solids, logical volumes, and physical volumes. 
+
+[48]: http://geant4-userdoc.web.cern.ch/geant4-userdoc/UsersGuides/ForApplicationDeveloper/html/
+[49]: http://geant4-userdoc.web.cern.ch/geant4-userdoc/UsersGuides/ForApplicationDeveloper/html/Detector/Geometry/geometry.html
 
 ## Credits
 
@@ -349,16 +364,20 @@ GDML detector geometry description
 ## Viewing a Markdown document
 
 This document is written in
-[Markdown](https://www.markdownguide.org/cheat-sheet/), a tool for
+[Markdown][50], a tool for
 formatting documents but still keeping the unformatted versions
 readable. It's also handy for reading documents on github, since files ending in `.md`
 are automatically formatted for the web. 
 
+[50]: https://www.markdownguide.org/basic-syntax
+
 If you want to read a formatted version of this document (so you're
 spared the funny backticks and hashtags and whatnot), do a web search on
 "Markdown viewer" to find a suitable program. For example, at Nevis, all
-the Linux cluster systems have [pandoc](https://pandoc.org/) installed.
+the Linux cluster systems have [pandoc][51] installed.
 You can view a plain text version of this document with:
+
+[51]: https://pandoc.org/
 
     pandoc README.md -t plain | less
 

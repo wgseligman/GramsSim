@@ -3,7 +3,9 @@
 
 #include "GramsG4ActionInitialization.hh"
 #include "GramsG4GPSGeneratorAction.hh"
+#ifdef HEPMC3_INSTALLED
 #include "GramsG4HepMC3GeneratorAction.hh"
+#endif
 #include "Options.h" // in util
 #include "UserAction.h" // in g4util/
 #include "RunAction.h" // in g4util/
@@ -51,10 +53,20 @@ namespace gramsg4 {
       // There is no input file of generated events, so let the GPS 
       // commands in the macro file control event generation.
       SetUserAction(new gramsg4::GPSGeneratorAction);
-    else
+    else {
+#ifdef HEPMC3_INSTALLED
       // Read the input file of generated events with HepMC3.
       SetUserAction(new gramsg4::HepMC3GeneratorAction(inputFile));
-  
+#else
+      G4ExceptionDescription description;
+      description << "File " << __FILE__ << " Line " << __LINE__ << " " << std::endl
+                  << "The 'inputgen' option has a value, but this program was compiled without HepMC3.";
+      G4Exception("gramsg4::HepMC3GeneratorAction::OpenFile","HepMC3 not found",
+                  FatalException, description);
+      
+#endif
+    }
+
     // Define the links between Geant4's user-action classes and the
     // UserAction's classes.
     SetUserAction(new g4util::RunAction(m_userAction));

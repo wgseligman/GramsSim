@@ -4,6 +4,7 @@
 #include "GramsG4LArSensitiveDetector.hh"
 #include "Options.h"
 
+#include "G4Version.hh"
 #include "G4Exception.hh"
 #include "G4SDManager.hh"
 #include "G4LogicalVolumeStore.hh"
@@ -71,7 +72,11 @@ namespace gramsg4 {
 	      {
 		G4String str=iaux->type;
 		G4String val=iaux->value;
+#if G4VERSION_NUMBER<1100
 		str.toLower();
+#else
+		G4StrUtil::to_lower(str);
+#endif
 
 		// Check for any step limits.
 		if ( str == "steplimit" ) {
@@ -98,7 +103,11 @@ namespace gramsg4 {
 
 		// Check for any visibility changes.
 		if ( str == "color" || str == "colour" ) {
+#if G4VERSION_NUMBER<1100
 		  val.toLower();
+#else
+		  G4StrUtil::to_lower(val);
+#endif
 		  if ( val == "none" ) {
 		    logVol->SetVisAttributes(G4VisAttributes::GetInvisible());
 		    if (verbose)
@@ -199,9 +208,11 @@ namespace gramsg4 {
     options->GetOption("gdmlout",gdmlOutput);
     if ( ! gdmlOutput.empty() ) {
       G4cout << "Writing geometry to '" << gdmlOutput << "'" << G4endl;
+#if G4VERSION_NUMBER>=1070
       // Added in Geant4.10.7: If the GDML output file already exists,
       // overwrite it. 
       fGDMLparser.SetOutputFileOverwrite(true);
+#endif
       fGDMLparser.Write(gdmlOutput, fGDMLparser.GetWorldVolume());
     } // write gdml
   }

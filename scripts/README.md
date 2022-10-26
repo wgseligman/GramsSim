@@ -1,8 +1,25 @@
-# GramsG4 scripts
+# GramsSim scripts
 
-This directory contains utility scripts to help work with GramsG4
+This directory contains utility scripts to help work with GramsSim
 inputs and outputs. Some of the programs are provided solely to teach
-programming concepts for folks new to handling ntuples and dataframes.
+programming concepts for folks new to:
+
+- handling ntuples
+- working with dataframes
+- C++
+- ROOT
+- GDML (Geant4 geometry)
+- HepMC3 (particle-physics file format)
+
+For examples related to working with Geant4 and GramsG4, see [`GramsSim/mac`](../mac).
+
+- If you add scripts/programs to this directory that require [HepMC3][10], [cfitsio][17], or [healpix][18], be sure to edit the [CMakeLists.txt](./CMakeLists.txt) file. This is to prevent those programs from being compiled on systems that don't have these libraries installed.  
+
+[10]: https://gitlab.cern.ch/hepmc/HepMC3
+[17]: https://heasarc.gsfc.nasa.gov/fitsio/
+[18]: https://healpix.jpl.nasa.gov/
+
+## Examples
 
 `SimpleAnalysis.C` - a very simple example of how to look at the
 ntuples produced by gramsg4.
@@ -28,6 +45,9 @@ append a new column that also contains a vector.
 used by Geant4's General Particle Source system. Any `.root` or `.txt`
 files in this directory are used as example inputs and outputs for
 `Hist2Text.C`.
+
+`gdmlsearch.cc` - an example of how to use ROOT to search through a
+geometry specified in GDML and extract information from it.
 
 ## HepMC3 tests
 

@@ -1,6 +1,6 @@
 # GramsG4
 
-If you want a formatted (or easier-to-read) version of this file, scroll to the bottom of `GramsSim/README.md` for instructions. If you're reading this on github, then it's already formatted. 
+If you want a formatted (or easier-to-read) version of this file, scroll to the bottom of [`GramsSim/README.md`](../README.md) for instructions. If you're reading this on github, then it's already formatted. 
 
 - [GramsG4](#gramsg4)
   * [Introduction](#introduction)
@@ -20,14 +20,19 @@ If you want a formatted (or easier-to-read) version of this file, scroll to the 
 
 ## Introduction
 
-**GramsG4** is a simulation of particle transport in the [GRAMS](https://express.northeastern.edu/grams/) detector. It is based on [Geant4](http://geant4.web.cern.ch/), a general-purpose particle-physics detector simulation.
+**GramsG4** is a simulation of particle transport in the [GRAMS][1] detector. It is based on [Geant4][2], a general-purpose particle-physics detector simulation.
+
+[1]: https://express.northeastern.edu/grams/
+[2]: http://geant4.web.cern.ch/
+
+- If the Geant4 libraries are not found during the [build process](../DEPENDENCIES.md), then this package will not be compiled.
 
 ## Running GramsG4
 
 Before running GramsG4 (or any of the GramsSim programs), please read
-`GramsSim/README.md` for how to set up a GramsSim build/work
+[`GramsSim/README.md`](../README.md) for how to set up a GramsSim build/work
 area. When you want to change program options, see
-`GramsSim/util/README.md`.
+[`GramsSim/util/README.md`](../util/README.md).
 
 To run the simulation:
 
@@ -35,7 +40,7 @@ To run the simulation:
     # in the build directory:
     ./gramsg4
 
-If no one has changed the defaults (see *Program Options* below), the Geant4 simulation
+If no one has changed the [defaults](../options.xml), the Geant4 simulation
 will generate 1000 1 *MeV* gammas. If you'd like to see an interactive
 display:
 
@@ -43,9 +48,11 @@ display:
     
 ### Controlling the particle source
 
-GramsG4 uses the [Geant4 general particle source](http://geant4-userdoc.web.cern.ch/geant4-userdoc/UsersGuides/ForApplicationDeveloper/html/GettingStarted/generalParticleSource.html) (or "gps") to generate primary particles. The gps commands
-can only be executed from Geant4 macro files. You can find examples in the `GramsG4/mac` directory. 
-See `GramsG4/mac/README.md` for a description of the examples. 
+GramsG4 uses the [Geant4 general particle source][3] (or "gps") to generate primary particles. The gps commands
+can only be executed from Geant4 macro files. You can find examples in the [`GramsSim/mac`](../mac) directory. 
+See [`GramsSim/mac/README.md`](../mac/README.md) for a description of the examples. 
+
+[3]: http://geant4-userdoc.web.cern.ch/geant4-userdoc/UsersGuides/ForApplicationDeveloper/html/GettingStarted/generalParticleSource.html
 
 To use a particular Geant4 macro file, e.g.,  `mac/run.mac`:
 ```
@@ -69,42 +76,46 @@ file and edit it:
     ./gramsg4 --macrofile my_test.mac
 ```
 
-Of particular interest is the file `mac/sky.mac`, which shows how to generate an energy spectrum from a user-supplied histogram with positions given uniformly by a sphere surrounding the detector. 
+Of particular interest is the file [`mac/sky.mac`](../mac/sky.mac), which shows how to generate an energy spectrum from a user-supplied histogram with positions given uniformly by a sphere surrounding the detector. 
 
 For more on the gps commands, see the [References](#references) section near the end of this document. 
 
 ### Visualization
 
-See `GramsG4/mac/README.md` for a description of the visualization examples in the `GramsG4/mac` directory.
+See [`GramsSim/mac/README.md`](../mac/README.md) for a description of the visualization examples in the [`GramsSim/mac`](../mac) directory.
 
 ### Events from an external generator
 
-The GPS commands may not be sufficient. For example, you may want to generate the primary particles from an initial nuclear interaction (*n-<span style="text-decoration:overline">n</span>*
-oscillations are one such case), or a shower of particles from a cosmic-ray simulation. 
+The GPS commands may not be sufficient. For example, you may want to generate the primary particles from an initial nuclear interaction (*n-n&#773;*
+oscillations are one such case), a shower of particles from a cosmic-ray simulation, or the output of GramsSky
+(see [`GramsSim/GramsSky/README.md`](../GramsSky/README.md)). 
 
-GramsG4 can read files of events in [HepMC3](https://gitlab.cern.ch/hepmc/HepMC3) format. A typical command to run the simulation with an input file would be:
+GramsG4 can read files of events in [HepMC3][10] format. A typical command to run the simulation with an input file would be:
 
     ./gramsg4 --macrofile mac/hepmc3.mac --inputgen scripts/example.hepmc3
 
 Note that HepMC3 can also read files in various formats. The format of the file is assumed to match the file's extension (the part after the final period ".") as follows:
 
-<table>
-<tr><th>Extension</th><th>Format</th></tr>
-<tr><td>.hepmc3</td><td>HepMC3 ASCII</td></tr>
-<tr><td>.hepmc2</td><td>HepMC2 ASCII</td></tr>
-<tr><td>.hpe</td><td><a href="https://cdcvs.fnal.gov/redmine/projects/minos-sim/wiki/HEPEVT_files">HEPEVT</a> (ASCII)</td></tr>
-<tr><td>.lhef</td><td><a href="http://home.thep.lu.se/~leif/LHEF/LHEF_8h_source.html">Les Houches Event File</a></td></tr>
-<tr><td>.root</td><td>HepMC3 ROOT</td></tr>
-<tr><td>.treeroot</td><td>HepMC3 ROOT TTree</td></tr>
-</table>
+|  Extension  |  Format                        |
+| ----------- | -----------------------------  |
+|  .hepmc3    |  HepMC3 ASCII                  |
+|  .hepmc2    |  HepMC2 ASCII                  |
+|  .hpe       |  [HEPEVT][15] (ASCII)          |
+|  .lhef      |  [Les Houches Event File][16]  |
+|  .root      |  HepMC3 ROOT                   |
+|  .treeroot  |  HepMC3 ROOT TTree             |
 
-If you want to write HepMC3 files, there are a couple of simple examples in the `scripts/` directory. More detailed examples can be found in the `examples/` directory within the HepMC3 distribution. 
+[10]: https://gitlab.cern.ch/hepmc/HepMC3
+[15]: https://cdcvs.fnal.gov/redmine/projects/minos-sim/wiki/HEPEVT_files
+[16]: http://home.thep.lu.se/~leif/LHEF/LHEF_8h_source.html
+
+If you want to write HepMC3 files, there are a couple of simple examples in the [`GramsSim/scripts/`](../scripts) directory. More detailed examples can be found in the `examples/` directory within the HepMC3 distribution. 
 
 #### Notes
 
-   - The number of events generated by GramsG4 is determined by the `/run/beamOn` command in the input `.mac` file; there's an example in `mac/hepmc3.mac`. If the number of events in the `beamOn` command exceeds the number of events in the HepMC3 file, GramsG4 will "rewind" the file and read it from the beginning. 
+   - The number of events generated by GramsG4 is determined by the `/run/beamOn` command in the input `.mac` file; there's an example in [`mac/hepmc3.mac`](../mac/hepmc3.mac). If the number of events in the `beamOn` command exceeds the number of events in the HepMC3 file, GramsG4 will "rewind" the file and read it from the beginning. 
    
-   - When creating the event->vertex->particles structure for an HepMC3 `GenEvent` object, there must be at least one incoming particle to the vertex even though GramsG4 will only process the outgoing particles. The program `script/hepmc3-grams-example.cc` demonstrates a work-around. 
+   - When creating the event->vertex->particles structure for an HepMC3 `GenEvent` object, there must be at least one incoming particle to the vertex even though GramsG4 will only process the outgoing particles. The program [`GramsSim/script/hepmc3-grams-example.cc`](../script/hepmc3-grams-example.cc) demonstrates a work-around. 
    
    - Of the above formats, `.hepmc3` files are closest to human-readable.
 
@@ -125,15 +136,17 @@ There are several ntuples in the ROOT file:
    - `TrackInfo`, which contains 'truth' information for all the tracks in the simulation;
    - `Options`, which includes the parsed options for the job (options XML file with the user overrides).
    
-To understand the structure of the ntuples, either view the contents using ROOT, or look in `$GGDIR/GramsG4/src/GramsG4WriteNtuplesAction.cc`.
+To understand the structure of the ntuples, either view the contents using ROOT, or look in [`GramsSim/GramsG4/src/GramsG4WriteNtuplesAction.cc`](src/GramsG4WriteNtuplesAction.cc).
 
-For information about what the term "Identifier" means, see `grams.gdml`. (It's explained there, instead of in this documentation, because it's in `grams.gdml` that Identifiers are defined and assigned.)
+For information about what the term "Identifier" means, see [`grams.gdml`](../grams.gdml). (It's explained there, instead of in this documentation, because it's in `grams.gdml` that Identifiers are defined and assigned.)
 
-If you don't know how to browse an ROOT ntuple, I suggest this [ROOT tutorial](https://www.nevis.columbia.edu/~seligman/root-class/).
+If you don't know how to browse an ROOT ntuple, I suggest this [ROOT tutorial][20].
+
+[20]: https://www.nevis.columbia.edu/~seligman/root-class/
 
 *Note:* The G4Track IDs will be in the order that Geant4 processes them, which is *not* in ascending numeric order (even if you don't run with multiple threads; see below). Also note that it's possible for an event to leave no energy deposits in an active TPC volume, so there may be information in `TrackInfo` with no corresponding information in `LArHits`. 
 
-If you're looking for a place to start in accessing the ntuples for analysis, look at the examples in the `scripts` directory which was copied to your build/work directory. 
+If you're looking for a place to start in accessing the ntuples for analysis, look at the examples in the [`scripts`](../scripts) directory which was copied to your build/work directory. 
     
 ### Generating large numbers of events
 
@@ -157,7 +170,7 @@ Some things to consider:
 
 ## Physics lists and how to extend them
 
-If you looked at `options.xml` you saw an intriguing option (the list may not be `FTFP_BERT`):
+If you looked at [`options.xml`](../options.xml) you saw an intriguing option (the list may not be `FTFP_BERT`):
 
 
 ```
@@ -200,8 +213,11 @@ Unfortunately, at the time of this writing (May-2020) there isn't one
 single source that provides an answer. Here are some links to get you
 started:
 
-* [Short Guide to Choosing Your Physics List](https://indico.cern.ch/event/776050/contributions/3241826/attachments/1789270/2914266/ChoosingPhysLists.pdf) (PDF presentation)
-* [G4 Physics List Guide](http://geant4-userdoc.web.cern.ch/geant4-userdoc/UsersGuides/PhysicsListGuide/BackupVersions/V10.5-2.0/html/physicslistguide.html) (incomplete)
+   * [Short Guide to Choosing Your Physics List][50] (PDF presentation)
+   * [G4 Physics List Guide][51] (incomplete)
+
+[50]: https://indico.cern.ch/event/776050/contributions/3241826/attachments/1789270/2914266/ChoosingPhysLists.pdf
+[51]: http://geant4-userdoc.web.cern.ch/geant4-userdoc/UsersGuides/PhysicsListGuide/BackupVersions/V10.5-2.0/html/physicslistguide.html
 
 If you're just starting out, the Geant4 collaboration's recommendations for initial tests is `FTFP_BERT`. 
 Here it is set explicitly on the command line:
@@ -231,9 +247,9 @@ list. To understand what you need to do to add your own custom list, see
 these files:
 
 ```
-GramsG4/gramsg4.cc
-GramsG4/include/MySpecialPhysList.hh
-GramsG4/include/MySpecialPhysList.icc
+GramsSim/GramsG4/gramsg4.cc
+GramsSim/GramsG4/include/MySpecialPhysList.hh
+GramsSim/GramsG4/include/MySpecialPhysList.icc
 ```
 
 These last two files are unaltered from the Geant4 extensibleFactory
@@ -251,14 +267,25 @@ This will show you many places to get started!
 ## References
 
 Toolkits:
-   - [Geant4 Manual](http://geant4.web.cern.ch/geant4/UserDocumentation/UsersGuides/ForApplicationDeveloper/html/)
-   - [ROOT Tutorial](https://www.nevis.columbia.edu/~seligman/root-class/)
+   - [Geant4 Manual][55]
+   - [ROOT Tutorial][56]
+
+[55]: http://geant4.web.cern.ch/geant4/UserDocumentation/UsersGuides/ForApplicationDeveloper/html/
+[56]: https://www.nevis.columbia.edu/~seligman/root-class/
 
 GDML detector geometry description
-   - [GDML manual](http://lcgapp.cern.ch/project/simu/framework/GDML/doc/GDMLmanual.pdf)
-   - [Geant4 Applications Guide](http://geant4-userdoc.web.cern.ch/geant4-userdoc/UsersGuides/ForApplicationDeveloper/html/), especially the [geometry section](http://geant4-userdoc.web.cern.ch/geant4-userdoc/UsersGuides/ForApplicationDeveloper/html/Detector/Geometry/geometry.html) which explains the difference between solids, logical volumes, and physical volumes. 
+   - [GDML manual][57]
+   - [Geant4 Applications Guide][60], especially the [geometry section][61] which explains the difference between solids, logical volumes, and physical volumes. 
+
+[57]: http://lcgapp.cern.ch/project/simu/framework/GDML/doc/GDMLmanual.pdf
+[60]: http://geant4-userdoc.web.cern.ch/geant4-userdoc/UsersGuides/ForApplicationDeveloper/html/
+[61]: http://geant4-userdoc.web.cern.ch/geant4-userdoc/UsersGuides/ForApplicationDeveloper/html/Detector/Geometry/geometry.html
 
 Geant4 General Particle Source:
-   - [Documentation](http://geant4-userdoc.web.cern.ch/geant4-userdoc/UsersGuides/ForApplicationDeveloper/html/GettingStarted/generalParticleSource.html)
-   - [Examples](http://hurel.hanyang.ac.kr/Geant4/Geant4_GPS/reat.space.qinetiq.com/gps/examples/examples.html)
-   - [Concepts](https://www.google.com/url?sa=t&rct=j&q=&esrc=s&source=web&cd=&cad=rja&uact=8&ved=2ahUKEwiY15u9wP3qAhXFJt8KHQk7C1gQFjADegQIBRAB&url=https%3A%2F%2Findico.in2p3.fr%2Fevent%2F443%2Fcontributions%2F30793%2Fattachments%2F24858%2F30632%2FGSantin_Geant4_Annecy2008_GPS_v11.ppt&usg=AOvVaw0yJS5FTzA2-btA1ag7XCX9) (Microsoft Powerpoint document)
+   - [Documentation][62]
+   - [Examples][63]
+   - [Concepts][64] (Microsoft Powerpoint document)
+
+[62]: http://geant4-userdoc.web.cern.ch/geant4-userdoc/UsersGuides/ForApplicationDeveloper/html/GettingStarted/generalParticleSource.html
+[63]: http://hurel.hanyang.ac.kr/Geant4/Geant4_GPS/reat.space.qinetiq.com/gps/examples/examples.html
+[64]: https://www.google.com/url?sa=t&rct=j&q=&esrc=s&source=web&cd=&cad=rja&uact=8&ved=2ahUKEwiY15u9wP3qAhXFJt8KHQk7C1gQFjADegQIBRAB&url=https%3A%2F%2Findico.in2p3.fr%2Fevent%2F443%2Fcontributions%2F30793%2Fattachments%2F24858%2F30632%2FGSantin_Geant4_Annecy2008_GPS_v11.ppt&usg=AOvVaw0yJS5FTzA2-btA1ag7XCX9 

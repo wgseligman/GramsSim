@@ -14,6 +14,9 @@
 
 // Forward declarations
 class G4Event;
+namespace util {
+  class Options;
+}
 namespace HepMC3 {
   class Reader;
   class GenEvent;
@@ -55,6 +58,25 @@ namespace gramsg4 {
     // The input event information, to be converted
     // and passed on to Geant4.
     HepMC3::GenEvent* m_hepmcEvent;
+
+    // Pointer to instance of the Options class (see
+    // GramsSim/util/README.md).
+    util::Options* m_options;
+
+    // Output flags set via the options XML file.
+    bool m_verbose;
+    bool m_debug;
+
+    // Units of time, from the options XML file.
+    double m_timeScale;
+
+    // Control the logic of whether the run and event numbers normally
+    // assigned by Geant4 are overridden by the contents of the HepMC3
+    // file. In general, if the user has specified non-default values
+    // for run and event numbers in the Geant4 options, they will take
+    // precedence over the values in the HepMC3 file.
+    bool m_useHepMC3RunNumber;
+    bool m_useHepMC3EventNumber;
   };
 
 } // namespace gramsg4
