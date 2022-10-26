@@ -3,6 +3,17 @@
 # .heprep files for use with the HepRApp visualizer.
 ###################################################
 
+# If you need to see details about the physics
+# list, you can use the following. It's also part of
+# the output of "./gramsg4 -v".
+#/process/em/verbose 1
+#/process/had/verbose 1
+
+# In GramsG4, every .mac file must contain this
+# line after any physics/geometry/thread setup,
+# but before any generation/visualization commands.
+/run/initialize
+
 # Tell G4 to create .heprep files. It will create
 # one file for each event. Note that these files
 # are in XML format and contain a great deal of

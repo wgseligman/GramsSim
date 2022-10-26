@@ -1,3 +1,18 @@
+###################################################
+# GUI/Event visualization example
+###################################################
+
+# If you need to see details about the physics
+# list, you can use the following. It's also part of
+# the output of "./gramsg4 -v".
+#/process/em/verbose 1
+#/process/had/verbose 1
+
+# In GramsG4, every .mac file must contain this
+# line after any physics/geometry/thread setup,
+# but before any generation/visualization commands.
+/run/initialize
+
 # This is an example of how to use the "addMenu" and
 # "addButton" commands to issue commands within the
 # Geant4 visualizer. 

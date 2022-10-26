@@ -7,6 +7,9 @@ someone typed "git commit"), see the output of "git log".
 Oct-2022
 
    - Multi-threaded saving and restoring of random numbers now works properly. 
+   - Enable the control of physics and other parameters from within the G4
+     macro file. This requires that /run/initialize be present in every
+     top-level macro file.
 
 Sep-2022
 
