@@ -25,6 +25,15 @@ C++ programs I write.
 
 ## Options - parse XML file and command line
 
+One of the most frequent issues that comes up in programming is
+getting options and parameters into a program. The purpose of the
+`Options` utility is to provide a systematic interface for:
+
+   - Defining and documenting options (handled via the `options.xml` file)
+   - Supplying or overriding options using the command line
+   - Accessing the options from within a C++ program
+   - Saving the options used in particular run of a program
+
 *Although you'll see the text `gramsg4` below, the Options class is generic and can work with any program. Just substitute the program's name for `gramsg4`.*
 
 ### Format of `options.xml`
@@ -263,7 +272,7 @@ In these cases, you can include a section of one XML file within another using [
           `<gramssky xml:id="gramssky">`
           
       - This may not be necessary if the value of the `element` attribute in the main file is the same as the tag
-      with the program's game (`gramssky` in this example). 
+      with the program's name (`gramssky` in this example). 
 
 
 ### Accessing options from within your program

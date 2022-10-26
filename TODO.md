@@ -2,9 +2,6 @@
 
 As of 25-Aug-2021:
 
-- Multi-threaded execution
-   - Test the saving and restoring of random-number states.
-
 - Scintillator hits
    - It would be handy to provide a two-way map of strip geometry to (x,y,z).
    
@@ -15,6 +12,10 @@ As of 25-Aug-2021:
 
 ## Resolved issues:
 
+- Multi-threaded execution
+   - Test the saving and restoring of random-number states. 
+   - Resolved Oct-2022.
+   
 - Multi-threaded execution no longer causes the program to crash. 
 
 - UI display

@@ -4,6 +4,26 @@ A description of major development milestones. The most recent are at
 the top. For a detailed list of all changes (basically, every time
 someone typed "git commit"), see the output of "git log".
 
+Oct-2022
+
+   - Multi-threaded saving and restoring of random numbers now works properly. 
+
+Sep-2022
+
+   - GramsDetSim functionally complete and documented (though the
+     values of the parameters in options.xml will probably change).
+
+Aug-2022
+
+   - Fixed bugs in GDML file (the low-z scintillators were not being placed).
+     Also simplified the GDML code to not require lots of different
+     index variables. 
+   - Switch to using the "cube" geometry (the LAr TPC is roughly cube-shaped)
+     instead of the "flat" geometry; the latter is archived in gdml/grams-flat.gdml. 
+   - The units for LAr TPC step size in GramsG4 now from the LengthUnit parameter
+     in options.xml.
+   - Fixed a tricky issue in Options.cc when compiled on a Macintosh. 
+
 Apr-2022
 
    - GramsG4 will now compile for both the latest Geant4 11.0, and earlier G4 versions such as Geant4.10.5 and 4.10.7. This requires several `#if G4VERSION_NUMBER...` several statements in the code; let's hope this doesn't get too confusing. 

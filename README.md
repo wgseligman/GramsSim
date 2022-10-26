@@ -13,6 +13,7 @@ If you want a formatted (or easier-to-read) version of this file, scroll to the 
     + [Development "flow"](#development--flow-)
   * [Detector geometry](#detector-geometry)
   * [Program options](#program-options)
+    + [Random numbers](#random-numbers)
     + [Setting run/event numbers](#setting-run-event-numbers)
   * [FAQ](#faq)
   * [References](#references)
@@ -46,7 +47,14 @@ subdirectory's README.md file:
 
    - [**scripts**](scripts): Examples of how to work with GramsSim components and files.
    
-   - [**mac**](mac): Geant4 macro files for use with GramsG4.
+   - [**mac**](mac): Geant4 macro files for use with [GramsG4](GramsG4).
+   
+This is a diagram of the overall structure of the GramsSim modules. Note that as of Oct-2022, many of these modules have not yet been formally installed in this packages; these are denoted in gray text in the figure.
+
+|                                                 |
+| :---------------------------------------------: | 
+| <img src="GramsSim_modules.png" width="100%" /> |
+
 
 Before installing GramsSim, please read [DEPENDENCIES.md](DEPENDENCIES.md) for a list of packages that must be installed for GramsSim to compile.
 
@@ -250,7 +258,7 @@ originally designed for Geant4.
 [15]: https://gdml.web.cern.ch/GDML/doc/GDMLmanual.pdf
 
 If you want to make changes to the detector geometry (including the colors used for
-the `gramsg4 --ui` interactive display), edit `grams.gdml` or supply a different GDML file using the `--gdmfile` option.
+the `gramsg4 --ui` interactive display), edit `grams.gdml` or supply a different GDML file using the `--gdmlfile` option.
 If you're having trouble 
 understanding the contents of the `grams.gdml`, start by reading the comments within the file.
 There's more about GDML in the [References](#references) section below. 
@@ -260,6 +268,14 @@ There's more about GDML in the [References](#references) section below.
 Short version: look at [`options.xml`](options.xml). 
 
 For a complete description, see [the Options XML file documentation](util/README.md).
+
+### Random numbers
+       
+If you are running multiple jobs to generate events, by default they'll all run with the same random number seed; i.e., in the options XML file there is a parameter `rngseed` which is set to -1 by default. To generate a different set of events for each job, you will want to vary the seed for each job. 
+   
+For example, if the job has a unique process ID in the variable `${Process}`, then you probably want something like this:
+      
+      ./gramsg4 --rngseed ${Process}
 
 ### Setting run/event numbers
 

@@ -1,7 +1,7 @@
 <?xml version = "1.0" encoding = "UTF-8" ?>
 
-<!-- This is an Options XML that could be used solely for running GramsDetSim.
-     It's also part of an example of how to include one XML file within another.
+<!-- IMPORTANT: This file is an example for how to include one XML file within 
+     another. It is NOT kept up-to date with the main GramsSim/options.xml. 
      Please see GramsSim/util/README.md for more. -->
 
 <parameters>
@@ -9,7 +9,7 @@
   <global>
 
     <!-- The parameters in this section are meant to apply to all the
-         programs. However, you can ovverride them within the
+         programs. However, you can override them within the
          individual program blocks, though it's probably more useful
          to override them on the command line. Be careful about what
          you're overriding, especially the unit options. -->
