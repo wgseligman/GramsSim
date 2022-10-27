@@ -46,7 +46,78 @@ display:
 
     ./gramsg4 --ui
     
-### Controlling the particle source
+## Controlling GramsG4
+
+As an application, `GramsG4` is a fairly generic Geant4 program. Most of its processing and functionality is controlled by input files. 
+
+|                                         |
+| :-------------------------------------: | 
+| <img src="GramsG4IO.png" width="75%" /> |
+
+### Geometry
+
+As noted in the [GramsSim documentation](../README.md), the detector geometry is defined
+by a file written in the detector-geometry language [GDML][57]. 
+
+The default name of the GDML file (as given in [`options.xml`](../options.xml)) is `grams.gdml`. This can be overridden by the `-g` (or `--gdmlfile`) option on the command line:
+
+    ./gramsg4 -g alt-geom.gdml
+    
+### Processing options
+
+As described in the [utilities documentation](../util/README.md), `GramsG4`'s processing can be controlled by the contents of [`options.xml`](../options.xml). In turn, those options can be overridden on the command line. 
+
+### G4 macro file
+
+As with many Geant4 applications, `GramsG4` reads in a Geant4 macro file. This file contains [Geant4 interactive commands][60]. There are many examples in the [`GramsSim/mac`](../mac) directory. 
+
+The default name of the macro file is defined in [`options.xml`](../options.xml). As of 27-Oct-2022, the default value of the `-m` (`--macrofile`) option is `mac/batch.mac`; when running `GramsG4` visualization interface (the `--ui` option), the default value of the `--uimacrofile` option is `mac/vis-menus.mac`. 
+
+There is is one key G4 command that must be in any macro file:
+
+    /run/initialize
+    
+In general, commands that affect the physics and geometry of the application must come _before_ that line; commands that affect particle and visualization must come _after_ that line. 
+
+### Option priority
+
+In general, the properties and operations of `GramsG4` as controlled by the above files are processed in the following order:
+
+   - GDML file
+   - options XML file
+   - command-line options
+   - G4 macro commands
+   
+As an example, consider the parameter that controls the size of the steps of charged particles in the liquid argon; this defines the maximum length of the "hits" in the LAr TPC. 
+
+- This is defined in the GDML file: 
+
+        <volume name="volTPCActive"> ...
+        <auxiliary auxtype="StepLimit" auxvalue="0.02"/> </volume>
+
+- Can be overridden by an option in the XML file:
+
+        <option name="larstepsize" value="0.01" type="double" />
+
+- Which means it could be overridden on the command line: 
+
+        ./gramsg4 --larstepsize=0.015
+        
+A second example: Controlling the number execution threads when running `GramsG4` as a multi-threaded application.
+
+- In the `options.xml` file:
+
+        <option name="nthreads" short = "t" value="0" type="integer" desc="number of threads"/>  
+
+- Would be overridden by an option on the command line:
+
+        ./gramsg4 -t 10
+    
+- But the final say would come from the following if it were specified in the G4 macro file, before `/run/intitialize`:
+
+         /run/numberOfThreads 4
+
+## Controlling the particle source
 
 GramsG4 uses the [Geant4 general particle source][3] (or "gps") to generate primary particles. The gps commands
 can only be executed from Geant4 macro files. You can find examples in the [`GramsSim/mac`](../mac) directory. 
@@ -80,11 +151,11 @@ Of particular interest is the file [`mac/sky.mac`](../mac/sky.mac), which shows 
 
 For more on the gps commands, see the [References](#references) section near the end of this document. 
 
-### Visualization
+## Visualization
 
 See [`GramsSim/mac/README.md`](../mac/README.md) for a description of the visualization examples in the [`GramsSim/mac`](../mac) directory.
 
-### Events from an external generator
+## Events from an external generator
 
 The GPS commands may not be sufficient. For example, you may want to generate the primary particles from an initial nuclear interaction (*n-n&#773;*
 oscillations are one such case), a shower of particles from a cosmic-ray simulation, or the output of GramsSky
@@ -120,7 +191,7 @@ If you want to write HepMC3 files, there are a couple of simple examples in the 
    - Of the above formats, `.hepmc3` files are closest to human-readable.
 
 
-### Program outputs
+## Program outputs
 
 These are likely to change rapidly as the software improves. This is the state of program outputs as of 17-Mar-2021.
 
@@ -148,7 +219,7 @@ If you don't know how to browse an ROOT ntuple, I suggest this [ROOT tutorial][2
 
 If you're looking for a place to start in accessing the ntuples for analysis, look at the examples in the [`scripts`](../scripts) directory which was copied to your build/work directory. 
     
-### Generating large numbers of events
+## Generating large numbers of events
 
 Some things to consider:
 
@@ -187,9 +258,7 @@ Some things to consider:
 If you looked at [`options.xml`](../options.xml) you saw an intriguing option (the list may not be `FTFP_BERT`):
 
 
-```
     <option name="physicslist" short= "p" value="FTFP_BERT" type="string" desc="physics list"/>
-```
 
 The program uses the extensible physics-list factory described in a
 Geant4 example; at Nevis, this example can be found at
@@ -281,6 +350,7 @@ This will show you many places to get started!
 ## References
 
 Toolkits:
+
    - [Geant4 Manual][55]
    - [ROOT Tutorial][56]
 
@@ -288,6 +358,7 @@ Toolkits:
 [56]: https://www.nevis.columbia.edu/~seligman/root-class/
 
 GDML detector geometry description
+
    - [GDML manual][57]
    - [Geant4 Applications Guide][60], especially the [geometry section][61] which explains the difference between solids, logical volumes, and physical volumes. 
 
@@ -296,6 +367,7 @@ GDML detector geometry description
 [61]: http://geant4-userdoc.web.cern.ch/geant4-userdoc/UsersGuides/ForApplicationDeveloper/html/Detector/Geometry/geometry.html
 
 Geant4 General Particle Source:
+
    - [Documentation][62]
    - [Examples][63]
    - [Concepts][64] (Microsoft Powerpoint document)
