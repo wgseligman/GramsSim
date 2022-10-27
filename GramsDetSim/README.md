@@ -55,6 +55,8 @@ command line.
 
 ## Detector-response functions
 
+Again recall that the parameters for all of the following functions can be found in the `options.xml` file. 
+
 ### Recombination
 
 "Recombination" is a model of the effects of electrons returning to
@@ -116,7 +118,7 @@ where
 
 - t<sub>elec</sub> = the electron lifetime in the liquid argon. 
 
-v<sub>drift</sub> and t<sub>elec</sub> are detector- and material-dependent parameters.
+v<sub>drift</sub> and t<sub>elec</sub> are detector- and material-dependent parameters, whose values are found in the `options.xml` file.
 
 ### Diffusion
 
@@ -126,6 +128,19 @@ The procedure is to convert the ionization energy to a number of
 electrons. The electrons are grouped into clusters, to save time. Then
 each cluster is randomly shifted in both the transverse and
 longitudinal directions of the drift.
+
+The spread of the electron clusters is given by:
+
+<img src="DiffusionFormulas.png" width="20%" />
+
+where _N(a,b)_ is a normal distribution with a mean of _a_ and a width of _b_, and _D_<sub>T</sub> and _D_<sub>L</sub> are parameters supplied in the `options.xml` file. 
+
+This is a sketch of the procedure:
+
+|                                           |
+| :---------------------------------------: | 
+| <img src="Diffusion.png" width="50%" />   |
+
 
 The output ntuple contains the energy, arrival time, and shifted
 (x,y,z) of each individual cluster.
