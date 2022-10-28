@@ -491,7 +491,7 @@
 
     The number of electrons in a cluster. The clusters are drifted in
     the LAr, as opposed to drifting each electron individually.
-    <option name="ElectronClusterSize" value="20" type="int"
+    <option name="ElectronClusterSize" value="200" type="int"
         desc="number of electrons in a cluster"/>
 
     <option name="MinNumberOfElCluster" value="0" type="integer"
@@ -506,11 +506,12 @@
 
 
   <gramsreadoutsim>
-    <!-- Input ROOT file from GramsG4 (or at least contains a LArHits-compatible ntuple -->
+
+    <!-- Input ROOT file from GramsDetSim (or at least contains a DetSim-compatible ntuple -->
     <option name="inputfile" short="i" value="gramsdetsim.root" type="string" 
         desc="input file"/>    
 
-    <!-- Name of ntuple in the input file that contains the hit information. -->
+    <!-- Name of ntuple in the input file that contains the electron-cluster information. -->
     <option name="inputntuple" value="DetSim" type="string" desc="input ntuple"/>
 
     <!-- Output ROOT file -->
@@ -518,10 +519,8 @@
         desc="output file"/>
 
     <!-- Name of ntuple in the output file that contains the
-         detector-response information. This ntuple will be a
-         row-for-row match with the input ntuple, and can therefore be
-         used as a "friend ntuple" with the input intuple (see "friend
-         TTrees" in the ROOT documentation.  -->
+         readout information. 
+    -->
     <option name="outputntuple" value="ReadoutSim" type="string" desc="output ntuple"/>
 
     <option name="readout_centerx"  value="0.0" type="double" desc="x coordinate of the readout plane" />
@@ -532,12 +531,14 @@
   </gramsreadoutsim>
 
   <gramselecsim>
-    <!-- Input ROOT file from GramsG4 (or at least contains a LArHits-compatible ntuple -->
+
+    <!-- Input ROOT file from GramsReadoutSim (or at least contains 
+	 a ReadoutSim-compatible ntuple -->
     <option name="inputfile" short="i" value="gramsreadoutsim.root" type="string" 
         desc="input file"/>    
 
-    <!-- Name of ntuple in the input file that contains the hit information. -->
-    <option name="inputntuple" value="LArHits" type="string" desc="input ntuple"/>
+    <!-- Name of ntuple in the input file that contains the readout information. -->
+    <option name="inputntuple" value="ReadoutSim" type="string" desc="input ntuple"/>
 
     <!-- Output ROOT file -->
     <option name="outputfile" short="o" value="gramselecsim.root" type="string"

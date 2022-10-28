@@ -1,6 +1,6 @@
 <?xml version = "1.0" encoding = "UTF-8" ?>
 
-<!-- This is an Options XML that could be used solely for running GramsDetSim.
+<!-- This is an Options XML that could be used solely for running GramsReadoutSim.
      It's also part of an example of how to include one XML file within another.
      Please see GramsSim/util/README.md for more. -->
 
@@ -48,34 +48,30 @@
         in recreating the run.
     </option>
 
-
   </global>
 
   <gramsreadoutsim>
-    <!-- Input ROOT file from GramsG4 (or at least contains a LArHits-compatible ntuple -->
-    <option name="inputfile" short="i" value="input.root" type="string"
-        desc="input file"/>
 
-    <!-- Name of ntuple in the input file that contains the hit information. -->
-    <option name="inputntuple" value="LArHits" type="string" desc="input ntuple"/>
+    <!-- Input ROOT file from GramsDetSim (or at least contains a DetSim-compatible ntuple -->
+    <option name="inputfile" short="i" value="gramsdetsim.root" type="string" 
+        desc="input file"/>    
+
+    <!-- Name of ntuple in the input file that contains the electron-cluster information. -->
+    <option name="inputntuple" value="DetSim" type="string" desc="input ntuple"/>
 
     <!-- Output ROOT file -->
-    <option name="outputfile" short="o" value="output.root" type="string"
+    <option name="outputfile" short="o" value="gramsreadoutsim.root" type="string"
         desc="output file"/>
 
     <!-- Name of ntuple in the output file that contains the
-         detector-response information. This ntuple will be a
-         row-for-row match with the input ntuple, and can therefore be
-         used as a "friend ntuple" with the input intuple (see "friend
-         TTrees" in the ROOT documentation.  -->
-    <option name="outputntuple" value="DetSim" type="string" desc="output ntuple"/>
+         readout information. 
+    -->
+    <option name="outputntuple" value="ReadoutSim" type="string" desc="output ntuple"/>
 
-    <option name="pixel_size" value="3.2" type="double" desc="pixel size" />
-    <option name="readout_centerx" value="3.2" type="double" desc="pixel size" />
-    <option name="readout_centery" value="3.2" type="double" desc="pixel size" />
-    <option name="readout_sizex" value="3.2" type="double" desc="pixel size" />
-    <option name="readout_sizey" value="3.2" type="double" desc="pixel size" />
-
+    <option name="readout_centerx"  value="0.0" type="double" desc="x coordinate of the readout plane" />
+    <option name="readout_centery"  value="0.0" type="double" desc="y coordinate of the readout plane" />
+    <option name="pixel_sizex" value="3.2" type="double" desc="pixel size x" />
+    <option name="pixel_sizey" value="3.2" type="double" desc="pixel size y" />
 
   </gramsreadoutsim>
 

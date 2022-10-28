@@ -1,6 +1,6 @@
 <?xml version = "1.0" encoding = "UTF-8" ?>
 
-<!-- This is an Options XML that could be used solely for running GramsDetSim.
+<!-- This is an Options XML that could be used solely for running GramsElecSim.
      It's also part of an example of how to include one XML file within another.
      Please see GramsSim/util/README.md for more. -->
 
@@ -51,32 +51,47 @@
 
   </global>
 
-  <gramsreadoutsim>
-    <!-- Input ROOT file from GramsG4 (or at least contains a LArHits-compatible ntuple -->
-    <option name="inputfile" short="i" value="input.root" type="string"
-        desc="input file"/>
+  <gramselecsim>
 
-    <!-- Name of ntuple in the input file that contains the hit information. -->
-    <option name="inputntuple" value="LArHits" type="string" desc="input ntuple"/>
+    <!-- Input ROOT file from GramsReadoutSim (or at least contains 
+	 a ReadoutSim-compatible ntuple -->
+    <option name="inputfile" short="i" value="gramsreadoutsim.root" type="string" 
+        desc="input file"/>    
+
+    <!-- Name of ntuple in the input file that contains the readout information. -->
+    <option name="inputntuple" value="ReadoutSim" type="string" desc="input ntuple"/>
 
     <!-- Output ROOT file -->
-    <option name="outputfile" short="o" value="output.root" type="string"
+    <option name="outputfile" short="o" value="gramselecsim.root" type="string"
         desc="output file"/>
+    <option name="outputntuple"         value="ElecSim" type="string" desc="output ntuple"/>
 
-    <!-- Name of ntuple in the output file that contains the
-         detector-response information. This ntuple will be a
-         row-for-row match with the input ntuple, and can therefore be
-         used as a "friend ntuple" with the input intuple (see "friend
-         TTrees" in the ROOT documentation.  -->
-    <option name="outputntuple" value="DetSim" type="string" desc="output ntuple"/>
+    <!-- general information -->
+    <option name="timebin_width"        value="10.0"    type="double" desc="time bin width in this framework[ns]"/>
+    <option name="time_window"          value="60000.0" type="double" desc="sampling width [ns]"/>
 
-    <option name="pixel_size" value="3.2" type="double" desc="pixel size" />
-    <option name="readout_centerx" value="3.2" type="double" desc="pixel size" />
-    <option name="readout_centery" value="3.2" type="double" desc="pixel size" />
-    <option name="readout_sizex" value="3.2" type="double" desc="pixel size" />
-    <option name="readout_sizey" value="3.2" type="double" desc="pixel size" />
+    <!-- Preamp -->
+    <option name="preamp_func"          value="4"       type="int"    desc="curve type of preamp output"/>
+    <option name="preamp_prior_time"    value="200.0"   type="double" desc="rise time [ns]"/>
+    <option name="preamp_post_time"     value="3000.0"  type="double" desc="decay time [ns]"/>
+    <option name="peak_delay"           value="0.0"     type="double" desc="delay time from e- [ns]"/>
+    <option name="preamp_mu"            value="1500.0"  type="double" desc="sampling width [ns]"/>
+    <option name="preamp_sigma"         value="400.0"   type="double" desc="sampling width [ns]"/>
+    <option name="preamp_tau1"          value="100.0"   type="double" desc="tau1 in two exp model [ns]"/>
+    <option name="preamp_tau2"          value="500.0"   type="double" desc="tau2 in two exp model [ns]"/>
+    <option name="preamp_gain"          value="1.0"     type="double" desc="gain [mV/fC]"/>
 
+    <!-- add noise -->
+    <option name="noise_param0"     value="0.0"     type="double" desc="0th order"/>
+    <option name="noise_param1"     value="0.0"     type="double" desc="1st order"/>
+    <option name="noise_param2"     value="0.0"     type="double" desc="2nd order"/>
 
-  </gramsreadoutsim>
+    <!-- AD converter -->
+    <option name="bit_resolution"   value="10"      type="int"      desc="resolution of ADC [bit]"/>
+    <option name="input_min"        value="0.0"     type="double"   desc="minimum input of ADC [mV]"/>
+    <option name="input_max"        value="1000.0"  type="double"   desc="maximum input of ADC [mV]"/>
+    <option name="sample_freq"      value="50.0"    type="double"   desc="sampling frequency of an ADC [MHz]"/>
+
+  </gramselecsim>
 
 </parameters>
