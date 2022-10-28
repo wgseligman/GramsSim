@@ -41,7 +41,11 @@ subdirectory's README.md file:
 
    - [**GramsG4**](GramsG4): A Geant4 simulation of particle transport in the GRAMS detector. 
 
-   - [**GramsDetSim**](GramsDetSim): Models the GRAMS detector response to the energy deposits recorded by GramsG4. 
+   - [**GramsDetSim**](GramsDetSim): A simulations of the GRAMS detector response to the energy deposits recorded by GramsG4. 
+
+   - [**GramsReadoutSim**](GramsReadoutSim): This models the readout geometry of the GRAMS detector.
+
+   - [**GramsElecSim**](GramsElecSim): A simulation of the electronics response to the detector readout, including noise and shaping. 
 
    - [**util**](util): Common utilities (e.g., options processing) shared by all components. 
 
