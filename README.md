@@ -329,18 +329,16 @@ cmake ../GramsSim
 
 **Q. On Mac OS X, the program names end in `.exe`. Why?**
 
-This is to avoid problems in the build procedure caused by Mac OS X being case-insensitive with respect to file and directory names; e.g., `GramsSky` and `gramssky` are the same in OS X; when the build procedure tries to create the executable `gramssky`, it fails (with a mysterious error message) because the directory `GramsSky` already exists. In this example, it's safer to make the name of the executable `gramssky.exe`.
+This is to avoid problems in the build procedure caused by a common version of the Mac OS X filesystem being case-insensitive with respect to file and directory names; e.g., `GramsSky` and `gramssky` are the same in OS X. When the build procedure tries to create the executable `gramssky`, it fails (with a mysterious error message) because the directory `GramsSky` already exists. In this case, it's safer to make the name of the executable `gramssky.exe`.
 
 So if you see an example like this in the documentation:
 
-```
-./gramsg4 --ui --uimacrofile mac/vis-menus.mac
-```
+
+    ./gramsg4 --ui --uimacrofile mac/vis-menus.mac
+
 In Mac OS X, this is
 
-```
-./gramsg4.exe --ui --uimacrofile mac/vis-menus.mac
-```
+    ./gramsg4.exe --ui --uimacrofile mac/vis-menus.mac
 
 ## References
 
