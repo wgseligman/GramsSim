@@ -21,6 +21,8 @@
 #include "G4Threading.hh"
 #include "G4AutoLock.hh"
 
+#include "TFile.h"
+
 #include <string>
 
 namespace gramsg4 {
@@ -67,7 +69,8 @@ namespace gramsg4 {
   //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
   // Destructor.
-  WriteNtuplesAction::~WriteNtuplesAction() {}
+  WriteNtuplesAction::~WriteNtuplesAction() {
+  }
 
   //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
@@ -214,7 +217,8 @@ namespace gramsg4 {
     m_optionsNTID = analysisManager->CreateNtuple("Options", "Options used for this program");
     if (m_debug) 
       G4cout << "WriteNtuplesAction::() - "
-	     << "ntuple id of 'Options' = " << m_optionsNTID << G4endl;
+             << "ntuple id of 'Options' = " << m_optionsNTID << G4endl;
+
 
     analysisManager->CreateNtupleSColumn("OptionName");     // id 0
     analysisManager->CreateNtupleSColumn("OptionValue");    // id 1
@@ -224,40 +228,40 @@ namespace gramsg4 {
     analysisManager->CreateNtupleSColumn("OptionSource");   // id 5
 
     if (m_debug) 
-	G4cout << "WriteNtuplesAction::BeginOfRunAction() - "
-	       << "finish Options n-tuple"
-	       << G4endl;
+      G4cout << "WriteNtuplesAction::BeginOfRunAction() - "
+	     << "finish Options n-tuple"
+	     << G4endl;
     analysisManager->FinishNtuple();
 
     // In multi-threaded running, ntuples exist in worker threads, but
     // not in the main thread. If we try to fill the options ntuple in
     // the master thread, we get lots of annoying (but harmless) error
     // messages. The following test makes sure we only fill the ntuple
-    // if there are no threads, or for a single worker thread (ID ==
-    // 0) in a multi-threaded application.
+    // if there are no threads (SEQUENTIAL_ID), or for a single worker
+    // thread (ID == 0) in a multi-threaded application.
 
     auto threadID = G4Threading::G4GetThreadId();
-    if ( ( ! G4Threading::IsMultithreadedApplication() )  ||  
-	 threadID == 0 ) {
+    if ( threadID == G4Threading::SEQUENTIAL_ID  ||  
+         threadID == 0 ) {
 
       // Write the options to the ntuple.
       auto numOptions = m_options->NumberOfOptions();
       if (m_debug) 
-	G4cout << "WriteNtuplesAction::BeginOfRunAction() - "
-	       << "number of options = " << numOptions
-	       << G4endl;
+        G4cout << "WriteNtuplesAction::BeginOfRunAction() - "
+               << "number of options = " << numOptions
+               << G4endl;
       for ( size_t i = 0; i != numOptions; ++i ) {
-	if (m_debug) 
-	  G4cout << "WriteNtuplesAction::BeginOfRunAction() - "
-		 << "filling for option number = " << i
-		 << G4endl;
-	analysisManager->FillNtupleSColumn(m_optionsNTID, 0, m_options->GetOptionName(i));
-	analysisManager->FillNtupleSColumn(m_optionsNTID, 1, m_options->GetOptionValue(i));
-	analysisManager->FillNtupleSColumn(m_optionsNTID, 2, m_options->GetOptionType(i));
-	analysisManager->FillNtupleSColumn(m_optionsNTID, 3, m_options->GetOptionBrief(i));
-	analysisManager->FillNtupleSColumn(m_optionsNTID, 4, m_options->GetOptionDescription(i));
-	analysisManager->FillNtupleSColumn(m_optionsNTID, 5, m_options->GetOptionSource(i));
-	analysisManager->AddNtupleRow(m_optionsNTID);  
+        if (m_debug) 
+          G4cout << "WriteNtuplesAction::BeginOfRunAction() - "
+                 << "filling for option number = " << i
+                 << G4endl;
+        analysisManager->FillNtupleSColumn(m_optionsNTID, 0, m_options->GetOptionName(i));
+        analysisManager->FillNtupleSColumn(m_optionsNTID, 1, m_options->GetOptionValue(i));
+        analysisManager->FillNtupleSColumn(m_optionsNTID, 2, m_options->GetOptionType(i));
+        analysisManager->FillNtupleSColumn(m_optionsNTID, 3, m_options->GetOptionBrief(i));
+        analysisManager->FillNtupleSColumn(m_optionsNTID, 4, m_options->GetOptionDescription(i));
+        analysisManager->FillNtupleSColumn(m_optionsNTID, 5, m_options->GetOptionSource(i));
+        analysisManager->AddNtupleRow(m_optionsNTID);  
       }
     } // if sequential or worker thread
   }

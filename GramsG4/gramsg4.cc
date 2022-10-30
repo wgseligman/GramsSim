@@ -12,6 +12,8 @@
 // For processing command-line and XML file options.
 #include "Options.h" // in util/
 
+#include "Analysis.h" // in g4util/
+
 // There are three mandatory classes needed for any Geant4 application
 // to work. One is the detector geometry:
 #include "GramsG4DetectorConstruction.hh"
@@ -76,6 +78,8 @@
 #include "G4PhysListStamper.hh"  // defines macro for factory registration
 #include "MySpecialPhysList.hh"
 G4_DECLARE_PHYSLIST_FACTORY(MySpecialPhysList);
+
+#include "TFile.h" // For writing options ntuple at the end. 
 
 // --------------------------------------------------------------
 
@@ -300,6 +304,7 @@ int main(int argc,char **argv)
   // ***** end User Action Manager setup *****
 
   // Tell Geant4 we're about to begin. 
+  // Oct-2022 WGS: This is now supplied via the G4 macro file. 
   // runManager->Initialize();
 
   // Initialize visualization
@@ -334,8 +339,10 @@ int main(int argc,char **argv)
     UImanager->ApplyCommand(command+macroFile);
 
   // Clean-up
+
   delete visManager;
   delete runManager;
+
   return 0;
 }
 

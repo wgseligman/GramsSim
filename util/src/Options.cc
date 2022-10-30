@@ -8,6 +8,7 @@
 #include "TKey.h"
 #include "TTreeReader.h"
 #include "TTreeReaderValue.h"
+#include "TTreeReaderArray.h"
 
 // C++ includes
 #include <getopt.h>
@@ -693,26 +694,28 @@ namespace util {
     std::string title = std::string("Options used for ") + m_progPath;
     auto ntuple = new TTree(a_ntupleName.c_str(), title.c_str());
 
-    // Set up the columns of the ntuple. 
-    std::string name, value, type, brief, desc, source;
-    ntuple->Branch("OptionName",&name);
-    ntuple->Branch("OptionValue",&value);
-    ntuple->Branch("OptionType",&type);
-    ntuple->Branch("OptionBrief",&brief);
-    ntuple->Branch("OptionDesc",&desc);
-    ntuple->Branch("OptionSource",&source);
+    // Set up the columns of the ntuple. To be compatible with
+    // Geant4's clumsy ROOT analysis manager, we have to use
+    // char arrays instead of std::string. 
+    char name[40], value[40], type[10], brief[2], desc[40], source[20];
+    ntuple->Branch("OptionName",&name,"OptionName/C");
+    ntuple->Branch("OptionValue",&value,"OptionValue/C");
+    ntuple->Branch("OptionType",&type,"OptionType/C");
+    ntuple->Branch("OptionBrief",&brief,"OptionBrief/C");
+    ntuple->Branch("OptionDesc",&desc,"OptionDesc/C");
+    ntuple->Branch("OptionSource",&source,"OptionSource/C");
 
     // Loop over the options. As it says in Options.h, this is an
     // inefficient operation, but hopefully no program will do it more
     // than once.
     auto numOptions = NumberOfOptions();
     for ( size_t i = 0; i != numOptions; ++i ) {
-      name = GetOptionName(i);
-      value = GetOptionValue(i);
-      type = GetOptionType(i);
-      brief = GetOptionBrief(i);
-      desc = GetOptionDescription(i);
-      source = GetOptionSource(i);
+      strcpy(name, GetOptionName(i).c_str());
+      strcpy(value, GetOptionValue(i).c_str());
+      strcpy(type, GetOptionType(i).c_str());
+      strcpy(brief, GetOptionBrief(i).c_str());
+      strcpy(desc, GetOptionDescription(i).c_str());
+      strcpy(source, GetOptionSource(i).c_str());
 
       // Write out the ntuple entry.
       ntuple->Fill();
@@ -754,39 +757,50 @@ namespace util {
 	  std::string ntName = ntuple->GetName();
 	  // Does the name match the user-supplied name (default "Options")?
 	  if ( ntName == a_name ) {
-	    // Set up reading columns from this ntuple.
-	    TTreeReader reader(ntName.c_str(), a_input);
-	    TTreeReaderValue<std::string> name(reader, "OptionName");
-	    TTreeReaderValue<std::string> value(reader, "OptionValue");
-	    TTreeReaderValue<std::string> type(reader, "OptionType");
-	    TTreeReaderValue<std::string> brief(reader, "OptionBrief");
-	    TTreeReaderValue<std::string> desc(reader, "OptionDesc");
-	    TTreeReaderValue<std::string> source(reader, "OptionSource");
+
+	    // Set up the columns of the ntuple. To be compatible with
+	    // Geant4's clumsy ROOT analysis manager, we have to use
+	    // char arrays instead of std::string. 
+	    char name[40], value[40], type[10], brief[2], desc[40], source[20];
+	    ntuple->SetBranchAddress("OptionName",&name);
+	    ntuple->SetBranchAddress("OptionValue",&value);
+	    ntuple->SetBranchAddress("OptionType",&type);
+	    ntuple->SetBranchAddress("OptionBrief",&brief);
+	    ntuple->SetBranchAddress("OptionDesc",&desc);
+	    ntuple->SetBranchAddress("OptionSource",&source);
 	    
 	    // For each row in the ntuple
-	    while ( reader.Next() ) {
+	    int nEntries = ntuple->GetEntriesFast();
+	    for ( int i=0; i<nEntries; ++i ) {
+	      ntuple->GetEntry(i);
 	      // Add the row to the options map it it's not already there.
-	      if ( m_options.find( *name ) == m_options.end() ) {
+	      std::string sname( name );
+	      std::string stype( type );
+	      if ( m_options.find( sname ) == m_options.end() ) {
 		m_option_type eType = e_string;
-		if ( std::string(*type).compare("double")  == 0 ) eType = e_double;
-		if ( std::string(*type).compare("integer") == 0 ) eType = e_integer;
-		if ( std::string(*type).compare("boolean") == 0 ) eType = e_boolean;
-		if ( std::string(*type).compare("flag")    == 0 ) eType = e_flag;
-		if ( std::string(*type).compare("vector")  == 0 ) eType = e_vector;
-		m_option_attributes attr = { *value, eType, (*brief)[0], *desc, *source };
-		m_options[ *name ] = attr;
+		if ( stype.compare("double")  == 0 ) eType = e_double;
+		if ( stype.compare("integer") == 0 ) eType = e_integer;
+		if ( stype.compare("boolean") == 0 ) eType = e_boolean;
+		if ( stype.compare("flag")    == 0 ) eType = e_flag;
+		if ( stype.compare("vector")  == 0 ) eType = e_vector;
+		m_option_attributes attr = { value,
+					     eType, 
+					     brief[0], 
+					     desc, 
+					     source };
+		m_options[ name ] = attr;
 	      } // option not already in table
 	    } // while there rows in the options nutple
 	    // We're finished; we don't have to keep scanning the input file.
 	    return true;
-	  } // name contains matches the user's name for the options nutple
+	  } // name matches the user's name for the options nutple
 	} // it's an ntuple
       } // key exists
     } // while looking through items
 
     // If we get here, we've failed! There are no ntuples whose name
     // contains "Options" in the ROOT file.
-    std::cerr << "Options::CopyInputNtuple ERROR! "
+    std::cerr << "Options::CopyInputNtuple WARNING: "
 	      <<" File " << __FILE__ << " Line " << __LINE__ << " " 
 	      << std::endl
 	      << "No ntuple with a name '"

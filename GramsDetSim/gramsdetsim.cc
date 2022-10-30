@@ -98,6 +98,11 @@ int main(int argc,char **argv)
     exit(EXIT_FAILURE);
   }
 
+  // If the input file has an Options ntuple created by an earlier
+  // program in the analysis chain, copy those options to maintain a
+  // historical record.
+  options->CopyInputNtuple(input);
+
   // The standard way of reading a TTree (without using RDataFrame) in
   // C++ is using the TTreeReader.
   auto reader = new TTreeReader(inputNtupleName.c_str(), input);
