@@ -20,11 +20,6 @@
 # but before any generation/visualization commands.
 /run/initialize
 
-# verbosity
-/tracking/verbose 1
-/control/verbose 1
-/run/verbose 2
-
 # This means "run Geant4 and generate 1000 events".  Note that if this
 # number is greater than the number of events in the input file of
 # generated events, the program will "rewind" the file and start

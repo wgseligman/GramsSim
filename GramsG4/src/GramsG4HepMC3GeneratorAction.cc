@@ -39,6 +39,7 @@
 #endif
 
 #include <string> 
+#include <memory>
 
 namespace gramsg4 {
 
@@ -165,10 +166,14 @@ namespace gramsg4 {
     else if ( extension == "lhef" )
       m_reader = new HepMC3::ReaderLHEF(m_inputFile);
 #ifdef HEPMC3_ROOTIO_INSTALLED
-    else if ( extension == "root" )
+    else if ( extension == "root" ) {
+      m_CopyOptions(m_inputFile);
       m_reader = new HepMC3::ReaderRoot(m_inputFile);
-    else if ( extension == "treeroot" )
+    }
+    else if ( extension == "roottree" ) {
+      m_CopyOptions(m_inputFile);
       m_reader = new HepMC3::ReaderRootTree(m_inputFile);
+    }
 #endif
     else {
       G4ExceptionDescription description;
@@ -430,6 +435,20 @@ namespace gramsg4 {
 
     } // for each vertex 
   }
+
+#ifdef HEPMC3_ROOTIO_INSTALLED
+  // If we're reading in a ROOT file, there may be an options ntuple
+  // in it too. If there is, copy it to our list of options to
+  // maintain a historical record.
+  bool HepMC3GeneratorAction::m_CopyOptions(const std::string& inputFile) {
+    // Open the file for the Options class, get the options from the
+    // file, then close it before we actively start reading from it.
+    auto input = new TFile(inputFile.c_str());
+    bool success = m_options->CopyInputNtuple(input);
+    input->Close();
+    return success;
+  }
+#endif
 
 } // namespace gramsg4
 

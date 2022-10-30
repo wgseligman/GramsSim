@@ -23,6 +23,7 @@
 #include <sstream>
 #include <iomanip>
 #include <cstdlib>
+#include <memory>
 
 // XML parser
 #include <xercesc/parsers/XercesDOMParser.hpp>
@@ -734,13 +735,19 @@ namespace util {
     TIter next(a_input->GetListOfKeys());
     TKey* key;
     TTree* ntuple;
+
+    // We have to get a bit fancy here, since HepMC3 .root files store
+    // information in a form that doesn't inherit from TObject. This
+    // means that the standard key->ReadObj may crash the program; use
+    // ReadObjectAny instead.
+    auto treeClass = TClass::GetClass("TTree");
     
     // For each item in the file:
     while ( ( key = (TKey*) next() ) ) {
       // Check that the key is valid.
       if (key != NULL) {
 	// Read in the item.
-	ntuple = (TTree*) key->ReadObj(); 
+	ntuple = (TTree*) key->ReadObjectAny(treeClass); 
 	// Is that item a TTree?
 	if ( ntuple != NULL ) {
 	  // What is the TTree's name?
@@ -1099,7 +1106,8 @@ namespace util {
   {
     // Search through all the items in the file, looking for the
     // first TTree whose name include "Options".
-    auto inputFile = TFile::Open(a_optionsFile.c_str());
+    // Use make_shared so we don't leave dangling pointers.
+    auto inputFile = new TFile(a_optionsFile.c_str());
     TIter next(inputFile->GetListOfKeys());
     TKey* key;
     TTree* ntuple;
@@ -1141,7 +1149,7 @@ namespace util {
 	      m_option_attributes attr = { *value, eType, (*brief)[0], *desc, *source };
 	      m_options[ *name ] = attr;
 	    }
-	    // We've filled the options map from the ntuple.
+	    // We've filled the options map from the ntuple. Clean up pointers.
 	    inputFile->Close();
 	    return true;
 	  } // name contains "Options"
