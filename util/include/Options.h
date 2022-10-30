@@ -64,6 +64,22 @@ namespace util {
     // ntuple. Presumably this will be a ROOT file.
     bool WriteNtuple(TDirectory* output, std::string outputNtuple = "Options");
 
+    // Copy the input options ntuple from the input ROOT file and
+    // merge its contents with the options we've already processed. Do
+    // not overwrite any options in our internal list.
+
+    // The intent to preserve a "history" of options selected
+    // for a series of programs within an analysis chain. 
+
+    // If you want to use this, you generally want call to call this
+    // method _after_ Process Options and _before_ WriteNtuple; e.g.,
+
+    // options->Process(int arv, char** argv );
+    // ... (open input file from prior program) ...
+    // options->CopyInputNtuple( inputfile );
+    // options->WriteNtuple( outputfile );
+
+    bool CopyInputNtuple(TDirectory* input, std::string inputNtupleName = "Options");
 
   protected:
     /// Standard null constructor for a singleton class.

@@ -726,6 +726,68 @@ namespace util {
     return success;
   }
 
+  bool Options::CopyInputNtuple(TDirectory* a_input, std::string a_name)
+  {
+    // Search through all the items in the file, looking for the first
+    // TTree whose name include the user's name for the options
+    // ntuple.
+    TIter next(a_input->GetListOfKeys());
+    TKey* key;
+    TTree* ntuple;
+    
+    // For each item in the file:
+    while ( ( key = (TKey*) next() ) ) {
+      // Check that the key is valid.
+      if (key != NULL) {
+	// Read in the item.
+	ntuple = (TTree*) key->ReadObj(); 
+	// Is that item a TTree?
+	if ( ntuple != NULL ) {
+	  // What is the TTree's name?
+	  std::string ntName = ntuple->GetName();
+	  // Does the name match the user-supplied name (default "Options")?
+	  if ( ntName == a_name ) {
+	    // Set up reading columns from this ntuple.
+	    TTreeReader reader(ntName.c_str(), a_input);
+	    TTreeReaderValue<std::string> name(reader, "OptionName");
+	    TTreeReaderValue<std::string> value(reader, "OptionValue");
+	    TTreeReaderValue<std::string> type(reader, "OptionType");
+	    TTreeReaderValue<std::string> brief(reader, "OptionBrief");
+	    TTreeReaderValue<std::string> desc(reader, "OptionDesc");
+	    TTreeReaderValue<std::string> source(reader, "OptionSource");
+	    
+	    // For each row in the ntuple
+	    while ( reader.Next() ) {
+	      // Add the row to the options map it it's not already there.
+	      if ( m_options.find( *name ) == m_options.end() ) {
+		m_option_type eType = e_string;
+		if ( std::string(*type).compare("double")  == 0 ) eType = e_double;
+		if ( std::string(*type).compare("integer") == 0 ) eType = e_integer;
+		if ( std::string(*type).compare("boolean") == 0 ) eType = e_boolean;
+		if ( std::string(*type).compare("flag")    == 0 ) eType = e_flag;
+		if ( std::string(*type).compare("vector")  == 0 ) eType = e_vector;
+		m_option_attributes attr = { *value, eType, (*brief)[0], *desc, *source };
+		m_options[ *name ] = attr;
+	      } // option not already in table
+	    } // while there rows in the options nutple
+	    // We're finished; we don't have to keep scanning the input file.
+	    return true;
+	  } // name contains matches the user's name for the options nutple
+	} // it's an ntuple
+      } // key exists
+    } // while looking through items
+
+    // If we get here, we've failed! There are no ntuples whose name
+    // contains "Options" in the ROOT file.
+    std::cerr << "Options::CopyInputNtuple ERROR! "
+	      <<" File " << __FILE__ << " Line " << __LINE__ << " " 
+	      << std::endl
+	      << "No ntuple with a name '"
+	      << a_name << "' found in file '"
+	      << a_input->GetName() << "'" << std::endl;
+    return false;
+  }
+
   // The following code is heavily adapted from
   // https://vichargrave.github.io/programming/xml-parsing-with-dom-in-cpp/
   // http://blog.f85.net/2012/02/xerces-c-tutorial.html

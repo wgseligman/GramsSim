@@ -1,7 +1,9 @@
 // gramsreadoutsim.cc
-// 25-Nov-2011 William Seligman
+// Take the charge-cluster results from GramsDetSim 
+// and map their positions to the GRAMS readout.
+// 25-Oct-2022 Satoshi Takashima
 
-// Our function(s) for the detector response.
+// The model of the readout geometry:
 #include "AssignPixelID.h"
 
 // For processing command-line and XML file options.
@@ -18,7 +20,7 @@
 #include <string>
 #include <cmath>
 #include <vector>
-#include <numeric>
+#include <memory>
 
 ///////////////////////////////////////
 int main(int argc,char **argv)
@@ -66,9 +68,10 @@ int main(int argc,char **argv)
             << "'" << std::endl;
 
 
-    gramsreadoutsim::AssignPixelID* assignPixelID = NULL;
-    assignPixelID = new gramsreadoutsim::AssignPixelID();
+    // Get the readout-geometry definition routine.
+    auto assignPixelID = std::make_shared<gramsreadoutsim::AssignPixelID>();
 
+    // Define the variables in the input ntuple.
     int run;
     int event;
     int trackID;
