@@ -9,8 +9,6 @@
 // For processing command-line and XML file options.
 #include "Options.h" // in util/
 
-//#include "
-
 // ROOT includes
 #include "TFile.h"
 #include "TTree.h"
@@ -25,50 +23,50 @@
 ///////////////////////////////////////
 int main(int argc,char **argv)
 {
-    auto options = util::Options::GetInstance();
+  // Access the options in the XML file and the command line. 
+  auto options = util::Options::GetInstance();
+  auto result = options->ParseOptions(argc, argv, "gramsreadoutsim");
 
-    auto result = options->ParseOptions(argc, argv, "gramsreadoutsim");
+  // Abort if we couldn't parse the job options.
+  if (! result) {
+    std::cerr << "File " << __FILE__ << " Line " << __LINE__ << " " << std::endl
+	      << "gramsreadoutsim: Aborting job due to failure to parse options"
+	      << std::endl;
+    exit(EXIT_FAILURE);
+  }
 
-    // Abort if we couldn't parse the job options.
-    if (! result) {
-      std::cerr << "File " << __FILE__ << " Line " << __LINE__ << " " << std::endl
-            << "gramsreadoutsim: Aborting job due to failure to parse options"
-            << std::endl;
-      exit(EXIT_FAILURE);
-    }
+  bool debug;
+  options->GetOption("debug",debug);
 
-    bool debug;
-    options->GetOption("debug",debug);
+  bool help;
+  options->GetOption("help",help);
+  if (help) {
+    options->PrintHelp();
+    exit(EXIT_SUCCESS);
+  }
 
-    bool help;
-    options->GetOption("help",help);
-    if (help) {
-      options->PrintHelp();
-      exit(EXIT_SUCCESS);
-    }
+  bool verbose;
+  options->GetOption("verbose",verbose);
+  if (verbose) {
+    // Display all program options.
+    options->PrintOptions();
+  }
 
-    bool verbose;
-    options->GetOption("verbose",verbose);
-    if (verbose) {
-      // Display all program options.
-      options->PrintOptions();
-    }
-
-    // Get the options associated with the input file and ntuple..
+    // Get the options associated with the input file and ntuple.
     std::string inputFileName;
     options->GetOption("inputfile",inputFileName);
     
     std::string inputNtupleName;
     options->GetOption("inputntuple",inputNtupleName);
 
-
     if (verbose)
       std::cout << "gramsreadoutsim: input file = '" << inputFileName
             << "', input ntuple = '" << inputNtupleName
             << "'" << std::endl;
 
-
-    // Get the readout-geometry definition routine.
+    // Get the readout-geometry definition routine. Use make_shared so
+    // we don't have to worry about memory leaks and deleting the
+    // pointer.
     auto assignPixelID = std::make_shared<gramsreadoutsim::AssignPixelID>();
 
     // Define the variables in the input ntuple.
@@ -93,20 +91,12 @@ int main(int argc,char **argv)
             << std::endl;
         exit(EXIT_FAILURE);
     }
-        
-    double driftVel;
-    double pixel_plane_offset;
-    gDirectory->cd("header");
-    TTree* inheadertree = (TTree*)input->Get("header/metatree");
-    inheadertree->SetBranchAddress("DriftVel",              &driftVel);
-    inheadertree->SetBranchAddress("pixel_plane_offset",    &pixel_plane_offset);
-    inheadertree->GetEntry(0);
-    delete inheadertree;
-    inheadertree = nullptr;
 
-    gDirectory->cd();
-    gDirectory->cd("../data");
-    TTree* intree = (TTree*)input->Get("data/DetSim");
+    // Copy any options saved in the input file. This allows us to
+    // track the history of how the files are created.
+    options->CopyInputNtuple(input);
+
+    TTree* intree = (TTree*)input->Get(inputNtupleName.c_str());
 
     intree->SetBranchAddress("Run",           &run);
     intree->SetBranchAddress("Event",         &event);
@@ -128,7 +118,6 @@ int main(int argc,char **argv)
     std::string outputNtupleName;
     options->GetOption("outputntuple", outputNtupleName);
 
-
     if (verbose)
       std::cout << "gramsreadoutsim: output file = '" << outputFileName
             << "', output ntuple = '" << outputNtupleName
@@ -137,12 +126,8 @@ int main(int argc,char **argv)
     // Open the output file.
     auto output = TFile::Open(outputFileName.c_str(),"RECREATE");
 
-    output->mkdir("header");
-    gDirectory->cd();
-    gDirectory->cd("header");
-
-    TTree* metatree = new TTree("metatree","metatree");
-
+    // From the XML file or the command line, get the options
+    // associated with readout processing.
     double readout_centerx;
     double readout_centery;
     double pixel_sizex;
@@ -152,26 +137,13 @@ int main(int argc,char **argv)
     options->GetOption("pixel_sizex",       pixel_sizex);
     options->GetOption("pixel_sizey",       pixel_sizey);
 
-    metatree->Branch("DriftVel",            &driftVel,              "DriftVel/D" );
-    metatree->Branch("pixel_plane_offset",  &pixel_plane_offset,    "pixel_plane_offset/D" );
-    metatree->Branch("readout_centerx",     &readout_centerx,       "readout_centerx/D" );
-    metatree->Branch("readout_centery",     &readout_centery,       "readout_centery/D" );
-    metatree->Branch("pixel_sizex",         &pixel_sizex,           "pixel_sizex/D" );
-    metatree->Branch("pixel_sizey",         &pixel_sizey,           "pixel_sizey/D" );
-    metatree->Fill();
-    metatree->Write();
-
     // Write the options to the output file, so we have a record.
     options->WriteNtuple(output);
 
-    gDirectory->cd();
-    output->mkdir("data");
-    gDirectory->cd();
-    gDirectory->cd("../data");
-
     // Define our output ntuple.
-    TTree* outtree = new TTree("ReadoutSim", "ReadoutSim");
+    TTree* outtree = new TTree(outputNtupleName.c_str(), "ReadoutSim");
 
+    // The number of hits (steps) within an event. 
     int num_step = 0;
     std::vector<int>*   p_pixel_idx = 0;
     std::vector<int>*   p_pixel_idy = 0;
@@ -193,36 +165,75 @@ int main(int argc,char **argv)
     outtree->Branch("identifier",    &identifier);
     outtree->Branch("pixel_idx",     &p_pixel_idx);
     outtree->Branch("pixel_idy",     &p_pixel_idy);
-
+ 
     if (verbose)
-        std::cout << "gramsreadoutsim: turned on" << std::endl;
+        std::cout << "gramsreadoutsim: output ntuple defined" << std::endl;
 
+    // The number of rows in the input ntuple.
     int num_row = intree->GetEntries();
+    int current_runid = -1;
     int current_eventid = -1;
 
-      for(int i=0;i<num_row;i++){
-          intree->GetEntry(i);
+    // For each row in the input ntuple (i.e., for each hit/step in
+    // the original GramsG4 simulation):
+    for (int i=0; i<num_row; i++) {
 
-          if(event != current_eventid){
-              current_eventid = event;
-              num_step = 1;
-              if(i!=(num_row-1)){
-                  do {
-                      intree->GetEntry(i + num_step);
-                      if(event == current_eventid){
-                          num_step += 1;
-                      }
-                  } while((current_eventid==event)&&((i + num_step)<num_row));
-                  intree->GetEntry(i);
-              }
-          }
+      // Read the row.
+      intree->GetEntry(i);
+      
+      // Previous GramsSim programs like GramsG4 can use
+      // multi-threading. While all the rows associated with a given
+      // event will be adjacent to each other in the input ntuple, the
+      // events are _not_ guaranteed to be in any kind of order.
 
-          std::tie(pixel_idx, pixel_idy) = assignPixelID->Assign(pxPosAtAnode, pyPosAtAnode);
-          p_pixel_idx = &pixel_idx;
-          p_pixel_idy = &pixel_idy;
+      // When we cross the boundary between one event and the next..
+      if (run != current_runid  ||  event != current_eventid) {
 
-          outtree->Fill();
-    }
+	// "Count ahead" in the ntuple to determine the number of rows
+	// with the same run/event ID. This tells us the number of steps/hits
+	// in the current event, num_step.
+
+	// Note that the value of num_step in the output ntuple will
+	// be the same for all the ntuple rows for this run/event ID.
+
+	current_runid = run;
+	current_eventid = event;
+
+	num_step = 1;
+	if ( i != (num_row-1) ) {
+	  do {
+	    // Move ahead in the ntuple rows while the run/event
+	    // doesn't change, counting the rows as we do.
+	    intree->GetEntry(i + num_step);
+	    if (run == current_runid  &&  event == current_eventid) {
+	      num_step += 1;
+	    }
+	  } while ( (current_runid == run ) && 
+		    (current_eventid == event) && 
+		    ((i + num_step) < num_row) );
+
+	  // Now that we've moved ahead, go back to the first entry
+	  // for this event ID.
+	  intree->GetEntry(i);
+ 
+	  if (verbose)
+	    std::cout << "gramsreadoutsim: run=" << run
+		      << " event=" << event << " has "
+		      << num_step << " steps" << std::endl;
+
+	} // If we haven't reached the last row. 
+      } // New run/event ID in the input ntuple.
+      
+      // From the (x,y) position vectors of electron clusters at the
+      // anode, assign a pixel readout ID to each cluster.
+      std::tie(pixel_idx, pixel_idy) = assignPixelID->Assign(pxPosAtAnode, pyPosAtAnode);
+      p_pixel_idx = &pixel_idx;
+      p_pixel_idy = &pixel_idy;
+      
+      // Add a row to the output ntuple.
+      outtree->Fill();
+
+    } // For each hit
 
     outtree->Write();
     output->Close();

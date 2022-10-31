@@ -68,6 +68,8 @@
     -->
     <option name="outputntuple" value="ReadoutSim" type="string" desc="output ntuple"/>
 
+    <!-- The pixel readout geometry parameters. Units are given by "LengthUnit" in 
+    the <global> section above. -->
     <option name="readout_centerx"  value="0.0" type="double" desc="x coordinate of the readout plane" />
     <option name="readout_centery"  value="0.0" type="double" desc="y coordinate of the readout plane" />
     <option name="pixel_sizex" value="3.2" type="double" desc="pixel size x" />
