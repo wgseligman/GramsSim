@@ -272,7 +272,8 @@ int main(int argc,char **argv)
 
     if (debug)
         std::cout << "gramsdetsim: before model corrections, energyAtAnode=" 
-	  	<< energy_sca << std::endl;
+		  << energy_sca 
+		  << " timeAtAnode=" << (m_readout_plane_coord - zPosAtAnode[0]) / m_DriftVel << std::endl;
 
     // Apply the model(s). Handle potential computation errors (i.e.,
     // if dx is zero) within the different models.
