@@ -51,8 +51,6 @@ namespace gramselecsim {
 	return true; 
     }
 
-    LoadOptionFile::~LoadOptionFile() {}
-
     general_header LoadOptionFile::GeneralHeader() {
 
         general_header header;

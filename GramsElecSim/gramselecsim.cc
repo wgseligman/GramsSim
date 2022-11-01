@@ -126,21 +126,11 @@ int main(int argc,char **argv)
   int nEntry = intree->GetEntries();
   intree->SetBranchAddress("Run",             &run);
   intree->SetBranchAddress("Event",           &event);
-  intree->SetBranchAddress("timeAtAnode",     &ptimeAtAnode);
   intree->SetBranchAddress("numElectrons",    &pnumElectrons);
+  intree->SetBranchAddress("timeAtAnode",     &ptimeAtAnode);
+  intree->SetBranchAddress("num_step",        &num_step);
   intree->SetBranchAddress("pixel_idx",       &p_pixel_idx);
   intree->SetBranchAddress("pixel_idy",       &p_pixel_idy);
-  intree->SetBranchAddress("num_step",        &num_step);
-
-  // Now read in the options associated with the output file and ntuple.
-  std::string outputFileName;
-  options->GetOption("outputfile",    outputFileName);
-
-  std::string outputNtupleName;
-  options->GetOption("outputntuple",  outputNtupleName);
-
-  // Open the output file.
-  auto output = TFile::Open(outputFileName.c_str(),"RECREATE");
 
   // These functions, defined with Elecstructure.h, return the ROOT
   // ntuple specification for how to store the options values in the
@@ -154,20 +144,18 @@ int main(int argc,char **argv)
     std::cout << "gramselecsim main: ntuple write options accessed" << std::endl;
   }
 
-  double sample_freq = header_adc.sample_freq;
+  // Now read in the options associated with the output file and ntuple.
+  std::string outputFileName;
+  options->GetOption("outputfile",    outputFileName);
 
-  //int response_current_bin = int(header_current.current_func_duration / header_gen.timebin_width);
-  int num_tbin = int(header_gen.time_window / header_gen.timebin_width);
+  std::string outputNtupleName;
+  options->GetOption("outputntuple",  outputNtupleName);
 
-  // Use make_shared for these model routines so that we don't have
-  // to worry about deleting them later.
-  auto adconverter = std::make_shared<gramselecsim::ADConvert>();
-  auto addNoise = std::make_shared<gramselecsim::AddNoise>();
-  auto preampProcessor = std::make_shared<gramselecsim::PreampProcessor>(num_tbin);
+  // Open the output file.
+  auto output = TFile::Open(outputFileName.c_str(),"RECREATE");
 
-  if (debug) {
-    std::cout << "gramselecsim main: model routines defined" << std::endl;
-  }
+  // Write the options to the output file in order to preserve them.
+  options->WriteNtuple(output);
 
   // Output ntuple: information for each event
   TTree* outtree = new TTree(outputNtupleName.c_str(),"Electronics Response");
@@ -188,19 +176,42 @@ int main(int argc,char **argv)
     std::cout << "gramselecsim main: output ntuple defined" << std::endl;
   }
 
+  double sample_freq = header_adc.sample_freq;
+
+  //int response_current_bin = int(header_current.current_func_duration / header_gen.timebin_width);
+  int num_tbin = int(header_gen.time_window / header_gen.timebin_width);
+
+  if (verbose) {
+    std::cout << "gramselecsim main: number of output time bins=" << num_tbin << std::endl;
+  }
+
+  // Use make_shared for these model routines so that we don't have
+  // to worry about deleting them later.
+  auto adconverter = std::make_shared<gramselecsim::ADConvert>();
+  auto addNoise = std::make_shared<gramselecsim::AddNoise>();
+  auto preampProcessor = std::make_shared<gramselecsim::PreampProcessor>(num_tbin);
+
+  if (debug) {
+    std::cout << "gramselecsim main: model routines defined" << std::endl;
+  }
+
   // The map of (x,y) pixel IDs to the electrons accumulated within each time bin.
 
   // Unlike a regular std::map, which stores its (key,value) pairs in sorted order
   // by key, an std::unordered_map stores its (key,value) pairs in buckets which
   // are computed by the "hash" of its key. This makes accessing individual keys
   // faster, at the expense of making searches slower. 
+  // typedef std::unordered_map<std::vector<int>, std::vector<int>, gramselecsim::HashVI> p2w_type;
 
-  std::unordered_map<std::vector<int>, std::vector<int>, gramselecsim::HashVI> mp_pixel2waveform;
-  std::unordered_map<std::vector<int>, std::vector<int>, gramselecsim::HashVI>::iterator iter_mp;
+  // Let's hold off on the unordered_map, and use a std::pair instead
+  // as the the key to a map. Recall that for a std::pair, .first and
+  // .second refer to the first and second elements of the pair
+  // respectively.
+  typedef std::pair<int,int> key_type;
+  typedef std::map<key_type, std::vector<int>> p2w_type;
+  p2w_type mp_pixel2waveform;
 
-  std::vector<int> pixel_pair(2, 0);
   std::vector<int> arrival_counter(num_tbin, 0);
-  std::vector<int> arrival_time_counter_temp(num_tbin, 0);
   std::vector<double> waveform_with_noise( num_tbin, 0.0 );
   std::vector<double> waveform_csa_shaper( num_tbin, 0.0 );
   std::vector<int>    digi_waveform( num_tbin, 0 );
@@ -218,10 +229,6 @@ int main(int argc,char **argv)
 
   // For each row in the input ntuple...
   for ( int istep=0; istep<nEntry; istep++ ) {
-        
-    if (debug) {
-      std::cout << "gramselecsim main: about to clear mp_pixel2waveform" << std::endl;
-    }
 
     mp_pixel2waveform.clear();
 
@@ -257,49 +264,60 @@ int main(int argc,char **argv)
 	}
 
 	// The integer time bin in which the cluster arrived.
-	ti = std::min(num_tbin-1, int(std::floor((*ptimeAtAnode)[jcl] / header_gen.timebin_width)));
+	ti = std::max(0, 
+	     std::min(num_tbin-1, int(std::floor((*ptimeAtAnode)[jcl] / header_gen.timebin_width)))
+                     );
+
+	// The number of electrons in this cluster.
+	auto clusterElectrons = (*pnumElectrons)[jcl];
+
+	// Create the pixel ID key.
+	key_type key( (*p_pixel_idx)[jcl], (*p_pixel_idy)[jcl] );
 
 	// Search for the (x,y) pixel ID in our map of pixels->waveforms..
-	pixel_pair[0] = (*p_pixel_idx)[jcl];
-	pixel_pair[1] = (*p_pixel_idy)[jcl];
-	auto itr = mp_pixel2waveform.find(pixel_pair);
+	auto itr = mp_pixel2waveform.find(key);
 
 	// Accumulate the number of electrons to arrive at the pixel within each time bin.
 
 	// Is this the first cluster to arrive at the pixel?
 	if( itr == mp_pixel2waveform.end() ) {
-	  // Yes, so create a new waveform for that pixel, and add its
-	  // electrons to the appropriate time bin.
-	  std::fill(arrival_time_counter_temp.begin(), arrival_time_counter_temp.end(), 0);
-	  arrival_time_counter_temp[ti] = (*pnumElectrons)[jcl];
-	  mp_pixel2waveform[pixel_pair] = arrival_time_counter_temp;
+	  // Yes, so create a new waveform for that pixel.
+	  mp_pixel2waveform[key] = zeros_array;
+	  mp_pixel2waveform[key][ti] = clusterElectrons;
 	} else {
 	  // At least one cluster has already arrived at the pixel.
-	  // Accumulate the electrons for this pixel's time bin. 
-	  mp_pixel2waveform[pixel_pair][ti] += (*pnumElectrons)[jcl];
+	  // Save ourselves a bit of time: itr is already pointing an
+	  // entry in the map mp_pixel2waveform, so use that pointer
+	  // to fetch the vector we want to add the electrons to.
+	  itr->second[ti] += clusterElectrons;
 	}
       } // for each cluster that arrives at a pixel
     } // for each step within an event 
 
-    // For each pixel which accumulated any electrons: 
-    for (iter_mp=mp_pixel2waveform.begin(); iter_mp != mp_pixel2waveform.end(); iter_mp++) {
+    if (debug) {
+      std::cout << "gramselecsim main: pixel2waveform accumulated" 
+		<< " size=" << mp_pixel2waveform.size() << std::endl;
+    }
 
-      // The iterator iter_mp points to a given (key,value) pair in mp_pixel2waveform. 
+    // For each pixel which accumulated any electrons: 
+    for (auto mp_iter = mp_pixel2waveform.cbegin(); mp_iter != mp_pixel2waveform.cend(); ++mp_iter) {
+
+      // The iterator mp_itr points to a given (key,value) pair in mp_pixel2waveform. 
       // These (key,value) pairs are stored as an std::pair<key-type, value-type>, and
       // are accessed by the methods "first" (key) and "second" (value). 
 
-      // So "iter_mp->first[0]" means to look at the (key,value) pointed to by iter_mp,
-      // to look at the key part ("first"), and since the key is a std::vector, get the
-      // value of the first element of the vector ("[0]").
+      // So "mp_itr->first.first" means to look at the (key,value) pointed to by iter_mp,
+      // to look at the key part ("first"), and since the key is a std::pair, get the
+      // value of the first element of the key; similarly mp_itr->first.second is the
+      // second element of the pair. .
 
-      std::vector<double> waveform(num_tbin, 0.0);
-      pixel_idx = iter_mp->first[0];
-      pixel_idy = iter_mp->first[1];
+      pixel_idx = mp_iter->first.first;
+      pixel_idy = mp_iter->first.second;
 
       // A trick: iter_mp-> is a vector, but instead of copying
       // the the entire vector, just copy its address to save
       // execution time and memory.
-      std::vector<int>& num_arrival_electron = iter_mp->second;
+      const std::vector<int>& num_arrival_electron = mp_iter->second;
       std::vector<int> num_arrival_electron_with_noise;
 
       if (debug) {

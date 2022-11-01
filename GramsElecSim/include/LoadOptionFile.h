@@ -30,9 +30,6 @@ namespace gramselecsim {
     preamp_header PreampHeader();
     noise_header NoiseHeader();
     adc_header ADCHeader();
-    
-    virtual ~LoadOptionFile();
-    
 
   protected:
     // Standard null constructor for a singleton class.
