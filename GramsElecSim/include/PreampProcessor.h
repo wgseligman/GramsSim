@@ -30,7 +30,6 @@ namespace gramselecsim {
         std::vector<int> preamp_time_bin_;
         std::vector<double> preamp_response_;
 
-        gramselecsim::LoadOptionFile*   optionloader_;
         general_header                  header_gen_;
         preamp_header                   header_preamp_;
 

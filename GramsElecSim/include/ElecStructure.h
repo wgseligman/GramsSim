@@ -1,3 +1,10 @@
+// Define:
+//  - Groups of option values used by the various 
+//    electronics-simulations models. 
+//  - The ROOT ntuple specification for how these values
+//    are to be stored in an ntuple. 
+
+// 25-Oct-2022 Satoshi Takashima
 
 #ifndef ElecStructure_h
 #define ElecStructure_h

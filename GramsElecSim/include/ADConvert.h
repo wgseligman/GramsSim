@@ -1,3 +1,5 @@
+// Convert an analog waveform to a digital waveform.
+// 25-Oct-2022 Satoshi Takashima
 
 #ifndef ADConvert_h
 #define ADConvert_h
@@ -20,7 +22,6 @@ namespace gramselecsim {
 
     private:
 
-        gramselecsim::LoadOptionFile* optionloader_;
         general_header header_gen_;
         adc_header header_adc_;
         int r_adcbin_width_to_origin_width_;

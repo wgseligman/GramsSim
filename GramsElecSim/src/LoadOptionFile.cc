@@ -1,6 +1,6 @@
-// 26-Nov-2021 WGS
-
-// Implement analogue-digital convertion
+// Define methods to load the parameters for the various
+// electronics-simulation models.
+// 25-Oct-2022 Satoshi Takashima
 
 #include "LoadOptionFile.h"
 #include "ElecStructure.h"
@@ -14,8 +14,8 @@
 
 namespace gramselecsim {
 
-    // Constructor: Initializes the class.
-    LoadOptionFile::LoadOptionFile()
+    // Load the options from the XML file and the command line. 
+    bool LoadOptionFile::Load()
     {
         // Get the options class. This contains all the program options
         // from options.xml and the command line.
@@ -45,6 +45,10 @@ namespace gramselecsim {
         options->GetOption("input_min",             m_input_min_);
         options->GetOption("input_max",             m_input_max_);
         options->GetOption("sample_freq",           m_sample_freq_);
+
+	// May modify this in the future if we want to include the
+	// possibility that this method will fail.
+	return true; 
     }
 
     LoadOptionFile::~LoadOptionFile() {}

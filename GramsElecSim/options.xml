@@ -71,6 +71,13 @@
     <option name="time_window"          value="60000.0" type="double" desc="sampling width [ns]"/>
 
     <!-- Preamp -->
+    <!-- Valid values of preamp_func are:
+    0 = Gaussian normalized to unit probability
+    1 = Gaussian
+    2 = Log of normalized gaussian
+    3 = Log of gaussian
+    4 = Double exponential
+    -->
     <option name="preamp_func"          value="4"       type="int"    desc="curve type of preamp output"/>
     <option name="preamp_prior_time"    value="200.0"   type="double" desc="rise time [ns]"/>
     <option name="preamp_post_time"     value="3000.0"  type="double" desc="decay time [ns]"/>

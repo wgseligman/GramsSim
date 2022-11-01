@@ -227,6 +227,9 @@ int main(int argc,char **argv)
       // From the (x,y) position vectors of electron clusters at the
       // anode, assign a pixel readout ID to each cluster.
       std::tie(pixel_idx, pixel_idy) = assignPixelID->Assign(pxPosAtAnode, pyPosAtAnode);
+
+      // A trick: Copy just the reference to the vectors,
+      // instead of the entire vectors, to save time and memory.
       p_pixel_idx = &pixel_idx;
       p_pixel_idy = &pixel_idy;
       

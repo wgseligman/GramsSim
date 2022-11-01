@@ -1,3 +1,6 @@
+// Definitions of functions used in other methods in this program.
+
+// 25-Oct-2022 Satoshi Takashima
 
 #ifndef UtilFunctions_h
 #define UtilFunctions_h
