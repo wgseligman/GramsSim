@@ -4,6 +4,10 @@ A description of major development milestones. The most recent are at
 the top. For a detailed list of all changes (basically, every time
 someone typed "git commit"), see the output of "git log".
 
+Nov-2022
+
+   - Added GramsReadoutSim and GramsElecsim to the repository.
+
 Oct-2022
 
    - Restructured the saving and loading of the option ntuple in a

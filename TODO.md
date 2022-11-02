@@ -1,6 +1,14 @@
 # TODO 
 
-As of 25-Aug-2021:
+As of 01-Nov-2022:
+
+- Cluster time 
+   - In GramsDetSim, the cluster arrival time at the anode
+     can be calculated to be negative in the DiffusionModel. This is
+     probably a geometry issue, either in the GDML file definition or
+     the value of ReadoutPlaneCoord in the options.xml file.
+   - We'll probably investigate this further when we have a better
+     idea of the final geometry of the GRAMS detector. 
 
 - Scintillator hits
    - It would be handy to provide a two-way map of strip geometry to (x,y,z).
