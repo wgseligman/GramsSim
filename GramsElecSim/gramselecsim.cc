@@ -282,8 +282,11 @@ int main(int argc,char **argv)
 	// Is this the first cluster to arrive at the pixel?
 	if( itr == mp_pixel2waveform.end() ) {
 	  // Yes, so create a new waveform for that pixel.
-	  mp_pixel2waveform[key] = zeros_array;
-	  mp_pixel2waveform[key][ti] = clusterElectrons;
+	  // Fetch the address of the new vector, so we don't
+	  // have to search the map more than once. 
+	  auto& newWaveform = mp_pixel2waveform[key];
+	  newWaveform = zeros_array;
+	  newWaveform[ti] = clusterElectrons;
 	} else {
 	  // At least one cluster has already arrived at the pixel.
 	  // Save ourselves a bit of time: itr is already pointing an
