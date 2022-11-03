@@ -53,6 +53,12 @@ See `GramsSim/util/README.md` for a description of how to control the
 operation of `gramsdetsim` through the [`options.xml`](../options.xml) file and the
 command line.
 
+Note that the diffusion model (described below) makes use of a random-number generator.
+If you're running `gramsdetsim` as part of a cluster of jobs, you probably want
+to include a random-number seed on the command line as described [`GramsG4`](../GramsG4); e.g.,
+
+    ./gramsdetsim --rngseed=${process}
+
 ## Detector-response functions
 
 Again recall that the parameters for all of the following functions can be found in the `options.xml` file. 
