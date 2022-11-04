@@ -5,14 +5,16 @@ include_directories(include
                     ${ROOT_INCLUDE_DIR}
 		    ${XercesC_INCLUDE_DIR})
 
-file(GLOB ElecSimSrc src/*.cc
-                    ${PROJECT_SOURCE_DIR}/util/src/*.cc
-    )
+file(GLOB ElecSimSrc src/*.cc)
 
 # Add an extension determined by GramsSim/CMakeLists.txt
 set (PROG "gramselecsim${EXE}")
 
 add_executable(${PROG} gramselecsim.cc ${ElecSimSrc})
+
+# Include any internal libraries, such as this project's utilities.
+target_link_libraries(${PROG} ${CMAKE_PROJECT_NAME}Utilities )
+
 target_link_libraries(${PROG} ${ROOT_LIBRARIES} )
 target_link_libraries(${PROG} ${XercesC_LIBRARY} )
 

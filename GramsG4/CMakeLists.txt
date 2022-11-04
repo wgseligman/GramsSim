@@ -17,7 +17,6 @@ include_directories(include
 
 file(GLOB sources src/*.cc
                   g4util/src/*.cc
-                  ${PROJECT_SOURCE_DIR}/util/src/*.cc
     )
 
 #----------------------------------------------------------------------------
@@ -27,6 +26,10 @@ file(GLOB sources src/*.cc
 set (PROG "gramsg4${EXE}")
 
 add_executable(${PROG} gramsg4.cc ${sources})
+
+# Include any internal libraries, such as this project's utilities.
+target_link_libraries(${PROG} ${CMAKE_PROJECT_NAME}Utilities )
+
 target_link_libraries(${PROG} ${HEPMC3_LIBRARIES} )
 target_link_libraries(${PROG} ${ROOT_LIBRARIES} )
 target_link_libraries(${PROG} ${Geant4_LIBRARIES} )

@@ -27,8 +27,8 @@ namespace gramsreadoutsim {
 
     private:
 
-      double m_verbose;
-      double m_debug;
+      bool m_verbose;
+      bool m_debug;
 
       // The variables that define the geometry of the pixel readout. 
       double m_pixel_sizex;

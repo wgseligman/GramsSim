@@ -19,7 +19,7 @@ namespace gramsreadoutsim {
     options->GetOption("pixel_sizey", m_pixel_sizey);
     options->GetOption("offset_x",    m_offset_x);
     options->GetOption("offset_y",    m_offset_y);
-    
+
     if (m_verbose) {
       std::cout << "GramsReadOutSim::AssignPixelID() - initialized" << std::endl;
     }

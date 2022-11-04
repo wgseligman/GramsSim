@@ -101,6 +101,9 @@ foreach(_script ${GramsSim_SCRIPTS})
     )
 endforeach()
 
+# Create the util library.
+add_subdirectory (util)
+
 # Copy/compile the sub-projects and work files.
 add_subdirectory(GramsSky)
 add_subdirectory(GramsG4)

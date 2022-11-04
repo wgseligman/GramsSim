@@ -47,7 +47,7 @@ int main(int argc,char **argv)
 
   bool verbose;
   options->GetOption("verbose",verbose);
-  if (verbose) {
+  if (verbose || debug) {
     // Display all program options.
     options->PrintOptions();
   }

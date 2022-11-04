@@ -11,17 +11,18 @@ endif()
 
 include_directories(SYSTEM
                     include
-                    ${PROJECT_SOURCE_DIR}/util/include
 )
 
-file(GLOB SkySrc src/*.cc
-                    ${PROJECT_SOURCE_DIR}/util/src/*.cc
-    )
+file(GLOB SkySrc src/*.cc)
 
 # Add an extension determined by GramsSim/CMakeLists.txt
 set (PROG "gramssky${EXE}")
 
 add_executable(${PROG} gramssky.cc ${SkySrc})
+
+# Include any internal libraries, such as this project's utilities.
+target_link_libraries(${PROG} ${CMAKE_PROJECT_NAME}Utilities )
+
 target_link_libraries(${PROG} ${ROOT_LIBRARIES} )
 target_link_libraries(${PROG} ${XercesC_LIBRARIES} )
 target_link_libraries(${PROG} ${HEPMC3_LIBRARIES} )

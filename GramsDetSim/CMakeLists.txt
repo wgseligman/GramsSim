@@ -5,14 +5,16 @@ include_directories(include
                     ${ROOT_INCLUDE_DIR}
 		    ${XercesC_INCLUDE_DIR})
 
-file(GLOB DetSimSrc src/*.cc
-                    ${PROJECT_SOURCE_DIR}/util/src/*.cc
-    )
+file(GLOB DetSimSrc src/*.cc)
 
 # Add an extension determined by GramsSim/CMakeLists.txt
 set (PROG "gramsdetsim${EXE}")
 
 add_executable(${PROG} gramsdetsim.cc ${DetSimSrc})
+
+# Include any internal libraries, such as this project's utilities.
+target_link_libraries(${PROG} ${CMAKE_PROJECT_NAME}Utilities )
+
 target_link_libraries(${PROG} ${ROOT_LIBRARIES} )
 target_link_libraries(${PROG} ${XercesC_LIBRARY} )
 
