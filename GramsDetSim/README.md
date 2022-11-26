@@ -148,5 +148,5 @@ This is a sketch of the procedure:
 | <img src="Diffusion.png" width="50%" />   |
 
 
-The output ntuple contains the energy, arrival time, and shifted
+The output ntuple contains the energy, arrival time at the anode, and shifted
 (x,y,z) of each individual cluster.

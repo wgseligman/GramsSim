@@ -220,61 +220,6 @@ Then all of the following are equivalent:
     ./gramsg4 -t 5 --verbose
     ./gramsg4 -vt5
 
-#### Overriding &lt;global&gt;
-
-Suppose you had something like this in the options XML file:
-
-```XML
-<parameters>
-  <global>
-    <option name="myoption" value="value1" ... />
-  </global>
-
-  <myprogram>
-    <option name="myoption" value="value2" ... />
-  </myprogram>
-</parameters>
-```
-
-Then for every other program that uses the Options class, the value of `myoption` would be `value1`. But for the program `myprogram`, the value of `myoption` would be `value2`.
-
-This is not a good practice. It's probably better to use the command line for this sort of override; e.g.,
-```
-./myprogram --myoption=value2
-```
-
-#### Including one XML file from within another
-
-Perhaps you are focussed on a particular set of options associated with one program and don't care about any other
-program's options. Or perhaps the default [`options.xml`](../options.xml) file seems too long and scrolling through it
-takes a long time. 
-
-In these cases, you can include a section of one XML file within another using [XInclude][70]. There's an example of this in [`GramsSim/xinclude.xml`](../xinclude.xml). The basic recipe is:
-
-[70]: https://www.xml.com/pub/a/2002/07/31/xinclude.html
-
-   - For the main file (the one that's doing the including):
-
-      - Include the xinclude specification in the opening `<parameters>` tag:
-   
-          `<parameters xmlns:xi="http://www.w3.org/2001/XInclude">`
-          
-      - Specify the file and the id of the tag to be included. In this example, the
-      section with the tag `gramssky` in file [`GramsSky/options.xml`](../GramsSky/options.xml)
-      is to be included.
-      
-          `<xi:include href="GramsSky/options.xml" element="gramssky"/>`
-                    
-   - For the file whose contents will be included:
-   
-      - In the program-options section you want to include, add an `xml:id` attribute with the id you supplied as the value of the `element` attribute in the main file, e.g.,
-      
-          `<gramssky xml:id="gramssky">`
-          
-      - This may not be necessary if the value of the `element` attribute in the main file is the same as the tag
-      with the program's name (`gramssky` in this example). 
-
-
 ### Accessing options from within your program
 
 Just having an option defined in the XML file is not enough.
@@ -296,7 +241,7 @@ The three arguments to `util::Options::ParseOptions` are:
 
             auto result = options->ParseOptions(argc, argv);
 
-      - The string `"ALL"`. In that case, all the tag blocks will be read in and used. Note that if multiple tag blocks have options with the same `name` attribute, then last one in the file will be used, overriding the ones above it. In the following, all of the tab blocks will be read in (and written by `WriteOptions`; see below):
+      - The string `"ALL"`. In that case, all the tag blocks will be read in and used. Note that if multiple tag blocks have options with the same `name` attribute, then last one in the file will be used, overriding the ones above it. In the following, all of the tag blocks will be read in (and written by `WriteOptions`; see below):
 
             auto result = options->ParseOptions(argc, argv, "ALL");
 
@@ -385,7 +330,9 @@ To fetch a vector, use `std::vector<double>`; e.g.,
   }     
 ```
 
-### Implementing the `-h/--help` option
+### Other `Options` methods
+
+#### Implementing the `-h/--help` option
 
 The method `util::Options::PrintHelp()` can be used to implement the `-h` and `--help` options for your program:
 ```C++
@@ -429,8 +376,6 @@ Usage:
 See options.xml for details.
 
 ```
-
-### Other `Options` methods
 
 #### Displaying a table of all the options
 
@@ -500,9 +445,17 @@ for example, to save the options in an ntuple for later reference. The following
     std::string GetOptionSource( size_t i ) const;
 ```
 
+### Using `Options` as metadata
+
+The `Options` class offers several methods for saving, restoring, and tracking the values of options in your analysis. 
+
+It's common for set of programs to be organized as a "chain": You run program A, whose output is the input to program B, whose output in turn is used by program C, and so on. The following methods allow you to keep internal track of the options used for programs A, B, C, etc.; that is, to record the metadata associated with your analysis chain.
+
+Later, you can easily re-run each individual program with the same options, overriding selected options when you need to. 
+
 #### Saving options to a ROOT file
 
-The utility method `WriteOptions` can be used to write the option to an ntuple in an output file in [ROOT](https://root.cern.ch/) format. This lets you record the values used to run the program that generated that particular file.
+The utility method `WriteOptions` can be used to write the options to an ntuple in an output file in [ROOT](https://root.cern.ch/) format. This lets you record the values used to run the program that generated that particular file.
 
 ```C++
 #include "Options.h" // in util/ 
@@ -520,18 +473,76 @@ options->WriteNtuple(output);
 Suppose you have an ROOT file that was created by a program that had its options saved using the `WriteOptions` method described above. You'd like to rerun the program with those same options, perhaps with one or more options changed via the command line. Let's further suppose that, due to the complexities of file management over a long analysis, you've lost the original XML options file that generated the ROOT file. 
 
 The `Options` class can automatically recognize ROOT files that are passed to the program in place of an XML file. For example:
-```
-./gramsdetsim gramsdetsim.root
-```
+
+    ./gramsdetsim gramsdetsim.root
+
 or
-```
-./gramsdetsim -v --options gramsdetsim.root
-```
+
+    ./gramsdetsim -v --options gramsdetsim.root
+
 The `ParseOptions` method will search the ROOT file for an ntuple with a name that contains the text `Options`. It will then populate its list of options from that ntuple, and accept any option overrides on the command line. For example:
-```
-./gramsdetsim -v --options gramsdetsim.root --rho 1.5
-```
+
+    ./gramsdetsim -v --options gramsdetsim.root --rho 1.5
+
 Take care! In this particular example, the default output file for `gramsdetsim` is `gramsdetsim.root`. So we're reading our options from the same file to which we're going to write our output; you've overridden the value of `rho` which will be written to the output file. To avoid unpredictable behaviors, you probably want to make sure the files from which you're reading options and to which you're writing output are different:
+
+    ./gramsdetsim -v --options gramsdetsim.root --rho 1.5 --outputfile gramsdetsim-revised.root
+
+
+### `Options` tips and tricks
+
+
+#### Overriding &lt;global&gt;
+
+Suppose you had something like this in the options XML file:
+
+```XML
+<parameters>
+  <global>
+    <option name="myoption" value="value1" ... />
+  </global>
+
+  <myprogram>
+    <option name="myoption" value="value2" ... />
+  </myprogram>
+</parameters>
 ```
-./gramsdetsim -v --options gramsdetsim.root --rho 1.5 --outputfile gramsdetsim-revised.root
+
+Then for every other program that uses the Options class, the value of `myoption` would be `value1`. But for the program `myprogram`, the value of `myoption` would be `value2`.
+
+This is not a good practice. It's probably better to use the command line for this sort of override; e.g.,
 ```
+./myprogram --myoption=value2
+```
+
+#### Including one XML file from within another
+
+Perhaps you are focussed on a particular set of options associated with one program and don't care about any other
+program's options. Or perhaps the default [`options.xml`](../options.xml) file seems too long and scrolling through it
+takes a long time. 
+
+In these cases, you can include a section of one XML file within another using [XInclude][70]. There's an example of this in [`GramsSim/xinclude.xml`](../xinclude.xml). The basic recipe is:
+
+[70]: https://www.xml.com/pub/a/2002/07/31/xinclude.html
+
+   - For the main file (the one that's doing the including):
+
+      - Include the xinclude specification in the opening `<parameters>` tag:
+   
+          `<parameters xmlns:xi="http://www.w3.org/2001/XInclude">`
+          
+      - Specify the file and the id of the tag to be included. In this example, the
+      section with the tag `gramssky` in file [`GramsSky/options.xml`](../GramsSky/options.xml)
+      is to be included.
+      
+          `<xi:include href="GramsSky/options.xml" element="gramssky"/>`
+                    
+   - For the file whose contents will be included:
+   
+      - In the program-options section you want to include, add an `xml:id` attribute with the id you supplied as the value of the `element` attribute in the main file, e.g.,
+      
+          `<gramssky xml:id="gramssky">`
+          
+      - This may not be necessary if the value of the `element` attribute in the main file is the same as the tag
+      with the program's name (`gramssky` in this example). 
+
