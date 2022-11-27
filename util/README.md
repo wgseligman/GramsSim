@@ -229,7 +229,7 @@ Then all of the following are equivalent:
 ### Accessing options from within your program
 
 Just having an option defined in the XML file is probably not enough.
-Some programming is needed to do something with that option. Typically you'd initiate the parsing of the options XML file and the command line by invoking `ParseOptions` in your program's `main` routine. This should only be done once in your program's code, typically in a `main` routine. 
+Some programming is needed to do something with that option. Typically you'd initiate the parsing of the options XML file and the command line by invoking `ParseOptions` in your program's `main` routine. This should only be done once in your program's code. 
 
 The three arguments to `util::Options::ParseOptions` are:
 
