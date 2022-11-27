@@ -1,3 +1,7 @@
+---
+author: [William Seligman](https://github.com/wgseligman)
+---
+
 # GramsSim
 
 *Principle Maintainer: [William Seligman](https://github.com/wgseligman)*
