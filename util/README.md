@@ -11,15 +11,20 @@ C++ programs I write.
         * [Flags](#flags)
         * [Vectors](#vectors)
       - [Abbreviating options](#abbreviating-options)
-      - [Overriding &lt;global&gt;](#overriding--lt-global-gt-)
-      - [Including one XML file from within another](#including-one-xml-file-from-within-another)
     + [Accessing options from within your program](#accessing-options-from-within-your-program)
-    + [Implementing the `-h/--help` option](#implementing-the---h---help--option)
     + [Other `Options` methods](#other--options--methods)
+      - [Implementing the `-h/--help` option](#implementing-the---h---help--option)
       - [Displaying a table of all the options](#displaying-a-table-of-all-the-options)
       - [Going through options one-by-one](#going-through-options-one-by-one)
+    + [Using `Options` as metadata](#using--options--as-metadata)
       - [Saving options to a ROOT file](#saving-options-to-a-root-file)
       - [Restoring options from a ROOT file](#restoring-options-from-a-root-file)
+      - [Preserving options across an analysis chain](#preserving-options-across-an-analysis-chain)
+    + [`Options` tips and tricks](#-options--tips-and-tricks)
+      - [Documentation options](#documentation-options)
+      - [Inspecting the `Options` ntuple](#inspecting-the--options--ntuple)
+      - [Overriding &lt;global&gt;](#overriding--lt-global-gt-)
+      - [Including one XML file from within another](#including-one-xml-file-from-within-another)
 
 <small><i><a href='http://ecotrust-canada.github.io/markdown-toc/'>Table of contents generated with markdown-toc</a></i></small>
 
@@ -654,7 +659,7 @@ If two different programs have an option with the same name, the most downstream
 
 The following sections discuss aspects of using `Options` that don't directly involve C++ programming. 
 
-#### Documentation option
+#### Documentation options
 
 A "documentation option" is one that's not actually used by any program, but is copied via the `CopyInputNtuple` and `WriteNtuple` methods from one file to another in the analysis. This can be used to describe the reason why the program/job/analysis chain is being run.
 
