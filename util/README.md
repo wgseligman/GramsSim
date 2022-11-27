@@ -222,12 +222,12 @@ Then all of the following are equivalent:
 
 ### Accessing options from within your program
 
-Just having an option defined in the XML file is not enough.
-You need the programming to do something with that option. Typically you'd initiate the parsing of the options XML file and the command line by invoking `ParseOptions` in your program's `main` routine. 
+Just having an option defined in the XML file is probably not enough.
+Some programming is needed to do something with that option. Typically you'd initiate the parsing of the options XML file and the command line by invoking `ParseOptions` in your program's `main` routine. This should only be done once in your program's code, typically in a `main` routine. 
 
 The three arguments to `util::Options::ParseOptions` are:
 
-   1. The number of arguments on the command line; normally that is the first argument to the main routine (`argc`). 
+   1. The number of arguments on the command line; normally that is the first argument to the `main` routine (`argc`). 
 
    2. An array of C-style character strings (or type char**) that contains the arguments on the command line; normally this is the second argument to the main routine (`argv`). The contents of this array will be altered by `ParseOptions`.
  
@@ -259,6 +259,7 @@ int main( int argc, char** argv ) {
 //  Parse the contents of the options XML file, with overrides
 //  from the command line. 
 
+    auto options = util::Options::GetInstance();
     auto result = options->ParseOptions(argc, argv, "gramsg4");
 
     // Abort if we couldn't parse the job options.
@@ -447,9 +448,19 @@ for example, to save the options in an ntuple for later reference. The following
 
 ### Using `Options` as metadata
 
-The `Options` class offers several methods for saving, restoring, and tracking the values of options in your analysis. 
+The `Options` class offers several methods for saving, restoring, and tracking the values of options in your analysis. For this discussion, consider the following case:
 
-It's common for set of programs to be organized as a "chain": You run program A, whose output is the input to program B, whose output in turn is used by program C, and so on. The following methods allow you to keep internal track of the options used for programs A, B, C, etc.; that is, to record the metadata associated with your analysis chain.
+|  <img src="UsingOptions.png" width="75%"/> |
+| :---------------------------------------------: | 
+|  <small><strong>Fig 1. A typical use of the `Options` class. Note that in this and the following figures, the options for Program A would be contained in a tag block such as `<programa>...</programa>`; this is omitted from these figures for clarity. </strong></small> |
+
+It's common for set of programs to be organized as a "chain": You run program A, whose output is the input to program B, whose output in turn is used by program C, and so on. For example:
+
+|  <img src="AnalysisChain.png" width="75%"/> |
+| :---------------------------------------------: | 
+|  <small><strong>Fig 2. An example analysis chain. Each program has its own options. Typically you'd have separate tag blocks within a single XML file, such as `<programa>...</programa> <programb>...<programb> <programc>...<programc>`. However, you could also set up separate XML files for each program if you wished. </strong></small> |
+
+The following methods allow you to keep internal track of the options used for programs A, B, C, etc.; that is, to record the metadata associated with your analysis chain.
 
 Later, you can easily re-run each individual program with the same options, overriding selected options when you need to. 
 
@@ -466,7 +477,11 @@ auto output = TFile::Open("output-file-name.root","RECREATE")
 options->WriteNtuple(output);
 ```
 
-`WriteNtuple` can take a second argument, the name of the options ntuple. If you don't supply one, the default is `Options`.
+`WriteNtuple` can take a second argument, the name of the options ntuple. If you don't supply one, the default is `Options`. This is a sketch of how that `Options` ntuple is placed within the output file:
+
+|  <img src="UsingWriteNtuple.png" width="75%"/> |
+| :---------------------------------------------: | 
+|  <small><strong>Fig 3. The effects of using `WriteNtuple`. Note that the `Options` ntuple embedded within the output file will contain the options within the example `<programa>...</programa>` tag block, with the changes from any command-line options. </strong></small> |
 
 #### Restoring options from a ROOT file
 
@@ -488,6 +503,143 @@ Take care! In this particular example, the default output file for `gramsdetsim`
 
     ./gramsdetsim -v --options gramsdetsim.root --rho 1.5 --outputfile gramsdetsim-revised.root
 
+|  <img src="UsingROOTforOptions.png" width="75%"/> |
+| :---------------------------------------------: | 
+|  <small><strong>Fig 4. Using a ROOT file from a previous run to get the options used for that run.  </strong></small> |
+
+#### Preserving options across an analysis chain
+
+If you just use `WriteOptions` as described above, each program's output file will contain an `Options` ntuple that contains just the options used for that run of the program. Consider how this would look for an analysis chain:
+
+|  <img src="AnalysisChainWriteNtuple.png" width="75%"/> |
+| :---------------------------------------------: | 
+|  <small><strong>Fig 5. Using a ROOT file from a previous run to get the options used for that run.  </strong></small> |
+
+Assume you'd like to preserve the options used for all the programs in your analysis chain. For example, if your chain goes from programs A -> B -> C -> D, you'd like to be able to look at the final output from program D and see what options were used in program A. 
+
+Again, this is useful in tracing the history of how a particular file was created, especially if no one kept detailed notes on how the files were created. (We are, of course, referring to files that other researchers created. _You_ always keep notes, but other researchers may not.)
+
+The `Options::CopyInputNtuple` copies an `Options` ntuple from a ROOT input file and merges it with the options already loaded via the `Options::ParseOptions` method. `CopyInputNtuple` takes as an argument the `TFile*` of a ROOT input file that you've already opened. 
+
+Here's a code fragment to demonstrate how this works:
+
+```C++
+#include "Options.h"
+#include "TFile.h" // ROOT File class
+#incluce <string>
+// ...
+
+int main( int argc, char** argv ) {
+
+    // Parse the contents of the options XML file, with overrides
+    // from the command line. 
+
+    auto options = util::Options::GetInstance();
+    auto result = options->ParseOptions(argc, argv, "programb");
+    
+    // For this example, assume the option that specifies the ROOT input 
+    // file is "inputfile".
+    std::string inputFileName;
+    options->GetOption("inputfile",inputFileName);
+    
+    // Open the ROOT input file. Note that ROOT requires that
+    // its string be comverted into C-style strings; it can't
+    // handle std::string objects as arguments. 
+    auto input = new TFile(inputFileName.c_str());
+
+    // Merge the options from the input file, to provide a historical
+    // record of the analysis chain.
+    options->CopyInputNtuple(input);
+
+    // Open the ROOT output file for this program. Assume
+    // the option for the output file name is "outputfile".
+    std::string outputFileName;
+    options->GetOption("outputfile",outputFileName);
+
+    // "RECREATE" means to open the file for writing, and to create a
+    // brand-new output file (as opposed to appending to an old one).
+    auto output = new TFile(outputFileName.c_str(),"RECREATE");
+
+    // Write all the options to the output file in order to preserve them.
+    options->WriteNtuple(output);
+
+    // ... do the rest of the program's processing ...
+}
+```
+
+Here a sketch of the result:
+
+|  <img src="UsingCopyInputNtuple.png" width="75%"/> |
+| :---------------------------------------------: | 
+|  <small><strong>Fig 6. A sketch of how `CopyInputNtuple` works. </strong></small> |
+
+
+For example, in the `GramsSim` analysis chain, the order of the programs is `gramssky` -> `gramsg4` -> `gramsdetsim` -> `gramsreadoutsim` -> `gramselecsim`. Each of these programs uses `CopyInputNtuple` to merge the previous programs' options into its own. These are the first 50 rows in the resulting `Options` ntuple in the output of the final program in the chain:
+
+```
+******************************************************************************************************************
+*    Row   * OptionName.OptionNam * OptionValue.Opt * OptionTy * O *     OptionDesc.OptionDesc * OptionSource.Op *
+******************************************************************************************************************
+*        0 *      DriftCoordinate *               2 *  integer *   * direction of electron dri *     gramsdetsim *
+*        1 *        ElectricField *        1.000000 *   double *   *    electric field [kV/cm] *     gramsdetsim *
+*        2 *  ElectronClusterSize *             200 *  integer *   * number of electrons in a  *     gramsdetsim *
+*        3 * ElectronDriftVelocit *        0.010000 *   double *   *    drift velocity (cm/ns) *     gramsdetsim *
+*        4 * ElectronLifeTimeCorr *    50000.000000 *   double *   * mean life of electrons (n *     gramsdetsim *
+*        5 *           EnergyUnit *             MeV *   string *   * energy unit for program o *          global *
+*        6 *           LArDensity *        1.397300 *   double *   *      LAr density [g/cm^3] *     gramsdetsim *
+*        7 *           LengthUnit *              cm *   string *   * length unit for program o *          global *
+*        8 * LongitudinalDiffusio *        0.000000 *   double *   *                 [cm^2/ns] *     gramsdetsim *
+*        9 *       MeVToElectrons *    42370.000000 *   double *   * the number of generated e *     gramsdetsim *
+*       10 * MinNumberOfElCluster *               0 *  integer *   * minimum number of cluster *     gramsdetsim *
+*       11 *    ReadoutPlaneCoord *        0.000000 *   double *   * location of readout plane *     gramsdetsim *
+*       12 *   RecombinationModel *               0 *  integer *   *       recombination model *     gramsdetsim *
+*       13 *             TimeUnit *              ns *   string *   * time unit for program out *          global *
+*       14 *  TransverseDiffusion *        0.000000 *   double *   *                 [cm^2/ns] *     gramsdetsim *
+*       15 *           absorption *               1 *  boolean *   *  model absorption effects *     gramsdetsim *
+*       16 *             birks_AB *        0.806000 *   double *   *   factor for Birk's model *     gramsdetsim *
+*       17 *             birks_kB *        0.052000 *   double *   * factor for Birk's model [ *     gramsdetsim *
+*       18 *       bit_resolution *              10 *  integer *   *   resolution of ADC [bit] *    gramselecsim *
+*       19 *            box_alpha *        0.930000 *   double *   *    recombination constant *     gramsdetsim *
+*       20 *             box_beta *        0.212000 *   double *   * recombination constant [( *     gramsdetsim *
+*       21 *                debug *               0 *     flag * d *                           *          global *
+*       22 *            diffusion *               1 *  boolean *   *   model diffusion effects *     gramsdetsim *
+*       23 *             gdmlfile *      grams.gdml *   string * g *  input GDML detector desc *         gramsg4 *
+*       24 *              gdmlout *                 *   string *   * write parsed GDML to this *         gramsg4 *
+*       25 *                 help *               0 *     flag * h *       show help then exit *          global *
+*       26 *            input_max *     1000.000000 *   double *   * maximum input of ADC [mV] *    gramselecsim *
+*       27 *            input_min *        0.000000 *   double *   * minimum input of ADC [mV] *    gramselecsim *
+*       28 *            inputfile * gramsreadoutsim *   string * i *                input file *    gramselecsim *
+*       29 *             inputgen *                 *   string * i *    input generator events *         gramsg4 *
+*       30 *          inputntuple *      ReadoutSim *   string *   *              input ntuple *    gramselecsim *
+*       31 *          larstepsize *        0.020000 *   double *   *         LAr TPC step size *         gramsg4 *
+*       32 *            macrofile *   mac/batch.mac *   string * m *             G4 macro file *         gramsg4 *
+*       33 *         noise_param0 *        0.000000 *   double *   *                 0th order *    gramselecsim *
+*       34 *         noise_param1 *        0.000000 *   double *   *                 1st order *    gramselecsim *
+*       35 *         noise_param2 *        0.000000 *   double *   *                 2nd order *    gramselecsim *
+*       36 *             nthreads *               0 *  integer * t *         number of threads *         gramsg4 *
+*       37 *              options *     options.xml *   string *   *       XML file of options *          global *
+*       38 *           outputfile * gramselecsim.ro *   string * o *               output file *    gramselecsim *
+*       39 *         outputntuple *         ElecSim *   string *   *             output ntuple *    gramselecsim *
+*       40 *           peak_delay *        0.000000 *   double *   *   delay time from e- [ns] *    gramselecsim *
+*       41 *          physicslist * FTFP_BERT_LIV+O *   string * p *              physics list *         gramsg4 *
+*       42 *          pixel_sizex *        3.200000 *   double *   *              pixel size x * gramsreadoutsim *
+*       43 *          pixel_sizey *        3.200000 *   double *   *              pixel size y * gramsreadoutsim *
+*       44 *          preamp_func *               4 *  integer *   * curve type of preamp outp *    gramselecsim *
+*       45 *          preamp_gain *        1.000000 *   double *   *              gain [mV/fC] *    gramselecsim *
+*       46 *            preamp_mu *     1500.000000 *   double *   *       sampling width [ns] *    gramselecsim *
+*       47 *     preamp_post_time *     3000.000000 *   double *   *           decay time [ns] *    gramselecsim *
+*       48 *    preamp_prior_time *      200.000000 *   double *   *            rise time [ns] *    gramselecsim *
+*       49 *         preamp_sigma *      400.000000 *   double *   *       sampling width [ns] *    gramselecsim *
+
+```
+
+Notes on the above table:
+
+   - The options are sorted in alphabetical order. In the standard ASCII sorting of characters, capital letters come before lower-case letters. 
+   
+   - The final column, `OptionSource`, keeps track of the XML tag block that was original source of the option. Exception: If the value of the option was overridden on the command line, the value of `OptionSource` will be `"Command line"`.
+   
+   - See the **Inspecting the `Options` ntuple** section below for how to generate this table for your own options. 
 
 ### `Options` tips and tricks
 
