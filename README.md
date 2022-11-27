@@ -55,9 +55,9 @@ subdirectory's README.md file:
    
 This is a diagram of the overall structure of the GramsSim modules. Note that as of Oct-2022, many of these modules have not yet been formally installed in this packages; these are denoted in gray text in the figure.
 
-|                                                 |
-| :---------------------------------------------: | 
 | <img src="GramsSim_modules.png" width="100%" /> |
+| :---------------------------------------------: | 
+| <small><strong>A sketch of the organization of the `GramsSim` modules.</strong></small> |
 
 
 Before installing GramsSim, please read [DEPENDENCIES.md](DEPENDENCIES.md) for a list of packages that must be installed for GramsSim to compile.

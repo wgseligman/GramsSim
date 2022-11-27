@@ -143,9 +143,9 @@ where _N(a,b)_ is a normal distribution with a mean of _a_ and a width of _b_, a
 
 This is a sketch of the procedure:
 
-|                                           |
+| <img src="Diffusion.png" width="50%" /> |
 | :---------------------------------------: | 
-| <img src="Diffusion.png" width="50%" />   |
+| <small><strong>Sketch by Satoshi Takashima of the operation of `GramsReadoutSim`. Note the separate values for <i>D<sub>L</sub></i> and <i>D<sub>T</sub></i>, the longitudinal and traverse diffusion respectively. </strong></small> |
 
 
 The output ntuple contains the energy, arrival time at the anode, and shifted
