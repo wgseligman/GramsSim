@@ -463,7 +463,7 @@ It's common for set of programs to be organized as a "chain": You run program A,
 
 |  <img src="AnalysisChain.png" width="75%"/> |
 | :---------------------------------------------: | 
-|  <small><strong>Fig 2. An example analysis chain. Each program has its own options. Typically you'd have separate tag blocks within a single XML file, such as `<programa>...</programa> <programb>...<programb> <programc>...<programc>`. However, you could also set up separate XML files for each program if you wished. </strong></small> |
+|  <small><strong>Fig 2. An example analysis chain. Each program has its own options. Typically you'd have separate tag blocks within a single XML file, such as `<programa>...</programa> <programb>...</programb> <programc>...</programc>`. However, you could also set up separate XML files for each program if you wished. </strong></small> |
 
 The following methods allow you to keep internal track of the options used for programs A, B, C, etc.; that is, to record the metadata associated with your analysis chain.
 
