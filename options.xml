@@ -46,6 +46,12 @@
         in recreating the run.
     </option>
 
+    <!-- This is a "documentation option" as described in GramsSim/util/README.md.
+         It doesn't do anything within a program, If the programs use
+         Options::CopyInputNtuple and Options::WriteNtuple, this option will be
+         included. Its value can be used to identify the run of the analysis chain.
+    -->
+    <option name="comment" type="string" value="" desc="document purpose of run" />
 
   </global>
 

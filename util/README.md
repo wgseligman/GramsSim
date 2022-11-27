@@ -573,7 +573,6 @@ Here a sketch of the result:
 | :---------------------------------------------: | 
 |  <small><strong>Fig 6. A sketch of how `CopyInputNtuple` works. </strong></small> |
 
-
 For example, in the `GramsSim` analysis chain, the order of the programs is `gramssky` -> `gramsg4` -> `gramsdetsim` -> `gramsreadoutsim` -> `gramselecsim`. Each of these programs uses `CopyInputNtuple` to merge the previous programs' options into its own. These are the first 50 rows in the resulting `Options` ntuple in the output of the final program in the chain:
 
 ```
@@ -637,12 +636,63 @@ Notes on the above table:
 
    - The options are sorted in alphabetical order. In the standard ASCII sorting of characters, capital letters come before lower-case letters. 
    
-   - The final column, `OptionSource`, keeps track of the XML tag block that was original source of the option. Exception: If the value of the option was overridden on the command line, the value of `OptionSource` will be `"Command line"`.
-   
    - See the **Inspecting the `Options` ntuple** section below for how to generate this table for your own options. 
+   
+   - Some of the columns' names are cut off in the above display. Here are the full names:
+      - `OptionName`
+      - `OptionValue` - This is always stored as a string, even if the value is numeric.  
+      - `OptionType`
+      - `OptionBrief` - The single-letter abbreviation that can be used on the command line.
+      - `OptionDesc`
+      - `OptionSource`
+   
+   - The final column, `OptionSource`, keeps track of the XML tag block that was original source of the option. Exception: If the value of the option was overridden on the command line, the value of `OptionSource` will be `"Command line"`.
+
+If two different programs have an option with the same name, the most downstream value of the option within the analysis chain is the one that's kept; in other words, `CopyInputNtuple` will not override an option read by `ParseOptions`. For the most part, this will affect options with common names like `inputfile` and `outputfile`. If it's important to track the inputs and outputs in the analysis chain, give the options different names for each program like `inputProgramA` or `outputProgramB`.
 
 ### `Options` tips and tricks
 
+The following sections discuss aspects of using `Options` that don't directly involve C++ programming. 
+
+#### Documentation option
+
+A "documentation option" is one that's not actually used by any program, but is copied via the `CopyInputNtuple` and `WriteNtuple` methods from one file to another in the analysis. This can be used to describe the reason why the program/job/analysis chain is being run.
+
+For example, assume this option is in the `<global>` section of the XML file:
+
+```XML
+ <option name="comment" type="string" value="" desc="document purpose of run" />
+```
+
+Then you can run a program with a value for that option, to document what you're doing; e.g.,
+
+    ./gramsg4 --comment "03-Nov-2022 understand energy calibration"
+    
+#### Inspecting the `Options` ntuple
+
+The simplest way to inspect the values stored in the `Options` ntuple is to use ROOT interactively. For example, assume you wish to know the value of the options stored in file `myOutput.root`:
+
+```
+# Set up ROOT as appropriate for your system, then:
+root myOutput.root
+# Within interactive ROOT
+Options->Scan()
+```
+
+By default, `TTree::Scan()` displays all the columns with the same width, which is not convenient for the `Options` ntuple. The following command adjusts the output column widths as shown in the table above; you can just copy-and-paste the following in your interactive ROOT session:
+
+```
+Options->Scan("","","col=20:15.3g:8:1:25:15")
+```
+
+For more tips on using `Scan`, see the documentation for [`TTreePlayer::Scan`](https://root.cern.ch/doc/master/classTTreePlayer.html#aa0149b416e4b812a8762ec1e389ba2db) on the ROOT web site. For example, to route the output of `Scan` to an external file:
+
+```
+Options->SetScanField(1000)
+.> options.txt
+Options->Scan("","","col=20:15.3g:8:1:25:15")
+.>
+```
 
 #### Overriding &lt;global&gt;
 
