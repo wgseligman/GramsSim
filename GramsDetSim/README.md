@@ -1,4 +1,5 @@
 # GramsDetSim
+*Principle author: Satoshi Takashima*
 
 - [GramsDetSim](#gramsdetsim)
   * [Overview](#overview)

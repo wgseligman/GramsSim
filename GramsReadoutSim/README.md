@@ -1,4 +1,5 @@
 # GramsReadoutSim
+*Author: Satoshi Takashima*
 
 The purpose of this program is to model the readout geometry of the GRAMS detector. 
 

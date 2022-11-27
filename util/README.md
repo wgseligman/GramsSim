@@ -1,3 +1,7 @@
+---
+author: [William Seligman](https://github.com/wgseligman)
+---
+
 # Directory and Namespace `util`
 
 This directory contains modules that I find generally useful in the
