@@ -1,8 +1,5 @@
----
-author: [William Seligman](https://github.com/wgseligman)
----
-
 # Directory and Namespace `util`
+*Author: [William Seligman](https://github.com/wgseligman)*
 
 This directory contains modules that I find generally useful in the
 C++ programs I write. 
