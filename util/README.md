@@ -491,7 +491,7 @@ options->WriteNtuple(output);
 
 #### Restoring options from a ROOT file
 
-Suppose you have an ROOT file that was created by a program that had its options saved using the `WriteOptions` method described above. You'd like to rerun the program with those same options, perhaps with one or more options changed via the command line. Let's further suppose that, due to the complexities of file management over a long analysis, you've lost the original XML options file that generated the ROOT file. 
+Suppose you have a ROOT file that was created by a program that had its options saved using the `WriteOptions` method described above. You'd like to rerun the program with those same options, perhaps with one or more options changed via the command line. Let's further suppose that, due to the complexities of file management over a long analysis, you've lost the original XML options file that generated the ROOT file. 
 
 The `Options` class can automatically recognize ROOT files that are passed to the program in place of an XML file. For example:
 
@@ -525,21 +525,20 @@ Assume you'd like to preserve the options used for all the programs in your anal
 
 Again, this is useful in tracing the history of how a particular file was created, especially if no one kept detailed notes on how the files were created. (We are, of course, referring to files that other researchers created. _You_ always keep notes, but other researchers may not.)
 
-The `Options::CopyInputNtuple` copies an `Options` ntuple from a ROOT input file and merges it with the options already loaded via the `Options::ParseOptions` method. `CopyInputNtuple` takes as an argument the `TFile*` of a ROOT input file that you've already opened. 
+The `Options::CopyInputNtuple` method copies an `Options` ntuple from a ROOT input file and merges it with the options already loaded via the `Options::ParseOptions` method. `CopyInputNtuple` takes as an argument the `TFile*` of a ROOT input file that you've already opened. 
 
 Here's a code fragment to demonstrate how this works:
 
 ```C++
 #include "Options.h"
 #include "TFile.h" // ROOT File class
-#incluce <string>
+#include <string>
 // ...
 
 int main( int argc, char** argv ) {
 
-    // Parse the contents of the options XML file, with overrides
-    // from the command line. 
-
+    // Parse the contents of the options XML file for the <global>
+    // and <programb> blocks, with overrides from the command line. 
     auto options = util::Options::GetInstance();
     auto result = options->ParseOptions(argc, argv, "programb");
     
@@ -549,7 +548,7 @@ int main( int argc, char** argv ) {
     options->GetOption("inputfile",inputFileName);
     
     // Open the ROOT input file. Note that ROOT requires that
-    // its string be comverted into C-style strings; it can't
+    // its string be converted into C-style strings; it can't
     // handle std::string objects as arguments. 
     auto input = new TFile(inputFileName.c_str());
 
@@ -688,7 +687,7 @@ Options->Scan()
 By default, `TTree::Scan()` displays all the columns with the same width, which is not convenient for the `Options` ntuple. The following command adjusts the output column widths as shown in the table above; you can just copy-and-paste the following in your interactive ROOT session:
 
 ```
-Options->Scan("","","col=20:15.3g:8:1:25:15")
+Options->Scan("","","col=20:15:8:1:25:15")
 ```
 
 For more tips on using `Scan`, see the documentation for [`TTreePlayer::Scan`](https://root.cern.ch/doc/master/classTTreePlayer.html#aa0149b416e4b812a8762ec1e389ba2db) on the ROOT web site. For example, to route the output of `Scan` to an external file:
@@ -696,7 +695,7 @@ For more tips on using `Scan`, see the documentation for [`TTreePlayer::Scan`](h
 ```
 Options->SetScanField(1000)
 .> options.txt
-Options->Scan("","","col=20:15.3g:8:1:25:15")
+Options->Scan("","","col=20:15:8:1:25:15")
 .>
 ```
 
