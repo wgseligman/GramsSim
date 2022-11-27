@@ -754,3 +754,34 @@ In these cases, you can include a section of one XML file within another using [
       - This may not be necessary if the value of the `element` attribute in the main file is the same as the tag
       with the program's name (`gramssky` in this example). 
 
+#### The single-file approach
+
+Depending on the needs of an analysis, the best choice may be to keep the options associated with each individual program separate, rather than merging them all via `CopyInputNtuple` over successive programs in an analysis chain. One approach is to use a single file to hold all the outputs of all the programs, instead of each program having a separate output file. 
+
+The simplest way to do this is to open a file with `"UPDATE"` access:
+
+    auto theFile = new TFile(filename.c_str, "UPDATE");
+    
+Then anything new written to the ROOT file is appended to its existing contents, instead of the file being replaced as it would be for `"RECREATE"` access. 
+
+In use this approach:
+
+- When using the `Options::WriteNtuple` method, include the second argument to specific the name of the output ntuple to record the program's options; e.g.,
+
+        options->WriteNtuple(theFile, "OptionsProgramA");
+
+   - If you omit the second argument and use the default name of `"Options"`, they'll be appended to the file as `Options;1`, `Options;2`, etc. It may be difficult to remember which of the cycles of the `Options` ntuple applies to which program. 
+   
+   - It's not a good idea to combine this with `Options::CopyInputNtuple`. The point of this approach is to avoid merging the options ntuples, which is what `CopyInputNtuple` does.
+   
+- Since all the other ntuples written by the various programs will be appended to the same file, even if each program's ntuple has a different name, to save space it may be worth considering [TTree friends](https://root.cern.ch/doc/master/treefriend_8C.html) to avoid duplicating columns between different ntuples. 
+
+   For example, assume ntuple `NtupleA` has one row for each (run,event,trackID), and ntuples `NtupleB`, `NtupleC`, `NtupleD`, etc., also have a row-for-row correspondence for (run,event,trackID). Then declaring `NtupleB`, `NtupleC`, etc., as friends of `NtupleA` means that you don't have to store (run,event,trackID) in the additional ntuples. They only have to contain the new columns being created by a particular program. 
+   
+- A reminder that you probably want the first program in the analysis to create the single ROOT file with `"RECREATE"` access.
+   
+Here's a sketch of the idea:
+
+|  <img src="UpdateFile.png" width="75%"/> |
+| :---------------------------------------------: | 
+|  <small><strong>Fig 7. A sketch of the single-file approach for managing program output ntuples, including the programs' options. </strong></small> |

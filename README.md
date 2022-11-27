@@ -1,9 +1,4 @@
----
-author: [William Seligman](https://github.com/wgseligman)
----
-
 # GramsSim
-
 *Principle Maintainer: [William Seligman](https://github.com/wgseligman)*
 
 If you want a formatted (or easier-to-read) version of this file, scroll to the bottom. If you're reading this on github, then it's already formatted. 
