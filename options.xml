@@ -480,8 +480,8 @@
 
     Options associated with the diffusion model. These values come
     from MicroBooNE:
-    https://github.com/LArSoft/larsim/blob/develop/larsim/Simulation/simulationservices.fcl
-    https://github.com/MicroBooNE/uboonecode/blob/develop/uboone/Simulation/simulationservices_microboone.fcl
+  https://github.com/LArSoft/larsim/blob/develop/larsim/Simulation/simulationservices.fcl
+  https://github.com/MicroBooNE/uboonecode/blob/develop/uboone/Simulation/simulationservices_microboone.fcl
 
     <option name="diffusion" value="true" type="boolean"
         desc="model diffusion effects"/>
@@ -552,10 +552,16 @@
     <option name="outputfile" short="o" value="gramselecsim.root" type="string"
         desc="output file"/>
     <option name="outputntuple"         value="ElecSim" type="string" desc="output ntuple"/>
+ 
+    <!-- 
+         IMPORTANT: Note that the units associated with these
+         constants should be consistent with the "TimeUnit",
+         "LengthUnit", and "EnergyUnit" options defined above.
+    -->
 
     <!-- general information -->
-    <option name="timebin_width"        value="10.0"    type="double" desc="time bin width in this framework[ns]"/>
-    <option name="time_window"          value="60000.0" type="double" desc="sampling width [ns]"/>
+    <option name="timebin_width"        value="10.0"    type="double" desc="time bin width in this framework"/>
+    <option name="time_window"          value="60000.0" type="double" desc="sampling width"/>
 
     <!-- Preamp -->
     <!-- Valid values of preamp_func are:
@@ -566,13 +572,13 @@
     4 = Double exponential
     -->
     <option name="preamp_func"          value="4"       type="int"    desc="curve type of preamp output"/>
-    <option name="preamp_prior_time"    value="200.0"   type="double" desc="rise time [ns]"/>
-    <option name="preamp_post_time"     value="3000.0"  type="double" desc="decay time [ns]"/>
-    <option name="peak_delay"           value="0.0"     type="double" desc="delay time from e- [ns]"/>
-    <option name="preamp_mu"            value="1500.0"  type="double" desc="sampling width [ns]"/>
-    <option name="preamp_sigma"         value="400.0"   type="double" desc="sampling width [ns]"/>
-    <option name="preamp_tau1"          value="100.0"   type="double" desc="tau1 in two exp model [ns]"/>
-    <option name="preamp_tau2"          value="500.0"   type="double" desc="tau2 in two exp model [ns]"/>
+    <option name="preamp_prior_time"    value="200.0"   type="double" desc="rise time"/>
+    <option name="preamp_post_time"     value="3000.0"  type="double" desc="decay time"/>
+    <option name="peak_delay"           value="0.0"     type="double" desc="delay time from e-"/>
+    <option name="preamp_mu"            value="1500.0"  type="double" desc="sampling width"/>
+    <option name="preamp_sigma"         value="400.0"   type="double" desc="sampling width"/>
+    <option name="preamp_tau1"          value="100.0"   type="double" desc="tau1 in two exp model"/>
+    <option name="preamp_tau2"          value="500.0"   type="double" desc="tau2 in two exp model"/>
     <option name="preamp_gain"          value="1.0"     type="double" desc="gain [mV/fC]"/>
 
     <!-- add noise -->

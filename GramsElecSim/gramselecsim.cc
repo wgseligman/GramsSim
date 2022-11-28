@@ -317,7 +317,7 @@ int main(int argc,char **argv)
       pixel_idx = mp_iter->first.first;
       pixel_idy = mp_iter->first.second;
 
-      // A trick: iter_mp-> is a vector, but instead of copying
+      // A trick: iter_mp->second is a vector, but instead of copying
       // the the entire vector, just copy its address to save
       // execution time and memory.
       const std::vector<int>& num_arrival_electron = mp_iter->second;

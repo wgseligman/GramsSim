@@ -57,6 +57,8 @@ namespace gramselecsim {
 
   AddNoise::~AddNoise() {}
 
+  // Note added Nov-2022 by WGS: This routine is not called by the main program,
+  // and it is also not finished.
   std::vector<double> AddNoise::ProcessCurrentNoise(const std::vector<double>& analogue_waveform ) {
 
     int length_waveform = analogue_waveform.size();

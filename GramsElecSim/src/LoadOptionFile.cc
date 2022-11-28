@@ -25,6 +25,10 @@ namespace gramselecsim {
 
         options->GetOption("timebin_width",         m_timebin_width_);
         options->GetOption("time_window",           m_time_window_);
+	// Note that this parameter is defined in the <gramsdetsim>
+	// tag block, and copied via Options::WriteNtuple and
+	// Options::CopyInputNtuple.  GramsSim/util/README.md for how
+	// options can be passed from earlier in the analysis chain.
         options->GetOption("ElectronClusterSize",   m_electron_cluster_size_);
 
         options->GetOption("preamp_func",           m_preamp_func_);
