@@ -697,7 +697,7 @@ namespace util {
     // Set up the columns of the ntuple. To be compatible with
     // Geant4's clumsy ROOT analysis manager, we have to use
     // char arrays instead of std::string. 
-    char name[40], value[40], type[10], brief[2], desc[40], source[20];
+    char name[40], value[40], type[10], brief[2], desc[60], source[20];
     ntuple->Branch("OptionName",&name,"OptionName/C");
     ntuple->Branch("OptionValue",&value,"OptionValue/C");
     ntuple->Branch("OptionType",&type,"OptionType/C");
@@ -761,7 +761,7 @@ namespace util {
 	    // Set up the columns of the ntuple. To be compatible with
 	    // Geant4's clumsy ROOT analysis manager, we have to use
 	    // char arrays instead of std::string. 
-	    char name[40], value[40], type[10], brief[2], desc[40], source[20];
+	    char name[40], value[40], type[10], brief[2], desc[60], source[20];
 	    ntuple->SetBranchAddress("OptionName",&name);
 	    ntuple->SetBranchAddress("OptionValue",&value);
 	    ntuple->SetBranchAddress("OptionType",&type);
@@ -1145,7 +1145,7 @@ namespace util {
 	    // Set up the columns of the ntuple. To be compatible with
 	    // Geant4's clumsy ROOT analysis manager, we have to use
 	    // char arrays instead of std::string. 
-	    char name[40], value[40], type[10], brief[2], desc[40], source[20];
+	    char name[40], value[40], type[10], brief[2], desc[60], source[20];
 	    ntuple->SetBranchAddress("OptionName",&name);
 	    ntuple->SetBranchAddress("OptionValue",&value);
 	    ntuple->SetBranchAddress("OptionType",&type);
