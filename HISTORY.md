@@ -7,6 +7,8 @@ someone typed "git commit"), see the output of "git log".
 Nov-2022
 
    - Added GramsReadoutSim and GramsElecsim to the repository.
+   - Revised Options class to better support saving and restoring
+     options along an entire analysis chain. 
 
 Oct-2022
 

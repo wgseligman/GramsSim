@@ -1,6 +1,8 @@
 # TODO 
 
-As of 01-Nov-2022:
+As of 28-Nov-2022:
+
+- In GramsElecSim, we may have to model induced charge on adjacent pixels. 
 
 - Cluster time 
    - In GramsDetSim, the cluster arrival time at the anode
