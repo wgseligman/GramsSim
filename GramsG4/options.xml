@@ -86,7 +86,7 @@
     .hepmc3 = HepMC3 text format
     .hep    = HEPEVT text format (https://cdcvs.fnal.gov/redmine/projects/minos-sim/wiki/HEPEVT_files)
     .root   = HepMC3 ROOT format
-    .treeroot = HepMC3 TTree ROOT format
+    .roottree = HepMC3 TTree ROOT format
     .lhef     = LHEF format (arXiv:hep-ph/0609017)
 
     Some of these formats do not provide a way to specify the (x,y,z,t) vertex

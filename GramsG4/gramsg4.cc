@@ -12,6 +12,8 @@
 // For processing command-line and XML file options.
 #include "Options.h" // in util/
 
+#include "Analysis.h" // in g4util/
+
 // There are three mandatory classes needed for any Geant4 application
 // to work. One is the detector geometry:
 #include "GramsG4DetectorConstruction.hh"
@@ -44,6 +46,11 @@
 #include "G4RunManager.hh"
 #endif
 
+
+// Solely for setting the verbosity of the physics display.
+#include "G4EmParameters.hh"
+#include "G4HadronicParameters.hh"
+
 #include "G4UImanager.hh"
 #include "G4VisExecutive.hh"
 #include "G4UIExecutive.hh"
@@ -71,6 +78,8 @@
 #include "G4PhysListStamper.hh"  // defines macro for factory registration
 #include "MySpecialPhysList.hh"
 G4_DECLARE_PHYSLIST_FACTORY(MySpecialPhysList);
+
+#include "TFile.h" // For writing options ntuple at the end. 
 
 // --------------------------------------------------------------
 
@@ -201,6 +210,17 @@ int main(int argc,char **argv)
       exit(EXIT_FAILURE);
     }
 
+  // Setting whether the details of the physics list are displayed
+  // at the start of the job.
+  auto emParam = G4EmParameters::Instance();
+  auto hadParam = G4HadronicParameters::Instance();
+  emParam->SetVerbose(0);
+  hadParam->SetVerboseLevel(0);
+  if (verbose) {
+    emParam->SetVerbose(1);
+    hadParam->SetVerboseLevel(1);
+  }
+  
   // Include optical photons if requested.
   // This was copied from 
   // artg4tk/artg4tk/pluginActions/physicsList/PhysicsList_service.cc 
@@ -254,6 +274,11 @@ int main(int argc,char **argv)
     
   } // if opticalphysics
 
+  // Control the verbosity of the physics-list display at the
+  // start of the run.
+  
+
+  
   // Usual initializations: detector, physics, and user actions.
   runManager->SetUserInitialization(new gramsg4::DetectorConstruction());
   runManager->SetUserInitialization(physics);
@@ -279,7 +304,8 @@ int main(int argc,char **argv)
   // ***** end User Action Manager setup *****
 
   // Tell Geant4 we're about to begin. 
-  runManager->Initialize();
+  // Oct-2022 WGS: This is now supplied via the G4 macro file. 
+  // runManager->Initialize();
 
   // Initialize visualization
   G4VisManager* visManager = new G4VisExecutive;
@@ -313,8 +339,10 @@ int main(int argc,char **argv)
     UImanager->ApplyCommand(command+macroFile);
 
   // Clean-up
+
   delete visManager;
   delete runManager;
+
   return 0;
 }
 

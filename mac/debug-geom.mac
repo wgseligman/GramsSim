@@ -2,10 +2,14 @@
 # Geometry test
 ###################################################
 
+# In GramsG4, every .mac file must contain this
+# line after any physics/geometry/thread setup,
+# but before any generation/visualization commands.
+/run/initialize
+
 # The following command will run a complete verification
-# of the detector geometry. In the case of GramsG4,
-# expect it to take a long time (hours!) because of the 
-# number of wires. 
+# of the detector geometry. This might take a long time
+# hours!) because of the number of cells, SiPMs, and such.. 
 
 # To run this:
 # ./gramsg4 -m debug-geom.mac

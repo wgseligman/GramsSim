@@ -1,4 +1,5 @@
 # Directory and Namespace `util`
+*Author: [William Seligman](https://github.com/wgseligman)*
 
 This directory contains modules that I find generally useful in the
 C++ programs I write. 
@@ -11,15 +12,20 @@ C++ programs I write.
         * [Flags](#flags)
         * [Vectors](#vectors)
       - [Abbreviating options](#abbreviating-options)
-      - [Overriding &lt;global&gt;](#overriding--lt-global-gt-)
-      - [Including one XML file from within another](#including-one-xml-file-from-within-another)
     + [Accessing options from within your program](#accessing-options-from-within-your-program)
-    + [Implementing the `-h/--help` option](#implementing-the---h---help--option)
     + [Other `Options` methods](#other--options--methods)
+      - [Implementing the `-h/--help` option](#implementing-the---h---help--option)
       - [Displaying a table of all the options](#displaying-a-table-of-all-the-options)
       - [Going through options one-by-one](#going-through-options-one-by-one)
+    + [Using `Options` as metadata](#using--options--as-metadata)
       - [Saving options to a ROOT file](#saving-options-to-a-root-file)
       - [Restoring options from a ROOT file](#restoring-options-from-a-root-file)
+      - [Preserving options across an analysis chain](#preserving-options-across-an-analysis-chain)
+    + [`Options` tips and tricks](#-options--tips-and-tricks)
+      - [Documentation options](#documentation-options)
+      - [Inspecting the `Options` ntuple](#inspecting-the--options--ntuple)
+      - [Overriding &lt;global&gt;](#overriding--lt-global-gt-)
+      - [Including one XML file from within another](#including-one-xml-file-from-within-another)
 
 <small><i><a href='http://ecotrust-canada.github.io/markdown-toc/'>Table of contents generated with markdown-toc</a></i></small>
 
@@ -220,75 +226,32 @@ Then all of the following are equivalent:
     ./gramsg4 -t 5 --verbose
     ./gramsg4 -vt5
 
-#### Overriding &lt;global&gt;
-
-Suppose you had something like this in the options XML file:
-
-```XML
-<parameters>
-  <global>
-    <option name="myoption" value="value1" ... />
-  </global>
-
-  <myprogram>
-    <option name="myoption" value="value2" ... />
-  </myprogram>
-</parameters>
-```
-
-Then for every other program that uses the Options class, the value of `myoption` would be `value1`. But for the program `myprogram`, the value of `myoption` would be `value2`.
-
-This is not a good practice. It's probably better to use the command line for this sort of override; e.g.,
-```
-./myprogram --myoption=value2
-```
-
-#### Including one XML file from within another
-
-Perhaps you are focussed on a particular set of options associated with one program and don't care about any other
-program's options. Or perhaps the default [`options.xml`](../options.xml) file seems too long and scrolling through it
-takes a long time. 
-
-In these cases, you can include a section of one XML file within another using [XInclude][70]. There's an example of this in [`GramsSim/xinclude.xml`](../xinclude.xml). The basic recipe is:
-
-[70]: https://www.xml.com/pub/a/2002/07/31/xinclude.html
-
-   - For the main file (the one that's doing the including):
-
-      - Include the xinclude specification in the opening `<parameters>` tag:
-   
-          `<parameters xmlns:xi="http://www.w3.org/2001/XInclude">`
-          
-      - Specify the file and the id of the tag to be included. In this example, the
-      section with the tag `gramssky` in file [`GramsSky/options.xml`](../GramsSky/options.xml)
-      is to be included.
-      
-          `<xi:include href="GramsSky/options.xml" element="gramssky"/>`
-                    
-   - For the file whose contents will be included:
-   
-      - In the program-options section you want to include, add an `xml:id` attribute with the id you supplied as the value of the `element` attribute in the main file, e.g.,
-      
-          `<gramssky xml:id="gramssky">`
-          
-      - This may not be necessary if the value of the `element` attribute in the main file is the same as the tag
-      with the program's name (`gramssky` in this example). 
-
-
 ### Accessing options from within your program
 
-Just having an option defined in the XML file is not enough.
-You need the programming to do something with that option. Typically you'd initiate the parsing of the options XML file and the command line by invoking `ParseOptions` in your program's `main` routine. 
+Just having an option defined in the XML file is probably not enough.
+Some programming is needed to do something with that option. Typically you'd initiate the parsing of the options XML file and the command line by invoking `ParseOptions` in your program's `main` routine. This should only be done once in your program's code. 
 
 The three arguments to `util::Options::ParseOptions` are:
-   1. The number of arguments on the command line; normally that is the first argument to the main routine (`argc`). 
-   2. An array of C-style character strings (or type char**) that contains the arguments on the command line; normally this is the second argument to the main routine (`argv`). The contents of this array will be altered by `ParseOptions`. 
+
+   1. The number of arguments on the command line; normally that is the first argument to the `main` routine (`argc`). 
+
+   2. An array of C-style character strings (or type char**) that contains the arguments on the command line; normally this is the second argument to the main routine (`argv`). The contents of this array will be altered by `ParseOptions`.
+ 
    3. The third argument can be one of the following:
-      - A character string. This should match a tag-block of the same name in the XML file. The examples below use `gramsg4` in order to select the tag block `<gramsg4> ... <\gramsg4>`. 
+
+      - A character string. This should match a tag-block of the same name in the XML file. If the following line of code is used to set up the `Options` routine, then it will only read in the contents of the `<global> ... <\global>` and the `<gramsg4> ... <\gramsg4>` tag blocks:
+
+            auto result = options->ParseOptions(argc, argv, "gramsg4");
+
       - Omitted. In this case, the name of the executing program (in `argv[0]`) will be used to search for a matching tag-block within the XML file. Any path specifications for the program will be omitted in searching for a tag block; e.g., if you're running `~/grams/GramsSim-work/bin/gramsdetsim` then `ParseOptions` will look for a tag block beginning with `<gramsdetsim>`.
-      - The string `"ALL"`. In that case, all the tag-blocks will be read in and used. Note that if multiple tag blocks have options with the same `name` attribute, then last one in the file will be used, overriding the ones above it. 
-         
-As noted above, here we use `gramsg4` as an example:
+
+            auto result = options->ParseOptions(argc, argv);
+
+      - The string `"ALL"`. In that case, all the tag blocks will be read in and used. Note that if multiple tag blocks have options with the same `name` attribute, then last one in the file will be used, overriding the ones above it. In the following, all of the tag blocks will be read in (and written by `WriteOptions`; see below):
+
+            auto result = options->ParseOptions(argc, argv, "ALL");
+
+Here is a detailed code example. Again, a reminder: `gramsg4` is just an example name:
 
 ```C++
 #include "Options.h"
@@ -302,6 +265,7 @@ int main( int argc, char** argv ) {
 //  Parse the contents of the options XML file, with overrides
 //  from the command line. 
 
+    auto options = util::Options::GetInstance();
     auto result = options->ParseOptions(argc, argv, "gramsg4");
 
     // Abort if we couldn't parse the job options.
@@ -373,7 +337,9 @@ To fetch a vector, use `std::vector<double>`; e.g.,
   }     
 ```
 
-### Implementing the `-h/--help` option
+### Other `Options` methods
+
+#### Implementing the `-h/--help` option
 
 The method `util::Options::PrintHelp()` can be used to implement the `-h` and `--help` options for your program:
 ```C++
@@ -417,8 +383,6 @@ Usage:
 See options.xml for details.
 
 ```
-
-### Other `Options` methods
 
 #### Displaying a table of all the options
 
@@ -488,9 +452,27 @@ for example, to save the options in an ntuple for later reference. The following
     std::string GetOptionSource( size_t i ) const;
 ```
 
+### Using `Options` as metadata
+
+The `Options` class offers several methods for saving, restoring, and tracking the values of options in your analysis. For this discussion, consider the following case:
+
+|  <img src="UsingOptions.png" width="75%"/> |
+| :---------------------------------------------: | 
+|  <small><strong>Fig 1. A typical use of the `Options` class. Note that in this and the following figures, the options for Program A would be contained in a tag block such as `<programa>...</programa>`; this is omitted from these figures for clarity. </strong></small> |
+
+It's common for set of programs to be organized as a "chain": You run program A, whose output is the input to program B, whose output in turn is used by program C, and so on. For example:
+
+|  <img src="AnalysisChain.png" width="75%"/> |
+| :---------------------------------------------: | 
+|  <small><strong>Fig 2. An example analysis chain. Each program has its own options. Typically you'd have separate tag blocks within a single XML file, such as `<programa>...</programa> <programb>...</programb> <programc>...</programc>`. However, you could also set up separate XML files for each program if you wished. </strong></small> |
+
+The following methods allow you to keep internal track of the options used for programs A, B, C, etc.; that is, to record the metadata associated with your analysis chain.
+
+Later, you can easily re-run each individual program with the same options, overriding selected options when you need to. 
+
 #### Saving options to a ROOT file
 
-The utility method `WriteOptions` can be used to write the option to an ntuple in an output file in [ROOT](https://root.cern.ch/) format. This lets you record the values used to run the program that generated that particular file.
+The utility method `WriteOptions` can be used to write the options to an ntuple in an output file in [ROOT](https://root.cern.ch/) format. This lets you record the values used to run the program that generated that particular file.
 
 ```C++
 #include "Options.h" // in util/ 
@@ -501,25 +483,304 @@ auto output = TFile::Open("output-file-name.root","RECREATE")
 options->WriteNtuple(output);
 ```
 
-`WriteNtuple` can take a second argument, the name of the options ntuple. If you don't supply one, the default is `Options`.
+`WriteNtuple` can take a second argument, the name of the options ntuple. If you don't supply one, the default is `Options`. This is a sketch of how that `Options` ntuple is placed within the output file:
+
+|  <img src="UsingWriteNtuple.png" width="75%"/> |
+| :---------------------------------------------: | 
+|  <small><strong>Fig 3. The effects of using `WriteNtuple`. Note that the `Options` ntuple embedded within the output file will contain the options within the example `<programa>...</programa>` tag block, with the changes from any command-line options. </strong></small> |
 
 #### Restoring options from a ROOT file
 
-Suppose you have an ROOT file that was created by a program that had its options saved using the `WriteOptions` method described above. You'd like to rerun the program with those same options, perhaps with one or more options changed via the command line. Let's further suppose that, due to the complexities of file management over a long analysis, you've lost the original XML options file that generated the ROOT file. 
+Suppose you have a ROOT file that was created by a program that had its options saved using the `WriteOptions` method described above. You'd like to rerun the program with those same options, perhaps with one or more options changed via the command line. Let's further suppose that, due to the complexities of file management over a long analysis, you've lost the original XML options file that generated the ROOT file. 
 
 The `Options` class can automatically recognize ROOT files that are passed to the program in place of an XML file. For example:
-```
-./gramsdetsim gramsdetsim.root
-```
+
+    ./gramsdetsim gramsdetsim.root
+
 or
-```
-./gramsdetsim -v --options gramsdetsim.root
-```
+
+    ./gramsdetsim -v --options gramsdetsim.root
+
 The `ParseOptions` method will search the ROOT file for an ntuple with a name that contains the text `Options`. It will then populate its list of options from that ntuple, and accept any option overrides on the command line. For example:
-```
-./gramsdetsim -v --options gramsdetsim.root --rho 1.5
-```
+
+    ./gramsdetsim -v --options gramsdetsim.root --rho 1.5
+
 Take care! In this particular example, the default output file for `gramsdetsim` is `gramsdetsim.root`. So we're reading our options from the same file to which we're going to write our output; you've overridden the value of `rho` which will be written to the output file. To avoid unpredictable behaviors, you probably want to make sure the files from which you're reading options and to which you're writing output are different:
+
+    ./gramsdetsim -v --options gramsdetsim.root --rho 1.5 --outputfile gramsdetsim-revised.root
+
+|  <img src="UsingROOTforOptions.png" width="75%"/> |
+| :---------------------------------------------: | 
+|  <small><strong>Fig 4. Using a ROOT file from a previous run to get the options used for that run.  </strong></small> |
+
+#### Preserving options across an analysis chain
+
+If you just use `WriteOptions` as described above, each program's output file will contain an `Options` ntuple that contains just the options used for that run of the program. Consider how this would look for an analysis chain:
+
+|  <img src="AnalysisChainWriteNtuple.png" width="75%"/> |
+| :---------------------------------------------: | 
+|  <small><strong>Fig 5. Using a ROOT file from a previous run to get the options used for that run.  </strong></small> |
+
+Assume you'd like to preserve the options used for all the programs in your analysis chain. For example, if your chain goes from programs A -> B -> C -> D, you'd like to be able to look at the final output from program D and see what options were used in program A. 
+
+Again, this is useful in tracing the history of how a particular file was created, especially if no one kept detailed notes on how the files were created. (We are, of course, referring to files that other researchers created. _You_ always keep notes, but other researchers may not.)
+
+The `Options::CopyInputNtuple` method copies an `Options` ntuple from a ROOT input file and merges it with the options already loaded via the `Options::ParseOptions` method. `CopyInputNtuple` takes as an argument the `TFile*` of a ROOT input file that you've already opened. 
+
+Here's a code fragment to demonstrate how this works:
+
+```C++
+#include "Options.h"
+#include "TFile.h" // ROOT File class
+#include <string>
+// ...
+
+int main( int argc, char** argv ) {
+
+    // Parse the contents of the options XML file for the <global>
+    // and <programb> blocks, with overrides from the command line. 
+    auto options = util::Options::GetInstance();
+    auto result = options->ParseOptions(argc, argv, "programb");
+    
+    // For this example, assume the option that specifies the ROOT input 
+    // file is "inputfile".
+    std::string inputFileName;
+    options->GetOption("inputfile",inputFileName);
+    
+    // Open the ROOT input file. Note that ROOT requires that
+    // its string be converted into C-style strings; it can't
+    // handle std::string objects as arguments. 
+    auto input = new TFile(inputFileName.c_str());
+
+    // Merge the options from the input file, to provide a historical
+    // record of the analysis chain.
+    options->CopyInputNtuple(input);
+
+    // Open the ROOT output file for this program. Assume
+    // the option for the output file name is "outputfile".
+    std::string outputFileName;
+    options->GetOption("outputfile",outputFileName);
+
+    // "RECREATE" means to open the file for writing, and to create a
+    // brand-new output file (as opposed to appending to an old one).
+    auto output = new TFile(outputFileName.c_str(),"RECREATE");
+
+    // Write all the options to the output file in order to preserve them.
+    options->WriteNtuple(output);
+
+    // ... do the rest of the program's processing ...
+}
 ```
-./gramsdetsim -v --options gramsdetsim.root --rho 1.5 --outputfile gramsdetsim-revised.root
+
+Here a sketch of the result:
+
+|  <img src="UsingCopyInputNtuple.png" width="75%"/> |
+| :---------------------------------------------: | 
+|  <small><strong>Fig 6. A sketch of how `CopyInputNtuple` works. </strong></small> |
+
+For example, in the `GramsSim` analysis chain, the order of the programs is `gramssky` -> `gramsg4` -> `gramsdetsim` -> `gramsreadoutsim` -> `gramselecsim`. Each of these programs uses `CopyInputNtuple` to merge the previous programs' options into its own. These are the first 50 rows in the resulting `Options` ntuple in the output of the final program in the chain:
+
 ```
+******************************************************************************************************************
+*    Row   * OptionName.OptionNam * OptionValue.Opt * OptionTy * O *     OptionDesc.OptionDesc * OptionSource.Op *
+******************************************************************************************************************
+*        0 *      DriftCoordinate *               2 *  integer *   * direction of electron dri *     gramsdetsim *
+*        1 *        ElectricField *        1.000000 *   double *   *    electric field [kV/cm] *     gramsdetsim *
+*        2 *  ElectronClusterSize *             200 *  integer *   * number of electrons in a  *     gramsdetsim *
+*        3 * ElectronDriftVelocit *        0.010000 *   double *   *    drift velocity (cm/ns) *     gramsdetsim *
+*        4 * ElectronLifeTimeCorr *    50000.000000 *   double *   * mean life of electrons (n *     gramsdetsim *
+*        5 *           EnergyUnit *             MeV *   string *   * energy unit for program o *          global *
+*        6 *           LArDensity *        1.397300 *   double *   *      LAr density [g/cm^3] *     gramsdetsim *
+*        7 *           LengthUnit *              cm *   string *   * length unit for program o *          global *
+*        8 * LongitudinalDiffusio *        0.000000 *   double *   *                 [cm^2/ns] *     gramsdetsim *
+*        9 *       MeVToElectrons *    42370.000000 *   double *   * the number of generated e *     gramsdetsim *
+*       10 * MinNumberOfElCluster *               0 *  integer *   * minimum number of cluster *     gramsdetsim *
+*       11 *    ReadoutPlaneCoord *        0.000000 *   double *   * location of readout plane *     gramsdetsim *
+*       12 *   RecombinationModel *               0 *  integer *   *       recombination model *     gramsdetsim *
+*       13 *             TimeUnit *              ns *   string *   * time unit for program out *          global *
+*       14 *  TransverseDiffusion *        0.000000 *   double *   *                 [cm^2/ns] *     gramsdetsim *
+*       15 *           absorption *               1 *  boolean *   *  model absorption effects *     gramsdetsim *
+*       16 *             birks_AB *        0.806000 *   double *   *   factor for Birk's model *     gramsdetsim *
+*       17 *             birks_kB *        0.052000 *   double *   * factor for Birk's model [ *     gramsdetsim *
+*       18 *       bit_resolution *              10 *  integer *   *   resolution of ADC [bit] *    gramselecsim *
+*       19 *            box_alpha *        0.930000 *   double *   *    recombination constant *     gramsdetsim *
+*       20 *             box_beta *        0.212000 *   double *   * recombination constant [( *     gramsdetsim *
+*       21 *                debug *               0 *     flag * d *                           *          global *
+*       22 *            diffusion *               1 *  boolean *   *   model diffusion effects *     gramsdetsim *
+*       23 *             gdmlfile *      grams.gdml *   string * g *  input GDML detector desc *         gramsg4 *
+*       24 *              gdmlout *                 *   string *   * write parsed GDML to this *         gramsg4 *
+*       25 *                 help *               0 *     flag * h *       show help then exit *          global *
+*       26 *            input_max *     1000.000000 *   double *   * maximum input of ADC [mV] *    gramselecsim *
+*       27 *            input_min *        0.000000 *   double *   * minimum input of ADC [mV] *    gramselecsim *
+*       28 *            inputfile * gramsreadoutsim *   string * i *                input file *    gramselecsim *
+*       29 *             inputgen *                 *   string * i *    input generator events *         gramsg4 *
+*       30 *          inputntuple *      ReadoutSim *   string *   *              input ntuple *    gramselecsim *
+*       31 *          larstepsize *        0.020000 *   double *   *         LAr TPC step size *         gramsg4 *
+*       32 *            macrofile *   mac/batch.mac *   string * m *             G4 macro file *         gramsg4 *
+*       33 *         noise_param0 *        0.000000 *   double *   *                 0th order *    gramselecsim *
+*       34 *         noise_param1 *        0.000000 *   double *   *                 1st order *    gramselecsim *
+*       35 *         noise_param2 *        0.000000 *   double *   *                 2nd order *    gramselecsim *
+*       36 *             nthreads *               0 *  integer * t *         number of threads *         gramsg4 *
+*       37 *              options *     options.xml *   string *   *       XML file of options *          global *
+*       38 *           outputfile * gramselecsim.ro *   string * o *               output file *    gramselecsim *
+*       39 *         outputntuple *         ElecSim *   string *   *             output ntuple *    gramselecsim *
+*       40 *           peak_delay *        0.000000 *   double *   *   delay time from e- [ns] *    gramselecsim *
+*       41 *          physicslist * FTFP_BERT_LIV+O *   string * p *              physics list *         gramsg4 *
+*       42 *          pixel_sizex *        3.200000 *   double *   *              pixel size x * gramsreadoutsim *
+*       43 *          pixel_sizey *        3.200000 *   double *   *              pixel size y * gramsreadoutsim *
+*       44 *          preamp_func *               4 *  integer *   * curve type of preamp outp *    gramselecsim *
+*       45 *          preamp_gain *        1.000000 *   double *   *              gain [mV/fC] *    gramselecsim *
+*       46 *            preamp_mu *     1500.000000 *   double *   *       sampling width [ns] *    gramselecsim *
+*       47 *     preamp_post_time *     3000.000000 *   double *   *           decay time [ns] *    gramselecsim *
+*       48 *    preamp_prior_time *      200.000000 *   double *   *            rise time [ns] *    gramselecsim *
+*       49 *         preamp_sigma *      400.000000 *   double *   *       sampling width [ns] *    gramselecsim *
+
+```
+
+Notes on the above table:
+
+   - The options are sorted in alphabetical order. In the standard ASCII sorting of characters, capital letters come before lower-case letters. 
+   
+   - See the **Inspecting the `Options` ntuple** section below for how to generate this table for your own options. 
+   
+   - Some of the columns' names are cut off in the above display. Here are the full names:
+      - `OptionName`
+      - `OptionValue` - This is always stored as a string, even if the value is numeric.  
+      - `OptionType`
+      - `OptionBrief` - The single-letter abbreviation that can be used on the command line.
+      - `OptionDesc`
+      - `OptionSource`
+   
+   - The final column, `OptionSource`, keeps track of the XML tag block that was original source of the option. Exception: If the value of the option was overridden on the command line, the value of `OptionSource` will be `"Command line"`.
+
+If two different programs have an option with the same name, the most downstream value of the option within the analysis chain is the one that's kept; in other words, `CopyInputNtuple` will not override an option read by `ParseOptions`. For the most part, this will affect options with common names like `inputfile` and `outputfile`. If it's important to track the inputs and outputs in the analysis chain, give the options different names for each program like `inputProgramA` or `outputProgramB`.
+
+### `Options` tips and tricks
+
+The following sections discuss aspects of using `Options` that don't directly involve C++ programming. 
+
+#### Documentation options
+
+A "documentation option" is one that's not actually used by any program, but is copied via the `CopyInputNtuple` and `WriteNtuple` methods from one file to another in the analysis. This can be used to describe the reason why the program/job/analysis chain is being run.
+
+For example, assume this option is in the `<global>` section of the XML file:
+
+```XML
+ <option name="comment" type="string" value="" desc="document purpose of run" />
+```
+
+Then you can run a program with a value for that option, to document what you're doing; e.g.,
+
+    ./gramsg4 --comment "03-Nov-2022 understand energy calibration"
+    
+#### Inspecting the `Options` ntuple
+
+The simplest way to inspect the values stored in the `Options` ntuple is to use ROOT interactively. For example, assume you wish to know the value of the options stored in file `myOutput.root`:
+
+```
+# Set up ROOT as appropriate for your system, then:
+root myOutput.root
+# Within interactive ROOT
+Options->Scan()
+```
+
+By default, `TTree::Scan()` displays all the columns with the same width, which is not convenient for the `Options` ntuple. The following command adjusts the output column widths as shown in the table above; you can just copy-and-paste the following in your interactive ROOT session:
+
+```
+Options->Scan("","","col=20:15:8:1:25:15")
+```
+
+For more tips on using `Scan`, see the documentation for [`TTreePlayer::Scan`](https://root.cern.ch/doc/master/classTTreePlayer.html#aa0149b416e4b812a8762ec1e389ba2db) on the ROOT web site. For example, to route the output of `Scan` to an external file:
+
+```
+Options->SetScanField(1000)
+.> options.txt
+Options->Scan("","","col=20:15:8:1:25:15")
+.>
+```
+
+#### Overriding &lt;global&gt;
+
+Suppose you had something like this in the options XML file:
+
+```XML
+<parameters>
+  <global>
+    <option name="myoption" value="value1" ... />
+  </global>
+
+  <myprogram>
+    <option name="myoption" value="value2" ... />
+  </myprogram>
+</parameters>
+```
+
+Then for every other program that uses the Options class, the value of `myoption` would be `value1`. But for the program `myprogram`, the value of `myoption` would be `value2`.
+
+This is not a good practice. It's probably better to use the command line for this sort of override; e.g.,
+```
+./myprogram --myoption=value2
+```
+
+#### Including one XML file from within another
+
+Perhaps you are focussed on a particular set of options associated with one program and don't care about any other
+program's options. Or perhaps the default [`options.xml`](../options.xml) file seems too long and scrolling through it
+takes a long time. 
+
+In these cases, you can include a section of one XML file within another using [XInclude][70]. There's an example of this in [`GramsSim/xinclude.xml`](../xinclude.xml). The basic recipe is:
+
+[70]: https://www.xml.com/pub/a/2002/07/31/xinclude.html
+
+   - For the main file (the one that's doing the including):
+
+      - Include the xinclude specification in the opening `<parameters>` tag:
+   
+          `<parameters xmlns:xi="http://www.w3.org/2001/XInclude">`
+          
+      - Specify the file and the id of the tag to be included. In this example, the
+      section with the tag `gramssky` in file [`GramsSky/options.xml`](../GramsSky/options.xml)
+      is to be included.
+      
+          `<xi:include href="GramsSky/options.xml" element="gramssky"/>`
+                    
+   - For the file whose contents will be included:
+   
+      - In the program-options section you want to include, add an `xml:id` attribute with the id you supplied as the value of the `element` attribute in the main file, e.g.,
+      
+          `<gramssky xml:id="gramssky">`
+          
+      - This may not be necessary if the value of the `element` attribute in the main file is the same as the tag
+      with the program's name (`gramssky` in this example). 
+
+#### The single-file approach
+
+Depending on the needs of an analysis, the best choice may be to keep the options associated with each individual program separate, rather than merging them all via `CopyInputNtuple` over successive programs in an analysis chain. One approach is to use a single file to hold all the outputs of all the programs, instead of each program having a separate output file. 
+
+The simplest way to do this is to open a file with `"UPDATE"` access:
+
+    auto theFile = new TFile(filename.c_str, "UPDATE");
+    
+Then anything new written to the ROOT file is appended to its existing contents, instead of the file being replaced as it would be for `"RECREATE"` access. 
+
+In use this approach:
+
+- When using the `Options::WriteNtuple` method, include the second argument to specific the name of the output ntuple to record the program's options; e.g.,
+
+        options->WriteNtuple(theFile, "OptionsProgramA");
+
+   - If you omit the second argument and use the default name of `"Options"`, they'll be appended to the file as `Options;1`, `Options;2`, etc. It may be difficult to remember which of the cycles of the `Options` ntuple applies to which program. 
+   
+   - It's not a good idea to combine this with `Options::CopyInputNtuple`. The point of this approach is to avoid merging the options ntuples, which is what `CopyInputNtuple` does.
+   
+- Since all the other ntuples written by the various programs will be appended to the same file, even if each program's ntuple has a different name, to save space it may be worth considering [TTree friends](https://root.cern.ch/doc/master/treefriend_8C.html) to avoid duplicating columns between different ntuples. 
+
+   For example, assume ntuple `NtupleA` has one row for each (run,event,trackID), and ntuples `NtupleB`, `NtupleC`, `NtupleD`, etc., also have a row-for-row correspondence for (run,event,trackID). Then declaring `NtupleB`, `NtupleC`, etc., as friends of `NtupleA` means that you don't have to store (run,event,trackID) in the additional ntuples. They only have to contain the new columns being created by a particular program. 
+   
+- A reminder that you probably want the first program in the analysis to create the single ROOT file with `"RECREATE"` access.
+   
+Here's a sketch of the idea:
+
+|  <img src="UpdateFile.png" width="75%"/> |
+| :---------------------------------------------: | 
+|  <small><strong>Fig 7. A sketch of the single-file approach for managing program output ntuples, including the programs' options. </strong></small> |

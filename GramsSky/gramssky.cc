@@ -17,6 +17,11 @@
 #include "HepMC3/Writer.h"
 #include "HepMC3/WriterAscii.h"
 #include "HepMC3/FourVector.h"
+#ifdef HEPMC3_ROOTIO_INSTALLED
+#include "HepMC3/WriterRoot.h"
+#include "HepMC3/WriterRootTree.h"
+#include "TFile.h"
+#endif
 
 #include <cmath>
 #include <string>
@@ -79,12 +84,38 @@ int main(int argc, char** argv) {
   }
 
   // Pick an output method format for HepMC3. WriterAscii writes files
-  // in the standard HepMC3 format, which is the most human-readable,
-  // but there are other writer methods (e.g., WriterROOT). Note that
-  // instead of using "new" for a standard C++ pointer, I'm using
-  // shared_ptr created by make_shared, so I don't have to worry about
-  // when to delete the pointer.
-  auto writer = std::make_shared<HepMC3::WriterAscii>(outputFileName);
+  // in the standard HepMC3 format, which is the most human-readable..
+  // Note that instead of using "new" for a standard C++ pointer,
+
+  // If the HepMC3 ROOTIO library is installed, look for a ".root" or
+  // ".roottree" extension to the filename.
+  bool rootOutput = false;
+#ifdef HEPMC3_ROOTIO_INSTALLED
+  HepMC3::Writer* writer;
+  auto i = outputFileName.rfind('.', outputFileName.length());
+  if ( i != std::string::npos ) {
+    auto extension = outputFileName.substr(i+1, outputFileName.length() - i);
+
+    // If the extension is .root or .roottree, create the corresponding
+    // HepMC3 writer.
+    if ( extension.compare("root") == 0 ) {
+      writer = new HepMC3::WriterRoot(outputFileName);
+      rootOutput = true;
+    }
+    else if ( extension.compare("roottree") == 0 ) {
+      writer = new HepMC3::WriterRootTree(outputFileName);
+      rootOutput = true;
+    }
+  }
+  if (! rootOutput) {
+    // Use the default method.
+    writer = new HepMC3::WriterAscii(outputFileName);
+  }
+#else
+  // The output method format for HepMC3. WriterAscii writes files in
+  // the standard HepMC3 format, which is the most human-readable.
+  auto writer = new HepMC3::WriterAscii(outputFileName);
+#endif
 
   // Number of events to generate.
   int numberOfEvents;
@@ -219,5 +250,16 @@ int main(int argc, char** argv) {
   }
 
   writer->close();
+
+#ifdef HEPMC3_ROOTIO_INSTALLED
+  if (rootOutput) {
+    // If we're writing to a ROOT output file, add the options ntuple
+    // to the file.
+    auto output = TFile::Open(outputFileName.c_str(), "UPDATE");
+    options->WriteNtuple(output);
+    output->Close();
+  }
+#endif
+
   exit(EXIT_SUCCESS);
 }

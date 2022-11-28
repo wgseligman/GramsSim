@@ -98,6 +98,11 @@ int main(int argc,char **argv)
     exit(EXIT_FAILURE);
   }
 
+  // If the input file has an Options ntuple created by an earlier
+  // program in the analysis chain, copy those options to maintain a
+  // historical record.
+  options->CopyInputNtuple(input);
+
   // The standard way of reading a TTree (without using RDataFrame) in
   // C++ is using the TTreeReader.
   auto reader = new TTreeReader(inputNtupleName.c_str(), input);
@@ -267,7 +272,8 @@ int main(int argc,char **argv)
 
     if (debug)
         std::cout << "gramsdetsim: before model corrections, energyAtAnode=" 
-	  	<< energy_sca << std::endl;
+		  << energy_sca 
+		  << " timeAtAnode=" << (m_readout_plane_coord - zPosAtAnode[0]) / m_DriftVel << std::endl;
 
     // Apply the model(s). Handle potential computation errors (i.e.,
     // if dx is zero) within the different models.

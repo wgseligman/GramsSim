@@ -1,4 +1,5 @@
 # GramsSim
+*Principle Maintainer: [William Seligman](https://github.com/wgseligman)*
 
 If you want a formatted (or easier-to-read) version of this file, scroll to the bottom. If you're reading this on github, then it's already formatted. 
 
@@ -41,7 +42,11 @@ subdirectory's README.md file:
 
    - [**GramsG4**](GramsG4): A Geant4 simulation of particle transport in the GRAMS detector. 
 
-   - [**GramsDetSim**](GramsDetSim): Models the GRAMS detector response to the energy deposits recorded by GramsG4. 
+   - [**GramsDetSim**](GramsDetSim): A simulations of the GRAMS detector response to the energy deposits recorded by GramsG4. 
+
+   - [**GramsReadoutSim**](GramsReadoutSim): This models the readout geometry of the GRAMS detector.
+
+   - [**GramsElecSim**](GramsElecSim): A simulation of the electronics response to the detector readout, including noise and shaping. 
 
    - [**util**](util): Common utilities (e.g., options processing) shared by all components. 
 
@@ -51,9 +56,9 @@ subdirectory's README.md file:
    
 This is a diagram of the overall structure of the GramsSim modules. Note that as of Oct-2022, many of these modules have not yet been formally installed in this packages; these are denoted in gray text in the figure.
 
-|                                                 |
-| :---------------------------------------------: | 
 | <img src="GramsSim_modules.png" width="100%" /> |
+| :---------------------------------------------: | 
+| <small><strong>A sketch of the organization of the `GramsSim` modules.</strong></small> |
 
 
 Before installing GramsSim, please read [DEPENDENCIES.md](DEPENDENCIES.md) for a list of packages that must be installed for GramsSim to compile.
@@ -329,18 +334,16 @@ cmake ../GramsSim
 
 **Q. On Mac OS X, the program names end in `.exe`. Why?**
 
-This is to avoid problems in the build procedure caused by Mac OS X being case-insensitive with respect to file and directory names; e.g., `GramsSky` and `gramssky` are the same in OS X; when the build procedure tries to create the executable `gramssky`, it fails (with a mysterious error message) because the directory `GramsSky` already exists. In this example, it's safer to make the name of the executable `gramssky.exe`.
+This is to avoid problems in the build procedure caused by a common version of the Mac OS X filesystem being case-insensitive with respect to file and directory names; e.g., `GramsSky` and `gramssky` are the same in OS X. When the build procedure tries to create the executable `gramssky`, it fails (with a mysterious error message) because the directory `GramsSky` already exists. In this case, it's safer to make the name of the executable `gramssky.exe`.
 
 So if you see an example like this in the documentation:
 
-```
-./gramsg4 --ui --uimacrofile mac/vis-menus.mac
-```
+
+    ./gramsg4 --ui --uimacrofile mac/vis-menus.mac
+
 In Mac OS X, this is
 
-```
-./gramsg4.exe --ui --uimacrofile mac/vis-menus.mac
-```
+    ./gramsg4.exe --ui --uimacrofile mac/vis-menus.mac
 
 ## References
 

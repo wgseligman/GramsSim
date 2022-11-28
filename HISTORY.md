@@ -4,9 +4,22 @@ A description of major development milestones. The most recent are at
 the top. For a detailed list of all changes (basically, every time
 someone typed "git commit"), see the output of "git log".
 
+Nov-2022
+
+   - Added GramsReadoutSim and GramsElecsim to the repository.
+   - Revised Options class to better support saving and restoring
+     options along an entire analysis chain. 
+
 Oct-2022
 
+   - Restructured the saving and loading of the option ntuple in a
+     .root output file. Adding a feature to copy the option ntuple in
+     the input file to the output file, to preserve a "history" of
+     the options that were used. 
    - Multi-threaded saving and restoring of random numbers now works properly. 
+   - Enable the control of physics and other parameters from within the G4
+     macro file. This requires that /run/initialize be present in every
+     top-level macro file.
 
 Sep-2022
 

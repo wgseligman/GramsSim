@@ -46,6 +46,12 @@
         in recreating the run.
     </option>
 
+    <!-- This is a "documentation option" as described in GramsSim/util/README.md.
+         It doesn't do anything within a program, If the programs use
+         Options::CopyInputNtuple and Options::WriteNtuple, this option will be
+         included. Its value can be used to identify the run of the analysis chain.
+    -->
+    <option name="comment" type="string" value="" desc="document purpose of run" />
 
   </global>
 
@@ -289,7 +295,7 @@
     .hepmc3 = HepMC3 text format
     .hep    = HEPEVT text format (https://cdcvs.fnal.gov/redmine/projects/minos-sim/wiki/HEPEVT_files)
     .root   = HepMC3 ROOT format
-    .treeroot = HepMC3 TTree ROOT format
+    .roottree = HepMC3 TTree ROOT format
     .lhef     = LHEF format (arXiv:hep-ph/0609017)
 
     Some of these formats do not provide a way to specify the (x,y,z,t) vertex
@@ -317,8 +323,8 @@
 	    desc="starting event number" />
 
     <!-- The name of the output file. The G4 Analysis Manager will automatically
-    append '.root' to this name.-->
-    <option name="outputfile" short="o" value="gramsg4" type="string" desc="output file"/>
+    append '.root' to this name if it's omitted. -->
+    <option name="outputfile" short="o" value="gramsg4,root" type="string" desc="output file"/>
 
     <!-- The physics list to be used by the detector simulation. --> 
     <option name="physicslist" short= "p" value="FTFP_BERT_LIV+OPTICAL+STEPLIMIT" type="string" 
@@ -474,8 +480,8 @@
 
     Options associated with the diffusion model. These values come
     from MicroBooNE:
-    https://github.com/LArSoft/larsim/blob/develop/larsim/Simulation/simulationservices.fcl
-    https://github.com/MicroBooNE/uboonecode/blob/develop/uboone/Simulation/simulationservices_microboone.fcl
+  https://github.com/LArSoft/larsim/blob/develop/larsim/Simulation/simulationservices.fcl
+  https://github.com/MicroBooNE/uboonecode/blob/develop/uboone/Simulation/simulationservices_microboone.fcl
 
     <option name="diffusion" value="true" type="boolean"
         desc="model diffusion effects"/>
@@ -491,7 +497,7 @@
 
     The number of electrons in a cluster. The clusters are drifted in
     the LAr, as opposed to drifting each electron individually.
-    <option name="ElectronClusterSize" value="20" type="int"
+    <option name="ElectronClusterSize" value="200" type="int"
         desc="number of electrons in a cluster"/>
 
     <option name="MinNumberOfElCluster" value="0" type="integer"
@@ -503,5 +509,89 @@
         desc="direction of electron drift"/>
 
   </gramsdetsim>
+
+
+  <gramsreadoutsim>
+
+    <!-- Input ROOT file from GramsDetSim (or at least contains a DetSim-compatible ntuple -->
+    <option name="inputfile" short="i" value="gramsdetsim.root" type="string" 
+        desc="input file"/>    
+
+    <!-- Name of ntuple in the input file that contains the electron-cluster information. -->
+    <option name="inputntuple" value="DetSim" type="string" desc="input ntuple"/>
+
+    <!-- Output ROOT file -->
+    <option name="outputfile" short="o" value="gramsreadoutsim.root" type="string"
+        desc="output file"/>
+
+    <!-- Name of ntuple in the output file that contains the
+         readout information. 
+    -->
+    <option name="outputntuple" value="ReadoutSim" type="string" desc="output ntuple"/>
+
+    <!-- The pixel readout geometry parameters. Units are given by "LengthUnit" in 
+    the <global> section above. -->
+    <option name="readout_centerx"  value="0.0" type="double" desc="x coordinate of the readout plane" />
+    <option name="readout_centery"  value="0.0" type="double" desc="y coordinate of the readout plane" />
+    <option name="pixel_sizex" value="3.2" type="double" desc="pixel size x" />
+    <option name="pixel_sizey" value="3.2" type="double" desc="pixel size y" />
+
+  </gramsreadoutsim>
+
+  <gramselecsim>
+
+    <!-- Input ROOT file from GramsReadoutSim (or at least contains 
+	 a ReadoutSim-compatible ntuple -->
+    <option name="inputfile" short="i" value="gramsreadoutsim.root" type="string" 
+        desc="input file"/>    
+
+    <!-- Name of ntuple in the input file that contains the readout information. -->
+    <option name="inputntuple" value="ReadoutSim" type="string" desc="input ntuple"/>
+
+    <!-- Output ROOT file -->
+    <option name="outputfile" short="o" value="gramselecsim.root" type="string"
+        desc="output file"/>
+    <option name="outputntuple"         value="ElecSim" type="string" desc="output ntuple"/>
+ 
+    <!-- 
+         IMPORTANT: Note that the units associated with these
+         constants should be consistent with the "TimeUnit",
+         "LengthUnit", and "EnergyUnit" options defined above.
+    -->
+
+    <!-- general information -->
+    <option name="timebin_width"        value="10.0"    type="double" desc="time bin width in this framework"/>
+    <option name="time_window"          value="60000.0" type="double" desc="sampling width"/>
+
+    <!-- Preamp -->
+    <!-- Valid values of preamp_func are:
+    0 = Gaussian normalized to unit probability
+    1 = Gaussian
+    2 = Log of normalized gaussian
+    3 = Log of gaussian
+    4 = Double exponential
+    -->
+    <option name="preamp_func"          value="4"       type="int"    desc="curve type of preamp output"/>
+    <option name="preamp_prior_time"    value="200.0"   type="double" desc="rise time"/>
+    <option name="preamp_post_time"     value="3000.0"  type="double" desc="decay time"/>
+    <option name="peak_delay"           value="0.0"     type="double" desc="delay time from e-"/>
+    <option name="preamp_mu"            value="1500.0"  type="double" desc="sampling width"/>
+    <option name="preamp_sigma"         value="400.0"   type="double" desc="sampling width"/>
+    <option name="preamp_tau1"          value="100.0"   type="double" desc="tau1 in two exp model"/>
+    <option name="preamp_tau2"          value="500.0"   type="double" desc="tau2 in two exp model"/>
+    <option name="preamp_gain"          value="1.0"     type="double" desc="gain [mV/fC]"/>
+
+    <!-- add noise -->
+    <option name="noise_param0"     value="0.0"     type="double" desc="0th order"/>
+    <option name="noise_param1"     value="0.0"     type="double" desc="1st order"/>
+    <option name="noise_param2"     value="0.0"     type="double" desc="2nd order"/>
+
+    <!-- AD converter -->
+    <option name="bit_resolution"   value="10"      type="int"      desc="resolution of ADC [bit]"/>
+    <option name="input_min"        value="0.0"     type="double"   desc="minimum input of ADC [mV]"/>
+    <option name="input_max"        value="1000.0"  type="double"   desc="maximum input of ADC [mV]"/>
+    <option name="sample_freq"      value="50.0"    type="double"   desc="sampling frequency of an ADC [MHz]"/>
+
+  </gramselecsim>
 
 </parameters>

@@ -77,6 +77,13 @@ namespace gramsg4 {
     // precedence over the values in the HepMC3 file.
     bool m_useHepMC3RunNumber;
     bool m_useHepMC3EventNumber;
+
+#ifdef HEPMC3_ROOTIO_INSTALLED
+    // If we're reading in a ROOT file, there may be an options ntuple
+    // in it too. If there is, copy it to our list of options to
+    // maintain a historical record.
+    bool m_CopyOptions(const std::string& inputFile);
+#endif
   };
 
 } // namespace gramsg4

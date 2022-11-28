@@ -1,4 +1,5 @@
 # GramsDetSim
+*Principle author: Satoshi Takashima*
 
 - [GramsDetSim](#gramsdetsim)
   * [Overview](#overview)
@@ -53,7 +54,15 @@ See `GramsSim/util/README.md` for a description of how to control the
 operation of `gramsdetsim` through the [`options.xml`](../options.xml) file and the
 command line.
 
+Note that the diffusion model (described below) makes use of a random-number generator.
+If you're running `gramsdetsim` as part of a cluster of jobs, you probably want
+to include a random-number seed on the command line as described [`GramsG4`](../GramsG4); e.g.,
+
+    ./gramsdetsim --rngseed=${process}
+
 ## Detector-response functions
+
+Again recall that the parameters for all of the following functions can be found in the `options.xml` file. 
 
 ### Recombination
 
@@ -116,7 +125,7 @@ where
 
 - t<sub>elec</sub> = the electron lifetime in the liquid argon. 
 
-v<sub>drift</sub> and t<sub>elec</sub> are detector- and material-dependent parameters.
+v<sub>drift</sub> and t<sub>elec</sub> are detector- and material-dependent parameters, whose values are found in the `options.xml` file.
 
 ### Diffusion
 
@@ -127,5 +136,18 @@ electrons. The electrons are grouped into clusters, to save time. Then
 each cluster is randomly shifted in both the transverse and
 longitudinal directions of the drift.
 
-The output ntuple contains the energy, arrival time, and shifted
+The spread of the electron clusters is given by:
+
+<img src="DiffusionFormulas.png" width="20%" />
+
+where _N(a,b)_ is a normal distribution with a mean of _a_ and a width of _b_, and _D_<sub>T</sub> and _D_<sub>L</sub> are parameters supplied in the `options.xml` file. 
+
+This is a sketch of the procedure:
+
+| <img src="Diffusion.png" width="50%" /> |
+| :---------------------------------------: | 
+| <small><strong>Sketch by Satoshi Takashima of the operation of `GramsReadoutSim`. Note the separate values for <i>D<sub>L</sub></i> and <i>D<sub>T</sub></i>, the longitudinal and traverse diffusion respectively. </strong></small> |
+
+
+The output ntuple contains the energy, arrival time at the anode, and shifted
 (x,y,z) of each individual cluster.

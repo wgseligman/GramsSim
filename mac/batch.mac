@@ -2,6 +2,17 @@
 # Batch running of events  
 ###################################################
 
+# If you need to see details about the physics
+# list, you can use the following. It's also part of
+# the output of "./gramsg4 -v".
+#/process/em/verbose 1
+#/process/had/verbose 1
+
+# In GramsG4, every .mac file must contain this
+# line after any physics/geometry/thread setup,
+# but before any generation/visualization commands.
+/run/initialize
+
 # For GRAMS, let's look at monoenergetic 1MeV photons
 # Note: the Geant4 names for a couple of possible
 # particles for our studies are anti_proton and anti_deuteron
