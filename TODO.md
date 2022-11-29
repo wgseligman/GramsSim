@@ -3,6 +3,7 @@
 As of 28-Nov-2022:
 
 - In GramsElecSim, we may have to model induced charge on adjacent pixels. 
+- There's no trigger logic in GramsElecSim; this may have to wait until the optical and veto detector code is implemented. 
 
 - Cluster time 
    - In GramsDetSim, the cluster arrival time at the anode
