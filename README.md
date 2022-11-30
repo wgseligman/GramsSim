@@ -16,6 +16,7 @@ If you want a formatted (or easier-to-read) version of this file, scroll to the 
   * [Program options](#program-options)
     + [Random numbers](#random-numbers)
     + [Setting run/event numbers](#setting-run-event-numbers)
+    + [Documenting the analysis chain](#documenting-the-analysis-chain)
   * [FAQ](#faq)
   * [References](#references)
   * [Credits](#credits)
@@ -299,6 +300,31 @@ The same options apply to GramsG4:
     ./gramsg4 -r 1234 -e 4321 -i myEvents.hepmc3 -m mac/hepmc3.mac
     
 Note that if the `gramsg4` options `-r` (or `--run`) or `-e` (or `--startEvent`) are set, they will override any values that are in an HepMC3 input file specified with the `-i` or `--inputgen` option; see [`GramsSky/README.md`](GramsSky/README.md) for more information about HepMC3 files.
+
+### Documenting the analysis chain
+
+In the example [`options.xml`](options.xml) there is a [documentation option](util/README.md) called `comment`. You can use this to record the purpose of a given analysis run. 
+
+For example, pretend that you're doing a study to understand the systematic effects of varying the simulation's step size in the LAr. Assume you've set up all the options in a file `stepStudy.xml` _except_ for the LAr step size. Then you could do something like this to run an analysis chain for the LAr step size = 0.02 ± 0.01<em>cm</em>:
+
+    ./gramsg4 stepStudy.xml --larstepsize 0.02 -o g4stepmid.root --comment "29-Nov-2022 LAr Step Study"
+    ./gramsdetsim stepStudy.xml -i g4stepmid.root -o detstepmid.root 
+    ./gramsreadoutsim stepStudy.xml -i detstepmid.root -o readoutstepmid.root
+    ./gramselecsim stepStudy.xml -i readoutstepmid.root -o elecstepmid.root
+
+    ./gramsg4 stepStudy.xml --larstepsize 0.03 -o g4stepplus.root --comment "29-Nov-2022 LAr Step Study"
+    ./gramsdetsim stepStudy.xml -i g4stepplus.root -o detstepplus.root 
+    ./gramsreadoutsim stepStudy.xml -i detstepplus.root -o readoutstepplus.root
+    ./gramselecsim stepStudy.xml -i readoutstepplus.root -o elecstepplus.root
+
+    ./gramsg4 stepStudy.xml --larstepsize 0.01 -o g4stepminus.root --comment "29-Nov-2022 LAr Step Study"
+    ./gramsdetsim stepStudy.xml -i g4stepminus.root -o detstepminus.root 
+    ./gramsreadoutsim stepStudy.xml -i detstepminus.root -o readoutstepminus.root
+    ./gramselecsim stepStudy.xml -i readoutstepminus.root -o elecstepminus.root
+    
+Because the GramsSim analysis chain preserves the metadata as described in the [`Options` documentation](util/README.md), the value of `comment` and `larstepsize` is preserved in all of the output files downstream of `gramsg4`. 
+
+Feel free to create your own documentation options as needed. Remember to document their existence somewhere, otherwise no one will look for them!
 
 ## FAQ
 
