@@ -18,24 +18,45 @@
 
 <small><i><a href='http://ecotrust-canada.github.io/markdown-toc/'>Table of contents generated with markdown-toc</a></i></small>
 
-GramsSky is a simulation of particles coming from spherical (sky) distributions around a detector. Using the [options XML file](../util/README.md), the user can specify position and energy distributions coming from the inner surface of a "celestial sphere". The output consists of events in [HepMC3][10] format, which can be used as input to [GramsG4](../GramsG4/README.md). 
+`GramsSky` is a simulation of particles coming from spherical (sky) distributions around a detector. Using the [options XML file](../util/README.md), the user can specify position and energy distributions coming from the inner surface of a "celestial sphere". 
 
-[10]: https://gitlab.cern.ch/hepmc/HepMC3
-
-This is similar to the [General Particle Source][62] available in [Geant4][60]. The principle difference is in the random "translation" of the generated particle to simulate that it was generated at "infinity" (or at least several light-years away). Understanding that process is crucial to supplying meaningful [options](../util/README.md) to the program, so it will be addressed first.
-
-[60]: https://geant4.web.cern.ch/
-[62]: http://geant4-userdoc.web.cern.ch/geant4-userdoc/UsersGuides/ForApplicationDeveloper/html/GettingStarted/generalParticleSource.html
-
-In the following documentation, names in __`this format`__ are parameters in the [options XML file](../options.xml). 
-
-The input and output units for the parameters described below are determined by parameters __`LengthUnit`__ and __`EnergyUnit`__. Normally these options are in the `<global>` section of the options XML file. 
+Note: 
 
 - If the HepMC3 libraries are not found during the [build process](../DEPENDENCIES.md), then this package will not be compiled.
 
 - If the [FITSIO][20] and [HEALPix][21] libraries are not found during the build process, then any generators involving HEALPix maps won't be compiled. 
 
+In the following documentation, names in __`this format`__ are parameters in the [options XML file](../options.xml). 
+
+## Output
+
+The input and output units for the parameters described in the rest of this documentation are determined by parameters __`LengthUnit`__ and __`EnergyUnit`__. Normally these options are in the `<global>` section of the options XML file. 
+
+The output consists of events in [HepMC3][10] format, which can be used as input to [GramsG4](../GramsG4/README.md). 
+
+`GramsSky` can write files in various formats. The format of the file is assumed to match the file's extension (the part after the final period ".") as follows:
+
+|  Extension  |  Format                        |
+| ----------- | -----------------------------  |
+|  .hepmc3    |  HepMC3 ASCII                  |
+|  .hepmc2    |  HepMC2 ASCII                  |
+|  .hpe       |  [HEPEVT][15] (ASCII)          |
+|  .lhef      |  [Les Houches Event File][16]  |
+|  .root      |  HepMC3 ROOT                   |
+|  .treeroot  |  HepMC3 ROOT TTree             |
+
+[10]: https://gitlab.cern.ch/hepmc/HepMC3
+[15]: https://cdcvs.fnal.gov/redmine/projects/minos-sim/wiki/HEPEVT_files
+[16]: http://home.thep.lu.se/~leif/LHEF/LHEF_8h_source.html
+
+If you want to preserve the program options in the output of `gramssky` as discussed in the [`Options` documentation](../util/README.md), you must use the `.treeroot` format. The program can't save a separate `Options` ntuple in any other format.
+
 ## The process of GramsSky generation
+
+The general operation of `GramsSky` is similar to the [General Particle Source][62] available in [Geant4][60]. The principle difference is in the random "translation" of the generated particle to simulate that it was generated at "infinity" (or at least several light-years away). Understanding that process is crucial to supplying meaningful [options](../util/README.md) to the program, so it will be addressed first.
+
+[60]: https://geant4.web.cern.ch/
+[62]: http://geant4-userdoc.web.cern.ch/geant4-userdoc/UsersGuides/ForApplicationDeveloper/html/GettingStarted/generalParticleSource.html
 
 |                                          |
 | :--------------------------------------: | 
