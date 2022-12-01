@@ -324,7 +324,7 @@
 
     <!-- The name of the output file. The G4 Analysis Manager will automatically
     append '.root' to this name if it's omitted. -->
-    <option name="outputfile" short="o" value="gramsg4,root" type="string" desc="output file"/>
+    <option name="outputfile" short="o" value="gramsg4.root" type="string" desc="output file"/>
 
     <!-- The physics list to be used by the detector simulation. --> 
     <option name="physicslist" short= "p" value="FTFP_BERT_LIV+OPTICAL+STEPLIMIT" type="string" 
