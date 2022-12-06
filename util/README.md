@@ -24,8 +24,10 @@ C++ programs I write.
     + [`Options` tips and tricks](#-options--tips-and-tricks)
       - [Documentation options](#documentation-options)
       - [Inspecting the `Options` ntuple](#inspecting-the--options--ntuple)
+      - [The `showoptions` script](#the--showoptions--script)
       - [Overriding &lt;global&gt;](#overriding--lt-global-gt-)
       - [Including one XML file from within another](#including-one-xml-file-from-within-another)
+      - [The single-file approach](#the-single-file-approach)
 
 <small><i><a href='http://ecotrust-canada.github.io/markdown-toc/'>Table of contents generated with markdown-toc</a></i></small>
 
