@@ -1,0 +1,91 @@
+#!/usr/bin/env python3
+#
+# Display the contents of an Options ntuple within a ROOT file.
+# 06-Dec-2022 WGS
+
+import sys
+from ROOT import TFile, gDirectory
+debug = False
+
+# Look at the arguments.
+if ( len(sys.argv) < 2 ):
+   print (sys.argv[0]," needs at least one argument: the name of the ROOT file with an Options nutple")
+   sys.exit(1)
+
+# Open the file. 
+try:
+    myfile = TFile( sys.argv[1] )
+except OSError as error:
+    print (error)
+    sys.exit(1)
+
+# If there is a second argument, it's the name of the ntuple
+# that contains the options. 
+ntupleName = 'Options'
+if ( len(sys.argv) > 2 ):
+   ntupleName = sys.argv[2]
+
+# Retrieve the Options ntuple.
+optionsNtuple = gDirectory.Get( ntupleName )
+
+# Number of rows in the ntuple.
+try:
+    entries = optionsNtuple.GetEntriesFast()
+except AttributeError as error:
+    print ("There is no ntuple with the name",sys.argv[2],"in file",sys.argv[1])
+    sys.exit(1)
+
+if (debug):
+    print ("number of options = ",entries)
+
+# How we'll format the output. The "{:N.N}" format assures
+# that the column width will be exactly N characters, truncating
+# any strings that are longer than that. 
+# Use different formats string, int, and double values.
+
+outputstring = "{:3.3} {:24.24} {:>18.18}  {:30.30}  {:15.15}"
+outputint = "{:3.3} {:24.24} {:18}  {:30.30}  {:15.15}"
+outputdouble = "{:3.3} {:24.24} {:18.15}  {:30.30}  {:15.15}"
+outputunderline = "{:*^3} {:*^24} {:*^18}  {:*^30}  {:*^15}"
+
+# Print a table heading
+print (outputunderline.format("","","","",""))
+print (outputstring.format("Abb","Name","Value","Description","Source"))
+print (outputunderline.format("","","","",""))
+
+# For each row in the ntuple:
+for jentry in range( entries ):
+
+    # Copy next entry into memory and verify.
+    nb = optionsNtuple.GetEntry( jentry )
+    if nb <= 0:
+        continue
+
+    try:
+        name = optionsNtuple.OptionName
+        value = optionsNtuple.OptionValue
+        otype = optionsNtuple.OptionType
+        brief = optionsNtuple.OptionBrief
+        desc = optionsNtuple.OptionDesc
+        source = optionsNtuple.OptionSource
+    except AttributeError as error:
+        print ("ntuple",sys.argv[2],"in file",sys.argv[1],"is not an options ntuple")
+        sys.exit(1)
+
+    # Display the numeric and boolean values in a more "natural" format.
+    if ( otype == 'integer' ):
+        ivalue = int(value)
+        print (outputint.format(brief,name,ivalue,desc,source))
+    elif ( otype == 'double' ):
+        fvalue = float(value)
+        print (outputdouble.format(brief,name,fvalue,desc,source))
+    elif ( otype == 'flag'  or  otype == 'boolean'):
+        bvalue = 'False'
+        if ( value == '1' ):
+            bvalue = 'True'
+        print (outputstring.format(brief,name,bvalue,desc,source))
+    else: 
+        print (outputstring.format(brief,name,value,desc,source))
+
+# Write a "bottom of table" delimiter.
+print (outputunderline.format("","","","",""))
