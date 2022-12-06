@@ -4,6 +4,11 @@ A description of major development milestones. The most recent are at
 the top. For a detailed list of all changes (basically, every time
 someone typed "git commit"), see the output of "git log".
 
+Dec-2022
+
+   - Add showoptions script, so a user can quickly display the
+     contents of the options ntuple. 
+
 Nov-2022
 
    - Added GramsReadoutSim and GramsElecsim to the repository.

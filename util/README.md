@@ -699,6 +699,16 @@ Options->Scan("","","col=20:15:8:1:25:15")
 .>
 ```
 
+#### The `showoptions` script
+
+For a non-interactive display of the options ntuple, there is a Python 3 script [`showoptions`](showoptions) which is normally installed in the `bin/` sub-directory of your project. Typically you use this script with one argument: the name of the ROOT file that contains an `Options` ntuple; e.g.,
+
+    ./bin/showoptions myoutput.root
+    
+If your options ntuple doesn't have the name `Options`, or you have more than one options ntuple in your output file (see **The single-file approach** below) then supply the name of the your ntuple as a second argument; e.g.,
+
+    ./bin/showoptions myoutput.root OptionsProgramB
+
 #### Overriding &lt;global&gt;
 
 Suppose you had something like this in the options XML file:
