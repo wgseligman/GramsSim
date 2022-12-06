@@ -41,7 +41,7 @@ if (debug):
 # How we'll format the output. The "{:N.N}" format assures
 # that the column width will be exactly N characters, truncating
 # any strings that are longer than that. 
-# Use different formats string, int, and double values.
+# Use different formats for string, int, and double values.
 
 outputstring = "{:3.3} {:24.24} {:>18.18}  {:30.30}  {:15.15}"
 outputint = "{:3.3} {:24.24} {:18}  {:30.30}  {:15.15}"
