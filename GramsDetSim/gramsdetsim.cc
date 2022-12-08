@@ -280,7 +280,7 @@ int main(int argc,char **argv)
 
     if ( doRecombination ) {
       energy_sca = recombinationModel->Calculate(energy_sca);
-      if ( isnan(energy_sca) ) 
+      if ( std::isnan(energy_sca) ) 
 	energyAtAnode[0] = 0.0;
       else
 	energyAtAnode[0] = energy_sca;
@@ -291,7 +291,7 @@ int main(int argc,char **argv)
 	  	<< energy_sca << std::endl;
     
     //absorption
-    if ( doAbsorption  &&  ! isnan(energy_sca) ) {
+    if ( doAbsorption  &&  ! std::isnan(energy_sca) ) {
       energy_sca = absorptionModel->Calculate(energy_sca);
       energyAtAnode[0] = energy_sca;
     }
@@ -303,7 +303,7 @@ int main(int argc,char **argv)
 	  	<< energy_sca << std::endl;
     
     //diffusion
-    if ( doDiffusion  &&  ! isnan(energy_sca) ) {
+    if ( doDiffusion  &&  ! std::isnan(energy_sca) ) {
       // This an "STL trick" to return a number of different vectors
       // at once from a single method.
       std::tie(energyAtAnode, electronAtAnode, xPosAtAnode, yPosAtAnode, zPosAtAnode, timeAtAnode)
