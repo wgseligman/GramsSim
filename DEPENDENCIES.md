@@ -98,7 +98,7 @@ tools (but see the cautions below).
 
 [12]: https://www.softwarecollections.org/en/scls/rhscl/devtoolset-7/
 
-    sudo yum -7 install https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
+    sudo yum -y install https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
     sudo yum -y install root HepMC3-devel HepMC3-rootIO-devel cfitsio-devel healpix_cxx-devel
     sudo yum -y install gcc-c++ glibc-devel cmake3
     sudo yum -y install centos-release-scl

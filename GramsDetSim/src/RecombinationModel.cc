@@ -101,7 +101,7 @@ namespace gramsdetsim {
     // It's possible for dx to be so small that the value of dEdx
     // becomes NaN (for "not a number"). If this happens, skip the
     // calculation.
-    if ( isnan(dEdx) ) 
+    if ( std::isnan(dEdx) ) 
       return (0.0);
 
     // The following calculations are based off of the modified box

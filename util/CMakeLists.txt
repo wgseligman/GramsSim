@@ -19,4 +19,6 @@ target_include_directories (${CMAKE_PROJECT_NAME}Utilities PUBLIC ${CMAKE_CURREN
 target_link_libraries(${LibName} ${ROOT_LIBRARIES} )
 target_link_libraries(${LibName} ${XercesC_LIBRARIES} )
 
-
+# Copy the showoptions script to the bin/ directory
+# of the project being built.
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/showoptions ${CMAKE_BINARY_DIR}/bin/showoptions COPYONLY)

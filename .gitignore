@@ -1,7 +1,7 @@
 # 29-May-2020 WGS: This is a default .gitignore
 # file. It comes from github. It skips typical
 # C++ compiler "leftovers". Since the build
-# procedure for GramsG4 uses a separate directory,
+# procedure for GramsGim uses a separate directory,
 # this file is probably unnecessary, but it doesn't
 # hurt to avoid "pushing" temporary files.
 

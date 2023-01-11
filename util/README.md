@@ -24,8 +24,10 @@ C++ programs I write.
     + [`Options` tips and tricks](#-options--tips-and-tricks)
       - [Documentation options](#documentation-options)
       - [Inspecting the `Options` ntuple](#inspecting-the--options--ntuple)
+      - [The `showoptions` script](#the--showoptions--script)
       - [Overriding &lt;global&gt;](#overriding--lt-global-gt-)
       - [Including one XML file from within another](#including-one-xml-file-from-within-another)
+      - [The single-file approach](#the-single-file-approach)
 
 <small><i><a href='http://ecotrust-canada.github.io/markdown-toc/'>Table of contents generated with markdown-toc</a></i></small>
 
@@ -698,6 +700,16 @@ Options->SetScanField(1000)
 Options->Scan("","","col=20:15:8:1:25:15")
 .>
 ```
+
+#### The `showoptions` script
+
+For a non-interactive display of the options ntuple, there is a Python 3 script [`showoptions`](showoptions) which is normally installed in the `bin/` sub-directory of your project. Typically you use this script with one argument: the name of the ROOT file that contains an `Options` ntuple; e.g.,
+
+    ./bin/showoptions myoutput.root
+    
+If your options ntuple doesn't have the name `Options`, or you have more than one options ntuple in your output file (see **The single-file approach** below) then supply the name of the your ntuple as a second argument; e.g.,
+
+    ./bin/showoptions myoutput.root OptionsProgramB
 
 #### Overriding &lt;global&gt;
 
