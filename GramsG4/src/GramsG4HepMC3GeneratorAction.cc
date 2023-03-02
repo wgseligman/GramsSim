@@ -21,6 +21,8 @@
 #include "G4VPhysicalVolume.hh"
 #include "G4Exception.hh"
 #include "G4SystemOfUnits.hh"
+#include "G4Threading.hh"
+#include "G4AutoLock.hh"
 
 #include "Options.h" // in util/
  
@@ -41,16 +43,30 @@
 #include <string> 
 #include <memory>
 
-namespace gramsg4 {
+// In a multi-threaded environment, make sure that different threads aren't
+// read the input file at the same time. 
 
+G4Mutex interface_mutex = G4MUTEX_INITIALIZER;
+G4Mutex generator_mutex = G4MUTEX_INITIALIZER;
+
+// For multi-threaded operations to work, this has to be static.
+// The HepMC3 module to read events. The choice of module
+// is based on the input file name extension (the part 
+// after the '.').
+HepMC3::Reader* s_reader = nullptr; 
+
+namespace gramsg4 {
+  
   //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
   HepMC3GeneratorAction::HepMC3GeneratorAction(const std::string& a_inputGen)
     : G4VUserPrimaryGeneratorAction()
     , m_inputFile(a_inputGen)
-    , m_reader(nullptr)
     , m_hepmcEvent(nullptr)
   {
+    // Let's avoid problems by locking initialization instances of this class.
+    G4AutoLock scoped_lock(&interface_mutex);
+ 
     // Access the set of program options.
     m_options = util::Options::GetInstance();
 
@@ -95,6 +111,7 @@ namespace gramsg4 {
 	       << G4endl;
     }
 
+  if ( s_reader == nullptr )
     OpenFile();
   }
 
@@ -110,6 +127,8 @@ namespace gramsg4 {
 
   void HepMC3GeneratorAction::GeneratePrimaries(G4Event* anEvent)
   {
+    // Keep multiple threads from reading the file at once. 
+    G4AutoLock scoped_lock(&generator_mutex);
     ReadEvent();
     HepMC2G4(m_hepmcEvent, anEvent);
   }
@@ -158,21 +177,21 @@ namespace gramsg4 {
 #endif
 
     if ( extension == "hepmc2" ) 
-      m_reader = new HepMC3::ReaderAsciiHepMC2(m_inputFile);
+      s_reader = new HepMC3::ReaderAsciiHepMC2(m_inputFile);
     else if ( extension == "hepmc3" )
-      m_reader = new HepMC3::ReaderAscii(m_inputFile);
+      s_reader = new HepMC3::ReaderAscii(m_inputFile);
     else if ( extension == "hpe" )
-      m_reader = new HepMC3::ReaderHEPEVT(m_inputFile);
+      s_reader = new HepMC3::ReaderHEPEVT(m_inputFile);
     else if ( extension == "lhef" )
-      m_reader = new HepMC3::ReaderLHEF(m_inputFile);
+      s_reader = new HepMC3::ReaderLHEF(m_inputFile);
 #ifdef HEPMC3_ROOTIO_INSTALLED
     else if ( extension == "root" ) {
       m_CopyOptions(m_inputFile);
-      m_reader = new HepMC3::ReaderRoot(m_inputFile);
+      s_reader = new HepMC3::ReaderRoot(m_inputFile);
     }
     else if ( extension == "roottree" ) {
       m_CopyOptions(m_inputFile);
-      m_reader = new HepMC3::ReaderRootTree(m_inputFile);
+      s_reader = new HepMC3::ReaderRootTree(m_inputFile);
     }
 #endif
     else {
@@ -188,14 +207,14 @@ namespace gramsg4 {
 
   void HepMC3GeneratorAction::CloseFile()
   {
-    if ( m_reader )
-      m_reader->close();
-    delete m_reader;
+    if ( s_reader )
+      s_reader->close();
+    delete s_reader;
   }
 
   void HepMC3GeneratorAction::ReadEvent()
   {
-    if ( !m_reader ) {
+    if ( !s_reader ) {
       G4ExceptionDescription description;
       description << "File " << __FILE__ << " Line " << __LINE__ << " " << G4endl
 		  << "HepMC3 reader not initialiazed for file '"
@@ -207,7 +226,7 @@ namespace gramsg4 {
     delete m_hepmcEvent;
     m_hepmcEvent = new HepMC3::GenEvent();
     
-    bool readEventOK = m_reader->read_event(*m_hepmcEvent);
+    bool readEventOK = s_reader->read_event(*m_hepmcEvent);
     if ( !readEventOK ) {
       G4ExceptionDescription description;
       description << "File " << __FILE__ << " Line " << __LINE__ << " " << G4endl
@@ -218,7 +237,7 @@ namespace gramsg4 {
     }
     
     // Have we reached the end of the file?
-    if ( m_reader->failed() )
+    if ( s_reader->failed() )
       {
 	G4cout << "gramsg4::HepMC3GeneratorAction::ReadEvent - " << G4endl 
 	       << " End of input generated events file '" << m_inputFile 
@@ -230,7 +249,7 @@ namespace gramsg4 {
 	delete m_hepmcEvent;
 	m_hepmcEvent = new HepMC3::GenEvent();
 
-	readEventOK = m_reader->read_event(*m_hepmcEvent);
+	readEventOK = s_reader->read_event(*m_hepmcEvent);
 	if ( !readEventOK ) {
 	  G4ExceptionDescription description;
 	  description << "File " << __FILE__ << " Line " << __LINE__ << " " << G4endl
