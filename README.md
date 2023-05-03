@@ -55,7 +55,7 @@ subdirectory's README.md file:
    
    - [**mac**](mac): Geant4 macro files for use with [GramsG4](GramsG4).
    
-This is a diagram of the overall structure of the GramsSim modules. Note that as of Oct-2022, many of these modules have not yet been formally installed in this packages; these are denoted in gray text in the figure.
+This is a diagram of the overall structure of the GramsSim modules. Note that as of Oct-2022, many of these modules have not yet been formally installed in this package; these are denoted in gray text in the figure.
 
 | <img src="GramsSim_modules.png" width="100%" /> |
 | :---------------------------------------------: | 

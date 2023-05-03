@@ -40,12 +40,24 @@
 // Setting up the random-number engine.
 #include "GramsG4RandomSeedAction.hh"
 
+#if G4VERSION_NUMBER<1070
+
+// This is the "old" way of handling multi-threading in Geant4.
+// There is a different run manager for the multi-threaded case.
+
 #ifdef G4MULTITHREADED
 #include "G4MTRunManager.hh"
 #else
 #include "G4RunManager.hh"
 #endif
 
+#else // G4VERSION >= 1070
+
+// This is the "modern" method of handling multi-threaded
+// execution in Geant4. There is a single run-manager factory.
+#include "G4RunManagerFactory.hh"
+
+#endif // multi-threaded run-manager includes
 
 // Solely for setting the verbosity of the physics display.
 #include "G4EmParameters.hh"
@@ -138,9 +150,9 @@ int main(int argc,char **argv)
     PrintAvailablePhysics();
   }
   
-  // Set up the Geant4 Run Manager. 
-#ifdef G4MULTITHREADED
-  G4MTRunManager* runManager = new G4MTRunManager;
+  // Set up the Geant4 Run Manager. First, deal with multiple threads
+  // (if available).
+
   G4int nThreads;
   options->GetOption("nthreads",nThreads);
   if ( nThreads <= 0 ) nThreads = 1;
@@ -164,12 +176,30 @@ int main(int argc,char **argv)
 		JustWarning, description);
     nThreads = 1;
   }
+
+#if G4VERSION_NUMBER<1070
+
+  // This is the "old" way of handling multi-threading in Geant4.
+  // There is a different run manager for the multi-threaded case.
+
+#ifdef G4MULTITHREADED
+  auto runManager = new G4MTRunManager;
   if (verbose) G4cout << "GramsG4::main(): Setting number of worker threads to "
 		      << nThreads << G4endl;
   runManager->SetNumberOfThreads(nThreads);
 #else
-  G4RunManager* runManager = new G4RunManager;
+  auto runManager = new G4RunManager;
 #endif
+
+#else // G4VERSION >= 1070
+
+  // The "modern" way to implement threads: Use a run-manager factory. 
+  if (verbose) G4cout << "GramsG4::main(): Setting number of worker threads to "
+		      << nThreads << G4endl;
+
+  auto runManager = G4RunManagerFactory::CreateRunManager(G4RunManagerType::Default, nThreads);
+
+#endif // multiple-threaded run manager.
   
   // g4alt::G4PhysListFactory is the extensible factory
   g4alt::G4PhysListFactory factory;
@@ -260,11 +290,11 @@ int main(int argc,char **argv)
     // These methods of controlling optical physics were introduced
     // in Geant4.7.
     auto opticalParams = G4OpticalParameters::Instance();
-    opticalParams->SetScintStackPhotons(false);
     if (isScint)
       opticalParams->SetProcessActivation("Scintillation",true);
     else
       opticalParams->SetProcessActivation("Scintillation",false);
+    opticalParams->SetScintStackPhotons(false);
 
     // For now, make absolutely sure that the Cerenkov process is
     // turned off.

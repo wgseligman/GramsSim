@@ -4,6 +4,12 @@ A description of major development milestones. The most recent are at
 the top. For a detailed list of all changes (basically, every time
 someone typed "git commit"), see the output of "git log".
 
+May-2023
+
+   - With the help of Hans Wenzel, improved specification of 
+     LAr optical properties so that the Scintillation process
+     works properly in Geant4.11. 
+
 Dec-2022
 
    - Add showoptions script, so a user can quickly display the

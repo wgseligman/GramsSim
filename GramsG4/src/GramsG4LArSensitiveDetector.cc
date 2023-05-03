@@ -71,17 +71,30 @@ namespace gramsg4 {
     G4SteppingManager* fpSteppingManager = G4EventManager::GetEventManager()
       ->GetTrackingManager()->GetSteppingManager();
     G4StepStatus stepStatus = fpSteppingManager->GetfStepStatus();
+
+    // If the particle is not at rest...
     if (stepStatus != fAtRestDoItProc) {
+
+      // Look at all the physics processes that were associated with this step.
       G4ProcessVector* procPost = fpSteppingManager->GetfPostStepDoItVector();
       size_t MAXofPostStepLoops = fpSteppingManager->GetMAXofPostStepLoops();
+
+      // For each of the processes associated with this step...
       for (size_t i3 = 0; i3 < MAXofPostStepLoops; i3++) {
+
+	// If we turn on Cerenkov light, then the following code will
+	// have to be modified. See examples/advanced/CaTS/src/lArTPCSD.cc
+
+	// If the process is Scintillation, accumulate the optical photons. 
 	if ((*procPost)[i3]->GetProcessName() == "Scintillation") {
 	  G4Scintillation* proc1 = (G4Scintillation*) (*procPost)[i3];
-	  photons += proc1->GetNumPhotons();
+	  auto nPhotons = proc1->GetNumPhotons(); 
+	  photons += nPhotons;
+
 	} // if scintillation photons
       } // loop over MAXofPostStepLoops
     } // if particle not at rest
-
+    
     auto start = aStep->GetPreStepPoint()->GetPosition();
     auto end   = aStep->GetPostStepPoint()->GetPosition();
 

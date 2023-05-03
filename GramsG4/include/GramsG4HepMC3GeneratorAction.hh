@@ -50,11 +50,6 @@ namespace gramsg4 {
     // The input file of generated events.
     std::string m_inputFile;
 
-    // The HepMC3 module to read events. The choice of module
-    // is based on the input file name extension (the part 
-    // after the '.').
-    HepMC3::Reader*   m_reader; 
-
     // The input event information, to be converted
     // and passed on to Geant4.
     HepMC3::GenEvent* m_hepmcEvent;
