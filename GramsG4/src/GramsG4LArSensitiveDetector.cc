@@ -71,17 +71,53 @@ namespace gramsg4 {
     G4SteppingManager* fpSteppingManager = G4EventManager::GetEventManager()
       ->GetTrackingManager()->GetSteppingManager();
     G4StepStatus stepStatus = fpSteppingManager->GetfStepStatus();
+
+    if (debug) {
+      G4cout << "LArSensitiveDetector::ProcessHits - stepStatus = "
+	     << stepStatus
+	     << G4endl;
+    }
+
     if (stepStatus != fAtRestDoItProc) {
       G4ProcessVector* procPost = fpSteppingManager->GetfPostStepDoItVector();
       size_t MAXofPostStepLoops = fpSteppingManager->GetMAXofPostStepLoops();
+
+      if (debug) {
+	G4cout << "LArSensitiveDetector::ProcessHits - stepStatus != fAtRestDoItProc"
+	       << " MAXofPostStepLoops=" << MAXofPostStepLoops
+	       << G4endl;
+      }
+
       for (size_t i3 = 0; i3 < MAXofPostStepLoops; i3++) {
+
+	if (debug) {
+	  G4cout << "LArSensitiveDetector::ProcessHits - i3=" << i3
+		 << "  (*procPost)[i3]->GetProcessName()= '"
+		 << (*procPost)[i3]->GetProcessName() << "'"
+		 << G4endl;
+	}
+
+	// If we turn on Cerenkov light, then the following code will
+	// have to be modified. See examples/advanced/CaTS/src/lArTPCSD.cc
 	if ((*procPost)[i3]->GetProcessName() == "Scintillation") {
 	  G4Scintillation* proc1 = (G4Scintillation*) (*procPost)[i3];
-	  photons += proc1->GetNumPhotons();
+	  auto nPhotons = proc1->GetNumPhotons(); 
+
+	  if (debug) {
+	    G4cout << "LArSensitiveDetector::ProcessHits - nPhotons=" << nPhotons
+		   << G4endl;
+	  }
+
+	  photons += nPhotons;
 	} // if scintillation photons
       } // loop over MAXofPostStepLoops
     } // if particle not at rest
 
+    if (debug) {
+      G4cout << "LArSensitiveDetector::ProcessHits - photons=" << photons
+	     << G4endl;
+    }
+    
     auto start = aStep->GetPreStepPoint()->GetPosition();
     auto end   = aStep->GetPostStepPoint()->GetPosition();
 

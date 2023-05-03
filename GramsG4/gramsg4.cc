@@ -290,11 +290,11 @@ int main(int argc,char **argv)
     // These methods of controlling optical physics were introduced
     // in Geant4.7.
     auto opticalParams = G4OpticalParameters::Instance();
-    opticalParams->SetScintStackPhotons(false);
     if (isScint)
       opticalParams->SetProcessActivation("Scintillation",true);
     else
       opticalParams->SetProcessActivation("Scintillation",false);
+    opticalParams->SetScintStackPhotons(false);
 
     // For now, make absolutely sure that the Cerenkov process is
     // turned off.
