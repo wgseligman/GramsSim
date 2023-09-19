@@ -55,7 +55,7 @@ Note that compiling Geant4 from source may be the only way to reliably use the [
 
 #### conda
 
-You can try to fulfill these requirements using [conda][7]. This *mostly* works,
+You can fulfill these requirements using [conda][7]. This *mostly* works,
 though it does not include ROOT I/O in HepMC3 and there are some issues with the Geant4
 OpenGL display. 
 
@@ -82,6 +82,8 @@ On any system with conda installed (including [anaconda3][10] and [miniconda][11
 
      # Create a conda environment. The name "grams-devel" is arbitrary.
      conda create -y --name grams-devel compilers cmake root geant4 hepmc3 cfitsio healpix_cxx
+     
+*Note: `strict` priority guarantees that the packages you install within an environment will be consistent with one another. However, it does not guarantee that you'll get the latest-and-greatest versions, especially of packages like `python`. I've found that `conda config --set channel_priority flexible` will get the latest versions of packages, at the potential risk that some package incompatibilties.*
 
 Afterwards, the following must be executed once per login session:
 
@@ -91,7 +93,7 @@ Afterwards, the following must be executed once per login session:
 #### CentOS packages
 
 Another potential solution is to use RPM packages for RHEL-derived
-Linux distributions (e.g., Scientific Linux, CentOS). In addition to the EPEL repository,
+Linux distributions (e.g., AlmaLinux, Scientific Linux, CentOS). In addition to the EPEL repository,
 you will need a more recent version of the GCC compiler than comes with CentOS 7. One
 solution is to use the [SCL][12] 
 tools (but see the cautions below).
