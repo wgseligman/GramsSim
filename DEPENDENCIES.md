@@ -3,7 +3,10 @@
 - [GramsSim Dependencies](#gramssim-dependencies)
   * [Prerequisites](#prerequisites)
     + [conda](#conda)
-    + [CentOS packages](#centos-packages)
+    + [RPM packages](#rpm-packages)
+      - [AlmaLinux 9 / CentOS Stream 9 / Oracle Linux 9](#almalinux-9---centos-stream-9---oracle-linux-9)
+      - [CentOS 7 / Scientific Linux 7](#centos-7---scientific-linux-7)
+    + [Compiling from source](#compiling-from-source)
   * [Prepare your local computer](#prepare-your-local-computer)
 
 <small><i><a href='http://ecotrust-canada.github.io/markdown-toc/'>Table of contents generated with markdown-toc</a></i></small>
