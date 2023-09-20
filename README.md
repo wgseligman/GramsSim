@@ -131,32 +131,17 @@ To run the programs:
 
 Obviously, you can make any changes you want to GramsSim for your own use. This section is for when you want to start making changes to be added to the official repository. 
 
-I strongly suggest becoming familiar with [git][46], at least to the extent of understanding what a [branch][4] is. I also suggest using [git flow][47] to organize your branches, mainly because that approach seems to work for [LArSoft][5]. 
+I strongly suggest becoming familiar with [git][46], at least to the extent of understanding what a [branch][4] is. 
 
 [4]: https://git-scm.com/book/en/v2/Git-Branching-Branches-in-a-Nutshell
 [5]: https://larsoft.org/
 [46]: https://git-scm.com/doc
-[47]: http://danielkummer.github.io/git-flow-cheatsheet/
 
-Before you edit files for the first time:
+Here's an example of working with branches. When you want to start on a new task:
 
-    cd $GSDIR/GramsSim
-    git flow init 
+    git branch $USER_MyMagnificentFeatureName
 
-You'll be asked a bunch of questions. Accept the defaults for all the questions.
-
-If you get a message that git flow is not recognized, it means that
-the gitflow package has to be installed on your machine.   
-
-You only have to type `git flow init` once, the first time you edit
-code in that directory. Don't type it again, unless you `git clone` a
-brand-new repository.
-
-When you want to start on a new task:
-
-    git flow feature start $USER_MyMagnificentFeatureName
-
-The '$USER_' means that your feature name should begin with your 
+The '$USER_' means that your branch name should begin with your 
 account name. That way you know who is doing what. `MyMagnificentFeatureName` can be anything that identifies your task. 
 
 To "bookmark" changes you've made to your copy of the `$GSDIR/GramsSim` directory:
@@ -168,13 +153,16 @@ When you've finished working on your task (after testing it, putting
 in the comments, writing the documentation, discussing it at a group
 meeting, etc.):
 
-    git flow feature finish $USER_MyMagnificentFeatureName
+    git checkout develop
+    git merge $USER_MyMagnificentFeatureName
+    git branch -d $USER_MyMagnificentFeatureName
     git push origin develop
     
-These two commands delete your local `feature/$USER_MyMagnificentFeatureName`
-branch and merge your changes into the develop branch. Please take care not to push
+These  commands merge your changes into the develop branch and delete your local `$USER_MyMagnificentFeatureName`
+branch. Please take care not to push
 changes to the develop branch until you want all the other developers to see it (and 
-perhaps notice that you didn't write comments or documentation for your changes).
+perhaps notice that you didn't write comments or documentation for your changes; better
+take do that now!).
 
 ### Advanced git commands 
 
@@ -184,11 +172,11 @@ the repository:
     git fetch origin
     git pull origin develop
 
-If you want other people to see your feature work, you want to save your work in a 
+If you want other people to see your branch, you want to save your work in a 
 remote repository, or you want to test if you have remote write
 access to the repository: 
 
-    git flow feature publish $USER_MyMagnificentFeatureName
+    git push origin $USER_MyMagnificentFeatureName
 
 If you discover that you don't have remote write access, contact wgseligman
 and let him know your [github account name][6].
@@ -198,13 +186,13 @@ and let him know your [github account name][6].
 Afterwards you can continue to update that remote feature branch with:
 
     git commit -a -m "Comment about what's changed"
-    git push origin feature/$USER_MyMagnificentFeatureName
+    git push origin $USER_MyMagnificentFeatureName
 
 If you pushed your feature branch to the remote repository, and there's no point in
 saving it for archival purposes (because you documented all the changes you made to the 
 develop branch, right?), you can remove the remote branch with:
 
-    git push origin :feature/$USER_MyMagnificentFeatureName
+    git push origin :$USER_MyMagnificentFeatureName
     
 Note the `:` before the branch name, which is what forces the deletion. 
 

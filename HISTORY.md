@@ -4,6 +4,13 @@ A description of major development milestones. The most recent are at
 the top. For a detailed list of all changes (basically, every time
 someone typed "git commit"), see the output of "git log".
 
+Sep-2023
+
+   - The instructions for installing the external packages and
+     working with branches have been revised to be consistent
+     with working in AlmaLinux 9, the RHEL derivative that
+     CERN and Fermilab have chosen as a successor to CentOS. 
+
 May-2023
 
    - With the help of Hans Wenzel, improved specification of 
