@@ -10,14 +10,6 @@
 
 ### Prerequisites
 
-If you're working on a system of the [Nevis Linux cluster][4], type
-
-    module load cmake root geant4 hepmc3 healpix
-
-and skip to the [section below](#prepare-your-local-computer) on preparing your local computer. Otherwise, read on.
-
-[4]: https://twiki.nevis.columbia.edu/twiki/bin/view/Main/LinuxCluster
-
 You will need recent versions of:
 
    - [Cmake](https://cmake.org/) (verified to work with version 3.14 and higher)
@@ -40,19 +32,6 @@ The following optional development libraries are needed for Geant4 visualization
    - [OpenGL](https://www.opengl.org/)
    - [QT4](https://www.qt.io/)
 
-At Nevis, the approach that fully worked on [CentOS 7][5] was to install recent versions of C++, cmake,
-ROOT, Geant4, HepMC3, cfitsio, and healpix_cxx by compiling them from source. There was no need to recompile 
-xerces-c, OpenGL, and QT4; the CentOS 7 development packages were sufficient:
-
-    sudo yum -y install freeglut-devel xerces-c-devel \
-       qt-devel mesa-libGLw-devel
-       
-[5]: https://www.centos.org/download/
-
-Note that compiling Geant4 from source may be the only way to reliably use the [OpenGL visualizer][6].
-
-[6]: https://conferences.fnal.gov/g4tutorial/g4cd/Documentation/Visualization/G4OpenGLTutorial/G4OpenGLTutorial.html 
-
 #### conda
 
 You can fulfill these requirements using [conda][7]. This *mostly* works,
@@ -60,19 +39,13 @@ though it does not include ROOT I/O in HepMC3 and there are some issues with the
 OpenGL display. 
 
 [7]: https://docs.conda.io/projects/conda/en/latest/
-
-On [RHEL][8]-derived systems, this is the one-time setup; 
-visit the [EPEL][9] web site for releases other than CentOS 7:
-
-[8]: https://www.redhat.com/en/technologies/linux-platforms/enterprise-linux
-[9]: https://fedoraproject.org/wiki/EPEL
-
-     # Install conda
-     sudo yum -y install https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
-     sudo yum -y install conda
      
-On any system with conda installed (including [anaconda3][10] and [miniconda][11]), the following will set up a suitable development environment:
+If you have administrative access to your Linux computer system, you can [install][8] conda globally.
+If you don't have administrative access or you prefer it, you can use [anaconda3][10] or [miniconda][11] to install conda on your acount locally. 
 
+After conda has been installed, the following will set up a suitable development environment:
+
+[8]: https://docs.conda.io/projects/conda/en/latest/user-guide/install/rpm-debian.html
 [10]: https://www.anaconda.com/products/individual
 [11]: https://docs.conda.io/en/latest/miniconda.html
      
@@ -83,17 +56,44 @@ On any system with conda installed (including [anaconda3][10] and [miniconda][11
      # Create a conda environment. The name "grams-devel" is arbitrary.
      conda create -y --name grams-devel compilers cmake root geant4 hepmc3 cfitsio healpix_cxx
      
-*Note: `strict` priority guarantees that the packages you install within an environment will be consistent with one another. However, it does not guarantee that you'll get the latest-and-greatest versions, especially of packages like `python`. I've found that `conda config --set channel_priority flexible` will get the latest versions of packages, at the potential risk that some package incompatibilties.*
+*Note: `strict` priority guarantees that the packages you install within an environment will be consistent with one another. However, it does not guarantee that you'll get the latest-and-greatest versions, especially of packages like `python`. I've found that `conda config --set channel_priority flexible` will get the latest versions of packages, at the potential risk of some package incompatibilities.*
 
 Afterwards, the following must be executed once per login session:
 
      # Activate the environment to modify $PATH and other variables.
      conda activate grams-devel
 
-#### CentOS packages
+#### RPM packages
 
 Another potential solution is to use RPM packages for RHEL-derived
-Linux distributions (e.g., AlmaLinux, Scientific Linux, CentOS). In addition to the EPEL repository,
+Linux distributions (e.g., AlmaLinux, Scientific Linux, CentOS, Oracle Linux). 
+
+##### AlmaLinux 9 / CentOS Stream 9 / Oracle Linux 9
+
+You will need the [EPEL (Extra Packages for Enterprise Linux)][9] repository before you install the main packages required for GramsSim:
+
+[9]: https://docs.fedoraproject.org/en-US/epel/
+
+    sudo dnf config-manager --set-enabled crb
+    sudo dnf -y install epel-release
+    # For Oracle Linux 9:
+    dnf install -y https://dl.fedoraproject.org/pub/epel/epel-release-latest-9.noarch.rpm
+
+    sudo yum -y install root HepMC3-devel HepMC3-rootIO-devel cfitsio-devel 
+    sudo yum -y install gcc-c++ glibc-devel cmake
+
+   - You will still have to
+     [download][13] and build/install Geant4 on your own.
+     
+   - You will also have to download and install [healpix_cxx][99] separately if you want to be able
+     to input [HealPIX][98] maps in [GramsSky](./GramsSky).
+
+[98]: https://healpix.sourceforge.io/
+[99]: https://healpix.sourceforge.io/downloads.php
+
+##### CentOS 7 / Scientific Linux 7
+
+In addition to the EPEL repository,
 you will need a more recent version of the GCC compiler than comes with CentOS 7. One
 solution is to use the [SCL][12] 
 tools (but see the cautions below).
@@ -117,13 +117,12 @@ There are problems with this approach:
 
    - In the [compilation instructions](README.md), you will want to use `cmake3` instead of just `cmake`.
 
-   - You will still have to
-     [download][13] and
-     build/install Geant4 on your own.
+   - You will still have to [download][13] and build/install Geant4 on your own.
 
    - It's important that ROOT, HepMC3, and Geant4 all be compiled with
      a version of the C++ compiler that
-     supports C++11 and above. The ROOT, HepMC3, cfitsio, and healpix_cxx packages from EPEL were compiled with
+     supports C++11 and above. The ROOT, HepMC3, cfitsio, and healpix\_cxx 
+     packages from EPEL were compiled with
      the "native compiler" of CentOS 7, GCC 4.8.5,
      which does _not_ support C++11. 
      
@@ -137,7 +136,30 @@ There are problems with this approach:
 (If you determine the installation commands needed for
 Debian-style distributions (including Ubuntu), please let
 wgseligman know so he can update this documentation.)
- 
+
+#### Compiling from source
+
+If you're working on a CentOS 7 system of the [Nevis Linux cluster][4], type
+
+    module load cmake root geant4 hepmc3 healpix
+
+and skip to the [section below](#prepare-your-local-computer) on preparing your local computer. Otherwise, read on.
+
+[4]: https://twiki.nevis.columbia.edu/twiki/bin/view/Main/LinuxCluster
+
+At Nevis, the approach that fully worked on [CentOS 7][5] was to install recent versions of C++, cmake,
+ROOT, Geant4, HepMC3, cfitsio, and healpix_cxx by compiling them from source (see **Prerequisites** above). There was no need to recompile xerces-c, OpenGL, and QT4; the CentOS 7 development packages were sufficient:
+
+    sudo yum -y install freeglut-devel xerces-c-devel \
+       qt-devel mesa-libGLw-devel
+       
+[5]: https://www.centos.org/download/
+
+Note that compiling Geant4 from source may be the only way to reliably use the [OpenGL visualizer][6].
+
+[6]: https://conferences.fnal.gov/g4tutorial/g4cd/Documentation/Visualization/G4OpenGLTutorial/G4OpenGLTutorial.html 
+
+
 ### Prepare your local computer 
    
 If you are working remotely (e.g., on a laptop), and you want to use
