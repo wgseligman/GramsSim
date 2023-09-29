@@ -59,7 +59,11 @@ After conda has been installed, the following will set up a suitable development
      # Create a conda environment. The name "grams-devel" is arbitrary.
      conda create -y --name grams-devel compilers cmake root geant4 hepmc3 cfitsio healpix_cxx
      
-*Note: `strict` priority guarantees that the packages you install within an environment will be consistent with one another. However, it does not guarantee that you'll get the latest-and-greatest versions, especially of packages like `python`. I've found that `conda config --set channel_priority flexible` will get the latest versions of packages, at the potential risk of some package incompatibilities.*
+*Note 1: `strict` priority guarantees that the packages you install within an environment will be consistent with one another. However, it does not guarantee that you'll get the latest-and-greatest versions, especially of packages like `python`. I've found that `conda config --set channel_priority flexible` will get the latest versions of packages, at the potential risk of some package incompatibilities.*
+
+*Note 2: This `conda create` command can take a very long time to execute as it resolves all the package dependencies; I've seen a `strict` priority install take days. You may want to consider installing the [libmamba][200] solver, which greatly speeds up all conda `create` and `install` commands.*
+
+[200]: https://www.anaconda.com/blog/a-faster-conda-for-a-growing-community
 
 Afterwards, the following must be executed once per login session:
 
