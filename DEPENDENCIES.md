@@ -80,10 +80,10 @@ You will need the [EPEL (Extra Packages for Enterprise Linux)][9] repository bef
     sudo dnf config-manager --set-enabled crb
     sudo dnf -y install epel-release
     # For Oracle Linux 9:
-    dnf install -y https://dl.fedoraproject.org/pub/epel/epel-release-latest-9.noarch.rpm
+    sudo dnf install -y https://dl.fedoraproject.org/pub/epel/epel-release-latest-9.noarch.rpm
 
-    sudo yum -y install root HepMC3-devel HepMC3-rootIO-devel cfitsio-devel 
-    sudo yum -y install gcc-c++ glibc-devel cmake
+    sudo dnf -y install root HepMC3-devel HepMC3-rootIO-devel cfitsio-devel 
+    sudo dnf -y install gcc-c++ glibc-devel cmake
 
    - You will still have to
      [download][13] and build/install Geant4 on your own.
