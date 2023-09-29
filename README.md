@@ -367,11 +367,6 @@ Understanding UNIX:
 
 Version control system:
    - [git][46]
-   - [git flow][47]
-
-Some git tips from other collaborations:  
-   - [git flow quick start guide](https://cdcvs.fnal.gov/redmine/projects/cet-is-public/wiki/Git_flow_quick_start)
-   - [while you are developing](https://cdcvs.fnal.gov/redmine/projects/uboonecode/wiki/Uboone_guide#While-you-are-developing)
 
 Toolkits:
    - [Geant4 Manual](http://geant4.web.cern.ch/geant4/UserDocumentation/UsersGuides/ForApplicationDeveloper/html/)
