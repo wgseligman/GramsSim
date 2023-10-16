@@ -91,7 +91,9 @@
 #include "MySpecialPhysList.hh"
 G4_DECLARE_PHYSLIST_FACTORY(MySpecialPhysList);
 
-#include "TFile.h" // For writing options ntuple at the end. 
+// For writing geometry at the end. 
+#include "TFile.h" 
+#include "TGeoManager.h"
 
 // --------------------------------------------------------------
 
@@ -372,6 +374,52 @@ int main(int argc,char **argv)
 
   delete visManager;
   delete runManager;
+
+  // At the end of the simulation, after all files have hopefully been
+  // closed:
+
+  // In addition to recording the options used to run this
+  // program, let's see if we can write a ROOT form of the
+  // detector geometry to the output file as well.
+  
+  // In order to do this, we need for the detector geometry to
+  // have been parsed in GramsG4DetectorConstruction. 
+  
+  G4String gdmlOutput;
+  options->GetOption("gdmlout",gdmlOutput);
+  if ( ! gdmlOutput.empty() ) {
+	  
+    // We also need a name for the TGeoManager structure that
+    // will be written to the output file.
+    G4String geometry;
+    options->GetOption("geometry",geometry);
+    if ( ! geometry.empty() ) {
+
+      // Open the output file for appending a new ROOT object.
+      G4String filename;
+      options->GetOption("outputfile",filename);
+      TFile outputFile(filename,"UPDATE");
+      
+      if (debug) 
+	G4cout << "gramsg4::main() - "
+	       << "Importing geometry from GDML file '" 
+	       << gdmlOutput << "' and converting to TGeoManager structure '"
+	       << geometry << "' in output file '"
+	       << filename << "'"
+	       << G4endl;
+
+      // gGeoManager, the global TGeoManager object, is defined
+      // in TGeoManager.h
+      gGeoManager->Import(gdmlOutput);
+
+      // Write the geometry to the output file.
+      gGeoManager->Write(geometry);
+      
+      // Close what we've (re-)opened.
+      outputFile.Close();
+      
+    } // geometry defined
+  } // gdmlOutput defined
 
   return 0;
 }

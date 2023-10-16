@@ -1,9 +1,10 @@
 # TODO 
 
-As of 28-Nov-2022:
+As of 16-Oct-2023:
 
 - In GramsReadoutSim or GramsElecSim, we may have to model induced charge on adjacent pixels. 
-- There's no trigger logic in GramsElecSim; this may have to wait until the optical and veto detector code is implemented. 
+- There's no trigger logic in GramsElecSim; this may have to wait until the optical and 
+  veto detector code is implemented. 
 
 - Cluster time 
    - In GramsDetSim, the cluster arrival time at the anode
@@ -20,6 +21,8 @@ As of 28-Nov-2022:
    - Ntuples have their limits. Some form of structured TTrees might be better for MC truth information. 
    - Can ROOT read the Geant4 GDML file directly?
       - Answer: As of ROOT 6.20, the answer is no. It must be parsed with `./gramsg4 --gdmlout` first.
+   - GramsG4 write a ROOT TGeoManager version of the detector geometry to the output file. 
+     Propagate this behavior so that subsequent job steps copy the geometry to their output as well. 
 
 ## Resolved issues:
 

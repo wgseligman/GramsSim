@@ -4,6 +4,12 @@ A description of major development milestones. The most recent are at
 the top. For a detailed list of all changes (basically, every time
 someone typed "git commit"), see the output of "git log".
 
+Oct-2023
+
+   - A new feature is added to GramsG4: By default, a copy of the
+     detector geometry is written to the output file as a TGeoManager
+     object.
+
 Sep-2023
 
    - The instructions for installing the external packages and

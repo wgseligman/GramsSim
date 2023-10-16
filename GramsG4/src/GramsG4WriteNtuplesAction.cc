@@ -263,6 +263,7 @@ namespace gramsg4 {
         analysisManager->FillNtupleSColumn(m_optionsNTID, 5, m_options->GetOptionSource(i));
         analysisManager->AddNtupleRow(m_optionsNTID);  
       }
+
     } // if sequential or worker thread
   }
 
