@@ -94,6 +94,8 @@ G4_DECLARE_PHYSLIST_FACTORY(MySpecialPhysList);
 // For writing geometry at the end. 
 #include "TFile.h" 
 #include "TGeoManager.h"
+#include "TKey.h"
+#include "TSystem.h"
 
 // --------------------------------------------------------------
 
@@ -376,7 +378,59 @@ int main(int argc,char **argv)
   delete runManager;
 
   // At the end of the simulation, after all files have hopefully been
-  // closed:
+  // closed...
+
+  // The G4AnalysisManager has a bug: The files it creates cannot be
+  // opened in UPDATE mode. The .root file created by the
+  // G4AnalysisManager was written to a work file. Post-process this
+  // work file to remove the bug.
+
+  G4String filename;
+  options->GetOption("outputfile",filename);
+  G4String workfile = "work_" + filename;
+
+  // The name of the program that can fix this problem is "hadd". It's
+  // part of a standard ROOT distribution. However, users be crazy,
+  // and it's possible that we can't find it in the user's environment.
+  auto path = gSystem->Getenv("PATH");
+  auto hadd = gSystem->Which(path,"hadd");
+
+  if (debug || verbose)
+    G4cout << "gramsg4.cc - Deleting any old copy of '"
+	   << filename << "'"
+	   << G4endl;
+
+  gSystem->Unlink(filename);
+  if ( hadd == nullptr ) {
+    // We could not find hadd. Simply rename the work file to the
+    // output filename.
+
+    if (debug || verbose)
+      G4cout << "gramsg4.cc - Could not find hadd, renaming '"
+	     << workfile << "' to '" << filename << "'"
+	     << G4endl;
+
+    gSystem->Rename(workfile,filename);
+  }
+  else {
+    G4String vhadd = " -v 0";
+    if (debug || verbose)
+      vhadd = " -v 99";
+
+    // hadd -v 0 -f gramsg4.root work_gramsg4.root
+    G4String haddCommand = G4String(hadd) + vhadd 
+      + " -f " + filename + " " + workfile;
+
+    if (debug || verbose)
+      G4cout << "gramsg4.cc - Executing command '"
+	     << haddCommand << "'"
+	     << G4endl;
+
+    gSystem->Exec(haddCommand);
+  }
+
+  // Remove the work file; it just wastes disk space at this point.
+  gSystem->Unlink(workfile);
 
   // In addition to recording the options used to run this
   // program, let's see if we can write a ROOT form of the
@@ -384,7 +438,7 @@ int main(int argc,char **argv)
   
   // In order to do this, we need for the detector geometry to
   // have been parsed in GramsG4DetectorConstruction. 
-  
+    
   G4String gdmlOutput;
   options->GetOption("gdmlout",gdmlOutput);
   if ( ! gdmlOutput.empty() ) {
@@ -394,33 +448,36 @@ int main(int argc,char **argv)
     G4String geometry;
     options->GetOption("geometry",geometry);
     if ( ! geometry.empty() ) {
+      
+      if (debug || verbose)
+	G4cout << "gramsg4.cc - Opening '"
+	       << filename << "' in UPDATE mode"
+	       << G4endl;
 
       // Open the output file for appending a new ROOT object.
-      G4String filename;
-      options->GetOption("outputfile",filename);
-      TFile outputFile(filename,"UPDATE");
-      
-      if (debug) 
-	G4cout << "gramsg4::main() - "
-	       << "Importing geometry from GDML file '" 
-	       << gdmlOutput << "' and converting to TGeoManager structure '"
-	       << geometry << "' in output file '"
-	       << filename << "'"
-	       << G4endl;
+      std::shared_ptr<TFile> outputFile ( TFile::Open(filename,"UPDATE") );
 
       // gGeoManager, the global TGeoManager object, is defined
       // in TGeoManager.h
-      gGeoManager->Import(gdmlOutput);
+      auto geoManager = gGeoManager->Import(gdmlOutput);
+
+      if (debug || verbose) 
+	G4cout << "gramsg4::main() - "
+	       << "Importing geometry from GDML file '" 
+	       << gdmlOutput << "' and appending TGeoManager structure '"
+	       << geometry << "' to output file '"
+	       << filename << "'"
+	       << G4endl;
 
       // Write the geometry to the output file.
-      gGeoManager->Write(geometry);
-      
-      // Close what we've (re-)opened.
-      outputFile.Close();
-      
+      geoManager->Write(geometry);
+
+      outputFile->Write();
+      outputFile->Close();
+
     } // geometry defined
   } // gdmlOutput defined
-
+  
   return 0;
 }
 

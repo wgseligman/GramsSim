@@ -21,8 +21,6 @@
 #include "G4Threading.hh"
 #include "G4AutoLock.hh"
 
-#include "TFile.h"
-
 #include <string>
 
 namespace gramsg4 {
@@ -95,23 +93,63 @@ namespace gramsg4 {
     // be in order in the output file if you use multiple threads.
     analysisManager->SetNtupleMerging(true);
 
-    // Open the output file.
+    // Open the output file... almost. The G4AnalysisManager has a
+    // bug: The files it creates cannot be opened in UPDATE
+    // mode. Write the output to a work file instead, and post-process
+    // that work file for the final result in a later step.
     G4String filename;
     m_options->GetOption("outputfile",filename);
+    m_filename = "work_" + filename;
 
     if (m_debug)
       G4cout << "WriteNtuplesAction::BeginOfRunAction() - "
-	     << "about to open file '" << filename
+	     << "about to open file '" << m_filename
 	     << "' for output" << G4endl;
 
-    auto openFile = analysisManager->OpenFile(filename);
+    auto openFile = analysisManager->OpenFile(m_filename);
     if ( ! openFile )
       G4cerr << "File " << __FILE__ << " Line " << __LINE__ << " " << G4endl 
 	     << "WriteNtuplesAction::BeginOfRunAction() - "
-	     << " could not open file '" << filename
+	     << " could not open file '" << m_filename
 	     << "' for output" << G4endl;
 
-    // Create ntuple.
+    // Create yet another ntuple.
+    m_TrackNTID = analysisManager->CreateNtuple("TrackInfo", "MC truth G4Track information");
+    if (m_debug) 
+      G4cout << "WriteNtuplesAction::() - "
+	     << "ntuple id of 'TrackInfo' = " << m_TrackNTID << G4endl;
+
+    // For tracking information, we're going to try to record the
+    // trajectory of the track as it passes through the detector. A
+    // trajectory is a set of two 4-vectors: (x,y,z,t) and
+    // (px,py,pz,E). The Geant4 analysis manager won't let us store
+    // 4-vectors directly, so store each components of these 4-vectors
+    // in a separate std::vector.
+
+    // Reminder: Units are defined via the Options XML file.
+    analysisManager->CreateNtupleIColumn("Run");                      // id 0         
+    analysisManager->CreateNtupleIColumn("Event");                    // id 1
+    analysisManager->CreateNtupleIColumn("TrackID");                  // id 2
+    analysisManager->CreateNtupleIColumn("ParentID");                 // id 3
+    analysisManager->CreateNtupleIColumn("PDGCode");                  // id 4
+    analysisManager->CreateNtupleSColumn("ProcessName");              // id 5
+    analysisManager->CreateNtupleDColumn("t", m_time);                // id 6
+    analysisManager->CreateNtupleFColumn("x", m_xpos);                // id 7
+    analysisManager->CreateNtupleFColumn("y", m_ypos);                // id 8
+    analysisManager->CreateNtupleFColumn("z", m_zpos);                // id 9
+    analysisManager->CreateNtupleDColumn("Etot", m_energy);           // id 10
+    analysisManager->CreateNtupleFColumn("px", m_xmom);               // id 11
+    analysisManager->CreateNtupleFColumn("py", m_ymom);               // id 12
+    analysisManager->CreateNtupleFColumn("pz", m_zmom);               // id 13
+    analysisManager->CreateNtupleIColumn("identifier", m_identifier); // id 14
+
+    if (m_debug) 
+	G4cout << "WriteNtuplesAction::BeginOfRunAction() - "
+	       << "finish TrackInfo n-tuple"
+	       << G4endl;
+    analysisManager->FinishNtuple();
+
+    // Create another ntuple.
     m_LArNTID = analysisManager->CreateNtuple("LArHits", "LAr TPC energy deposits");
     if (m_debug) 
       G4cout << "WriteNtuplesAction::() - "
@@ -164,43 +202,6 @@ namespace gramsg4 {
     analysisManager->CreateNtupleIColumn("identifier"); // id 13
     analysisManager->FinishNtuple();
 
-    // Create yet another ntuple.
-    m_TrackNTID = analysisManager->CreateNtuple("TrackInfo", "MC truth G4Track information");
-    if (m_debug) 
-      G4cout << "WriteNtuplesAction::() - "
-	     << "ntuple id of 'TrackInfo' = " << m_TrackNTID << G4endl;
-
-
-    // For tracking information, we're going to try to record the
-    // trajectory of the track as it passes through the detector. A
-    // trajectory is a set of two 4-vectors: (x,y,z,t) and
-    // (px,py,pz,E). The Geant4 analysis manager won't let us store
-    // 4-vectors directly, so store each components of these 4-vectors
-    // in a separate std::vector.
-
-    // Reminder: Units are defined via the Options XML file.
-    analysisManager->CreateNtupleIColumn("Run");                      // id 0         
-    analysisManager->CreateNtupleIColumn("Event");                    // id 1
-    analysisManager->CreateNtupleIColumn("TrackID");                  // id 2
-    analysisManager->CreateNtupleIColumn("ParentID");                 // id 3
-    analysisManager->CreateNtupleIColumn("PDGCode");                  // id 4
-    analysisManager->CreateNtupleSColumn("ProcessName");              // id 5
-    analysisManager->CreateNtupleDColumn("t", m_time);                // id 6
-    analysisManager->CreateNtupleFColumn("x", m_xpos);                // id 7
-    analysisManager->CreateNtupleFColumn("y", m_ypos);                // id 8
-    analysisManager->CreateNtupleFColumn("z", m_zpos);                // id 9
-    analysisManager->CreateNtupleDColumn("Etot", m_energy);           // id 10
-    analysisManager->CreateNtupleFColumn("px", m_xmom);               // id 11
-    analysisManager->CreateNtupleFColumn("py", m_ymom);               // id 12
-    analysisManager->CreateNtupleFColumn("pz", m_zmom);               // id 13
-    analysisManager->CreateNtupleIColumn("identifier", m_identifier); // id 14
-
-    if (m_debug) 
-	G4cout << "WriteNtuplesAction::BeginOfRunAction() - "
-	       << "finish TrackInfo n-tuple"
-	       << G4endl;
-    analysisManager->FinishNtuple();
-
     // Yet another ntuple: This contains the options used to run this
     // program. 
 
@@ -218,7 +219,6 @@ namespace gramsg4 {
     if (m_debug) 
       G4cout << "WriteNtuplesAction::() - "
              << "ntuple id of 'Options' = " << m_optionsNTID << G4endl;
-
 
     analysisManager->CreateNtupleSColumn("OptionName");     // id 0
     analysisManager->CreateNtupleSColumn("OptionValue");    // id 1
@@ -281,8 +281,16 @@ namespace gramsg4 {
 
     if (m_debug)
       G4cout << "WriteNtuplesAction::EndOfRunAction - "
-	     << "about to close n-tuple file" << G4endl;
+	     << "about to close n-tuple file '" 
+	     << m_filename << "'"
+	     << G4endl;
     analysisManager->CloseFile();
+
+    if (m_debug)
+      G4cout << "WriteNtuplesAction::EndOfRunAction - "
+	     << "about to clear analysisManager" 
+	     << G4endl;
+    analysisManager->Clear();
   }
 
   //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
