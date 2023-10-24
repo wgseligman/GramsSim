@@ -381,13 +381,11 @@ int main(int argc,char **argv)
   // closed...
 
   // The G4AnalysisManager has a bug: The files it creates cannot be
-  // opened in UPDATE mode. The .root file created by the
-  // G4AnalysisManager was written to a work file. Post-process this
-  // work file to remove the bug.
+  // opened in UPDATE mode. Post-process the file created by
+  // G4AnalysisManager to remove the bug.
 
   G4String filename;
   options->GetOption("outputfile",filename);
-  G4String workfile = "work_" + filename;
 
   // The name of the program that can fix this problem is "hadd". It's
   // part of a standard ROOT distribution. However, users be crazy,
@@ -395,30 +393,28 @@ int main(int argc,char **argv)
   auto path = gSystem->Getenv("PATH");
   auto hadd = gSystem->Which(path,"hadd");
 
-  if (debug || verbose)
-    G4cout << "gramsg4.cc - Deleting any old copy of '"
-	   << filename << "'"
-	   << G4endl;
-
-  gSystem->Unlink(filename);
   if ( hadd == nullptr ) {
-    // We could not find hadd. Simply rename the work file to the
-    // output filename.
+    // We could not find hadd.
 
     if (debug || verbose)
-      G4cout << "gramsg4.cc - Could not find hadd, renaming '"
-	     << workfile << "' to '" << filename << "'"
+      G4cout << "gramsg4.cc - Could not find hadd, filename '"
+	     << filename << "' unchanged; cannot be opened in UPDATE mode"
 	     << G4endl;
-
-    gSystem->Rename(workfile,filename);
   }
   else {
-    G4String vhadd = " -v 0";
+    // Define the work file name.
+    G4String workfile = "work_" + filename;
+
+    // Rename the output file to the temporary work file name.
+    gSystem->Rename(filename,workfile);
+
+    // Setting the hadd verbosity argument.
+    G4String vhadd = "-v 0";
     if (debug || verbose)
-      vhadd = " -v 99";
+      vhadd = "-v 99";
 
     // hadd -v 0 -f gramsg4.root work_gramsg4.root
-    G4String haddCommand = G4String(hadd) + vhadd 
+    G4String haddCommand = G4String(hadd) + " " + vhadd 
       + " -f " + filename + " " + workfile;
 
     if (debug || verbose)
@@ -426,11 +422,17 @@ int main(int argc,char **argv)
 	     << haddCommand << "'"
 	     << G4endl;
 
+    // Execute the hadd command.
     gSystem->Exec(haddCommand);
-  }
 
-  // Remove the work file; it just wastes disk space at this point.
-  gSystem->Unlink(workfile);
+    // Remove the work file; it just wastes disk space at this point.
+
+    if (debug || verbose)
+      G4cout << "gramsg4.cc - Deleting '" << workfile << "'"
+	     << G4endl;
+
+    gSystem->Unlink(workfile);
+  }
 
   // In addition to recording the options used to run this
   // program, let's see if we can write a ROOT form of the

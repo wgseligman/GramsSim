@@ -93,13 +93,8 @@ namespace gramsg4 {
     // be in order in the output file if you use multiple threads.
     analysisManager->SetNtupleMerging(true);
 
-    // Open the output file... almost. The G4AnalysisManager has a
-    // bug: The files it creates cannot be opened in UPDATE
-    // mode. Write the output to a work file instead, and post-process
-    // that work file for the final result in a later step.
-    G4String filename;
-    m_options->GetOption("outputfile",filename);
-    m_filename = "work_" + filename;
+    // Get the output file name.
+    m_options->GetOption("outputfile",m_filename);
 
     if (m_debug)
       G4cout << "WriteNtuplesAction::BeginOfRunAction() - "
