@@ -12,7 +12,11 @@
 // For processing command-line and XML file options.
 #include "Options.h" // in util/
 
-#include "Analysis.h" // in g4util/
+// For appending the detector geometry to the output.
+#include "Geometry.h" // in util/
+
+#include "Analysis.h"    // in g4util/
+#include "FixAnalysis.h" // in g4util/
 
 // There are three mandatory classes needed for any Geant4 application
 // to work. One is the detector geometry:
@@ -90,12 +94,6 @@
 #include "G4PhysListStamper.hh"  // defines macro for factory registration
 #include "MySpecialPhysList.hh"
 G4_DECLARE_PHYSLIST_FACTORY(MySpecialPhysList);
-
-// For writing geometry at the end. 
-#include "TFile.h" 
-#include "TGeoManager.h"
-#include "TSystem.h"
-#include "TFileMerger.h"
 
 // --------------------------------------------------------------
 
@@ -386,90 +384,15 @@ int main(int argc,char **argv)
 
   G4String filename;
   options->GetOption("outputfile",filename);
+  g4util::FixAnalysis( filename );
 
-  // Define the work file name.
-  G4String workfile = "work_" + filename;
+  // In addition to recording the options used to run this program,
+  // let's see if we can write a ROOT form of the detector geometry to
+  // the output file as well. The Geometry::GDML2ROOT() method with
+  // default arguments should be able to take care of this.
 
-  // Rename the output file to the temporary work file name.
-  gSystem->Rename(filename,workfile);
-
-  // Use the poorly-documented TFileMerger class (the class that hadd
-  // uses) to "convert" the file.
-  TFileMerger* merger = new TFileMerger(kFALSE,kFALSE); 
-
-  // The input file is the work file, that is, the file the
-  // G4AnalysisManager created.
-  auto input = TFile::Open(workfile);
-
-  // This turns out to be mandatory: Get the compression setting of
-  // the input file.
-  auto compression = input->GetCompressionSettings();
-  merger->AddFile(input); 
-
-  // Tell TFileMerger to use the compression settings of the input
-  // file. If you omit this, the output ntuples will be unreadable.
-  merger->OutputFile(filename,"RECREATE",compression);
-
-  // Copy the input to the output, incidentally fixing the
-  // G4AnalysisManager bug.
-  merger->Merge();
-
-  // Remove the work file; it just wastes disk space at this point.
-  if (debug || verbose)
-    G4cout << "gramsg4.cc - Deleting '" << workfile << "'"
-	   << G4endl;
-  gSystem->Unlink(workfile);
-
-  // Clean up.
-  delete merger;
-  input->Close();
-  delete input;
-
-  // In addition to recording the options used to run this
-  // program, let's see if we can write a ROOT form of the
-  // detector geometry to the output file as well.
-  
-  // In order to do this, we need for the detector geometry to
-  // have been parsed in GramsG4DetectorConstruction. 
-    
-  G4String gdmlOutput;
-  options->GetOption("gdmlout",gdmlOutput);
-  if ( ! gdmlOutput.empty() ) {
-	  
-    // We also need a name for the TGeoManager structure that
-    // will be written to the output file.
-    G4String geometry;
-    options->GetOption("geometry",geometry);
-    if ( ! geometry.empty() ) {
-      
-      if (debug || verbose)
-	G4cout << "gramsg4.cc - Opening '"
-	       << filename << "' in UPDATE mode"
-	       << G4endl;
-
-      // Open the output file for appending a new ROOT object.
-      std::shared_ptr<TFile> outputFile ( TFile::Open(filename,"UPDATE") );
-
-      // gGeoManager, the global TGeoManager object, is defined
-      // in TGeoManager.h
-      auto geoManager = gGeoManager->Import(gdmlOutput);
-
-      if (debug || verbose) 
-	G4cout << "gramsg4::main() - "
-	       << "Importing geometry from GDML file '" 
-	       << gdmlOutput << "' and appending TGeoManager structure '"
-	       << geometry << "' to output file '"
-	       << filename << "'"
-	       << G4endl;
-
-      // Write the geometry to the output file.
-      geoManager->Write(geometry);
-
-      outputFile->Write();
-      outputFile->Close();
-
-    } // geometry defined
-  } // gdmlOutput defined
+  auto geometry = util::Geometry::GetInstance();
+  geometry->GDML2ROOT();
   
   return 0;
 }
