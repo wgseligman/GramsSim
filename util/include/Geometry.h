@@ -86,7 +86,7 @@ namespace util {
 
     // Note that both gdmlFile and rootFile should be closed before
     // invoking this routine, as GDML2ROOT will open these files; in
-    // particular, gdmlFile will be opened in "UPDATE" mode.
+    // particular, rootFile will be opened in "UPDATE" mode.
 
     // This routine will probably only ever be called from a Geant4
     // simulation after all files are closed anyway, near the end of

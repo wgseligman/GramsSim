@@ -6,6 +6,10 @@
 // opened in UPDATE mode. This function Post-processes the file
 // created by G4AnalysisManager to remove the bug.
 
+// Note that this routine must not be invoked until after the file
+// named in the argument is closed. Typically in a Geant4 simulation,
+// this is after the G4RunManager has been deleted.
+
 #ifndef FixAnalysis_h
 #define FixAnalysis_h 1
 

@@ -207,11 +207,15 @@ The `gramsg4` program produces only one ROOT output file containing multiple ntu
 
 will write the output to `myStudy.root`.
 
-There are several ntuples in the ROOT file: 
+There are several ntuples in the ROOT file, and one other ROOT structure: 
+
    - `LArHits`, which contains energy deposits in the LAr (both ionization energy and optical photons);
    - `ScintillatorHits`, which contains energy deposits in the inner and outer scintillators in the detector;
    - `TrackInfo`, which contains 'truth' information for all the tracks in the simulation;
    - `Options`, which includes the parsed options for the job (options XML file with the user overrides).
+   - The [TGeoManager][2020] description of the detector geometry. The name of this structure comes from the `geometry` parameter in [`options.xml`](../options.xml). 
+   
+[2020]: https://root.cern.ch/doc/master/classTGeoManager.html 
    
 To understand the structure of the ntuples, either view the contents using ROOT, or look in [`GramsSim/GramsG4/src/GramsG4WriteNtuplesAction.cc`](src/GramsG4WriteNtuplesAction.cc).
 
@@ -244,7 +248,7 @@ Some things to consider:
 
    - You can save and restore random-number sequences; this can be
      used to re-create the random numbers associated with a particular
-     event. The list of relevant parameters in the [`options.xml`](../options.xml) is: 
+     event. The list of relevant parameters in [`options.xml`](../options.xml) is: 
      
      - `rngdir`: The state of the random-number generator (RNG) must be saved and restored from a named directory. If this parameter is `""`, saving and restoring the RNG state is disabled. If you want to save the random-number state in the current directory, set this to `"."`.
      

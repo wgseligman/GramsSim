@@ -796,3 +796,70 @@ Here's a sketch of the idea:
 |  <img src="UpdateFile.png" width="75%"/> |
 | :---------------------------------------------: | 
 |  <small><strong>Fig 7. A sketch of the single-file approach for managing program output ntuples, including the programs' options. </strong></small> |
+
+## Geometry
+
+The `Geometry` utility class contains methods that are of use in working with ROOT-based [TGeoManager][2020] detector geometries.
+
+[2020]: https://root.cern.ch/doc/master/classTGeoManager.html
+
+### [GDML2ROOT](include/Geometry.h)
+
+By default, this method makes use of parameters in [`options.xml`](../options.xml). It takes the GDML detector description saved in the file specified by the `gdmlout` parameter, converts it into a ROOT `TGeoManager` geometry, and appends the model to the ROOT file specified in the `outputfile` parameter, with the name given by the `geometry` parameter.
+
+A concrete example: Assume
+
+   - `gdmlout` = `parsed.gdml`
+   - `outputfile` = `gramsg4.root`
+   - `geometry` = `GRAMSgeometry`
+   
+Then when `util::Geometry::GDML2ROOT()` is executed, it will convert the GDML code in `parsed.gdml` into ROOT form, and append it to `gramsg4.root` as a `TGeoManager` object named `GRAMSgeometry`.
+
+Typically, this method will be used at the end of a simulation, after all Geant4 files have been closed.
+
+_Note: It's possible to use a separate ROOT file instead of a GDML file as the intermediate geometry file by giving the `gdmlout` parameter a file name that ends in `.root` instead of `.gdml`; the various Geant4 and ROOT routines will automatically switch the model's interpretation based on the extension._
+
+The full signature of the `GDML2ROOT` method is:
+
+```
+    bool GDML2ROOT( std::string gdmlFile = "",
+                    std::string rootFile = "",
+                    std::string geometry = "" );
+```
+
+By supplying appropriate values for these arguments, you can append any `.gdml` or `.root` geometry file into another `.root` file with any name you choose.
+
+### [CopyGeometry](include/Geometry.h)
+
+After the simulation, in subsequent job steps it's handy to copy the `TGeoManager` description from the input file to the output file. In that way, every file in the analysis chain can have a record of the geometry used to generate its output.
+
+_While it might initially seem that this is a waste of disk space, the `TGeoManager` description of a detector like GRAMS is only ~200K, while a typical output file is 50M or more. The ability to track the "archeology" of a given file is probably worth making files a few percent larger._
+
+The full signature of `CopyGeometry` is:
+
+```
+    std::shared_ptr<TGeoManager> CopyGeometry(const TDirectory* input, 
+                                              TDirectory* output, 
+                                              std::string geometry = "");
+```
+
+The typical use of `CopyGeometry` is:
+
+   - Open the input file; assume the name of `TFile` variable is `inputfile`.
+   - Open the output file; assume the name of the `TFile` variable is `outputfile`.
+   - Assume the name of the geometry is the same as that of `geometry` parameter in the [`options.xml`](../options.xml) file.
+   
+Then to copy the geometry from the input file to the output file, use:
+
+```
+  auto geometry = util::Geometry::GetInstance();
+  geometry->CopyGeometry(inputfile,outputfile);
+```
+
+If you need to access the `TGeoManager` object that is being copied, modify the second line to read something like:
+
+```
+  auto myGeometry = geometry->CopyGeometry(inputfile,outputfile);
+```
+
+You might make use of the third argument to `CopyGeometry` if stored more than one detector description in the same file, or the name the geometry you want doesn't match the parameter in `options.xml`.

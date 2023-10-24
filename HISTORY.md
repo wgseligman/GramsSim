@@ -9,6 +9,8 @@ Oct-2023
    - A new feature is added to GramsG4: By default, a copy of the
      detector geometry is written to the output file as a TGeoManager
      object.
+   - Every existing subsequent GramsSim job step (gramsdetsim, gramsreadoutsim, gramselecsim) 
+     copies the geometry (as a TGeoManager object) from the input file to the output file.
 
 Sep-2023
 

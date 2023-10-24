@@ -21,10 +21,14 @@ As of 16-Oct-2023:
    - Ntuples have their limits. Some form of structured TTrees might be better for MC truth information. 
    - Can ROOT read the Geant4 GDML file directly?
       - Answer: As of ROOT 6.20, the answer is no. It must be parsed with `./gramsg4 --gdmlout` first.
-   - GramsG4 write a ROOT TGeoManager version of the detector geometry to the output file. 
-     Propagate this behavior so that subsequent job steps copy the geometry to their output as well. 
 
 ## Resolved issues:
+
+- Analysis features
+   - GramsG4 writes a ROOT TGeoManager version of the detector geometry to the output file. 
+     Propagate this behavior so that subsequent job steps copy the geometry to their output as well. 
+   - Resolved Oct-2023.
+
 
 - Multi-threaded execution
    - Test the saving and restoring of random-number states. 

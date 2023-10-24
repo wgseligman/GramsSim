@@ -314,6 +314,12 @@ Because the GramsSim analysis chain preserves the metadata as described in the [
 
 Feel free to create your own documentation options as needed. Remember to document their existence somewhere, otherwise no one will look for them!
 
+In addition, the [TGeoManager][2020] description of the detector geometry is included in the output of the GramsG4 simulation, and is copied from ROOT input to output at each subsequent job step.
+
+[2020]: https://root.cern.ch/doc/master/classTGeoManager.html
+
+The result is that every file in the analysis chain has a record of all the information used to create that file.
+
 ## FAQ
 
 **Q: Why are some programs compiled directly into the build directory, and others into the `bin/` sub-directory of the build directory?**
