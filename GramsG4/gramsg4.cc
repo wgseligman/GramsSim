@@ -94,8 +94,8 @@ G4_DECLARE_PHYSLIST_FACTORY(MySpecialPhysList);
 // For writing geometry at the end. 
 #include "TFile.h" 
 #include "TGeoManager.h"
-#include "TKey.h"
 #include "TSystem.h"
+#include "TFileMerger.h"
 
 // --------------------------------------------------------------
 
@@ -387,52 +387,43 @@ int main(int argc,char **argv)
   G4String filename;
   options->GetOption("outputfile",filename);
 
-  // The name of the program that can fix this problem is "hadd". It's
-  // part of a standard ROOT distribution. However, users be crazy,
-  // and it's possible that we can't find it in the user's environment.
-  auto path = gSystem->Getenv("PATH");
-  auto hadd = gSystem->Which(path,"hadd");
+  // Define the work file name.
+  G4String workfile = "work_" + filename;
 
-  if ( hadd == nullptr ) {
-    // We could not find hadd.
+  // Rename the output file to the temporary work file name.
+  gSystem->Rename(filename,workfile);
 
-    if (debug || verbose)
-      G4cout << "gramsg4.cc - Could not find hadd, filename '"
-	     << filename << "' unchanged; cannot be opened in UPDATE mode"
-	     << G4endl;
-  }
-  else {
-    // Define the work file name.
-    G4String workfile = "work_" + filename;
+  // Use the poorly-documented TFileMerger class (the class that hadd
+  // uses) to "convert" the file.
+  TFileMerger* merger = new TFileMerger(kFALSE,kFALSE); 
 
-    // Rename the output file to the temporary work file name.
-    gSystem->Rename(filename,workfile);
+  // The input file is the work file, that is, the file the
+  // G4AnalysisManager created.
+  auto input = TFile::Open(workfile);
 
-    // Setting the hadd verbosity argument.
-    G4String vhadd = "-v 0";
-    if (debug || verbose)
-      vhadd = "-v 99";
+  // This turns out to be mandatory: Get the compression setting of
+  // the input file.
+  auto compression = input->GetCompressionSettings();
+  merger->AddFile(input); 
 
-    // hadd -v 0 -f gramsg4.root work_gramsg4.root
-    G4String haddCommand = G4String(hadd) + " " + vhadd 
-      + " -f " + filename + " " + workfile;
+  // Tell TFileMerger to use the compression settings of the input
+  // file. If you omit this, the output ntuples will be unreadable.
+  merger->OutputFile(filename,"RECREATE",compression);
 
-    if (debug || verbose)
-      G4cout << "gramsg4.cc - Executing command '"
-	     << haddCommand << "'"
-	     << G4endl;
+  // Copy the input to the output, incidentally fixing the
+  // G4AnalysisManager bug.
+  merger->Merge();
 
-    // Execute the hadd command.
-    gSystem->Exec(haddCommand);
+  // Remove the work file; it just wastes disk space at this point.
+  if (debug || verbose)
+    G4cout << "gramsg4.cc - Deleting '" << workfile << "'"
+	   << G4endl;
+  gSystem->Unlink(workfile);
 
-    // Remove the work file; it just wastes disk space at this point.
-
-    if (debug || verbose)
-      G4cout << "gramsg4.cc - Deleting '" << workfile << "'"
-	     << G4endl;
-
-    gSystem->Unlink(workfile);
-  }
+  // Clean up.
+  delete merger;
+  input->Close();
+  delete input;
 
   // In addition to recording the options used to run this
   // program, let's see if we can write a ROOT form of the
