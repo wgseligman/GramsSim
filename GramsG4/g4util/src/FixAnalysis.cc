@@ -36,61 +36,93 @@
 
 #include <string>
 #include <iostream>
+#include <random>
 
 namespace g4util {
 
-bool FixAnalysis( const std::string filename ) 
-{
+  // Forward declaration.
+  std::string random_string(std::size_t length);
 
-// The basic operation we're going to do is to "merge" (actually copy)
-// the defective G4AnalysisManager-produced file into a new file.
+  bool FixAnalysis( const std::string filename ) 
+  {
 
-// Define a work file name.
-std::string workfile = "work_" + filename;
+    // The basic operation we're going to do is to "merge" (actually copy)
+    // the defective G4AnalysisManager-produced file into a new file.
 
-// Note: ROOT's methods cannot accept std::string as arguments
-// directly. So we have to use the std::string::c_str() method to
-// convert them to C-style strings.
+    // Define a work file name. Put a random string in the name, so
+    // that if multiple simulation jobs are running in the same
+    // directory, the work files won't conflict. (But won't the user's
+    // ROOT output file names conflict? Yes, but there's only so much
+    // you can do to protect users.)
 
-// Rename the G4Analysis-produced output file to the temporary work
-// file name.
-gSystem->Rename(filename.c_str(),workfile.c_str());
+    std::string workfile = "work_" + random_string(8) + "_" + filename;
+    //std::cout << "FixAnalysis - workfile = '" << workfile << "'" 
+    //	      << std::endl;
 
-// Use the TFileMerger class "convert" the file. You need the double
-// "kFALSE,kFALSE" here; otherwise the routine will complain that the
-// file name is not a URL.
-TFileMerger* merger = new TFileMerger(kFALSE,kFALSE); 
+    // Note: ROOT's methods cannot accept std::string as arguments
+    // directly. So we have to use the std::string::c_str() method to
+    // convert them to C-style strings.
 
-// The input file is the work file, that is, the file the
-// G4AnalysisManager created.
-auto input = TFile::Open(workfile.c_str());
+    // Rename the G4Analysis-produced output file to the temporary work
+    // file name.
+    gSystem->Rename(filename.c_str(),workfile.c_str());
 
-// This turns out to be mandatory: Get the compression setting of
-// the input file.
-auto compression = input->GetCompressionSettings();
+    // Use the TFileMerger class "convert" the file. You need the double
+    // "kFALSE,kFALSE" here; otherwise the routine will complain that the
+    // file name is not a URL.
+    TFileMerger* merger = new TFileMerger(kFALSE,kFALSE); 
 
-// Add the workfile to the list of files to be merged. Here, there's
-// only going to be one file in the merger's list.
-merger->AddFile(input); 
+    // The input file is the work file, that is, the file the
+    // G4AnalysisManager created.
+    auto input = TFile::Open(workfile.c_str());
 
-// Tell TFileMerger to use the compression settings of the input
-// file. If you omit this, the output ntuples will be unreadable.
-merger->OutputFile(filename.c_str(),"RECREATE",compression);
+    // This turns out to be mandatory: Get the compression setting of
+    // the input file.
+    auto compression = input->GetCompressionSettings();
 
-// Copy the input to the output, incidentally fixing the
-// G4AnalysisManager bug.
-merger->Merge();
+    // Add the workfile to the list of files to be merged. Here, there's
+    // only going to be one file in the merger's list.
+    merger->AddFile(input); 
 
-// Remove the work file; it just wastes disk space at this point.
-gSystem->Unlink(workfile.c_str());
+    // Tell TFileMerger to use the compression settings of the input
+    // file. If you omit this, the output ntuples will be unreadable.
+    merger->OutputFile(filename.c_str(),"RECREATE",compression);
 
-// Clean up.
-delete merger;
-input->Close();
-delete input;
+    // Copy the input to the output, incidentally fixing the
+    // G4AnalysisManager bug.
+    merger->Merge();
 
-return true;
-}
+    // Remove the work file; it just wastes disk space at this point.
+    gSystem->Unlink(workfile.c_str());
+
+    // Clean up.
+    delete merger;
+    input->Close();
+    delete input;
+
+    return true;
+  }
+
+  // A routine to create a random string of characters. Source:
+  // https://inversepalindrome.com/blog/how-to-create-a-random-string-in-cpp
+
+  std::string random_string(std::size_t length)
+  {
+    const std::string CHARACTERS = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+
+    std::random_device random_device;
+    std::mt19937 generator(random_device());
+    std::uniform_int_distribution<> distribution(0, CHARACTERS.size() - 1);
+
+    std::string random_string;
+
+    for (std::size_t i = 0; i < length; ++i)
+      {
+        random_string += CHARACTERS[distribution(generator)];
+      }
+
+    return random_string;
+  }
 
 } // namespace g4util
 

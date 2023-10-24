@@ -9,6 +9,9 @@
 // For processing command-line and XML file options.
 #include "Options.h" // in util/
 
+// For copying and accessing the detectory geometry.
+#include "Geometry.h" // in util/
+
 // ROOT includes
 #include "TFile.h"
 #include "TTree.h"
@@ -139,6 +142,19 @@ int main(int argc,char **argv)
 
     // Write the options to the output file, so we have a record.
     options->WriteNtuple(output);
+
+    // Copy the detector geometry from the input file to the output
+    // file.
+    auto geometry = util::Geometry::GetInstance();
+    if (debug)
+      std::cout << "File " << __FILE__ << " Line " << __LINE__ << " " << std::endl
+		<< "gramsreadoutsim: About to copy geometry"
+		<< std::endl;
+    geometry->CopyGeometry(input,output);
+    if (debug)
+      std::cout << "File " << __FILE__ << " Line " << __LINE__ << " " << std::endl
+		<< "gramsreadoutsim: geometry copied"
+		<< std::endl;
 
     // Define our output ntuple.
     TTree* outtree = new TTree(outputNtupleName.c_str(), "ReadoutSim");
