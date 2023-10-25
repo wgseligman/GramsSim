@@ -34,8 +34,6 @@ C++ programs I write.
 
 <small><i><a href='http://ecotrust-canada.github.io/markdown-toc/'>Table of contents generated with markdown-toc</a></i></small>
 
-<small><i><a href='http://ecotrust-canada.github.io/markdown-toc/'>Table of contents generated with markdown-toc</a></i></small>
-
 ## Options - parse XML file and command line
 
 One of the most frequent issues that comes up in programming is
