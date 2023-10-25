@@ -10,6 +10,9 @@
 // For processing command-line and XML file options.
 #include "Options.h" // in util/
 
+// For copying and accessing the detectory geometry.
+#include "Geometry.h" // in util/
+
 // ROOT includes
 #include "TFile.h"
 #include "TTreeReader.h"
@@ -144,6 +147,19 @@ int main(int argc,char **argv)
   // Write the options to the output file, so we have a record.
   options->WriteNtuple(output);
 
+  // Copy the detector geometry from the input file to the output
+  // file.
+  auto geometry = util::Geometry::GetInstance();
+  if (debug)
+    std::cout << "File " << __FILE__ << " Line " << __LINE__ << " " << std::endl
+	      << "gramsdetsim: About to copy geometry"
+	      << std::endl;
+  geometry->CopyGeometry(input,output);
+  if (debug)
+    std::cout << "File " << __FILE__ << " Line " << __LINE__ << " " << std::endl
+	      << "gramsdetsim: geometry copied"
+	      << std::endl;
+
   // Define our output ntuple.
   auto outputNtuple = new TTree(outputNtupleName.c_str(),"Detector Response");
 
@@ -236,8 +252,16 @@ int main(int argc,char **argv)
 
   double energy_sca;
 
+  if (debug) 
+    std::cout << "gramsdetsim.cc - debug 1000" 
+	      << std::endl;
+
   // For each row in the input ntuple:
   while ( (*reader).Next() ) {
+
+    if (debug) 
+      std::cout << "gramsdetsim.cc - debug 1100" 
+		<< std::endl;
 
     // Remember that given the TTreeReaderValue definitions above, a
     // variable read from the input ntuple must be accessed like a

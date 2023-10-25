@@ -4,6 +4,21 @@ A description of major development milestones. The most recent are at
 the top. For a detailed list of all changes (basically, every time
 someone typed "git commit"), see the output of "git log".
 
+Oct-2023
+
+   - A new feature is added to GramsG4: By default, a copy of the
+     detector geometry is written to the output file as a TGeoManager
+     object.
+   - Every existing subsequent GramsSim job step (gramsdetsim, gramsreadoutsim, gramselecsim) 
+     copies the geometry (as a TGeoManager object) from the input file to the output file.
+
+Sep-2023
+
+   - The instructions for installing the external packages and
+     working with branches have been revised to be consistent
+     with working in AlmaLinux 9, the RHEL derivative that
+     CERN and Fermilab have chosen as a successor to CentOS. 
+
 May-2023
 
    - With the help of Hans Wenzel, improved specification of 

@@ -107,6 +107,9 @@ namespace gramsg4 {
     double m_timeScale;
     double m_lengthScale;
     double m_energyScale;
+
+    // The name of the ROOT output file.
+    G4String m_filename;
   };
 
 } // namespace gramsg4

@@ -12,7 +12,11 @@
 // For processing command-line and XML file options.
 #include "Options.h" // in util/
 
-#include "Analysis.h" // in g4util/
+// For appending the detector geometry to the output.
+#include "Geometry.h" // in util/
+
+#include "Analysis.h"    // in g4util/
+#include "FixAnalysis.h" // in g4util/
 
 // There are three mandatory classes needed for any Geant4 application
 // to work. One is the detector geometry:
@@ -90,8 +94,6 @@
 #include "G4PhysListStamper.hh"  // defines macro for factory registration
 #include "MySpecialPhysList.hh"
 G4_DECLARE_PHYSLIST_FACTORY(MySpecialPhysList);
-
-#include "TFile.h" // For writing options ntuple at the end. 
 
 // --------------------------------------------------------------
 
@@ -373,6 +375,25 @@ int main(int argc,char **argv)
   delete visManager;
   delete runManager;
 
+  // At the end of the simulation, after all files have hopefully been
+  // closed...
+
+  // The G4AnalysisManager has a bug: The files it creates cannot be
+  // opened in UPDATE mode. Post-process the file created by
+  // G4AnalysisManager to remove the bug.
+
+  G4String filename;
+  options->GetOption("outputfile",filename);
+  g4util::FixAnalysis( filename );
+
+  // In addition to recording the options used to run this program,
+  // let's see if we can write a ROOT form of the detector geometry to
+  // the output file as well. The Geometry::GDML2ROOT() method with
+  // default arguments should be able to take care of this.
+
+  auto geometry = util::Geometry::GetInstance();
+  geometry->GDML2ROOT();
+  
   return 0;
 }
 

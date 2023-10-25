@@ -84,13 +84,12 @@ int main(int argc, char** argv) {
   }
 
   // Pick an output method format for HepMC3. WriterAscii writes files
-  // in the standard HepMC3 format, which is the most human-readable..
-  // Note that instead of using "new" for a standard C++ pointer,
+  // in the standard HepMC3 format, which is the most human-readable.
 
+#ifdef HEPMC3_ROOTIO_INSTALLED
   // If the HepMC3 ROOTIO library is installed, look for a ".root" or
   // ".roottree" extension to the filename.
   bool rootOutput = false;
-#ifdef HEPMC3_ROOTIO_INSTALLED
   HepMC3::Writer* writer;
   auto i = outputFileName.rfind('.', outputFileName.length());
   if ( i != std::string::npos ) {

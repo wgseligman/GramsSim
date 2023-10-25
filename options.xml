@@ -46,6 +46,17 @@
         in recreating the run.
     </option>
 
+    <!-- In a detector-simulation analysis chain, it can be useful to
+         preserve the detector geometry in your files. The TGeoManager
+         description doesn't usually take up much space compared to
+         the data, and it serves as a way to preserve the
+         configuration that generated a particular file.  This option
+         defines the name of the ROOT TGeoManager object within that
+         file. If you don't want the geometry written to your output
+         files, set the following to an empty string. -->
+    <option name="geometry" value="GRAMSgeometry" type="string" 
+        desc="name of ROOT TGeoManager object stored in files" />    
+
     <!-- This is a "documentation option" as described in GramsSim/util/README.md.
          It doesn't do anything within a program, If the programs use
          Options::CopyInputNtuple and Options::WriteNtuple, this option will be
@@ -268,11 +279,19 @@
 
     <!-- If not blank, write a parsed version of the GDML input file.
     This can be used as input to ROOT, since ROOT doesn't accept the
-    GDML <loop> tags. Note that prior to Geant4.10.7, a G4 application
-    (like gramsg4) will crash if it tries to write to a GDML file 
-    that already exists. -->
-    <option name="gdmlout" value="" type="string" 
-        desc="write parsed GDML to this file" />    
+    GDML <loop> tags. The name of the TGeoManager object is defined by
+    the 'geometry' option in the global section.
+
+    If you want to include a copy of the detector geometry in the
+    output file (strongly recommended), then this option should not
+    be blank. 
+
+    Note that prior to Geant4.10.7, a G4 application (like gramsg4)
+    will crash if it tries to write to a GDML file that already
+    exists. -->
+
+    <option name="gdmlout" value="parsed.gdml" type="string" 
+        desc="write parsed geometry to this file" />    
 
     <!-- The file of Geant4 commands to be executed. If ui is on, this parameter
     is ignored. Take a look at the mac/ directory for some ideas. -->
