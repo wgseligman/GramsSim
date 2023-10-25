@@ -215,18 +215,18 @@ namespace gramsg4 {
 	  } // for each <auxiliary/> tab
       } // for each volume 
 
-    // Write out the parsed GDML geometry if the user supplied a GDML
+    // Write out the parsed geometry if the user supplied a geometry
     // output file name.
-    G4String gdmlOutput;
-    options->GetOption("gdmlout",gdmlOutput);
-    if ( ! gdmlOutput.empty() ) {
-      G4cout << "Writing geometry to '" << gdmlOutput << "'" << G4endl;
+    G4String geomOutput;
+    options->GetOption("gdmlout",geomOutput);
+    if ( ! geomOutput.empty() ) {
+      G4cout << "Writing geometry to '" << geomOutput << "'" << G4endl;
 #if G4VERSION_NUMBER>=1070
       // Added in Geant4.10.7: If the GDML output file already exists,
       // overwrite it. 
       fGDMLparser.SetOutputFileOverwrite(true);
 #endif
-      fGDMLparser.Write(gdmlOutput, fGDMLparser.GetWorldVolume());
+      fGDMLparser.Write(geomOutput, fGDMLparser.GetWorldVolume());
     } // write gdml
   }
 

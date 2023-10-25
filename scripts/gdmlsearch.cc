@@ -33,14 +33,17 @@ int main(int, char**) {
   // file. It's the '--gdmlout' option, as defined in the options.xml
   // file. To use it:
   //
-  // ./gramsg4 --gdmlout <output-gdml-file>
+  // ./gramsg4 --gdmlout <output-geometry-file>
   //
   // This only has to be repeated if the contents of the input GDML
   // file (normally grams.gdml) are changed.
   //
-  // In this example, I named that output GDML file 'parsed.gdml'. 
+  // In this example, I named that output geometry file 'parsed.gdml'.
+  // I could have have used a file extension of .root so the file
+  // would be in ROOT format. However, a GDML file is closer to
+  // human-readable.
   //
-  // Use ROOT's geometry manager to read in the GDML file. Note that
+  // Use ROOT's geometry manager to read in the geometry file. Note that
   // in real code, the name of this file should come in via the
   // Options class.
   auto geom = TGeoManager::Import("parsed.gdml");
@@ -142,7 +145,7 @@ int main(int, char**) {
 
       // Note that length units of the GRAMS GDML file are
       // _centimeters_. Geant4 automatically converts these to its
-      // internal length units (mm), either ROOT does not do this, or
+      // internal length units (mm). Either ROOT does not do this, or
       // it uses its default length unit of cm.
 
       // The center of the box.

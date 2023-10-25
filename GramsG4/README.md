@@ -199,7 +199,7 @@ If you want to write HepMC3 files, there are a couple of simple examples in the 
 
 ## Program outputs
 
-These are likely to change rapidly as the software improves. This is the state of program outputs as of 17-Mar-2021.
+These are likely to change rapidly as the software improves. This is the state of program outputs as of 24-Oct-2023.
 
 The `gramsg4` program produces only one ROOT output file containing multiple ntuples. The default name of the output file is `gramsg4.root`. This can be changed via a job option (see *Program Options* below); e.g.,
 

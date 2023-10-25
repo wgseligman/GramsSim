@@ -284,15 +284,14 @@
 
     If you want to include a copy of the detector geometry in the
     output file (strongly recommended), then this option should not
-    be blank. ROOT requires a compatible GDML file to convert the
-    geometry to ROOT format. 
+    be blank. 
 
     Note that prior to Geant4.10.7, a G4 application (like gramsg4)
     will crash if it tries to write to a GDML file that already
     exists. -->
 
     <option name="gdmlout" value="parsed.gdml" type="string" 
-        desc="write parsed GDML to this file" />    
+        desc="write parsed geometry to this file" />    
 
     <!-- The file of Geant4 commands to be executed. If ui is on, this parameter
     is ignored. Take a look at the mac/ directory for some ideas. -->
