@@ -56,7 +56,7 @@ T: 1 for LAr TPC
    4 for the tile
    5 for the SIPMs
    6 for the cathode plate
-   7 for any bits of LAr not covered by the above
+   7 for inactive LAr 
    8 for the cryostat walls
     
 ZZ: 
@@ -156,9 +156,26 @@ source of interactions (e.g., the cryostat walls.)
     to 0.5cm -->
     <!-- 29-Sep-2021 WGS: A talk at the collaboration meeting suggest 6mm is more likely. -->
     <constant name="cryostatThickness" value="0.6" />
-    <constant name="cryostatXSize" value="lArTPCXSize + 2*cryostatThickness" />
-    <constant name="cryostatYSize" value="lArTPCYSize + 2*cryostatThickness" />
-    <constant name="cryostatZSize" value="lArTPCZSize + 2*cryostatThickness" />
+    <!-- 31-Oct-2023 WGS: The cryostat was formerly a "skin-tight" around the TPC
+    volume. Allow potentially for a cryostat larger than the TPC. -->
+    <constant name="cryostatXInteriorSize" value="lArTPCXSize" />
+    <constant name="cryostatYInteriorSize" value="lArTPCYSize" />
+    <constant name="cryostatZInteriorSize" value="lArTPCZSize" />
+
+    <constant name="cryostatXSize" value="cryostatXInteriorSize + 2*cryostatThickness" />
+    <constant name="cryostatYSize" value="cryostatYInteriorSize + 2*cryostatThickness" />
+    <constant name="cryostatZSize" value="cryostatZInteriorSize + 2*cryostatThickness" />
+    
+    <!-- 31-Oct-2023 WGS: This is the offset of the geometric center of the
+    TPC within the cryostat. For the moment, align the centers; in the actual
+    detector, this may not be true. -->
+    <constant name="cryostatXTPCOffset" value="0" />
+    <constant name="cryostatYTPCOffset" value="0" />
+    <constant name="cryostatZTPCOffset" value="0" />
+    <position name="cryostatTPCOffset" unit="cm" 
+        x="cryostatXTPCOffset" 
+        y="cryostatYTPCOffset" 
+        z="cryostatZTPCOffset"/>
 
     <!-- 05-Oct-2021 WGS: 
     
@@ -720,6 +737,10 @@ source of interactions (e.g., the cryostat walls.)
     <box lunit="cm" name="InnerZwall" x="InnerZwallXSize" y="InnerZwallYSize" z="InnerZwallZSize"/>
 
     <box lunit="cm" name="Cryostat" x="cryostatXSize" y="cryostatYSize" z="cryostatZSize" />
+    <box lunit="cm" name="CryostatInterior" 
+        x="cryostatXInteriorSize" 
+        y="cryostatYInteriorSize" 
+        z="cryostatZInteriorSize" />
 
   </solids>
 
@@ -731,11 +752,10 @@ source of interactions (e.g., the cryostat walls.)
   <auxiliary auxtype="SensDet" auxvalue="LArSD" />
   -->
 
-  <!-- 29-Jun-2020 WGS: The following tag will assign a maximum step
-       size for a given volume. This will override Geant4's normal
+  <!-- 29-Jun-2020 WGS: The following tag within a volume definition will assign 
+       a maximum step size for that volume. This will override Geant4's normal
        mechanism for determining step size. Note that there may be an
-       option in the XML options file that will override this
-       value. 
+       option in the XML options file that will override this value.
 
        Units are set in options.xml (typically cm). 
 
@@ -789,7 +809,7 @@ source of interactions (e.g., the cryostat walls.)
     </volume>
 
     <!-- 8-May-2020 WGS: As a first approximation, let's assume that
-    SIPMs are pure silicon. Question this assumption! -->
+    SiPMs are pure silicon. Question this assumption! -->
     <volume name="volSIPM">
       <materialref ref="SILICON_Si"/>
       <solidref ref="SIPM"/>
@@ -799,7 +819,7 @@ source of interactions (e.g., the cryostat walls.)
     <volume name="volTPCActive">
       <materialref ref="LAr"/>
       <solidref ref="ActiveCell"/>
-      <!-- 05-Oct-2021 WGS: Where are the SIPMs? How will they be mounted? I don't know.
+      <!-- 05-Oct-2021 WGS: Where are the SiPMs? How will they be mounted? I don't know.
       For now, let them magically be attached to the separator sheets on the high-x
       side of each cell. -->
       <physvol copynumber="5000000">
@@ -899,11 +919,21 @@ source of interactions (e.g., the cryostat walls.)
     
     <!-- Inner detector definition -->
 
+    <volume name="volCryostatInterior">
+      <materialref ref="LAr"/>
+      <solidref ref="CryostatInterior"/>
+      <physvol copynumber="8000000">
+        <volumeref ref="volTPC" />
+        <positionref ref="cryostatTPCOffset" />
+      </physvol>     
+      <auxiliary auxtype="Color" auxvalue="gray" />      
+    </volume>
+
     <volume name="volCryostat">
       <materialref ref="STEEL_STAINLESS_Fe7Cr2Ni"/>
       <solidref ref="Cryostat"/>
       <physvol copynumber="7000000">
-        <volumeref ref="volTPC" />
+        <volumeref ref="volCryostatInterior" />
         <positionref ref="posCenter" />
       </physvol>     
       <auxiliary auxtype="Color" auxvalue="gray" />      
