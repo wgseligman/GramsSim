@@ -11,6 +11,9 @@ Oct-2023
      object.
    - Every existing subsequent GramsSim job step (gramsdetsim, gramsreadoutsim, gramselecsim) 
      copies the geometry (as a TGeoManager object) from the input file to the output file.
+   - Restructure the GDML file slightly to allow for a cryostat that is not a "skin-tight" fit
+     around the TPC, and for a potential offset of the TPC from the geometric center of the
+     cryostat. 
 
 Sep-2023
 
