@@ -14,7 +14,7 @@
 // The actual class documentation:
 // https://root.cern.ch/doc/master/classTFileMerger.html
 
-// The source code for hadd, which uses TFileMerger. Of course, there
+// This is the source code for hadd, which uses TFileMerger. Of course, there
 // are no comments in the code.
 // https://root.cern.ch/doc/master/hadd_8cxx_source.html
 
@@ -46,7 +46,7 @@ namespace g4util {
   bool FixAnalysis( const std::string filename ) 
   {
 
-    // The basic operation we're going to do is to "merge" (actually copy)
+    // The basic operation we're going to do is "merge" (actually copy)
     // the defective G4AnalysisManager-produced file into a new file.
 
     // Define a work file name. Put a random string in the name, so
@@ -67,7 +67,7 @@ namespace g4util {
     // file name.
     gSystem->Rename(filename.c_str(),workfile.c_str());
 
-    // Use the TFileMerger class "convert" the file. You need the double
+    // Use the TFileMerger class to copy the file. You need the double
     // "kFALSE,kFALSE" here; otherwise the routine will complain that the
     // file name is not a URL.
     TFileMerger* merger = new TFileMerger(kFALSE,kFALSE); 
@@ -92,13 +92,13 @@ namespace g4util {
     // G4AnalysisManager bug.
     merger->Merge();
 
-    // Remove the work file; it just wastes disk space at this point.
-    gSystem->Unlink(workfile.c_str());
-
     // Clean up.
     delete merger;
     input->Close();
     delete input;
+
+    // Remove the work file; it just wastes disk space at this point.
+    gSystem->Unlink(workfile.c_str());
 
     return true;
   }
