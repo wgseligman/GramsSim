@@ -4,6 +4,10 @@ A description of major development milestones. The most recent are at
 the top. For a detailed list of all changes (basically, every time
 someone typed "git commit"), see the output of "git log".
 
+Nov-2023
+
+   - Mihir Shetty found a bug in gramsdetsim.cc. It's been fixed.
+
 Oct-2023
 
    - A new feature is added to GramsG4: By default, a copy of the

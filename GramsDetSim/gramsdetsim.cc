@@ -330,7 +330,7 @@ int main(int argc,char **argv)
     if ( doDiffusion  &&  ! std::isnan(energy_sca) ) {
       // This an "STL trick" to return a number of different vectors
       // at once from a single method.
-      std::tie(energyAtAnode, electronAtAnode, xPosAtAnode, yPosAtAnode, zPosAtAnode, timeAtAnode)
+      std::tie(electronAtAnode, energyAtAnode, xPosAtAnode, yPosAtAnode, zPosAtAnode, timeAtAnode)
 	= diffusionModel->Calculate(energy_sca);
     }
 
