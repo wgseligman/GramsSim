@@ -77,7 +77,8 @@ int main(int argc,char **argv)
     int event;
     int trackID;
     int pDGCode;
-    int numPhotons;
+    int numPhotons; // scintillation photons
+    int cerPhotons; // Cerenkov photons
     int identifier;
 
     std::vector<double>* penergyAtAnode = 0;
@@ -105,7 +106,8 @@ int main(int argc,char **argv)
     intree->SetBranchAddress("Event",         &event);
     intree->SetBranchAddress("TrackID",       &trackID);
     intree->SetBranchAddress("PDGCode",       &pDGCode);
-    intree->SetBranchAddress("numPhotons",    &numPhotons);
+    intree->SetBranchAddress("numPhotons",    &numPhotons); // scintillation photons
+    intree->SetBranchAddress("cerPhotons",    &cerPhotons); // Cerenkov photons
     intree->SetBranchAddress("energy",        &penergyAtAnode);
     intree->SetBranchAddress("numElectrons",  &pelectronAtAnode);
     intree->SetBranchAddress("x",             &pxPosAtAnode);
@@ -171,6 +173,7 @@ int main(int argc,char **argv)
     outtree->Branch("TrackID",       &trackID,           "TrackID/I");
     outtree->Branch("PDGCode",       &pDGCode,           "PDGCode/I");
     outtree->Branch("numPhotons",    &numPhotons,        "numPhotons/I");
+    outtree->Branch("cerPhotons",    &cerPhotons,        "cerPhotons/I");
     outtree->Branch("energy",        &penergyAtAnode);
     outtree->Branch("numElectrons",  &pelectronAtAnode);
     outtree->Branch("x",             &pxPosAtAnode);
