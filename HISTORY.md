@@ -7,6 +7,9 @@ someone typed "git commit"), see the output of "git log".
 Feb-2024
 
    - Added an _incorrect_ pGRAMS detector description, just to get things started. 
+   - GramsG4 now accumulates Cerenkov photons (in addition to the existing accumulation
+     of scintillation photons). This new field is passed on and through GramsDetSim
+     and GramsReadoutSim. 
 
 Nov-2023
 
