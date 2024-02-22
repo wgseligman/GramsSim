@@ -14,6 +14,7 @@
 #include "G4EventManager.hh"
 #include "G4SteppingManager.hh"
 #include "G4Scintillation.hh"
+#include "G4Cerenkov.hh"
 #include "G4Exception.hh"
 #include "G4ios.hh"
 
@@ -67,7 +68,9 @@ namespace gramsg4 {
     // The following code was copied from LArSoft:
     // https://github.com/LArSoft/larg4/blob/develop/larg4/Services/SimEnergyDepositSD.cc
 
-    G4int photons = 0;
+    G4int sphotons = 0; // scintillation photons
+    G4int cphotons = 0; // cerenkov photons
+
     G4SteppingManager* fpSteppingManager = G4EventManager::GetEventManager()
       ->GetTrackingManager()->GetSteppingManager();
     G4StepStatus stepStatus = fpSteppingManager->GetfStepStatus();
@@ -82,16 +85,23 @@ namespace gramsg4 {
       // For each of the processes associated with this step...
       for (size_t i3 = 0; i3 < MAXofPostStepLoops; i3++) {
 
-	// If we turn on Cerenkov light, then the following code will
-	// have to be modified. See examples/advanced/CaTS/src/lArTPCSD.cc
+	// The following code was copied from
+	// https://github.com/hanswenzel/CaTS_legacy/blob/master/src/lArTPCSD.cc
 
-	// If the process is Scintillation, accumulate the optical photons. 
+	// If the process is Cerenkov, accumulate the cerenkov photons. 
+	if((*procPost)[i3]->GetProcessName() == "Cerenkov") {
+	  G4Cerenkov* process = (G4Cerenkov*) (*procPost)[i3];
+	  auto photons = process->GetNumPhotons();
+	  cphotons += photons;
+	} // if cerenkov photons
+
+	// If the process is Scintillation, accumulate the scintillation photons. 
 	if ((*procPost)[i3]->GetProcessName() == "Scintillation") {
-	  G4Scintillation* proc1 = (G4Scintillation*) (*procPost)[i3];
-	  auto nPhotons = proc1->GetNumPhotons(); 
-	  photons += nPhotons;
-
+	  G4Scintillation* process = (G4Scintillation*) (*procPost)[i3];
+	  auto photons = process->GetNumPhotons(); 
+	  sphotons += photons;
 	} // if scintillation photons
+
       } // loop over MAXofPostStepLoops
     } // if particle not at rest
     
@@ -107,7 +117,8 @@ namespace gramsg4 {
 		GetDynamicParticle()->
 		GetParticleDefinition()->
 		GetPDGEncoding(),
-	photons,
+	sphotons,
+	cphotons,
 	edep,
 	tstart,
 	tend,

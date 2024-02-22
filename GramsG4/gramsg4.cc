@@ -275,6 +275,14 @@ int main(int argc,char **argv)
       else 
 	G4cout << "GramsG4::main(): Scintillation is off" << G4endl;
     }
+    G4bool isCerenkov;
+    options->GetOption("cerenkov",isCerenkov);
+    if (verbose) {
+      if (isCerenkov)
+	G4cout << "GramsG4::main(): Cerenkov light is on" << G4endl;
+      else 
+	G4cout << "GramsG4::main(): Cerenkov light is off" << G4endl;
+    }
 
 #if G4VERSION_NUMBER<1070
     // The following optical photon controls were eliminated in Geant4.11.0 and higher.
@@ -284,10 +292,11 @@ int main(int argc,char **argv)
     else
       opticalPhysics->Configure(kScintillation,false);
 
-    // For now, make absolutely sure that the Cerenkov process is
-    // turned off.
-    opticalPhysics->Configure(kCerenkov,false);
     opticalPhysics->SetCerenkovStackPhotons(false);
+    if (isCerenkov)
+      opticalPhysics->Configure(kCerenkov,true);
+    else
+      opticalPhysics->Configure(kCerenkov,false);
 #else
     // These methods of controlling optical physics were introduced
     // in Geant4.7.
@@ -298,9 +307,10 @@ int main(int argc,char **argv)
       opticalParams->SetProcessActivation("Scintillation",false);
     opticalParams->SetScintStackPhotons(false);
 
-    // For now, make absolutely sure that the Cerenkov process is
-    // turned off.
-    opticalParams->SetProcessActivation("Cerenkov",false);
+    if (isCerenkov)
+      opticalParams->SetProcessActivation("Cerenkov",true);
+    else
+      opticalParams->SetProcessActivation("Cerenkov",false);
     opticalParams->SetCerenkovStackPhotons(false);
 #endif
     

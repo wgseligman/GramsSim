@@ -26,7 +26,8 @@ namespace gramsg4 {
     // Constructor with arguments
     LArHit(G4int trackID,
 	   G4int PDG,
-	   G4int nPhotons,
+	   G4int nPhotons, // scintillation photons
+	   G4int cPhotons, // cerenkov photons
 	   G4double energy,
 	   G4double tstart,
 	   G4double tend,
@@ -66,6 +67,7 @@ namespace gramsg4 {
     G4int GetTrackID() const          { return m_trackID; };
     G4int GetPDGCode() const          { return m_pdgCode; };
     G4int GetNumPhotons() const       { return m_numPhotons; };
+    G4int GetCerPhotons() const       { return m_cerPhotons; };
     G4double GetEnergy() const        { return m_energy; };
     G4double GetStartTime() const     { return m_startTime; };
     G4double GetEndTime() const       { return m_endTime; };
@@ -79,7 +81,8 @@ namespace gramsg4 {
   
     G4int         m_trackID; 
     G4int         m_pdgCode;
-    G4int         m_numPhotons;
+    G4int         m_numPhotons;    ///< scintillation photons
+    G4int         m_cerPhotons;    ///< Cerenkov photons
     G4double      m_energy;        ///< units MeV
     G4double      m_startTime;     ///< units ns
     G4double      m_endTime;       ///< units ns

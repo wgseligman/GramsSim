@@ -496,7 +496,7 @@ source of interactions (e.g., the cryostat walls.)
         be used in the <materials> section below. -->
 
     <!-- 03-May-2023 WGS: Material optical properties -->
-    <!-- From https://github.com/hanswenzel/CaTS/gdml/simpleLArTPC.gdml -->
+    <!-- From https://github.com/hanswenzel/CaTS/blob/main/gdml/simpleLArTPC.gdml -->
     <!-- Courtesy of Hanz Wenzel -->
     <!-- Unit constants for Geant4 (mm, ns, MeV) -->
 

@@ -28,6 +28,7 @@ namespace gramsg4 {
     , m_trackID(-1)
     , m_pdgCode(0)
     , m_numPhotons(-1)
+    , m_cerPhotons(-1)
     , m_energy(0.)
     , m_startTime(0.)
     , m_endTime(0.)
@@ -40,6 +41,7 @@ namespace gramsg4 {
   LArHit::LArHit(G4int trackID,
 		 G4int PDG,
 		 G4int nPhotons,
+		 G4int cPhotons,
 		 G4double energy,
 		 G4double tstart,
 		 G4double tend,
@@ -50,6 +52,7 @@ namespace gramsg4 {
     , m_trackID(trackID)
     , m_pdgCode(PDG)
     , m_numPhotons(nPhotons)
+    , m_cerPhotons(cPhotons)
     , m_energy(energy)
     , m_startTime(tstart)
     , m_endTime(tend)
@@ -70,6 +73,7 @@ namespace gramsg4 {
     m_trackID       = right.m_trackID;
     m_pdgCode       = right.m_pdgCode;
     m_numPhotons    = right.m_numPhotons;
+    m_cerPhotons    = right.m_cerPhotons;
     m_energy        = right.m_energy;
     m_startTime     = right.m_startTime;
     m_endTime       = right.m_endTime;
@@ -85,6 +89,7 @@ namespace gramsg4 {
     m_trackID       = right.m_trackID;
     m_pdgCode       = right.m_pdgCode;
     m_numPhotons    = right.m_numPhotons;
+    m_cerPhotons    = right.m_cerPhotons;
     m_energy        = right.m_energy;
     m_startTime     = right.m_startTime;
     m_endTime       = right.m_endTime;
@@ -134,6 +139,7 @@ namespace gramsg4 {
       << " trackID=" << m_trackID 
       << " PDG=" << m_pdgCode
       << " numPhotons=" << m_numPhotons
+      << " cerPhotons=" << m_cerPhotons
       << " Edep="
       << std::setw(7) << G4BestUnit(m_energy,"Energy")
       << " Start Time="
