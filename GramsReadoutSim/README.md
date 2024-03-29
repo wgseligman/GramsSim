@@ -13,7 +13,7 @@ In [`GramsDetSim`](../GramsDetSim), the ionization left by charged-particle trac
 
 Since the pixel readout is presently modeled as a simple 2D grid in x and y, the `GramsReadoutSim` parameters are equally simple:
 
-- `pixel_sizex` and `pixel_sizey`: The x- and y-sizes of the individual pixel regions. 
+- `channel_numx` and `channel_numy`: Number of channels assigned to the x and the y axes. 
 
 - `readout_centerx` and `readout_centery`: The x- and y-offset of the center of the readout geometry from the (x=0,y=0) coordinate of the detector geometry. 
 
