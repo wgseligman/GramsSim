@@ -15,6 +15,12 @@
 // ROOT includes
 #include "TFile.h"
 #include "TTree.h"
+#include <TGeoManager.h>
+#include <TGeoVolume.h>
+#include <TGeoBBox.h>
+#include <TGeoMatrix.h>
+#include <TString.h>
+#include <TRegexp.h>
 
 // C++ includes
 #include <iostream>
@@ -67,10 +73,50 @@ int main(int argc,char **argv)
             << "', input ntuple = '" << inputNtupleName
             << "'" << std::endl;
 
+    std::string GramsG4_gdml;
+    options->GetOption("gdml",GramsG4_gdml);
+
+  // Get the gdml file that was emitted by GramsG4, and load Geometry
+  // From said geometry, extract out x and y dimensions
+    auto geom = TGeoManager::Import(GramsG4_gdml.c_str());
+    TGeoVolume* startVol = geom->GetTopVolume();
+    TString volName = "volTilePlane";
+    TRegexp searchFor(volName);
+    TGeoIterator next(startVol);
+    TGeoNode* current;
+    TString nodePath;
+    double xDim  = -1;
+    double yDim  = -1;
+    while((current= next())){
+      next.GetPath(nodePath);
+      if(nodePath.Contains(searchFor)){
+        auto volume = current->GetVolume();
+        auto box = dynamic_cast<TGeoBBox*>(volume->GetShape());
+        xDim = box->GetDX()*2;
+        yDim = box->GetDY()*2;
+        break;
+      }
+    }
+  // PANIC if the dimensions are negative
+    if(xDim<0 || yDim<0){
+      throw std::invalid_argument("Negative volTilePlane dimensions");
+    }
+    // From the XML file or the command line, get the options
+    // associated with readout processing.
+    double readout_centerx;
+    double readout_centery;
+    double channel_numx;
+    double channel_numy;
+    options->GetOption("readout_centerx",   readout_centerx);
+    options->GetOption("readout_centery",   readout_centery);
+    options->GetOption("channel_numx",       channel_numx);
+    options->GetOption("channel_numy",       channel_numy);
+
     // Get the readout-geometry definition routine. Use make_shared so
     // we don't have to worry about memory leaks and deleting the
     // pointer.
-    auto assignPixelID = std::make_shared<gramsreadoutsim::AssignPixelID>();
+
+    auto assignPixelID = std::make_shared<gramsreadoutsim::AssignPixelID>(gramsreadoutsim::AssignPixelID(channel_numx, channel_numy, xDim, yDim, verbose, debug));
 
     // Define the variables in the input ntuple.
     int run;
@@ -130,18 +176,6 @@ int main(int argc,char **argv)
 
     // Open the output file.
     auto output = TFile::Open(outputFileName.c_str(),"RECREATE");
-
-    // From the XML file or the command line, get the options
-    // associated with readout processing.
-    double readout_centerx;
-    double readout_centery;
-    double pixel_sizex;
-    double pixel_sizey;
-    options->GetOption("readout_centerx",   readout_centerx);
-    options->GetOption("readout_centery",   readout_centery);
-    options->GetOption("pixel_sizex",       pixel_sizex);
-    options->GetOption("pixel_sizey",       pixel_sizey);
-
     // Write the options to the output file, so we have a record.
     options->WriteNtuple(output);
 

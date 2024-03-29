@@ -557,8 +557,11 @@
     the <global> section above. -->
     <option name="readout_centerx"  value="0.0" type="double" desc="x coordinate of the readout plane" />
     <option name="readout_centery"  value="0.0" type="double" desc="y coordinate of the readout plane" />
-    <option name="pixel_sizex" value="3.2" type="double" desc="pixel size x" />
-    <option name="pixel_sizey" value="3.2" type="double" desc="pixel size y" />
+
+    <option name="gdml" value="parsed.gdml" type="string" desc="ROOT-compatible gdml file emitted by GramsG4"/>
+
+    <option name="channel_numx" value="30" type="int" desc="Number of Channels in x" />
+    <option name="channel_numx" value="30" type="int" desc="Number of Channels in y" />
 
   </gramsreadoutsim>
 

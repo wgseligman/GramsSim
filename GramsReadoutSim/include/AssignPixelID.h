@@ -11,7 +11,7 @@ namespace gramsreadoutsim {
     public:
 
       // Constructor.
-      AssignPixelID();
+      AssignPixelID(int channels_x, int channels_y, double x_dim, double y_dim, double offset_x, double offset_y , bool verbose=false, bool debug=false);
 
       // Destructor.
       virtual ~AssignPixelID();

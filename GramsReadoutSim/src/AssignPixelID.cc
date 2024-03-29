@@ -4,21 +4,26 @@
 
 #include <iostream>
 #include <cmath>
+#include <cassert>
 
 namespace gramsreadoutsim {
 
-  AssignPixelID::AssignPixelID()
+  AssignPixelID::AssignPixelID(int channels_x, int channels_y, double x_dim, double y_dim, double offset_x, double offset_y , bool verbose, bool debug)
   {
+    assert(channels_x>0);
+    assert(channels_y>0);
+    assert(x_dim>0);
+    assert(y_dim>0);
+    assert(offset_x>0);
+    assert(offset_y>0);
     // Get the pixel geometry options from the XML file/command
     // line.
-    auto options = util::Options::GetInstance();
-    
-    options->GetOption("verbose",     m_verbose);
-    options->GetOption("debug",       m_debug);
-    options->GetOption("pixel_sizex", m_pixel_sizex);
-    options->GetOption("pixel_sizey", m_pixel_sizey);
-    options->GetOption("offset_x",    m_offset_x);
-    options->GetOption("offset_y",    m_offset_y);
+    m_verbose = verbose;
+    m_debug = debug;
+    m_pixel_sizex = x_dim/((double)(channels_x));
+    m_pixel_sizey = y_dim/((double)(channels_y));
+    m_offset_x = offset_x;
+    m_offset_y = offset_y;
 
     if (m_verbose) {
       std::cout << "GramsReadOutSim::AssignPixelID() - initialized" << std::endl;
