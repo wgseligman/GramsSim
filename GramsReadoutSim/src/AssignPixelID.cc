@@ -8,22 +8,24 @@
 
 namespace gramsreadoutsim {
 
-  AssignPixelID::AssignPixelID(int channels_x, int channels_y, double x_dim, double y_dim, double offset_x, double offset_y , bool verbose, bool debug)
+  AssignPixelID::AssignPixelID(double AnodePlaneXLength, double AnodePlaneYLength)
   {
-    assert(channels_x>0);
-    assert(channels_y>0);
-    assert(x_dim>0);
-    assert(y_dim>0);
-    assert(offset_x>0);
-    assert(offset_y>0);
+    assert(AnodePlaneXLength>0);
+    assert(AnodePlaneYLength>0);    
     // Get the pixel geometry options from the XML file/command
     // line.
-    m_verbose = verbose;
-    m_debug = debug;
-    m_pixel_sizex = x_dim/((double)(channels_x));
-    m_pixel_sizey = y_dim/((double)(channels_y));
-    m_offset_x = offset_x;
-    m_offset_y = offset_y;
+    auto options = util::Options::GetInstance();
+    options->GetOption("verbose",     m_verbose);
+    options->GetOption("debug",       m_debug);
+    options->GetOption("offset_x",    m_offset_x);
+    options->GetOption("offset_y",    m_offset_y);
+
+    int x_resolution;
+    int y_resolution;
+    options->GetOption("x_resolution", x_resolution);
+    options->GetOption("y_resolution", y_resolution);
+    m_pixel_sizex = AnodePlaneXLength/static_cast<double>(x_resolution);
+    m_pixel_sizey = AnodePlaneXLength/static_cast<double>(y_resolution);
 
     if (m_verbose) {
       std::cout << "GramsReadOutSim::AssignPixelID() - initialized" << std::endl;
