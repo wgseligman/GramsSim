@@ -15,9 +15,6 @@
 // ROOT includes
 #include "TFile.h"
 #include "TTree.h"
-#include <TGeoManager.h>
-#include <TGeoVolume.h>
-#include <TGeoBBox.h>
 #include <TGeoMatrix.h>
 #include <TString.h>
 #include <TRegexp.h>
@@ -73,51 +70,7 @@ int main(int argc,char **argv)
             << "', input ntuple = '" << inputNtupleName
             << "'" << std::endl;
 
-    std::string GramsG4_gdml;
-    options->GetOption("gdml",GramsG4_gdml);
-    std::string anodeTileVolume;
-    options->GetOption("anodeTileVolume",anodeTileVolume);
-
-  // Get the gdml file that was emitted by GramsG4, and load Geometry
-    auto geom = TGeoManager::Import(GramsG4_gdml.c_str());
-  // get the top level volume of the bounding volume hierarchy so that you can find the AnodePlane volume
-    TGeoVolume* startVol = geom->GetTopVolume();
-  // Construct a (very simple) Regex expression to try and pattern match the bounding box names you encounter as you traverse the hierarchy
-    TString volName = anodeTileVolume;
-    TRegexp searchFor(volName);
-  // construct an interator around the top level volume
-    TGeoIterator next(startVol);
-  // the current Node in the tree that you will be traversing
-    TGeoNode* current;
-  // Place to store the name of the current node
-    TString nodePath;
-  // output x/y extend of the Anode Plane
-    double xDim  = -1;
-    double yDim  = -1;
-  // Run through the geometry tree structure via the iterator
-    while((current= next())){
-      // grab the node name
-      next.GetPath(nodePath);
-      // if the volume contains the regex expression...
-      if(nodePath.Contains(searchFor)){
-        // Grab the bounding box of the Anode Plane (which for Grams, just coincides with the Tile since it is just a parallelpiped)
-        auto volume = current->GetVolume();
-        auto box = dynamic_cast<TGeoBBox*>(volume->GetShape());
-        // GetDX() gets half width along the X axis, so multiply by 2 to get full width
-        xDim = box->GetDX()*2;
-        yDim = box->GetDY()*2;
-        break;
-      }
-    }
-  // PANIC if the dimensions are negative
-    if(xDim<0 || yDim<0){
-      throw std::invalid_argument("Negative volTilePlane dimensions");
-    }
-    // Get the readout-geometry definition routine. Use make_shared so
-    // we don't have to worry about memory leaks and deleting the
-    // pointer.
-
-    auto assignPixelID = std::make_shared<gramsreadoutsim::AssignPixelID>(gramsreadoutsim::AssignPixelID(xDim, yDim));
+    auto assignPixelID = std::make_shared<gramsreadoutsim::AssignPixelID>(gramsreadoutsim::AssignPixelID());
 
     // Define the variables in the input ntuple.
     int run;
