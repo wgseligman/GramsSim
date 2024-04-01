@@ -13,10 +13,12 @@ In [`GramsDetSim`](../GramsDetSim), the ionization left by charged-particle trac
 
 Since the pixel readout is presently modeled as a simple 2D grid in x and y, the `GramsReadoutSim` parameters are equally simple:
 
-- `pixel_sizex` and `pixel_sizey`: The x- and y-sizes of the individual pixel regions. 
+- `gdml` : The ROOT-compatible gdml file emitted by GramsG4
+
+- `anodeTileVolume`: The volume in gdml file that corresponds to Anode Tile plane. You extract the dimensions of the pixel grid from this
+
+- `x_resolution` and `y_resolution`: Number of pixels along the x/y direction(s)
 
 - `readout_centerx` and `readout_centery`: The x- and y-offset of the center of the readout geometry from the (x=0,y=0) coordinate of the detector geometry. 
 
 The output ntuple include the pixel ID assigned to each individual charge cluster in the input. 
-
-
