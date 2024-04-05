@@ -12,6 +12,7 @@ C++ programs I write.
         * [Flags](#flags)
         * [Vectors](#vectors)
       - [Abbreviating options](#abbreviating-options)
+      - [Value Limits](#value-limits)
     + [Accessing options from within your program](#accessing-options-from-within-your-program)
     + [Other `Options` methods](#other--options--methods)
       - [Implementing the `-h/--help` option](#implementing-the---h---help--option)
@@ -109,6 +110,10 @@ Anatomy of <option> tag:
    
    desc  - optional; brief description of the option (keep it 
            less than 20 characters); used in the --help|-h message
+
+   low   - optional; the lower allowed limit of 'value'. 
+
+   high  - optional; the upper allowed limit of 'value'.    
 ```
 
 #### Defining new options
@@ -230,6 +235,34 @@ Then all of the following are equivalent:
     ./gramsg4 -v --nthreads=5
     ./gramsg4 -t 5 --verbose
     ./gramsg4 -vt5
+
+#### Value limits
+
+You can optionally specify the lower and upper limits allowed for a numeric option"
+
+
+```XML
+  <option name="energyMin" short="e" value="12.5" type="double" desc="min pion energy [MeV]" low="0" />
+  <option name="energyMax" short="E" value="125.0" type="double" desc="max pion energy [Mev] high="10000" />
+  <option name="energyPeak" value="75" type="double" desc="peak pion energy [Mev]" low="5" high="10000" />
+```
+
+Note that the `low` and `high` attributes can be omitted (probably the
+most common case), or specified individually if only a lower or an
+upper limit is desired.
+
+Realistically, these limits only matter if you specify them for an
+option that's likely to passed to the program on the command
+line. They form a basic check on potential user errors. For example,
+if the program is named `myEnergyProgram`, and given the example
+above:
+
+```
+./myEnergyProgram --energyPeak 3.6
+```
+
+This will result in an error message, and can terminate the program
+code (as shown below).
 
 ### Accessing options from within your program
 

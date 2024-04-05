@@ -387,6 +387,63 @@ namespace util {
 	    } // switch
 	} // getopt_long loop
     } // if there are any options in the map
+    
+    // Now that all the options have been parsed, do a "validation
+    // pass". This means to compare the numeric options against the
+    // permitted low and high limits, if there are any.
+
+    // For every entry in the options map...
+    for ( auto option_iter = m_options.cbegin(); option_iter != m_options.cend(); ++option_iter )
+      {
+	// Get the option's name.
+	auto name = (*option_iter).first;
+	
+	// Is this a numeric option?
+	if ( (*option_iter).second.type == e_integer ||
+	     (*option_iter).second.type == e_double ) {
+
+	  // Is there a lower limit?
+	  if ( ! (*option_iter).second.low.empty() ) {
+	    // There is, so convert the strings for the value and the
+	    // limit into numbers and compare them. 
+	    auto value = std::stod((*option_iter).second.value);
+	    auto low = std::stod((*option_iter).second.low);
+	    if ( low > value ) 
+	      {
+		// We have a problem! Print an error message and unset
+		// the success flag.
+		std::cerr << "ERROR: File " << __FILE__ << " Line " << __LINE__ << " " 
+			  << std::endl
+			  << "Option '" << name << "' - the value '" << value
+			  << "' is lower than the lower limit of '" << low
+			  << "' as defined in the options file '" << m_optionsFile
+			  << "'" << std::endl;
+		success = false;
+	      }
+	  } // there is an option attribute for 'low'
+
+	  // Is there an upper limit?
+	  if ( ! (*option_iter).second.high.empty() ) {
+	    // There is, so convert the strings for the value and the
+	    // limit into numbers and compare them. 
+	    auto value = std::stod((*option_iter).second.value);
+	    auto high = std::stod((*option_iter).second.high);
+	    if ( value > high ) 
+	      {
+		// We have a problem! Print an error message and unset
+		// the success flag.
+		std::cerr << "ERROR: File " << __FILE__ << " Line " << __LINE__ << " " 
+			  << std::endl
+			  << "Option '" << name << "' - the value '" << value
+			  << "' is higher than the higher limit of '" << high
+			  << "' as defined in the options file '" << m_optionsFile
+			  << "'" << std::endl;
+		success = false;
+	      }
+	  } // there is a option attribute of 'high'
+
+	} // option is numeric
+      } // for each option
 
     if (debug) PrintOptions();
 
@@ -680,6 +737,18 @@ namespace util {
     return (*j).second.source; 
   }
 
+  std::string Options::GetOptionLow( size_t i ) const {
+    auto j = m_options.cbegin(); 
+    std::advance(j,i); 
+    return (*j).second.low; 
+  }
+
+  std::string Options::GetOptionHigh( size_t i ) const {
+    auto j = m_options.cbegin(); 
+    std::advance(j,i); 
+    return (*j).second.high; 
+  }
+
   bool Options::WriteNtuple( TDirectory* a_output, std::string a_ntupleName ) {
     // Start by assuming we'll succeed.
     bool success = true;
@@ -698,12 +767,15 @@ namespace util {
     // Geant4's clumsy ROOT analysis manager, we have to use
     // char arrays instead of std::string. 
     char name[40], value[254], type[10], brief[2], desc[80], source[30];
+    char low[40], high[40]; 
     ntuple->Branch("OptionName",&name,"OptionName/C");
     ntuple->Branch("OptionValue",&value,"OptionValue/C");
     ntuple->Branch("OptionType",&type,"OptionType/C");
     ntuple->Branch("OptionBrief",&brief,"OptionBrief/C");
     ntuple->Branch("OptionDesc",&desc,"OptionDesc/C");
     ntuple->Branch("OptionSource",&source,"OptionSource/C");
+    ntuple->Branch("OptionLow",&source,"OptionLow/C");
+    ntuple->Branch("OptionHigh",&source,"OptionHigh/C");
 
     // Loop over the options. As it says in Options.h, this is an
     // inefficient operation, but hopefully no program will do it more
@@ -716,6 +788,8 @@ namespace util {
       strcpy(brief, GetOptionBrief(i).c_str());
       strcpy(desc, GetOptionDescription(i).c_str());
       strcpy(source, GetOptionSource(i).c_str());
+      strcpy(source, GetOptionLow(i).c_str());
+      strcpy(source, GetOptionHigh(i).c_str());
 
       // Write out the ntuple entry.
       ntuple->Fill();
@@ -762,12 +836,15 @@ namespace util {
 	    // Geant4's clumsy ROOT analysis manager, we have to use
 	    // char arrays instead of std::string. 
 	    char name[40], value[254], type[10], brief[2], desc[80], source[30];
+            char low[40], high[40];
 	    ntuple->SetBranchAddress("OptionName",&name);
 	    ntuple->SetBranchAddress("OptionValue",&value);
 	    ntuple->SetBranchAddress("OptionType",&type);
 	    ntuple->SetBranchAddress("OptionBrief",&brief);
 	    ntuple->SetBranchAddress("OptionDesc",&desc);
 	    ntuple->SetBranchAddress("OptionSource",&source);
+	    ntuple->SetBranchAddress("OptionLow",&low);
+	    ntuple->SetBranchAddress("OptionHigh",&high);
 	    
 	    // For each row in the ntuple
 	    int nEntries = ntuple->GetEntriesFast();
@@ -787,7 +864,9 @@ namespace util {
 					     eType, 
 					     brief[0], 
 					     desc, 
-					     source };
+					     source,
+					     low,
+					     high };
 		m_options[ name ] = attr;
 	      } // option not already in table
 	    } // while there rows in the options nutple
@@ -877,6 +956,8 @@ namespace util {
     auto valueAttr = xercesc::XMLString::transcode("value");
     auto typeAttr = xercesc::XMLString::transcode("type");
     auto descAttr = xercesc::XMLString::transcode("desc");
+    auto lowAttr = xercesc::XMLString::transcode("low");
+    auto highAttr = xercesc::XMLString::transcode("high");
 
     // For the program-level tag blocks, store them in a list.. 
     std::set<std::string> programTags;
@@ -982,11 +1063,19 @@ namespace util {
 	  char* cdesc
 	    = xercesc::XMLString::transcode(element->getAttribute(descAttr));
 	  std::string desc(cdesc);
+	  char* clow
+	    = xercesc::XMLString::transcode(element->getAttribute(lowAttr));
+	  std::string low(clow);
+	  char* chigh
+	    = xercesc::XMLString::transcode(element->getAttribute(highAttr));
+	  std::string high(chigh);
 	  xercesc::XMLString::release(&cname);
 	  xercesc::XMLString::release(&cvalue);
 	  xercesc::XMLString::release(&ctype);
 	  xercesc::XMLString::release(&cbrief);
 	  xercesc::XMLString::release(&cdesc);
+	  xercesc::XMLString::release(&clow);
+	  xercesc::XMLString::release(&chigh);
 
 	  // Validate as much as we can.
 
@@ -1017,8 +1106,9 @@ namespace util {
 	      m_options[name].value = "0";
 	      break;
 	    case 'b':
-	      // Wacky users require lower case for the logical values;
-	      // e.g., they may use "ON" or "True".
+	      // The always-wacky users just might use upper case for
+	      // the logical values; e.g., they may use "ON" or
+	      // "True". Convert the boolean values to lower case.
 	      std::transform(value.begin(), value.end(), value.begin(), lowC);
 	  
 	      m_options[name].type = e_boolean;
@@ -1086,6 +1176,51 @@ namespace util {
 	      ;
 	    } // switch on type
 
+	  // This second switch on the type is to validate that, if either
+	  // the low or high attribute is present, that the values are
+	  // valid numbers.
+
+	  switch (firstCharacter)
+	    {
+	    case 'i':
+	    case 'd':
+	    case 'f':
+	      if ( ! low.empty() ) {
+		try {
+		  double test = std::stod(low);
+		  m_options[name].low = std::to_string(test);
+		} catch ( std::invalid_argument& e ) {
+		  success = false;
+		  std::cerr << "WARNING: File " << __FILE__ << " Line " << __LINE__ << " " 
+			    << std::endl
+			    << "<" << parentString << "><option name=\""
+			    << name << "\" low=\"" << low
+			    << "\" /></" << parentString << "> :" << std::endl
+			    << "   cannot convert 'low' to number" << std::endl;
+		}
+	      } // low has a value
+
+	      if ( ! high.empty() ) {
+		try {
+		  double test = std::stod(high);
+		  m_options[name].high = std::to_string(test);
+		} catch ( std::invalid_argument& e ) {
+		  success = false;
+		  std::cerr << "WARNING: File " << __FILE__ << " Line " << __LINE__ << " " 
+			    << std::endl
+			    << "<" << parentString << "><option name=\""
+			    << name << "\" high=\"" << high
+			    << "\" /></" << parentString << "> :" << std::endl
+			    << "   cannot convert 'high' to number" << std::endl;
+		}
+	      } // high has a value
+
+	      break;
+	      
+	    default:
+	      ;
+	    } // switch on type for numeric options
+	  
 	  // Handle the "short" attribute (which I call 'brief' here to avoid
 	  // the C++ keyword 'short'. If there's no short option, set this
 	  // to char(0) to avoid issues with getopt_long processing in ParseXML.
@@ -1109,6 +1244,8 @@ namespace util {
     xercesc::XMLString::release(&valueAttr);
     xercesc::XMLString::release(&typeAttr);
     xercesc::XMLString::release(&descAttr);
+    xercesc::XMLString::release(&lowAttr);
+    xercesc::XMLString::release(&highAttr);
     document->release();
     xercesc::XMLPlatformUtils::Terminate();
 

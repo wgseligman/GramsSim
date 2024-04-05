@@ -4,6 +4,18 @@ A description of major development milestones. The most recent are at
 the top. For a detailed list of all changes (basically, every time
 someone typed "git commit"), see the output of "git log".
 
+Apr-2024
+
+   - From a suggestion by Mihir Shetty: modified the Options
+     processing to allow the user to specify lower and upper limits
+     for numeric parameters in the Options XML file.
+
+Mar-2024
+
+   - Mihir Shetty changed the input parameters for GramsReadoutSim
+     from the pixel sizes to the number of channels along the edge of
+     the readout plane.
+
 Feb-2024
 
    - Added an _incorrect_ pGRAMS detector description, just to get things started. 
