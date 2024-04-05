@@ -201,8 +201,8 @@ std::tuple<std::vector<double>, std::vector<double>, std::vector<double>, std::v
 
     // Return the vectors containing the per-cluster values for (units
     // defined in the options XML file):
-    return std::make_tuple(m_nEnDiff,      // Number of electrons in each cluster.
-			   m_nElDiff,      // Amount of energy in each cluster. 
+    return std::make_tuple(m_nElDiff,      // Number of electrons in each cluster.
+			   m_nEnDiff,      // Amount of energy in each cluster. 
 			   m_TransDiff1,   // Amount of cluster diffusion along the "1-axis"
 			   m_TransDiff2,   // Amount of cluster diffusion along the "2-axis"
 			   m_LongDiff,     // Amount of longitudinal diffusion. 
