@@ -238,13 +238,12 @@ Then all of the following are equivalent:
 
 #### Value limits
 
-You can optionally specify the lower and upper limits allowed for a numeric option"
-
+You can optionally specify the lower and upper limits allowed for a numeric option:
 
 ```XML
-  <option name="energyMin" short="e" value="12.5" type="double" desc="min pion energy [MeV]" low="0" />
-  <option name="energyMax" short="E" value="125.0" type="double" desc="max pion energy [Mev] high="10000" />
-  <option name="energyPeak" value="75" type="double" desc="peak pion energy [Mev]" low="5" high="10000" />
+  <option name="energyMin" value="12.5" low="0" type="double" desc="min pion energy [MeV]" />
+  <option name="energyMax" value="125.0" high="1000" type="double" desc="max pion energy [Mev] />
+  <option name="energyPeak" value="75" low="5" high="10000" type="double" desc="peak pion energy [Mev]" />
 ```
 
 Note that the `low` and `high` attributes can be omitted (probably the

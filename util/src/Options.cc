@@ -782,14 +782,14 @@ namespace util {
     // than once.
     auto numOptions = NumberOfOptions();
     for ( size_t i = 0; i != numOptions; ++i ) {
-      strcpy(name, GetOptionName(i).c_str());
-      strcpy(value, GetOptionValue(i).c_str());
-      strcpy(type, GetOptionType(i).c_str());
-      strcpy(brief, GetOptionBrief(i).c_str());
-      strcpy(desc, GetOptionDescription(i).c_str());
+      strcpy(name,   GetOptionName(i).c_str());
+      strcpy(value,  GetOptionValue(i).c_str());
+      strcpy(type,   GetOptionType(i).c_str());
+      strcpy(brief,  GetOptionBrief(i).c_str());
+      strcpy(desc,   GetOptionDescription(i).c_str());
       strcpy(source, GetOptionSource(i).c_str());
-      strcpy(source, GetOptionLow(i).c_str());
-      strcpy(source, GetOptionHigh(i).c_str());
+      strcpy(low,    GetOptionLow(i).c_str());
+      strcpy(high,   GetOptionHigh(i).c_str());
 
       // Write out the ntuple entry.
       ntuple->Fill();
