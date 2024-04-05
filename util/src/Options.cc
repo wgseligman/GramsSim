@@ -774,8 +774,8 @@ namespace util {
     ntuple->Branch("OptionBrief",&brief,"OptionBrief/C");
     ntuple->Branch("OptionDesc",&desc,"OptionDesc/C");
     ntuple->Branch("OptionSource",&source,"OptionSource/C");
-    ntuple->Branch("OptionLow",&source,"OptionLow/C");
-    ntuple->Branch("OptionHigh",&source,"OptionHigh/C");
+    ntuple->Branch("OptionLow",&low,"OptionLow/C");
+    ntuple->Branch("OptionHigh",&high,"OptionHigh/C");
 
     // Loop over the options. As it says in Options.h, this is an
     // inefficient operation, but hopefully no program will do it more
@@ -1283,12 +1283,15 @@ namespace util {
 	    // Geant4's clumsy ROOT analysis manager, we have to use
 	    // char arrays instead of std::string. 
 	    char name[40], value[254], type[10], brief[2], desc[80], source[30];
+	    char low[40], high[40];
 	    ntuple->SetBranchAddress("OptionName",&name);
 	    ntuple->SetBranchAddress("OptionValue",&value);
 	    ntuple->SetBranchAddress("OptionType",&type);
 	    ntuple->SetBranchAddress("OptionBrief",&brief);
 	    ntuple->SetBranchAddress("OptionDesc",&desc);
 	    ntuple->SetBranchAddress("OptionSource",&source);
+	    ntuple->SetBranchAddress("OptionLow",&low);
+	    ntuple->SetBranchAddress("OptionHigh",&high);
 	    
 	    // For each row in the ntuple
 	    int nEntries = ntuple->GetEntriesFast();
@@ -1306,7 +1309,9 @@ namespace util {
 					   eType, 
 					   brief[0], 
 					   desc, 
-					   source };
+					   source,
+					   low,
+					   high };
 	      m_options[ name ] = attr;
 	    }
 	    // We've filled the options map from the ntuple. Clean up pointers.
