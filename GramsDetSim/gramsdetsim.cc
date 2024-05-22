@@ -118,7 +118,8 @@ int main(int argc,char **argv)
   TTreeReaderValue<Int_t> Event      = {*reader, "Event"};
   TTreeReaderValue<Int_t> TrackID    = {*reader, "TrackID"};
   TTreeReaderValue<Int_t> PDGCode    = {*reader, "PDGCode"};
-  TTreeReaderValue<Int_t> NumPhotons = {*reader, "numPhotons"};
+  TTreeReaderValue<Int_t> NumPhotons = {*reader, "numPhotons"}; // scintillation photons
+  TTreeReaderValue<Int_t> CerPhotons = {*reader, "cerPhotons"}; // Cerenkov photons
   TTreeReaderValue<Double_t> energy  = {*reader, "energy"};
   TTreeReaderValue<Float_t> xStart   = {*reader, "xStart"};
   TTreeReaderValue<Float_t> yStart   = {*reader, "yStart"};
@@ -176,7 +177,8 @@ int main(int argc,char **argv)
   Int_t run;
   Int_t event;
   Int_t trackID;
-  Int_t numPhotons;
+  Int_t numPhotons; // scintillation photons
+  Int_t cerPhotons; // Cerenkov photons
   Int_t pdgCode;
   Int_t identifier;
 
@@ -194,7 +196,8 @@ int main(int argc,char **argv)
   outputNtuple->Branch("Event",         &event);
   outputNtuple->Branch("TrackID",       &trackID);
   outputNtuple->Branch("PDGCode",       &pdgCode);
-  outputNtuple->Branch("numPhotons",    &numPhotons);
+  outputNtuple->Branch("numPhotons",    &numPhotons); // scintillation photons
+  outputNtuple->Branch("cerPhotons",    &cerPhotons); // Cerenkov photons
   outputNtuple->Branch("energy",        &energyAtAnode);
   outputNtuple->Branch("numElectrons",  &electronAtAnode);
   outputNtuple->Branch("x",             &xPosAtAnode);
@@ -270,7 +273,8 @@ int main(int argc,char **argv)
     run = *Run;
     event = *Event;
     trackID = *TrackID;
-    numPhotons = *NumPhotons;
+    numPhotons = *NumPhotons; // scintillation photons
+    cerPhotons = *CerPhotons; // Cerenkov photons
     pdgCode = *PDGCode;
     identifier = *Identifier;
     
@@ -330,7 +334,7 @@ int main(int argc,char **argv)
     if ( doDiffusion  &&  ! std::isnan(energy_sca) ) {
       // This an "STL trick" to return a number of different vectors
       // at once from a single method.
-      std::tie(energyAtAnode, electronAtAnode, xPosAtAnode, yPosAtAnode, zPosAtAnode, timeAtAnode)
+      std::tie(electronAtAnode, energyAtAnode, xPosAtAnode, yPosAtAnode, zPosAtAnode, timeAtAnode)
 	= diffusionModel->Calculate(energy_sca);
     }
 

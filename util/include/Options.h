@@ -59,6 +59,8 @@ namespace util {
     std::string GetOptionBrief( size_t i ) const;
     std::string GetOptionDescription( size_t i ) const;
     std::string GetOptionSource( size_t i ) const;
+    std::string GetOptionLow( size_t i ) const;
+    std::string GetOptionHigh( size_t i ) const;
 
     // The argument to this method is the output directory for the
     // ntuple. Presumably this will be a ROOT file.
@@ -93,6 +95,8 @@ namespace util {
       char brief;          ///< Optional one-char short option
       std::string desc;    ///< Optional description for --help
       std::string source;  ///< From which place (XML tag block, command line) did this come from?
+      std::string low;     ///< If non-empty, the lower bound of the option's numeric value.
+      std::string high;    ///< If non-empty, the upper bound of the option's numeric value.
     };
 
     std::map<std::string,m_option_attributes> m_options; ///< User options map

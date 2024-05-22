@@ -15,6 +15,9 @@
 // ROOT includes
 #include "TFile.h"
 #include "TTree.h"
+#include <TGeoMatrix.h>
+#include <TString.h>
+#include <TRegexp.h>
 
 // C++ includes
 #include <iostream>
@@ -67,17 +70,15 @@ int main(int argc,char **argv)
             << "', input ntuple = '" << inputNtupleName
             << "'" << std::endl;
 
-    // Get the readout-geometry definition routine. Use make_shared so
-    // we don't have to worry about memory leaks and deleting the
-    // pointer.
-    auto assignPixelID = std::make_shared<gramsreadoutsim::AssignPixelID>();
+    auto assignPixelID = std::make_shared<gramsreadoutsim::AssignPixelID>(gramsreadoutsim::AssignPixelID());
 
     // Define the variables in the input ntuple.
     int run;
     int event;
     int trackID;
     int pDGCode;
-    int numPhotons;
+    int numPhotons; // scintillation photons
+    int cerPhotons; // Cerenkov photons
     int identifier;
 
     std::vector<double>* penergyAtAnode = 0;
@@ -105,7 +106,8 @@ int main(int argc,char **argv)
     intree->SetBranchAddress("Event",         &event);
     intree->SetBranchAddress("TrackID",       &trackID);
     intree->SetBranchAddress("PDGCode",       &pDGCode);
-    intree->SetBranchAddress("numPhotons",    &numPhotons);
+    intree->SetBranchAddress("numPhotons",    &numPhotons); // scintillation photons
+    intree->SetBranchAddress("cerPhotons",    &cerPhotons); // Cerenkov photons
     intree->SetBranchAddress("energy",        &penergyAtAnode);
     intree->SetBranchAddress("numElectrons",  &pelectronAtAnode);
     intree->SetBranchAddress("x",             &pxPosAtAnode);
@@ -128,18 +130,6 @@ int main(int argc,char **argv)
 
     // Open the output file.
     auto output = TFile::Open(outputFileName.c_str(),"RECREATE");
-
-    // From the XML file or the command line, get the options
-    // associated with readout processing.
-    double readout_centerx;
-    double readout_centery;
-    double pixel_sizex;
-    double pixel_sizey;
-    options->GetOption("readout_centerx",   readout_centerx);
-    options->GetOption("readout_centery",   readout_centery);
-    options->GetOption("pixel_sizex",       pixel_sizex);
-    options->GetOption("pixel_sizey",       pixel_sizey);
-
     // Write the options to the output file, so we have a record.
     options->WriteNtuple(output);
 
@@ -171,6 +161,7 @@ int main(int argc,char **argv)
     outtree->Branch("TrackID",       &trackID,           "TrackID/I");
     outtree->Branch("PDGCode",       &pDGCode,           "PDGCode/I");
     outtree->Branch("numPhotons",    &numPhotons,        "numPhotons/I");
+    outtree->Branch("cerPhotons",    &cerPhotons,        "cerPhotons/I");
     outtree->Branch("energy",        &penergyAtAnode);
     outtree->Branch("numElectrons",  &pelectronAtAnode);
     outtree->Branch("x",             &pxPosAtAnode);

@@ -102,7 +102,7 @@ To build/compile:[^make]
 
     # Set up the tools as appropriate for your system
     # For example, at Nevis type
-    module load cmake root geant4 hepmc3 healpix
+    conda activate /nevis/amsterdam/share/seligman/conda/grams
     
     # Create a separate build/work directory. This directory should
     # not be the GramsG4 directory or a sub-directory of it. This

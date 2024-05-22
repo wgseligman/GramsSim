@@ -13,8 +13,9 @@ if ( len(sys.argv) < 2 ):
    sys.exit(1)
 
 # Open the file. 
+fileName = sys.argv[1]
 try:
-    myfile = TFile( sys.argv[1] )
+    myfile = TFile( fileName )
 except OSError as error:
     print (error)
     sys.exit(1)
@@ -32,7 +33,7 @@ optionsNtuple = gDirectory.Get( ntupleName )
 try:
     entries = optionsNtuple.GetEntriesFast()
 except AttributeError as error:
-    print ("There is no ntuple with the name",sys.argv[2],"in file",sys.argv[1])
+    print ("There is no ntuple with the name",ntupleName,"in file",fileName)
     sys.exit(1)
 
 if (debug):
@@ -69,7 +70,7 @@ for jentry in range( entries ):
         desc = optionsNtuple.OptionDesc
         source = optionsNtuple.OptionSource
     except AttributeError as error:
-        print ("ntuple",sys.argv[2],"in file",sys.argv[1],"is not an options ntuple")
+        print ("ntuple",ntupleName,"in file",fileName,"is not a complete options ntuple")
         sys.exit(1)
 
     # Display the numeric and boolean values in a more "natural" format.

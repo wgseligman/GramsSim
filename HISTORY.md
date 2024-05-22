@@ -4,6 +4,29 @@ A description of major development milestones. The most recent are at
 the top. For a detailed list of all changes (basically, every time
 someone typed "git commit"), see the output of "git log".
 
+Apr-2024
+
+   - From a suggestion by Mihir Shetty: modified the Options
+     processing to allow the user to specify lower and upper limits
+     for numeric parameters in the Options XML file.
+
+Mar-2024
+
+   - Mihir Shetty changed the input parameters for GramsReadoutSim
+     from the pixel sizes to the number of channels along the edge of
+     the readout plane.
+
+Feb-2024
+
+   - Added an _incorrect_ pGRAMS detector description, just to get things started. 
+   - GramsG4 now accumulates Cerenkov photons (in addition to the existing accumulation
+     of scintillation photons). This new field is passed on and through GramsDetSim
+     and GramsReadoutSim. 
+
+Nov-2023
+
+   - Mihir Shetty found a bug in gramsdetsim.cc. It's been fixed.
+
 Oct-2023
 
    - A new feature is added to GramsG4: By default, a copy of the
@@ -11,6 +34,9 @@ Oct-2023
      object.
    - Every existing subsequent GramsSim job step (gramsdetsim, gramsreadoutsim, gramselecsim) 
      copies the geometry (as a TGeoManager object) from the input file to the output file.
+   - Restructure the GDML file slightly to allow for a cryostat that is not a "skin-tight" fit
+     around the TPC, and for a potential offset of the TPC from the geometric center of the
+     cryostat. 
 
 Sep-2023
 

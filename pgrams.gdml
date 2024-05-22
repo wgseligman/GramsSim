@@ -2,6 +2,22 @@
 <gdml xmlns:gdml="http://cern.ch/2001/Schemas/GDML" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="GDMLSchema/gdml.xsd">
 <!-- 
 
+20-Feb-2024 WGS:
+
+This is a "zero-th" draft of the geometry for pGRAMS. I made guesses,
+approximations, and left many things unchanged from the preliminary
+GRAMS detector description of 2020. Again, assume that everything is wrong
+until you convince yourself that it's right.
+
+Most of my guesses come from looking at this web page:
+
+https://grams.northeastern.edu/bin/view/Main/GRAMS%20Project%20page/Prototype%20Flight/MiniGRAMS%20Design/
+
+When you see the words "pGRAMS description" below, it refers to that web page. 
+
+I'm not sure what's the difference between "MiniGRAMS" and "pGRAMS". For the purposes of
+this GDML file, I assume they're the same. 
+
 07-Apr-2020 WGS: 
 
 Everything in this file is preliminary. Please assume it's wrong
@@ -126,11 +142,15 @@ source of interactions (e.g., the cryostat walls.)
     <!-- 5-May-2020 WGS: Everything will eventually get placed into a large
     world volume. Typically you want a volume that's big enough to contain 
     everything you're modeling, plus some space to both inject incoming
-    particles and track outgoing particles from the detector simulation. -->
+    particles and track outgoing particles from the detector simulation. 
     
-    <quantity name="worldVolumeXSize" type="length" value="600" unit="cm" />
-    <quantity name="worldVolumeYSize" type="length" value="600" unit="cm" />
-    <quantity name="worldVolumeZSize" type="length" value="600" unit="cm" />
+    20-Feb-2024 WGS: The pGRAMS detector is smaller than GRAMS, and does not require
+    a world volume that's as big. 
+    -->
+    
+    <quantity name="worldVolumeXSize" type="length" value="200" unit="cm" />
+    <quantity name="worldVolumeYSize" type="length" value="200" unit="cm" />
+    <quantity name="worldVolumeZSize" type="length" value="200" unit="cm" />
     
     <!-- 5-May-2020 WGS: All length units are cm. Many of the dimensions
     used below are 'constant' or 'variable' so they can be used in calculations. -->
@@ -142,13 +162,38 @@ source of interactions (e.g., the cryostat walls.)
     To make the placement of the sensitive detector cells easier, I'm putting 
     the same boundary as the volume of the LArTPC. This
     isn't realistic, but you have to start somewhere. -->
-    <constant name="fidVolGap" value="0" />
+    
+    <!-- 20-Feb-2024 WGS: From the pGRAMS description, it looks like there's a
+    substantial gap between the active LAr region and the sizes of the TPC. -->
+    <constant name="fidVolGapX" value="3" />
+    <constant name="fidVolGapY" value="3" />
+    <constant name="fidVolGapZ" value="1" />
 
-    <!-- 10-June-2022 MS: Changed dimensions of LArTPC to be cubic -->
+    <!-- 10-Jun-2022 MS: Changed dimensions of LArTPC to be cubic -->
 
-    <constant name="lArTPCXSize" value="70" />
-    <constant name="lArTPCYSize" value="70" />
-    <constant name="lArTPCZSize" value="80" />
+    <!-- 20-Feb-2024 WGS: I'm guessing these values for pGRAMS, based on 
+    the pGRAMS descriptions. -->
+
+    <constant name="lArTPCXSize" value="30" />
+    <constant name="lArTPCYSize" value="30" />
+    <constant name="lArTPCZSize" value="20" />
+
+    <!-- 
+    
+    20-Feb-2022 WGS: The pGRAMS cryostat will be some kind of cylindrical container.
+    What will its dimensions be? No one wants to tell me. Since this remains a 
+    closely-guarded secret, I'm going to make a random guess.
+    
+    The cryostat is modeled as a hollow cylinder, with nested GDML tubes.
+    
+    According to a presentation by John Mitchell, the actual cryostat material is likely
+    to be some kind of foam composite. However, I can't locate the slides that
+    contain the details of its composition. Therefore, I'm falling back on the
+    original GRAMS description and assume it will be a thin layer of steel. This
+    is WRONG, WRONG, WRONG! But given my lack of information, it's what you
+    see here. FIX THIS! NOW! DON'T WAIT UNTIL YOU FINISH READING THIS COMMENT!
+    
+    -->
 
     <!-- 5-May-2020 WGS: For all I know the cryostat will be made of insulating foam.
     With no other information, I'm assuming a steel cryostat of 1cm thickness. -->
@@ -156,14 +201,11 @@ source of interactions (e.g., the cryostat walls.)
     to 0.5cm -->
     <!-- 29-Sep-2021 WGS: A talk at the collaboration meeting suggest 6mm is more likely. -->
     <constant name="cryostatThickness" value="0.6" />
-    <!-- 31-Oct-2023 WGS: The cryostat was formerly a "skin-tight" around the TPC
-    volume. Allow potentially for a cryostat larger than the TPC. -->
-    <constant name="cryostatXInteriorSize" value="lArTPCXSize" />
-    <constant name="cryostatYInteriorSize" value="lArTPCYSize" />
-    <constant name="cryostatZInteriorSize" value="lArTPCZSize" />
+    
+    <constant name="cryostatInteriorRadius" value="lArTPCXSize * sqrt(0.5) + 5.0" />
+    <constant name="cryostatZInteriorSize" value="lArTPCZSize + 10.0" />
 
-    <constant name="cryostatXSize" value="cryostatXInteriorSize + 2*cryostatThickness" />
-    <constant name="cryostatYSize" value="cryostatYInteriorSize + 2*cryostatThickness" />
+    <constant name="cryostatRadius" value="cryostatInteriorRadius + cryostatThickness" />
     <constant name="cryostatZSize" value="cryostatZInteriorSize + 2*cryostatThickness" />
     
     <!-- 31-Oct-2023 WGS: This is the offset of the geometric center of the
@@ -200,6 +242,9 @@ source of interactions (e.g., the cryostat walls.)
  
     <!-- 6-May-2020 WGS: There has to be a cathode plate to provide the field along with
     the anode plane. -->
+    <!-- 20-Feb-2024 WGS: In pGRAMS (and in GRAMS as well) it turns out that the cathode
+    can be a wire mesh. That's actually not hard to implement, but in the absence of
+    details leave the description as a solid plate for now. FIX THIS! NOW! -->
     <constant name="cathodeThickness" value="0.1" />
     <constant name="cathodeXSize" value="lArTPCXSize" />
     <constant name="cathodeYSize" value="lArTPCYSize" />
@@ -221,11 +266,18 @@ source of interactions (e.g., the cryostat walls.)
     now, leave the material to be PTFE but call them "Separator sheets"
     instead of PTFE sheets so that swapping the material will be easier. -->
     <!-- 10-June-2022 MS: Changed number of cells to be 7x7x4 instead of 14x14x1-->
-    <constant name="numberActiveCellsY" value="7" />
+    
+    <!-- 20-Feb-2024 WGS: The above batch of comments may give you the idea that
+    we don't have a fixed idea of how many cells there should be in pGRAMS or
+    GRAMS. That idea is correct. For pGRAMS, I was told to assume 3x3 cells in x and y,
+    from the pGRAMS description.
+    -->
+    
+    <constant name="numberActiveCellsY" value="3" />
     <constant name="numberSepSheetsY" value="numberActiveCellsY - 1" />
-    <constant name="numberActiveCellsX" value="7" />
+    <constant name="numberActiveCellsX" value="3" />
     <constant name="numberSepSheetsX" value="numberActiveCellsX - 1" />
-    <constant name="numberActiveCellsZ" value="4" />
+    <constant name="numberActiveCellsZ" value="1" />
     <constant name="numberSepSheetsZ" value="numberActiveCellsZ - 1" />
     
     <!-- 5-May-2020 WGS: How thick will the separator sheets be? I don't know, so 
@@ -235,10 +287,10 @@ source of interactions (e.g., the cryostat walls.)
 
     <!-- 16-Jul-2020 WGS: Define the groups of cells we'll place along x. 
     Allow for additional spacing for a fiducial volume cut. -->
-    <constant name="cellGroupXRegion" value="lArTPCXSize - 2*fidVolGap" />
+    <constant name="cellGroupXRegion" value="lArTPCXSize - 2*fidVolGapX" />
     <constant name="cellGroupXSize" value="(cellGroupXRegion - numberSepSheetsX*sepThickness) / numberActiveCellsX" />
-    <constant name="cellGroupYSize" value="lArTPCYSize - 2*fidVolGap" />
-    <constant name="cellGroupZSize" value="lArTPCZSize - 2*fidVolGap" />
+    <constant name="cellGroupYSize" value="lArTPCYSize - 2*fidVolGapY" />
+    <constant name="cellGroupZSize" value="lArTPCZSize - 2*fidVolGapZ" />
 
     <!-- 16-Jul-2020 WGS: The sheets that separate the cell groups along x. -->
     <constant name="sepGroupXSize" value="sepThickness" />
@@ -255,27 +307,41 @@ source of interactions (e.g., the cryostat walls.)
     <constant name="sepYSize" value="sepThickness" />
     <constant name="sepZSize" value="cellGroupZSize" />
     
-<!-- 05-May-2020 WGS: How big is a SIPM? I don't know. Make a guess. -->
-    <!-- 06-Oct-2021 WGS: With a plate as a cathode and a tile as the anode,
-    the location of the SiPMs is now a complete unknown. I'm going to arbitrarily
-    place them in the center of the high-x side of each cell, magically
-    attached to the separator sheet. This will _definitely_ need revision in 
-    the future. -->
+    <!-- 05-May-2020 WGS: How big is a SIPM? I don't know. Make a guess. -->
+    <!-- 20-Feb-2024 WGS: In pGRAMS (and probably GRAMS as well), the SiPMs 
+    will be located "underneath" the cathode (i.e., on the lower-z side of
+    the cathode wire mesh). According to pGRAMS description and a verbal
+    confirmation, each cell will have a 4x4 arragement of SiPMs for each
+    cell. -->
     <constant name="sipmThickness" value="0.1" />
-    <constant name="sipmXSize" value="sipmThickness" />
+    <constant name="sipmXSize" value="1.0" />
     <constant name="sipmYSize" value="1.0" />
-    <constant name="sipmZSize" value="1.0" />
+    <constant name="sipmZSize" value="sipmThickness" />
 
-    <!-- 17-Jul-2020 WGS: How many SIPMs within each cell? What will their
-    arrangement be? I don't know. Start with evenly spacing the SIPMs within
-    each cell evenly and identicially. (This will become more complex if we
-    explore "honeycomb" patterns.) The following values are defined here,
-    but they are not used (yet) in this GDML file. The code to implement anything 
-    with them must wait until we until we do some optical physics studies. -->
-    <constant name="numberSIPMsInCell" value="6" />
-    <constant name="sipmXseparation" value="activeCellXSize/numberSIPMsInCell" />
+    <constant name="numberSIPMsInCellX" value="4" />
+    <constant name="numberSIPMsInCellY" value="4" />
+    <constant name="sipmXseparation" value="activeCellXSize/numberSIPMsInCellX" />
+    <constant name="sipmYseparation" value="activeCellYSize/numberSIPMsInCellY" />
+
+    <!-- 20-Feb-2024 WGS: Another guess = the z-position of the SiPMs
+    with respect to the cryostat interior. -->
+    <constant name="sipmZposition" value="(-lArTPCZSize/2) + (fidVolGapZ/4)" />
 
     <!-- ************** Scintillator walls section **************
+
+    20-Feb-2024 WGS: 
+    
+    IMPORTANT: What I simply called "scintillator walls" in 2020
+    turn out to be called "TOF" (time-of-flight) detectors.
+    
+    As with the cryostat, the location and dimensions of the TOF detectors are a
+    deep, impenetrable secret. So I'm doing something stupid, and using the
+    GRAMS TOF description for pGRAMS, except that I'm reducing the overall
+    dimensions. 
+    
+    This is WRONG, WRONG, WRONG! FIX IT NOW! NOW! WHY ARE YOU WAITING?
+    
+    16-Jul-2020 WGS:
 
     "Outer" and "inner" refer to the two main boxes of scintillator in the detector. 
     Think of each box as a pair of x-walls, y-walls, and z-walls. Assume that 
@@ -292,9 +358,9 @@ source of interactions (e.g., the cryostat walls.)
     are slightly different. 
     -->
     
-    <constant name="outerVolumeXSize" value="280" />
-    <constant name="outerVolumeYSize" value="280" />
-    <constant name="outerVolumeZSize" value="250" />
+    <constant name="outerVolumeXSize" value="90" />
+    <constant name="outerVolumeYSize" value="90" />
+    <constant name="outerVolumeZSize" value="90" />
 
     <!-- 5-May-2020 WGS: The sole reason I've defined the scintillator 
     width and thickness with these values is that they fit exactly in the crude
@@ -360,9 +426,9 @@ source of interactions (e.g., the cryostat walls.)
     <constant name="outerXwallZSize" value="outerVolumeZSize - 2*scintillatorThickness" />
 
 
-    <constant name="innerVolumeXSize" value="90 + 2*fidVolGap" />
-    <constant name="innerVolumeYSize" value="90 + 2*fidVolGap" />
-    <constant name="innerVolumeZSize" value="100 + 2*fidVolGap" />
+    <constant name="innerVolumeXSize" value="60" />
+    <constant name="innerVolumeYSize" value="60" />
+    <constant name="innerVolumeZSize" value="60" />
 
     <constant name="lengthInnerZwallXstrips" value="innerVolumeXSize" />
     <constant name="lengthInnerYwallXstrips" value="(innerVolumeXSize - 2*scintillatorThickness)" />
@@ -407,7 +473,9 @@ source of interactions (e.g., the cryostat walls.)
          geometry, a better location is to place the bottom of the
          inner detector 20cm from the bottom of the outer
          detector. -->
-    <constant name="innerDetectorOffsetInOuter" value ="-outerVolumeZSize/2 + innerVolumeZSize/2 + 20" />
+    <!-- 20-Feb-2024 WGS: Since everything else is wrong with the pGRAMS TOF
+        description, just make the TOF cubes concentric. -->
+    <constant name="innerDetectorOffsetInOuter" value ="-outerVolumeZSize/2 + innerVolumeZSize/2" />
 
     <!-- 10-May-2020 WGS: This is the offset of the outer detector from the center of
     of the world volume. This is tricky, because (to follow the LArSoft convention,
@@ -418,13 +486,17 @@ source of interactions (e.g., the cryostat walls.)
     all of the TPC active cells have z<0. The purpose of LArSoft's definition of having
     the induction plane be at an axis=0 is to avoid negative numbers! Leave this
     for now, and let the collaboration decide an appropriate coordinate system. -->
-    <constant name="outerDetectorOffsetInWorld" value ="-(lArTPCZSize/2) + tilePlaneZSize - innerDetectorOffsetInOuter" />
+    
+    <!-- 20-Feb-202r WGS: This is a bit trickier for pGRAMS, since now the anode
+    is located substantially outside the active TPC LAr. Again, make a guess. -->
+    
+    <constant name="outerDetectorOffsetInWorld" value ="-(lArTPCZSize/2) - (fidVolGapZ/2)+ tilePlaneZSize - innerDetectorOffsetInOuter" />
 
     <!-- Understanding these properties: These matrices define properties that will
         be used in the <materials> section below. -->
 
     <!-- 03-May-2023 WGS: Material optical properties -->
-    <!-- From CaTS/main/gdml/simpleLArTPC.gdml -->
+    <!-- From https://github.com/hanswenzel/CaTS/blob/main/gdml/simpleLArTPC.gdml -->
     <!-- Courtesy of Hanz Wenzel -->
     <!-- Unit constants for Geant4 (mm, ns, MeV) -->
 
@@ -736,11 +808,14 @@ source of interactions (e.g., the cryostat walls.)
     <box lunit="cm" name="InnerYwall" x="InnerYwallXSize" y="InnerYwallYSize" z="InnerYwallZSize"/>
     <box lunit="cm" name="InnerZwall" x="InnerZwallXSize" y="InnerZwallYSize" z="InnerZwallZSize"/>
 
-    <box lunit="cm" name="Cryostat" x="cryostatXSize" y="cryostatYSize" z="cryostatZSize" />
-    <box lunit="cm" name="CryostatInterior" 
-        x="cryostatXInteriorSize" 
-        y="cryostatYInteriorSize" 
-        z="cryostatZInteriorSize" />
+    <!-- 20-Feb-2024 WGS: For pGRAMS, define a cylindrical cryostat volume. -->
+
+    <tube name="Cryostat" 
+        lunit = "cm" rmin="0" rmax="cryostatRadius" z="cryostatZSize" 
+        aunit="degree" deltaphi="360" />
+    <tube name="CryostatInterior" 
+        lunit = "cm" rmin="0" rmax="cryostatInteriorRadius" z="cryostatZInteriorSize" 
+        aunit="degree" deltaphi="360" />
 
   </solids>
 
@@ -819,13 +894,6 @@ source of interactions (e.g., the cryostat walls.)
     <volume name="volTPCActive">
       <materialref ref="LAr"/>
       <solidref ref="ActiveCell"/>
-      <!-- 05-Oct-2021 WGS: Where are the SiPMs? How will they be mounted? I don't know.
-      For now, let them magically be attached to the separator sheets on the high-x
-      side of each cell. -->
-      <physvol copynumber="5000000">
-        <volumeref ref="volSIPM"/>
-        <position name="posSIPM" unit="cm" x="(activeCellXSize/2) - sipmThickness" y="0" z="0" />
-      </physvol>
       <auxiliary auxtype="SensDet" auxvalue="LArSensitiveDetector" />
       <auxiliary auxtype="StepLimit" auxvalue="0.02"/>
       <auxiliary auxtype="Color" auxvalue="red" />
@@ -853,18 +921,6 @@ source of interactions (e.g., the cryostat walls.)
     <volume name="volTPC">
       <materialref ref="LAr"/>
       <solidref ref="TPC"/>
-      
-      <!-- 8-May-2020 WGS: Where will the cathode plate be? I don't know. Make a guess. -->
-      <physvol copynumber="6000000">
-        <volumeref ref="volCathodePlate"/>
-        <position name="posCathod" unit="cm" x="0" y="0" z="-(lArTPCZSize/2) + 2*cathodeThickness" />
-      </physvol>
-      
-      <!-- 08-May-2020 WGS: Where will the tile planes be? I don't know. Make a guess. -->
-      <physvol>
-        <volumeref ref="volTilePlane"/>
-        <position name="posXplane" unit="cm" x="0" y="0" z="(lArTPCZSize/2) - (tilePlaneZSize/2)" />
-      </physvol>
 
       <!-- 16-Jul-2020 WGS: First we're going to place the cell groups
            along x within the LArTPC. Then we're going to place the
@@ -922,10 +978,54 @@ source of interactions (e.g., the cryostat walls.)
     <volume name="volCryostatInterior">
       <materialref ref="LAr"/>
       <solidref ref="CryostatInterior"/>
+ 
       <physvol copynumber="8000000">
         <volumeref ref="volTPC" />
         <positionref ref="cryostatTPCOffset" />
       </physvol>     
+     <!-- 08-May-2020 WGS: Where will the tile planes be? I don't know. Make a guess. -->
+      <physvol>
+        <volumeref ref="volTilePlane"/>
+        <position name="posTileplane" unit="cm" x="0" y="0" z="((lArTPCZSize-fidVolGapZ)/2)" />
+      </physvol>
+      
+      <!-- 20-Feb-2024 WGS: Where will the cathode plate be in pGRAMS? I don't know. Make a guess. -->
+      <physvol copynumber="6000000">
+        <volumeref ref="volCathodePlate"/>
+        <position name="posCathode" unit="cm" x="0" y="0" z="-((lArTPCZSize-fidVolGapZ)/2)" />
+      </physvol>
+      
+      <!-- 20-Feb-2024 WGS: Where are the SiPMs in pGRAMS? How will they be mounted? 
+      I don't know. For now, let them magically be hovering beneath the cathode and aligned
+      to the cell boundaries. 
+      
+      The nested loops may be a bit difficult to picture. We're placing the SiPMs in a rectangular
+      grid that, hopefully, will align with the separator cells above them. This entire construction
+      scenario is almost certainly wrong. Fortunately, you're about to fix it. 
+      -->
+      
+      <loop for="i" 
+        from="0" 
+        to="numberActiveCellsX*numberSIPMsInCellX - 1" 
+        step="1">
+
+        <loop for="j" 
+            from="0" 
+            to="numberActiveCellsY*numberSIPMsInCellY - 1" 
+            step="1">
+            
+            <physvol copynumber="5000000">
+            <volumeref ref="volSIPM"/>
+            <position name="posSIPM" unit="cm" 
+                x="(i - (numberActiveCellsX*numberSIPMsInCellX/2) + 0.5) * sipmXseparation" 
+                y="(j - (numberActiveCellsY*numberSIPMsInCellY/2) + 0.5) * sipmYseparation" 
+                z="sipmZposition" />
+            </physvol>
+
+        </loop>
+
+      </loop>
+
       <auxiliary auxtype="Color" auxvalue="gray" />      
     </volume>
 

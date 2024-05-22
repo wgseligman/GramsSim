@@ -160,16 +160,17 @@ namespace gramsg4 {
     analysisManager->CreateNtupleIColumn("TrackID");    // id 2
     analysisManager->CreateNtupleIColumn("PDGCode");    // id 3
     analysisManager->CreateNtupleIColumn("numPhotons"); // id 4
-    analysisManager->CreateNtupleDColumn("energy");     // id 5
-    analysisManager->CreateNtupleDColumn("tStart");     // id 6
-    analysisManager->CreateNtupleFColumn("xStart");     // id 7
-    analysisManager->CreateNtupleFColumn("yStart");     // id 8
-    analysisManager->CreateNtupleFColumn("zStart");     // id 9
-    analysisManager->CreateNtupleDColumn("tEnd");       // id 10
-    analysisManager->CreateNtupleFColumn("xEnd");       // id 11
-    analysisManager->CreateNtupleFColumn("yEnd");       // id 12
-    analysisManager->CreateNtupleFColumn("zEnd");       // id 13
-    analysisManager->CreateNtupleIColumn("identifier"); // id 14
+    analysisManager->CreateNtupleIColumn("cerPhotons"); // id 5
+    analysisManager->CreateNtupleDColumn("energy");     // id 6
+    analysisManager->CreateNtupleDColumn("tStart");     // id 7
+    analysisManager->CreateNtupleFColumn("xStart");     // id 8
+    analysisManager->CreateNtupleFColumn("yStart");     // id 9
+    analysisManager->CreateNtupleFColumn("zStart");     // id 10
+    analysisManager->CreateNtupleDColumn("tEnd");       // id 11
+    analysisManager->CreateNtupleFColumn("xEnd");       // id 12
+    analysisManager->CreateNtupleFColumn("yEnd");       // id 13
+    analysisManager->CreateNtupleFColumn("zEnd");       // id 14
+    analysisManager->CreateNtupleIColumn("identifier"); // id 15
 
     if (m_debug) 
 	G4cout << "WriteNtuplesAction::BeginOfRunAction() - "
@@ -221,6 +222,8 @@ namespace gramsg4 {
     analysisManager->CreateNtupleSColumn("OptionBrief");    // id 3
     analysisManager->CreateNtupleSColumn("OptionDesc");     // id 4
     analysisManager->CreateNtupleSColumn("OptionSource");   // id 5
+    analysisManager->CreateNtupleSColumn("OptionLow");      // id 6
+    analysisManager->CreateNtupleSColumn("OptionHigh");     // id 7
 
     if (m_debug) 
       G4cout << "WriteNtuplesAction::BeginOfRunAction() - "
@@ -256,6 +259,8 @@ namespace gramsg4 {
         analysisManager->FillNtupleSColumn(m_optionsNTID, 3, m_options->GetOptionBrief(i));
         analysisManager->FillNtupleSColumn(m_optionsNTID, 4, m_options->GetOptionDescription(i));
         analysisManager->FillNtupleSColumn(m_optionsNTID, 5, m_options->GetOptionSource(i));
+        analysisManager->FillNtupleSColumn(m_optionsNTID, 6, m_options->GetOptionLow(i));
+        analysisManager->FillNtupleSColumn(m_optionsNTID, 7, m_options->GetOptionHigh(i));
         analysisManager->AddNtupleRow(m_optionsNTID);  
       }
 
@@ -325,16 +330,17 @@ namespace gramsg4 {
       analysisManager->FillNtupleIColumn(m_LArNTID, 2, hit->GetTrackID() );
       analysisManager->FillNtupleIColumn(m_LArNTID, 3, hit->GetPDGCode() );
       analysisManager->FillNtupleIColumn(m_LArNTID, 4, hit->GetNumPhotons() );
-      analysisManager->FillNtupleDColumn(m_LArNTID, 5, hit->GetEnergy() / m_energyScale );
-      analysisManager->FillNtupleDColumn(m_LArNTID, 6, hit->GetStartTime() / m_timeScale );
-      analysisManager->FillNtupleFColumn(m_LArNTID, 7, (hit->GetStartPosition()).x() / m_lengthScale );
-      analysisManager->FillNtupleFColumn(m_LArNTID, 8, (hit->GetStartPosition()).y() / m_lengthScale );
-      analysisManager->FillNtupleFColumn(m_LArNTID, 9, (hit->GetStartPosition()).z() / m_lengthScale );
-      analysisManager->FillNtupleDColumn(m_LArNTID,10, hit->GetEndTime() / m_timeScale);
-      analysisManager->FillNtupleFColumn(m_LArNTID,11, (hit->GetEndPosition()).x() / m_lengthScale );
-      analysisManager->FillNtupleFColumn(m_LArNTID,12, (hit->GetEndPosition()).y() / m_lengthScale );
-      analysisManager->FillNtupleFColumn(m_LArNTID,13, (hit->GetEndPosition()).z() / m_lengthScale );
-      analysisManager->FillNtupleIColumn(m_LArNTID,14, hit->GetIdentifier() );
+      analysisManager->FillNtupleIColumn(m_LArNTID, 5, hit->GetCerPhotons() );
+      analysisManager->FillNtupleDColumn(m_LArNTID, 6, hit->GetEnergy() / m_energyScale );
+      analysisManager->FillNtupleDColumn(m_LArNTID, 7, hit->GetStartTime() / m_timeScale );
+      analysisManager->FillNtupleFColumn(m_LArNTID, 8, (hit->GetStartPosition()).x() / m_lengthScale );
+      analysisManager->FillNtupleFColumn(m_LArNTID, 9, (hit->GetStartPosition()).y() / m_lengthScale );
+      analysisManager->FillNtupleFColumn(m_LArNTID,10, (hit->GetStartPosition()).z() / m_lengthScale );
+      analysisManager->FillNtupleDColumn(m_LArNTID,11, hit->GetEndTime() / m_timeScale);
+      analysisManager->FillNtupleFColumn(m_LArNTID,12, (hit->GetEndPosition()).x() / m_lengthScale );
+      analysisManager->FillNtupleFColumn(m_LArNTID,13, (hit->GetEndPosition()).y() / m_lengthScale );
+      analysisManager->FillNtupleFColumn(m_LArNTID,14, (hit->GetEndPosition()).z() / m_lengthScale );
+      analysisManager->FillNtupleIColumn(m_LArNTID,15, hit->GetIdentifier() );
 
       if (m_debug) 
 	G4cout << "WriteNtuplesAction::EndOfEventAction - Adding LAr row" << G4endl;

@@ -349,7 +349,7 @@
     <option name="physicslist" short= "p" value="FTFP_BERT_LIV+OPTICAL+STEPLIMIT" type="string" 
         desc="physics list">
         Here are few options. There are many, many others. Note that to simulate
-        voxels/pixels, you want to include +STEPLIMIT; to include scintillation
+        voxels/pixels, you want to include +STEPLIMIT; to include optical
         photons you want to include +OPTICAL. 
         "FTFP_BERT" - typical for HEP applications
         "QGSP_BIC_HP" - typical medical applications
@@ -357,11 +357,16 @@
         See README.md for references.
     </option>
 
-    <!-- Do we want to turn on this optical physics? Note that if you don't include
+    <!-- Do we want to turn on optical physics? Note that if you don't include
     OPTICAL (or G4OpticalPhysics) in the physics list above, these processes
-    won't happen anyway. -->
+    won't happen anyway. 
+
+    There are two general categories of optical photons: scintillation light
+    and Cerenkov light. Treat them separately. -->
     <option name="scint" value="true" type="boolean" 
-	    desc="turn on/off scintillation" /> 
+	    desc="turn on/off scintillation light" /> 
+    <option name="cerenkov" value="true" type="boolean" 
+	    desc="turn on/off Cerenkov light" /> 
 
     <!-- Display available physics lists. --> 
     <option name="showphysicslists" short="l" type="flag" 
@@ -552,8 +557,12 @@
     the <global> section above. -->
     <option name="readout_centerx"  value="0.0" type="double" desc="x coordinate of the readout plane" />
     <option name="readout_centery"  value="0.0" type="double" desc="y coordinate of the readout plane" />
-    <option name="pixel_sizex" value="3.2" type="double" desc="pixel size x" />
-    <option name="pixel_sizey" value="3.2" type="double" desc="pixel size y" />
+
+    <option name="gdml" value="parsed.gdml" type="string" desc="ROOT-compatible gdml file emitted by GramsG4"/>
+    <option name="anodeTileVolume" value="volTilePlane" type="string" desc="Volume in gdml file that corresponds to Anode Tile"/>
+
+    <option name="x_resolution" value="30" type="int" desc="Number of pixels along the x direction" />
+    <option name="y_resolution" value="30" type="int" desc="Number of pixels along the y direction" />
 
   </gramsreadoutsim>
 
