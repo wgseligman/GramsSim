@@ -104,6 +104,9 @@ endforeach()
 # Create the util library.
 add_subdirectory (util)
 
+# Create the data object dictionary
+add_subdirectory (GramsDataObj)
+
 # Copy/compile the sub-projects and work files.
 add_subdirectory(GramsSky)
 add_subdirectory(GramsG4)
