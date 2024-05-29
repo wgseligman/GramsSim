@@ -14,6 +14,9 @@
 #include "UserAction.h" // in g4util/
 #include "Analysis.h" // in g4util/
 
+// In GramsDataObj
+#include "EventID.h"
+
 #include "G4Run.hh"
 #include "G4RunManager.hh"
 #include "G4Event.hh"
