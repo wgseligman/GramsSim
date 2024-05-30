@@ -10,7 +10,8 @@
 
 #pragma link C++ class grams::EventID+;
 
-#pragma link C++ struct grams::TrajectoryPoint+;
+#pragma link C++ struct grams::MCTrajectoryPoint+;
+#pragma link C++ typedef grams::MCTrajectory+;
 
 // The following statements may not be necessary, but I include them
 // for "safety"; see

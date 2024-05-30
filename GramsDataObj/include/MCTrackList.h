@@ -13,7 +13,7 @@ namespace grams {
   // accessor methods for folks who don't want to look up ROOT's 4D
   // classes.
 
-  struct TrajectoryPoint {
+  struct MCTrajectoryPoint {
     std::pair< ROOT::Math::XYZTVector, ROOT::Math::PxPyPzEVector > trajectoryPoint;
 
     ROOT::Math::XYZTVector position() const {
@@ -56,7 +56,16 @@ namespace grams {
       return trajectoryPoint.second.E();
     }
 
-  };
+    // It's not likely that we'll need to sort trajectory points. If
+    // we do, doing them by time seems to make sense.
+    bool operator<( const MCTrajectoryPoint& tp ) const {
+      return this->trajectoryPoint.first.T() < tp.trajectoryPoint.first.T();
+    }
+
+  }; // TrajectoryPoint 
+
+  // A trajectory is a sequence of trajectory points.
+  typedef std::vector< MCTrajectoryPoint > MCTrajectory;
 
 } // namespace grams
 
