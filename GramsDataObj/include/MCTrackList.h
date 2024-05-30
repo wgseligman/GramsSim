@@ -5,11 +5,58 @@
 #ifndef _grams_mctracklist_h_
 #define _grams_mctracklist_h_
 
-#include <TLorentzVector.h>
+#include <Math/Vector4D.h>
 
 namespace grams {
 
-  typedef std::pair< TLorentzVector, TLorentzVector > TrajectoryPoint;
+  // Define a point along a track's trajectory. Provide lots of
+  // accessor methods for folks who don't want to look up ROOT's 4D
+  // classes.
+
+  struct TrajectoryPoint {
+    std::pair< ROOT::Math::XYZTVector, ROOT::Math::PxPyPzEVector > trajectoryPoint;
+
+    ROOT::Math::XYZTVector position() const {
+      return trajectoryPoint.first;
+    }
+
+    ROOT::Math::PxPyPzEVector momentum() const {
+      return trajectoryPoint.second;
+    }
+
+    double x() const {
+      return trajectoryPoint.first.X();
+    }
+
+    double y() const {
+      return trajectoryPoint.first.Y();
+    }
+
+    double z() const {
+      return trajectoryPoint.first.Z();
+    }
+
+    double t() const {
+      return trajectoryPoint.first.T();
+    }
+
+    double px() const {
+      return trajectoryPoint.second.Px();
+    }
+
+    double py() const {
+      return trajectoryPoint.second.Py();
+    }
+
+    double pz() const {
+      return trajectoryPoint.second.Pz();
+    }
+
+    double E() const {
+      return trajectoryPoint.second.E();
+    }
+
+  };
 
 } // namespace grams
 
