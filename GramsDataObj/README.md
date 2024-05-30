@@ -10,9 +10,9 @@ in [the src/ directory](./src).
 
 Because of the way [ROOT dictionary
 generation](https://root.cern/manual/io_custom_classes/) works,
-there's single file [Linkdef.h](./include/Linkdef.h) that contains at
-least one line for every data object defined in this directory. If you
-add a new data object, be sure to edit this file.
+there's a `*_Linkdef.h` file for every `*.h` file, where `*` is the
+name of the data object. If you add a new data object, be sure to add
+the corresponding LinkDef file.
 
 
 
