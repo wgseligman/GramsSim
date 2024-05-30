@@ -1,4 +1,4 @@
-/// \file EventID.cc
+/// \file EventID.h
 /// \brief Data object to identify an event.
 // 29-May-2024 WGS
 
@@ -17,13 +17,13 @@
 // object, in the code we can simply search, sort, and test against
 // EventID types.
 
-#ifndef _gramsg4_eventid_h_
-#define _gramsg4_eventid_h_
+#ifndef _grams_eventid_h_
+#define _grams_eventid_h_
 
 #include <iostream>
 #include <limits>
 
-namespace gramsg4 {
+namespace grams {
 
   class EventID {
 
@@ -75,6 +75,6 @@ namespace gramsg4 {
     return out;
   }
 
-} // namespace gramsg4
+} // namespace grams
 
-#endif // _gramsg4_eventid_h_
+#endif // _grams_eventid_h_

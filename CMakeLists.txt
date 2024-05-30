@@ -3,7 +3,7 @@
 
 #----------------------------------------------------------------------------
 # Setup the project
-cmake_minimum_required(VERSION 3.6 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.14 FATAL_ERROR)
 
 # Note: Do NOT make the project name the same as any executable
 # name, including case. When the project was GramsG4 and the 

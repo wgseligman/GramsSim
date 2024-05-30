@@ -1,14 +1,16 @@
-#ifdef __ROOTCLING__
+#ifdef __CLING__
 
 // This is a ROOT dictionary link definitions file.  The format is
 // described (too briefly) at
 // <https://root.cern/manual/io_custom_classes/#selecting-dictionary-entries-linkdefh>.
 
-// There must be at least one line below for every data object that's
-// defined in GramsDataObj. If that object contains special C++
+// There must be at least a line below for every data object that's
+// used in each header; if an object contains special C++
 // classes of its own (e.g., std::map), those must be defined as well.
 
-#pragma link C++ class EventID+;
+#pragma link C++ class grams::EventID+;
+
+#pragma link C++ typedef grams::TrajectoryPoint+;
 
 // The following statements may not be necessary, but I include them
 // for "safety"; see
