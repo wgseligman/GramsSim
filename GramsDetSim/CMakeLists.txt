@@ -12,8 +12,10 @@ set (PROG "gramsdetsim${EXE}")
 
 add_executable(${PROG} gramsdetsim.cc ${DetSimSrc})
 
-# Include any internal libraries, such as this project's utilities.
+# Include any internal libraries, such as this project's and data
+# objects.                                                          
 target_link_libraries(${PROG} ${CMAKE_PROJECT_NAME}Utilities )
+target_link_libraries(${PROG} ${CMAKE_PROJECT_NAME}DataObj )
 
 target_link_libraries(${PROG} ${ROOT_LIBRARIES} )
 target_link_libraries(${PROG} ${XercesC_LIBRARY} )

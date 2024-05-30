@@ -14,7 +14,18 @@ namespace grams {
   // classes.
 
   struct MCTrajectoryPoint {
+
+    // (position, momentum)
     std::pair< ROOT::Math::XYZTVector, ROOT::Math::PxPyPzEVector > trajectoryPoint;
+
+    // volume identifier
+    int volumeID;
+
+    // This is redundant, but just in case someone wants a function
+    // instead of struct member:
+    int identifier() const {
+      return volumeID;
+    }
 
     ROOT::Math::XYZTVector position() const {
       return trajectoryPoint.first;
