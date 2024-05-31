@@ -24,7 +24,7 @@ namespace grams {
 
   }; // MCLArHit
 
-  // Define a list of hist for an event.
+  // Define a list of hits for an event.
   typedef std::vector< MCLArHit > MCLArHits;
 
 } // namespace grams
