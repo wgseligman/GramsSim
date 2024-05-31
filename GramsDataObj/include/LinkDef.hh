@@ -15,6 +15,9 @@
 #pragma link C++ class grams::MCTrack+;
 #pragma link C++ typedef grams::MCTrackList+;
 
+#pragma link C++ struct grams::MCLArHit+;
+#pragma link C++ typedef grams::MCLArHits+;
+
 // The following statements may not be necessary, but I include them
 // for "safety"; see
 // https://root.cern.ch/root/htmldoc/guides/users-guide/AddingaClass.html

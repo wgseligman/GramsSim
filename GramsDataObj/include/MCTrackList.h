@@ -21,7 +21,8 @@ namespace grams {
   struct MCTrajectoryPoint {
 
     // (position, momentum)
-    std::pair< ROOT::Math::XYZTVector, ROOT::Math::PxPyPzEVector > trajectoryPoint;
+    ROOT::Math::XYZTVector position;
+    ROOT::Math::PxPyPzEVector momentum;
 
     // volume identifier
     int volumeID;
@@ -32,49 +33,49 @@ namespace grams {
       return volumeID;
     }
 
-    ROOT::Math::XYZTVector position() const {
-      return trajectoryPoint.first;
+    ROOT::Math::XYZTVector Position4D() const {
+      return position;
     }
 
-    ROOT::Math::PxPyPzEVector momentum() const {
-      return trajectoryPoint.second;
+    ROOT::Math::PxPyPzEVector Momentum4D() const {
+      return momentum;
     }
 
     double x() const {
-      return trajectoryPoint.first.X();
+      return position.X();
     }
 
     double y() const {
-      return trajectoryPoint.first.Y();
+      return position.Y();
     }
 
     double z() const {
-      return trajectoryPoint.first.Z();
+      return position.Z();
     }
 
     double t() const {
-      return trajectoryPoint.first.T();
+      return position.T();
     }
 
     double px() const {
-      return trajectoryPoint.second.Px();
+      return momentum.Px();
     }
 
     double py() const {
-      return trajectoryPoint.second.Py();
+      return momentum.Py();
     }
 
     double pz() const {
-      return trajectoryPoint.second.Pz();
+      return momentum.Pz();
     }
 
     double E() const {
-      return trajectoryPoint.second.E();
+      return momentum.E();
     }
 
     // Define a "less-than" operator so we can have a sorted list.
     bool operator<( const MCTrajectoryPoint& tp ) const {
-      return this->trajectoryPoint.first.T() < tp.trajectoryPoint.first.T();
+      return this->position.T() < tp.position.T();
     }
 
   }; // MCTrajectoryPoint 
@@ -84,14 +85,18 @@ namespace grams {
   // MCTrajectoryPoint:
   std::ostream& operator<< (std::ostream& out, const MCTrajectoryPoint& tp) {
     out << "(x,y,z,t)=(" 
-	<< tp.x() << "," 
-	<< tp.y() << "," 
-	<< tp.z() << "," 
-	<< tp.t() << ") (px,py,pz,E)=("
-	<< tp.px() << "," 
-	<< tp.py() << "," 
-	<< tp.pz() << "," 
-	<< tp.E() << ") id="
+	<< std::setprecision(5) << std::right
+	<< std::setw(11) << tp.x() << std::setw(1) << "," 
+	<< std::setw(11) << tp.y() << std::setw(1) << "," 
+	<< std::setw(11) << tp.z() << std::setw(1) << "," 
+	<< std::setw(11) << tp.t() << std::setw(0)
+	<< ") (px,py,pz,E)=("
+	<< std::setprecision(5) << std::right
+	<< std::setw(11) << tp.px() << std::setw(1) << "," 
+	<< std::setw(11) << tp.py() << std::setw(1) << "," 
+	<< std::setw(11) << tp.pz() << std::setw(1) << "," 
+	<< std::setw(11) << tp.E() << std::setw(0)
+	<< ") id="
 	<< tp.identifier();
     return out;
   }
@@ -124,7 +129,8 @@ namespace grams {
       , weight(1.0)
     {}
 
-    // The "setters" and the "getters".
+    // The setters and getters: access to the information in this
+    // class.
 
     int TrackID() const { return trackID; }
     void SetTrackID( const int& tid ) { trackID = tid; }
@@ -166,6 +172,7 @@ namespace grams {
     const MCTrajectory& Trajectory() const { return trajectory; }
     // So, as with Daughters, provide access to the individual
     // trajectory points.
+    size_t NumTrajectoryPoints() const { return trajectory.size(); }
     const MCTrajectoryPoint& TrajectoryPoint( const int& i ) {
       auto t = trajectory.cbegin();
       std::advance(t, i);
@@ -178,7 +185,8 @@ namespace grams {
 			     const ROOT::Math::XYZTVector& mom,
 			     int identifier ) {
       MCTrajectoryPoint mtp;
-      mtp.trajectoryPoint = std::pair<ROOT::Math::XYZTVector,ROOT::Math::XYZTVector> ( pos, mom );
+      mtp.position = pos;
+      mtp.momentum = mom;
       mtp.volumeID = identifier;
       trajectory.insert( mtp );
     }
@@ -194,21 +202,22 @@ namespace grams {
     void SetPolarizationY( const double& a ) { polarization.SetY(a); }
     void SetPolarizationZ( const double& a ) { polarization.SetZ(a); }
 
-    // If we want to sort tracks, the natural way seems to be by track
-    // ID.
+    // If we want to sort tracks (e.g., in a std::set), the natural
+    // way seems to be by track ID.
     bool operator<( const MCTrack& track ) const {
-      return this->trackID < track.trackID;;
+      return this->trackID < track.trackID;
     }
 
   private:
 
-    // Note: While a common standard for a class's private member is
-    // to use some kind of prefix in the variable name (e.g.,
-    // ftrackID, m_trackID), when using ROOT I/O with dictionary
+    // Note: While a common standard is for a class's private member
+    // name is to use some kind of prefix in the variable name (e.g.,
+    // fparentID, m_parentID), when using ROOT I/O with dictionary
     // generation the branches inherit the names of the
-    // variables. This became awkward in the subsequent analysis.
+    // variables. This becomes awkward in the subsequent analysis.
+    // That's why the private members don't have "header prefixes".
 
-    // The ID number for the track assigned by the simulation. 
+    // Note that the trackID is also used to index MCTrackList.
     int trackID;
 
     // The PDG code for the particle in this track.
@@ -241,7 +250,31 @@ namespace grams {
     // For some studies, we might want to re-weight tracks.
     double weight;
 
+    // I prefer to include "write" operators in my custom classes to
+    // make it easier to examine their contents.
+    friend std::ostream& operator<< (std::ostream& out, const MCTrack& m);
+
   }; // MCTrack
+
+  // The full definition of MCTrack::operator<<. 
+  std::ostream& operator<< (std::ostream& out, const MCTrack& track) {
+    out << "Track ID " << track.trackID
+	<< " PDG code " << track.pdgCode
+	<< " parent ID " << track.parentID
+	<< " process (start) " << track.process
+	<< " process (end) " << track.endProcess
+	<< std::endl;
+    out << "   daughters:";
+    for ( const auto& d : track.daughters ) {
+      out << " " << d;
+    }
+    out << std::endl;
+    out << "   trajectory points:" << std::endl;
+    for ( const auto& tp : track.trajectory ) {
+      out << tp << std::endl;
+    }
+    return out;
+  }
 
   // Define a list of tracks for an event.
   typedef std::set< MCTrack > MCTrackList;
