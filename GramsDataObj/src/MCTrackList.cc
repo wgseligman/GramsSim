@@ -7,6 +7,7 @@
 
 namespace grams {
 
+  // How to write a MCTrajectoryPoint.
   std::ostream& operator<< (std::ostream& out, const MCTrajectoryPoint& tp) {
     out << "(x,y,z,t)=(" 
 	<< std::setprecision(5) << std::right
@@ -25,21 +26,21 @@ namespace grams {
     return out;
   }
 
-  // The full definition of MCTrack::operator<<. 
+  // The full definition of operator<< for MCTrack.
   std::ostream& operator<< (std::ostream& out, const MCTrack& track) {
-    out << "Track ID " << track.trackID
-	<< " PDG code " << track.pdgCode
-	<< " parent ID " << track.parentID
-	<< " process (start) " << track.process
-	<< " process (end) " << track.endProcess
+    out << "Track ID " << track.TrackID()
+	<< " PDG code " << track.PDGCode()
+	<< " parent ID " << track.ParentID()
+	<< " process (start) " << track.Process()
+	<< " process (end) " << track.EndProcess()
 	<< std::endl;
     out << "   daughters:";
-    for ( const auto& d : track.daughters ) {
+    for ( const auto& d : track.Daughters() ) {
       out << " " << d;
     }
     out << std::endl;
     out << "   trajectory points:" << std::endl;
-    for ( const auto& tp : track.trajectory ) {
+    for ( const auto& tp : track.Trajectory() ) {
       out << tp << std::endl;
     }
     return out;
