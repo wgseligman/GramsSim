@@ -50,7 +50,7 @@ namespace grams {
 	    (this->run == e.run && this->event < e.event);      
     }
 
-    // The auto-generated test for equality is fine for us. 
+    // Test for equality is fine for us. 
     bool operator==(const EventID& e) const
     {
       return this->run == e.run  &&

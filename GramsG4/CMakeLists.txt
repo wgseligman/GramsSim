@@ -27,8 +27,8 @@ set (PROG "gramsg4${EXE}")
 
 add_executable(${PROG} gramsg4.cc ${sources})
 
-# Include any internal libraries, such as this project's and data
-# objects.
+# Include any internal libraries, such as this project's utilities and
+# its data objects.
 target_link_libraries(${PROG} ${CMAKE_PROJECT_NAME}Utilities )
 target_link_libraries(${PROG} ${CMAKE_PROJECT_NAME}DataObj )
 

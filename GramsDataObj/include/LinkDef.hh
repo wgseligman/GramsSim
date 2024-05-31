@@ -4,14 +4,16 @@
 // described (too briefly) at
 // <https://root.cern/manual/io_custom_classes/#selecting-dictionary-entries-linkdefh>.
 
-// There must be at least a line below for every data object that's
-// used in each header; if an object contains special C++
+// There must be at least one line below for every data object that's
+// used in each header. If an object contains special C++
 // classes of its own (e.g., std::map), those must be defined as well.
 
 #pragma link C++ class grams::EventID+;
 
 #pragma link C++ struct grams::MCTrajectoryPoint+;
 #pragma link C++ typedef grams::MCTrajectory+;
+#pragma link C++ class grams::MCTrack+;
+#pragma link C++ typedef grams::MCTrackList+;
 
 // The following statements may not be necessary, but I include them
 // for "safety"; see
