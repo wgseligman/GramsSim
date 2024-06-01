@@ -11,6 +11,7 @@
 #include <iostream>
 #include <string>
 #include <set>
+#include <map>
 
 namespace grams {
 
@@ -212,8 +213,15 @@ namespace grams {
   // make it easier to examine their contents. To write an MCTrack:
   std::ostream& operator<< (std::ostream& out, const MCTrack& m);
 
-  // Define a list of tracks for an event.
-  typedef std::set< MCTrack > MCTrackList;
+  // Define a list of tracks for an event. There's a bit of redundancy
+  // here: This a map whose key is the track ID, and every track also
+  // has a trackID field. A map is needed so that, in the full
+  // analysis chain, we can quickly locate the MC truth information
+  // for hits and such.
+  typedef std::map< int, MCTrack > MCTrackList;
+
+  // How to print the entire list of tracks at once. 
+  std::ostream& operator<< (std::ostream& out, const MCTrackList& tl);
 
 } // namespace grams
 
