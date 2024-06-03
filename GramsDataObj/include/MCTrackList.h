@@ -28,22 +28,21 @@ namespace grams {
     // volume identifier
     int volumeID;
 
-    // This is redundant, but just in case someone wants a function
-    // instead of a struct member:
-    int identifier() const { return volumeID; }
+    // This is redundant, but just in case someone wants methods
+    // instead of struct members:
+    int Identifier() const { return volumeID; }
 
-    ROOT::Math::XYZTVector Position4D() const { return position; }
+    const ROOT::Math::XYZTVector Position4D() const { return position; }
+    const ROOT::Math::PxPyPzEVector Momentum4D() const { return momentum; }
 
-    ROOT::Math::PxPyPzEVector Momentum4D() const { return momentum; }
+    double X() const { return position.X(); }
+    double Y() const { return position.Y(); }
+    double Z() const { return position.Z(); }
+    double T() const { return position.T(); }
 
-    double x() const { return position.X(); }
-    double y() const { return position.Y(); }
-    double z() const { return position.Z(); }
-    double t() const { return position.T(); }
-
-    double px() const { return momentum.Px(); }
-    double py() const { return momentum.Py(); }
-    double pz() const { return momentum.Pz(); }
+    double Px() const { return momentum.Px(); }
+    double Py() const { return momentum.Py(); }
+    double Pz() const { return momentum.Pz(); }
     double E()  const { return momentum.E(); }
 
     // Define a "less-than" operator so we can have a sorted list.

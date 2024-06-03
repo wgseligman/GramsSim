@@ -21,18 +21,18 @@ namespace grams {
 
     out << "(x,y,z,t)=(" 
 	<< std::setprecision(5) << std::right
-	<< std::setw(11) << tp.x() << std::setw(1) << "," 
-	<< std::setw(11) << tp.y() << std::setw(1) << "," 
-	<< std::setw(11) << tp.z() << std::setw(1) << "," 
-	<< std::setw(11) << tp.t() << std::setw(0)
+	<< std::setw(11) << tp.X() << std::setw(1) << "," 
+	<< std::setw(11) << tp.Y() << std::setw(1) << "," 
+	<< std::setw(11) << tp.Z() << std::setw(1) << "," 
+	<< std::setw(11) << tp.T() << std::setw(0)
 	<< ") (px,py,pz,E)=("
 	<< std::setprecision(5) << std::right
-	<< std::setw(11) << tp.px() << std::setw(1) << "," 
-	<< std::setw(11) << tp.py() << std::setw(1) << "," 
-	<< std::setw(11) << tp.pz() << std::setw(1) << "," 
+	<< std::setw(11) << tp.Px() << std::setw(1) << "," 
+	<< std::setw(11) << tp.Py() << std::setw(1) << "," 
+	<< std::setw(11) << tp.Pz() << std::setw(1) << "," 
 	<< std::setw(11) << tp.E() << std::setw(0)
 	<< ") id="
-	<< tp.identifier();
+	<< tp.Identifier();
 
     // Restore the saved output format.
     out.copyfmt( savedFormat );
