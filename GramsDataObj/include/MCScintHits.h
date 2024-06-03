@@ -1,9 +1,9 @@
-/// \file MCLArHits.h
-/// \brief Data object that contains a list of energy deposits in a LAr TPC
-// 31-May-2024 WGS
+/// \file MCScintHits.h
+/// \brief Data object that contains a list of energy deposits in a scintillar volume.
+// 03-May-2024 WGS
 
-#ifndef _grams_mclarhits_h_
-#define _grams_mclarhits_h_
+#ifndef _grams_mcscinthits_h_
+#define _grams_mcscinthits_h_
 
 #include <Math/Vector4D.h>
 
@@ -16,7 +16,7 @@ namespace grams {
   // LAr TPC. This is effectively a record of a "step" within
   // LAr. 
 
-  struct MCLArHit {
+  struct MCScintHit {
 
     // A pointer back to the MCTrack that created the step.
     int trackID;
@@ -26,12 +26,6 @@ namespace grams {
     // this variable requires the users to do a lookup in
     // MCTrackList.)
     int pdgCode;
-
-    // Number of scintillations photons. 
-    int numPhotons;
-
-    // Number of Cerenkov photons.
-    int cerPhotons;
 
     // Volume identifier for the step.
     int volumeID;
@@ -47,8 +41,6 @@ namespace grams {
     // and a C++ class.
     int TrackID() const { return trackID; }
     int PDGCode() const { return pdgCode; }
-    int NumPhotons() const { return numPhotons; }
-    int CerPhotons() const { return cerPhotons; }
     int Identifier() const { return volumeID; }
     int E() const { return energy; }
     int Energy() const { return energy; } // an extra accessor can't hurt
@@ -68,31 +60,31 @@ namespace grams {
     double EndZ() const { return end.Z(); }
     double EndT() const { return end.T(); }
 
-  }; // MCLArHit
+  }; // MCScintHit
 
   // I like to define output operations for my custom classes.
-  std::ostream& operator<< (std::ostream& out, const MCLArHit& mcLArHit);
+  std::ostream& operator<< (std::ostream& out, const MCScintHit& mcScintHit);
 
-  // Define a list of LAr hits for an event. It's defined as a
-  // map<TrackID, MCLArHit> just in case a user needs to know which
-  // hits are associated with a given track.
+  // Define a list of scintillator hits for an event. It's defined as
+  // a map<TrackID, MCScintHit> just in case a user needs to know
+  // which hits are associated with a given track.
   //
   // An example of iterating through a map without worrying about
   // where the hits came from (which is more "realistic" if we're
   // trying to simulate data aquisition):
 
-  //    for ( const auto& [ trackID, mcLArHit ] : mcLArHits ) {
-  //        ... do whatever with mcLArHit, ignoring trackID ...
+  //    for ( const auto& [ trackID, mcScintHit ] : mcScintHits ) {
+  //        ... do whatever with mcScintHit, ignoring trackID ...
   //    }
 
   // Note that this example applies even if you want to use the value
   // of trackID.
 
-  typedef std::map< int, MCLArHit > MCLArHits;
+  typedef std::map< int, MCScintHit > MCScintHits;
 
   // I like to define output operations for my custom classes.
-  std::ostream& operator<< (std::ostream& out, const MCLArHits& mcLArHits);
+  std::ostream& operator<< (std::ostream& out, const MCScintHits& mcScintHits);
 
 } // namespace grams
 
-#endif // _grams_mclarhits_h_
+#endif // _grams_mcscinthits_h_
