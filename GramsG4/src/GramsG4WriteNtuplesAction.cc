@@ -178,10 +178,14 @@ namespace gramsg4 {
     if ( threadID == G4Threading::MASTER_ID   ||
 	 threadID == G4Threading::SEQUENTIAL_ID ) {
 
-    if (m_debug)
-      G4cout << "WriteNtuplesAction::EndOfRunAction() - "
-	     << "about to close file in threadID '" << threadID
-	     << G4endl;
+      if (m_debug)
+	G4cout << "WriteNtuplesAction::EndOfRunAction() - "
+	       << "about to close file in threadID '" << threadID
+	       << G4endl;
+
+      // Build an index for this tree. This will allow downstream
+      // programs to quickly access a given EventID within the tree.
+      s_tree->BuildIndex("EventID.Index()");
 
       // Save the output tree and close the output file.
       s_tree->Write();

@@ -65,6 +65,23 @@ namespace grams {
       return out;
     }
 
+    // This method is meant to be used with TTree::BuildIndex and
+    // TTree::GetEntryWithIndex. The idea is to generate a unique
+    // number for each unique EventID, which can then be used to
+    // quickly search for a given entry in a TTree.
+
+    // The default BuildIndex and GetEntryWithIndex routines are
+    // designed to work with run/event numbers. The purpose of this
+    // routine is to provide an index number even if it turns out that
+    // run/event is not a good way to specify an EventID for a given
+    // experiment.
+
+    int Index() const {
+      // Note that this scheme assumes that a given run won't have
+      // more than 1000000 events.
+      return run*1000000 + event;
+    }
+
   private:
 
     int run;    // run number

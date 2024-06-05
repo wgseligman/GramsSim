@@ -388,21 +388,21 @@ int main(int argc,char **argv)
   // At the end of the simulation, after all files have hopefully been
   // closed...
 
-  // The G4AnalysisManager has a bug: The files it creates cannot be
-  // opened in UPDATE mode. Post-process the file created by
-  // G4AnalysisManager to remove the bug.
+  // In GramsG4WriteNtupleAction, we wrote the options used to run tis
+  // program.  Let's write a ROOT form of the detector geometry to the
+  // output file as well. The Geometry::GDML2ROOT() method with mostly
+  // default arguments takes care of this.
 
+  // We need to fetch the name of the output file, since GDML2ROOT
+  // assumes the name of the parameter is "outputfile", while the
+  // option's name was changed to "outputg4file" to avoid conflicting
+  // with "outputfile" as used by other programs in the analysis
+  // chain.
   G4String filename;
   options->GetOption("outputg4file",filename);
-  //g4util::FixAnalysis( filename );
-
-  // In addition to recording the options used to run this program,
-  // let's see if we can write a ROOT form of the detector geometry to
-  // the output file as well. The Geometry::GDML2ROOT() method with
-  // default arguments should be able to take care of this.
 
   auto geometry = util::Geometry::GetInstance();
-  geometry->GDML2ROOT("", filename);
+  geometry->GDML2ROOT(filename);
   
   return 0;
 }
