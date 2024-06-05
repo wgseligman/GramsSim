@@ -5,12 +5,12 @@
 #include "MCScintHits.h"
 #include "iostream"
 
-#include <set>
 #include <map>
 
 // How to write a MCScintHit
 std::ostream& operator<< (std::ostream& out, const grams::MCScintHit& ahit) {
   out << "Track ID=" << ahit.TrackID()
+      << ", Hit ID=" << ahit.HitID()
       << ", PDG code=" << ahit.PDGCode()
       << ", Energy=" << ahit.E()
       << ", Identifier=" << ahit.Identifier()
@@ -36,7 +36,7 @@ std::ostream& operator<< (std::ostream& out, const grams::MCScintHit& ahit) {
 // How to write a collection of MCScintHits
 std::ostream& operator<< (std::ostream& out, const grams::MCScintHits& hits) {
   
-  for ( const auto& [ trackID, mcScintHit ] : hits ) {
+  for ( const auto& [ key, mcScintHit ] : hits ) {
     out << mcScintHit;
   }
   out << std::endl;

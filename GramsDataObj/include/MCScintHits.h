@@ -21,6 +21,11 @@ namespace grams {
     // A pointer back to the MCTrack that created the step.
     int trackID;
 
+    // An arbitrary number assigned in Geant4. Note that 'hitID' is
+    // completely arbitrary. It does not imply time ordering, nor
+    // anything else.
+    int hitID;
+
     // For conveniece, the PDG code of the particle that created the
     // step. (This information is also in the MCTrack, but omitting
     // this variable requires the users to do a lookup in
@@ -40,6 +45,7 @@ namespace grams {
     // Provide accessors to avoid confusion between a C++ struct
     // and a C++ class.
     int TrackID() const { return trackID; }
+    int HitID() const { return hitID; }
     int PDGCode() const { return pdgCode; }
     int Identifier() const { return volumeID; }
     int E() const { return energy; }
@@ -62,22 +68,20 @@ namespace grams {
 
   }; // MCScintHit
 
-  // Define a list of scintillator hits for an event. It's defined as
-  // a map<TrackID, MCScintHit> just in case a user needs to know
-  // which hits are associated with a given track.
+  // Define a list of Scint hits for an event. It's defined as a
+  // map<key, MCScintHit>. where the key is std::tuple<trackID,hitID>.
+  // This allows backtracking of which which track and which hit
+  // an energy deposit comes from.
   //
-  // An example of iterating through a map without worrying about
-  // where the hits came from (which is more "realistic" if we're
-  // trying to simulate data aquisition):
+  // An example of iterating through a map:
 
-  //    for ( const auto& [ trackID, mcScintHit ] : mcScintHits ) {
-  //        ... do whatever with mcScintHit, ignoring trackID ...
+  //    for ( const auto& [ key, mcScintHit ] : mcScintHits ) {
+  //        ... do whatever with mcScintHit, ignoring the key, or ...
+  //       auto trackID = key.get<0>; // if you need the track ID
+  //       auto hitID = key.get<1>; // if you need the hit ID
   //    }
 
-  // Note that this example applies even if you want to use the value
-  // of trackID.
-
-  typedef std::map< int, MCScintHit > MCScintHits;
+  typedef std::map< std::tuple<int,int>, MCScintHit > MCScintHits;
 
 } // namespace grams
 

@@ -5,12 +5,13 @@
 #include "MCLArHits.h"
 #include "iostream"
 
-#include <set>
 #include <map>
+#include <tuple>
 
 // How to write a MCLArHit
 std::ostream& operator<< (std::ostream& out, const grams::MCLArHit& ahit) {
   out << "Track ID=" << ahit.TrackID()
+      << ", Hit ID=" << ahit.HitID()
       << ", PDG code=" << ahit.PDGCode()
       << ", Energy=" << ahit.E()
       << ", Scintillation Photons=" << ahit.NumPhotons()
@@ -38,7 +39,7 @@ std::ostream& operator<< (std::ostream& out, const grams::MCLArHit& ahit) {
 // How to write a collection of MCLArHits
 std::ostream& operator<< (std::ostream& out, const grams::MCLArHits& hits) {
 
-  for ( const auto& [ trackID, mcLArHit ] : hits ) {
+  for ( const auto& [ key, mcLArHit ] : hits ) {
     out << mcLArHit;
   }
   out << std::endl;

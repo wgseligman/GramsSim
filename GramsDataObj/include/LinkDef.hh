@@ -15,6 +15,7 @@
 #pragma link C++ class grams::EventID+;
 #pragma link C++ function operator<<(std::ostream&, const grams::EventID&);
 
+// Track objects
 #pragma link C++ struct grams::MCTrajectoryPoint+;
 #pragma link C++ function operator<<(std::ostream&, const grams::MCTrajectoryPoint&);
 #pragma link C++ class grams::MCTrajectory+;
@@ -23,6 +24,10 @@
 #pragma link C++ class grams::MCTrackList+;
 #pragma link C++ function operator<<(std::ostream&, const grams::MCTrackList&);
 
+// Needed for the hit objects.
+#pragma link C++ class std::tuple<int,int>+;
+
+// Hit objects
 #pragma link C++ struct grams::MCLArHit+;
 #pragma link C++ function operator<<(std::ostream&, const grams::MCLArHit&);
 #pragma link C++ class grams::MCLArHits+;

@@ -34,6 +34,7 @@
 #include <Math/Vector4D.h>
 
 #include <string>
+#include <tuple>
 
 namespace gramsg4 {
 
@@ -268,6 +269,7 @@ namespace gramsg4 {
       // Create a new ROOT hit object.
       grams::MCLArHit mcLArHit;
       mcLArHit.trackID = hit->GetTrackID();
+      mcLArHit.hitID = i;
       mcLArHit.pdgCode = hit->GetPDGCode();
       mcLArHit.numPhotons = hit->GetNumPhotons();
       mcLArHit.cerPhotons = hit->GetCerPhotons();
@@ -283,8 +285,10 @@ namespace gramsg4 {
 			        (hit->GetEndPosition()).y() / m_lengthScale,
 			        (hit->GetEndPosition()).z() / m_lengthScale,
 			        hit->GetEndTime() / m_timeScale );
+
       // Add the new hit to the list.
-      auto newHit = std::make_pair(mcLArHit.trackID, mcLArHit);
+      auto key = std::make_tuple( mcLArHit.trackID, mcLArHit.hitID );
+      auto newHit = std::make_pair(key, mcLArHit);
       m_mcLArHits->insert( newHit );
 
     } // For each LArHit
@@ -310,6 +314,7 @@ namespace gramsg4 {
       // Create a new ROOT hit object.
       grams::MCScintHit mcScintHit;
       mcScintHit.trackID = hit->GetTrackID();
+      mcScintHit.hitID = i;
       mcScintHit.pdgCode = hit->GetPDGCode();
       mcScintHit.volumeID = hit->GetIdentifier();
       mcScintHit.energy = hit->GetEnergy() / m_energyScale;
@@ -323,8 +328,10 @@ namespace gramsg4 {
 			        (hit->GetEndPosition()).y() / m_lengthScale,
 			        (hit->GetEndPosition()).z() / m_lengthScale,
 			        hit->GetEndTime() / m_timeScale );
+
       // Add the new hit to the list.
-      auto newHit = std::make_pair(mcScintHit.trackID, mcScintHit);
+      auto key = std::make_tuple( mcScintHit.trackID, mcScintHit.hitID );
+      auto newHit = std::make_pair(key, mcScintHit);
       m_mcScintHits->insert( newHit );
 
     } // For each ScintHit
