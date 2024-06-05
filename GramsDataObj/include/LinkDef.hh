@@ -8,19 +8,30 @@
 // used in each header. If an object contains special C++
 // classes of its own (e.g., std::map), those must be defined as well.
 
+// In addition, if operator<< is used for any classes, then it must be
+// explicitly included below, and it must _not_ be part of any
+// namespace.
+
 #pragma link C++ class grams::EventID+;
 #pragma link C++ function operator<<(std::ostream&, const grams::EventID&);
 
 #pragma link C++ struct grams::MCTrajectoryPoint+;
+#pragma link C++ function operator<<(std::ostream&, const grams::MCTrajectoryPoint&);
 #pragma link C++ class grams::MCTrajectory+;
 #pragma link C++ class grams::MCTrack+;
+#pragma link C++ function operator<<(std::ostream&, const grams::MCTrack&);
 #pragma link C++ class grams::MCTrackList+;
+#pragma link C++ function operator<<(std::ostream&, const grams::MCTrackList&);
 
 #pragma link C++ struct grams::MCLArHit+;
+#pragma link C++ function operator<<(std::ostream&, const grams::MCLArHit&);
 #pragma link C++ class grams::MCLArHits+;
+#pragma link C++ function operator<<(std::ostream&, const grams::MCLArHits&);
 
 #pragma link C++ struct grams::MCScintHit+;
+#pragma link C++ function operator<<(std::ostream&, const grams::MCScintHit&);
 #pragma link C++ class grams::MCScintHits+;
+#pragma link C++ function operator<<(std::ostream&, const grams::MCScintHits&);
 
 // The following statements may not be necessary, but I include them
 // for "safety"; see
