@@ -10,8 +10,12 @@
 
 #include <iostream>
 #include <string>
+#include <cstring> // for strncpy
 #include <set>
 #include <map>
+
+// The maximum length of the process name, as defined by Geant4.
+#define MAXPROCESSLEN 30
 
 namespace grams {
 
@@ -102,10 +106,10 @@ namespace grams {
     void SetParentID( const int& pid ) { parentID = pid; }
 
     std::string Process() const { return process; }
-    void SetProcess( const std::string& p ) { process = p; }
+    void SetProcess( const std::string& p ) { strncpy(process, p.c_str(), MAXPROCESSLEN); }
 
     std::string EndProcess() const { return endProcess; }
-    void SetEndProcess( const std::string& p ) { endProcess = p; }
+    void SetEndProcess( const std::string& p ) { strncpy(endProcess, p.c_str(), MAXPROCESSLEN); }
 
     double Weight() const { return weight; }
     void SetWeight( const double& w ) { weight = w; }
@@ -195,11 +199,13 @@ namespace grams {
     std::set<int> daughters;
 
     // The simulation process that created this track. If this is a
-    // primary particle, its value will be "primary".
-    std::string process;
+    // primary particle, its value will be "primary". We're using
+    // old-style character arrays, instead of strings, because the
+    // older style is easier to view in interactive ROOT.
+    char process[MAXPROCESSLEN+1];
 
     // The process that ended this track. 
-    std::string endProcess;
+    char endProcess[MAXPROCESSLEN+1];
 
     // The list of points that make up the track's trajectory.
     MCTrajectory trajectory;

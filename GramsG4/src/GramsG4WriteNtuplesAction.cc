@@ -426,12 +426,22 @@ namespace gramsg4 {
 	     << "'" << G4endl;
   }
 
-  void WriteNtuplesAction::PostTrackingAction(const G4Track*) {
+  void WriteNtuplesAction::PostTrackingAction(const G4Track* a_track) {
 
     if (m_debug)
       G4cout << "WriteNtuplesAction::PostTrackingAction() - "
 	     << "at start of method for threadID '" << G4Threading::G4GetThreadId()
 	     << G4endl;
+
+    // See if we can get the process at the end the track by looking
+    // at its last step.
+    auto step = a_track->GetStep();
+    if ( step ) {
+      auto lastProcess = step->GetPostStepPoint()->GetProcessDefinedStep();
+      if ( lastProcess ) {
+	m_mcTrack.SetEndProcess( lastProcess->GetProcessName() );
+      }
+    }
 
     // Lock this thread so that only one instance can execute at a
     // time, to avoid memory-management problems. 
