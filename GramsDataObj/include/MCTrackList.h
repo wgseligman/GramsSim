@@ -56,11 +56,6 @@ namespace grams {
 
   }; // MCTrajectoryPoint 
 
-  // I prefer to define "write" operators for my custom classes to
-  // make it easier to examine their contents.  In order to print an
-  // MCTrajectoryPoint:
-  std::ostream& operator<< (std::ostream& out, const MCTrajectoryPoint& tp);
-
   // A trajectory is a sequence of trajectory points. It's not likely
   // we'll have two trajectory points in a track with the same time
   // (see MCTrajectoryPoint::operator<); it's more likely that the
@@ -218,10 +213,6 @@ namespace grams {
 
   }; // MCTrack
 
-  // I prefer to include "write" operators for my custom classes to
-  // make it easier to examine their contents. To write an MCTrack:
-  std::ostream& operator<< (std::ostream& out, const MCTrack& m);
-
   // Define a list of tracks for an event. There's a bit of redundancy
   // here: This a map whose key is the track ID, and every track also
   // has a trackID field. A map is needed so that, in the full
@@ -229,9 +220,20 @@ namespace grams {
   // for hits and such.
   typedef std::map< int, MCTrack > MCTrackList;
 
-  // How to print the entire list of tracks at once. 
-  std::ostream& operator<< (std::ostream& out, const MCTrackList& tl);
-
 } // namespace grams
+
+// I prefer to define "write" operators for my custom classes to make
+// it easier to examine their contents. For these to work in ROOT's
+// dictionary-generation system, they must be located outside of any
+// namespace.
+
+// In order to print an MCTrajectoryPoint:
+std::ostream& operator<< (std::ostream& out, grams::MCTrajectoryPoint const& tp);
+
+// To write an MCTrack:
+std::ostream& operator<< (std::ostream& out, grams::MCTrack const& m);
+
+// How to print the entire list of tracks at once. 
+std::ostream& operator<< (std::ostream& out, grams::MCTrackList const& tl);
 
 #endif // _grams_mctracklist_h_

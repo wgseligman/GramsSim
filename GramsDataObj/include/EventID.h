@@ -57,14 +57,6 @@ namespace grams {
 	this->event == e.event;
     }
 
-    // I prefer to include "write" operators in my custom classes to
-    // make it easier to examine their contents.
-    std::ostream& operator<< (std::ostream& out) {
-      out << "run=" << this->run 
-	  << " event=" << this->event;
-      return out;
-    }
-
     // This method is meant to be used with TTree::BuildIndex and
     // TTree::GetEntryWithIndex. The idea is to generate a unique
     // number for each unique EventID, which can then be used to
@@ -82,6 +74,10 @@ namespace grams {
       return run*1000000 + event;
     }
 
+    // I dislike these accessors, but we need them for operator<<.
+    int Run() const { return run; }
+    int Event() const { return event; }
+
   private:
 
     int run;    // run number
@@ -90,5 +86,11 @@ namespace grams {
   };
 
 } // namespace grams
+
+// I prefer to include "write" operators for my custom classes to make
+// it easier to examine their contents. For ROOT's dictionary
+// definition to function properly, this must be located outside of
+// any namespace.
+std::ostream& operator<< (std::ostream& out, grams::EventID const& e);
 
 #endif // _grams_eventid_h_

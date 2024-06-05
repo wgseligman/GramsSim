@@ -62,9 +62,6 @@ namespace grams {
 
   }; // MCScintHit
 
-  // I like to define output operations for my custom classes.
-  std::ostream& operator<< (std::ostream& out, const MCScintHit& mcScintHit);
-
   // Define a list of scintillator hits for an event. It's defined as
   // a map<TrackID, MCScintHit> just in case a user needs to know
   // which hits are associated with a given track.
@@ -82,9 +79,14 @@ namespace grams {
 
   typedef std::map< int, MCScintHit > MCScintHits;
 
-  // I like to define output operations for my custom classes.
-  std::ostream& operator<< (std::ostream& out, const MCScintHits& mcScintHits);
-
 } // namespace grams
+
+// I prefer to define "write" operators for my custom classes to make
+// it easier to examine their contents. For these to work in ROOT's
+// dictionary-generation system, they must be located outside of any
+// namespace.
+
+std::ostream& operator<< (std::ostream& out, const grams::MCScintHit& mcScintHit);
+std::ostream& operator<< (std::ostream& out, const grams::MCScintHits& mcScintHits);
 
 #endif // _grams_mcscinthits_h_

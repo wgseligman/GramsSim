@@ -9,6 +9,7 @@
 // classes of its own (e.g., std::map), those must be defined as well.
 
 #pragma link C++ class grams::EventID+;
+#pragma link C++ function operator<<(std::ostream&, const grams::EventID&);
 
 #pragma link C++ struct grams::MCTrajectoryPoint+;
 #pragma link C++ class grams::MCTrajectory+;
