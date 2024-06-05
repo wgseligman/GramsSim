@@ -31,6 +31,8 @@ add_executable(${PROG} gramsg4.cc ${sources})
 # its data objects.
 target_link_libraries(${PROG} ${CMAKE_PROJECT_NAME}Utilities )
 target_link_libraries(${PROG} ${CMAKE_PROJECT_NAME}DataObj )
+#message(STATUS "GramsG4 link library ${CMAKE_PROJECT_NAME}Utilities")
+#message(STATUS "GramsG4 link library ${CMAKE_PROJECT_NAME}DataObj")
 
 target_link_libraries(${PROG} ${HEPMC3_LIBRARIES} )
 target_link_libraries(${PROG} ${ROOT_LIBRARIES} )
