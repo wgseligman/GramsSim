@@ -244,8 +244,8 @@ namespace gramsg4 {
     delete m_mcScintHits;
     m_mcScintHits = new grams::MCScintHits;
 
-    // First, convert the energy deposits in the LAr. Get hit
-    // collection ID (only once)
+    // First, convert the energy deposits in the LAr. Get the Geant4
+    // hit collection ID (only once)
     if ( m_LArHitCollectionID == -1 ) {
       // Make sure the following collection ID name agrees with that
       // in GramsG4DetectorConstruction.cc
@@ -253,16 +253,15 @@ namespace gramsg4 {
 	= G4SDManager::GetSDMpointer()->GetCollectionID("LArHits");
     }
 
-    // Get collection of hits
+    // Get the collection of hits attached to this Geant4 event.
     auto LArHC 
       = GetHitsCollection<LArHitsCollection>(m_LArHitCollectionID, a_event);
 
-    G4int entries = LArHC->entries();
     // For each hit in the collection...
-    for ( G4int i = 0; i != entries; ++i ) {
+    for ( size_t i = 0; i != LArHC->entries(); ++i ) {
       auto hit = (*LArHC)[i];
 
-      // Create a new hit object.
+      // Create a new ROOT hit object.
       grams::MCLArHit mcLArHit;
       mcLArHit.trackID = hit->GetTrackID();
       mcLArHit.pdgCode = hit->GetPDGCode();
@@ -288,7 +287,7 @@ namespace gramsg4 {
 
     // Do the same thing for the Scintillator hits.
 
-    // Get hit collection ID (only once)
+    // Get the Geant4 hit collection ID (only once)
     if ( m_ScintillatorHitCollectionID == -1 ) {
       // Make sure the following collection ID name agrees with that
       // in GramsG4DetectorConstruction.cc
@@ -296,16 +295,15 @@ namespace gramsg4 {
 	= G4SDManager::GetSDMpointer()->GetCollectionID("ScintillatorHits");
     }
 
-    // Get hits collection
+    // Get the collection of hits attached to this Geant4 event.
     auto ScintillatorHC = 
       GetHitsCollection<ScintillatorHitsCollection>(m_ScintillatorHitCollectionID, a_event);
 
-    entries = ScintillatorHC->entries();
     // For each hit in the collection...
-    for ( G4int i = 0; i != entries; ++i ) {
+    for ( size_t i = 0; i != ScintillatorHC->entries(); ++i ) {
       auto hit = (*ScintillatorHC)[i];
       
-      // Create a new hit object.
+      // Create a new ROOT hit object.
       grams::MCScintHit mcScintHit;
       mcScintHit.trackID = hit->GetTrackID();
       mcScintHit.pdgCode = hit->GetPDGCode();
@@ -326,6 +324,30 @@ namespace gramsg4 {
       m_mcScintHits->insert( newHit );
 
     } // For each ScintHit
+
+    // For each track in m_mcTrackList, we've set the parent track
+    // ID. Now we go through the list and fill in the daughter track
+    // IDs.
+    for ( auto& [ trackID, mcTrack ]: (*m_mcTrackList) ) {
+
+      // Get the parent track ID for this track.
+      auto parentID = mcTrack.ParentID();
+
+      // The track "trackID" is the daughter of track
+      // "parentID". Search for parentID in the track list. (Due to
+      // energy cuts, it's possible for a daughter to exist without a
+      // parent in the list, and vice versa.)
+      auto search = m_mcTrackList->find(parentID);
+      if ( search != m_mcTrackList->end() ) {
+
+	// This is the MCTrack for the parentID.
+	auto& parentTrack = (*search).second;
+
+	// Add this track to the list of daughters for this parent.
+	parentTrack.AddDaughter( trackID );
+
+      } // search for parent
+    } // for each track in list
 
     // Filling the tree. Within the Geant4 paradigm of master/worker
     // threads, it may not be clear that each thread has its own local
@@ -410,6 +432,7 @@ namespace gramsg4 {
     // Lock this thread so that only one instance can execute at a
     // time, to avoid memory-management problems. 
     G4AutoLock lock(&myMutex);
+
     // std::map consists of (key,value) pairs. Construct such a pair
     // for this map, then insert it.
     auto newEntry = std::make_pair(m_mcTrack.TrackID(), m_mcTrack); 
@@ -427,8 +450,13 @@ namespace gramsg4 {
   HC* WriteNtuplesAction::GetHitsCollection(G4int hcID,
 					    const G4Event* event) const
   {
-    // Fetch the appropriate collection of hits from the
-    // current event.
+    // Fetch the appropriate collection of hits from the current
+    // event. 
+
+    // Be careful with the structure returned by this routine. A
+    // Geant4 hits collection (class G4THitsCollection) looks vaguely
+    // like a vector (operator[] is defined), but it's not a vector
+    // (no begin() or end() methods).
     
     auto hitsCollection 
       = static_cast<HC*>(event->GetHCofThisEvent()->GetHC(hcID));

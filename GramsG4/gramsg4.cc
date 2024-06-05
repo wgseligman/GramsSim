@@ -401,11 +401,8 @@ int main(int argc,char **argv)
   // the output file as well. The Geometry::GDML2ROOT() method with
   // default arguments should be able to take care of this.
 
-  G4String gdmlfile;
-  options->GetOption("gdmlfile",gdmlfile);
-
   auto geometry = util::Geometry::GetInstance();
-  geometry->GDML2ROOT(gdmlfile, filename);
+  geometry->GDML2ROOT("", filename);
   
   return 0;
 }

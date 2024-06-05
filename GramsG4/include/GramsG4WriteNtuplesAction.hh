@@ -2,13 +2,14 @@
 /// \brief User-action class to write out hits.
 
 /// This is a user-action class that writes out the event hits and
-/// truth information. At present, the output takes the form of basic
-/// (and inefficient) ROOT n-tuples.
+/// truth information. At present, the output takes the form of a ROOT
+/// Tree with several branches, with each branch containing a data
+/// object defined in GramsDataObj.
 
 #ifndef GramsG4WriteNtuplesAction_H
 #define GramsG4WriteNtuplesAction_H
 
-// From GramsDataObj
+// From GramsDataObj: The TTree branches we'll write.
 #include "EventID.h"
 #include "MCTrackList.h"
 #include "MCLArHits.h"
@@ -61,13 +62,6 @@ namespace gramsg4 {
     // Hit collection ID numbers, assigned by Geant4.
     G4int m_LArHitCollectionID;
     G4int m_ScintillatorHitCollectionID;
-
-    // ID numbers for the n-tuples we'll create. Ntuples are
-    // automatically assigned IDs in the order we create them.
-    G4int m_LArNTID;
-    G4int m_ScintNTID;
-    G4int m_TrackNTID;
-    G4int m_optionsNTID;
 
     // Save the output states.
     G4bool m_verbose;
