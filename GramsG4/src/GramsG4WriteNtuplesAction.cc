@@ -127,8 +127,6 @@ namespace gramsg4 {
 	       << "about to open file '" << m_filename
 	       << "' for output" << G4endl;
 
-      gSystem->Load("GramsDataObj/libGramsSimProjectDataObj.so");
-
       // Open the output file.
       s_file = new TFile(m_filename, "RECREATE");
 
