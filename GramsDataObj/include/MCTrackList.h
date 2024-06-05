@@ -81,6 +81,10 @@ namespace grams {
     // values. Supply some defaults on initialization. 
     MCTrack() 
       : trackID(0)
+      , pdgCode(0)
+      , parentID(0)
+      , process("")
+      , endProcess("")
       , polarization(0.,0.,0.)
       , weight(1.0)
     {}

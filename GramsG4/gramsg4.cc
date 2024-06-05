@@ -393,16 +393,19 @@ int main(int argc,char **argv)
   // G4AnalysisManager to remove the bug.
 
   G4String filename;
-  options->GetOption("outputfile",filename);
-  g4util::FixAnalysis( filename );
+  options->GetOption("outputg4file",filename);
+  //g4util::FixAnalysis( filename );
 
   // In addition to recording the options used to run this program,
   // let's see if we can write a ROOT form of the detector geometry to
   // the output file as well. The Geometry::GDML2ROOT() method with
   // default arguments should be able to take care of this.
 
+  G4String gdmlfile;
+  options->GetOption("gdmlfile",gdmlfile);
+
   auto geometry = util::Geometry::GetInstance();
-  geometry->GDML2ROOT();
+  geometry->GDML2ROOT(gdmlfile, filename);
   
   return 0;
 }

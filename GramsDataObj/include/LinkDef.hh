@@ -11,15 +11,15 @@
 #pragma link C++ class grams::EventID+;
 
 #pragma link C++ struct grams::MCTrajectoryPoint+;
-#pragma link C++ typedef grams::MCTrajectory+;
+#pragma link C++ class grams::MCTrajectory+;
 #pragma link C++ class grams::MCTrack+;
-#pragma link C++ typedef grams::MCTrackList+;
+#pragma link C++ class grams::MCTrackList+;
 
 #pragma link C++ struct grams::MCLArHit+;
-#pragma link C++ typedef grams::MCLArHits+;
+#pragma link C++ class grams::MCLArHits+;
 
 #pragma link C++ struct grams::MCScintHit+;
-#pragma link C++ typedef grams::MCScintHits+;
+#pragma link C++ class grams::MCScintHits+;
 
 // The following statements may not be necessary, but I include them
 // for "safety"; see

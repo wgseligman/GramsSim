@@ -59,7 +59,11 @@ namespace grams {
 
     // I prefer to include "write" operators in my custom classes to
     // make it easier to examine their contents.
-    friend std::ostream& operator<< (std::ostream& out, const EventID& e);
+    std::ostream& operator<< (std::ostream& out) {
+      out << "run=" << this->run 
+	  << " event=" << this->event;
+      return out;
+    }
 
   private:
 
@@ -67,13 +71,6 @@ namespace grams {
     int event;  // event number within a run
 
   };
-
-  // The full definition of operator<<. 
-  std::ostream& operator<< (std::ostream& out, const EventID& e) {
-    out << "run=" << e.run 
-	<< " event=" << e.event;
-    return out;
-  }
 
 } // namespace grams
 
