@@ -38,6 +38,17 @@ std::ostream& operator<< (std::ostream& out, const grams::MCTrajectoryPoint& tp)
   return out;
 }
 
+// The full definition of operator<< for MCTrajectory.
+std::ostream& operator<< (std::ostream& out, const grams::MCTrajectory& trajectory) {
+
+  for ( const auto& tp : trajectory ) {
+    // Note how the following statement depends on the definition of
+    // operator<< for MCTrajectoryPoint above.
+    out << "      " << tp << std::endl;
+  }
+  return out;
+}
+
 // The full definition of operator<< for MCTrack.
 std::ostream& operator<< (std::ostream& out, const grams::MCTrack& track) {
   out << "Track ID " << track.TrackID()
@@ -58,11 +69,8 @@ std::ostream& operator<< (std::ostream& out, const grams::MCTrack& track) {
   out << std::endl;
   
   out << "   trajectory points:" << std::endl;
-  for ( const auto& tp : track.Trajectory() ) {
-    // Note how the following statement depends on the definition of
-    // operator<< for MCTrajectoryPoint above.
-    out << "      " << tp << std::endl;
-  }
+  out << track.Trajectory();
+  out << std::endl;
   
   // At least for now, don't print out the polarization or the
   // weight.

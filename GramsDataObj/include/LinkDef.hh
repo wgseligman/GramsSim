@@ -19,6 +19,7 @@
 #pragma link C++ struct grams::MCTrajectoryPoint+;
 #pragma link C++ function operator<<(std::ostream&, const grams::MCTrajectoryPoint&);
 #pragma link C++ class grams::MCTrajectory+;
+#pragma link C++ function operator<<(std::ostream&, const grams::MCTrajectory&);
 #pragma link C++ class grams::MCTrack+;
 #pragma link C++ function operator<<(std::ostream&, const grams::MCTrack&);
 #pragma link C++ class grams::MCTrackList+;

@@ -230,6 +230,9 @@ namespace grams {
 // In order to print an MCTrajectoryPoint:
 std::ostream& operator<< (std::ostream& out, grams::MCTrajectoryPoint const& tp);
 
+// In order to print an MCTrajectory:
+std::ostream& operator<< (std::ostream& out, grams::MCTrajectory const& tj);
+
 // To write an MCTrack:
 std::ostream& operator<< (std::ostream& out, grams::MCTrack const& m);
 
