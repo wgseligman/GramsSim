@@ -16,6 +16,7 @@
 #pragma link C++ function operator<<(std::ostream&, const grams::EventID&);
 
 // Track objects
+#pragma link C++ class std::string+;
 #pragma link C++ struct grams::MCTrajectoryPoint+;
 #pragma link C++ function operator<<(std::ostream&, const grams::MCTrajectoryPoint&);
 #pragma link C++ class grams::MCTrajectory+;

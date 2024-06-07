@@ -101,10 +101,10 @@ namespace grams {
     void SetParentID( const int& pid ) { parentID = pid; }
 
     std::string Process() const { return process; }
-    void SetProcess( const std::string& p ) { strncpy(process, p.c_str(), MAXPROCESSLEN); }
+    void SetProcess( const std::string& p ) { process = p; }
 
     std::string EndProcess() const { return endProcess; }
-    void SetEndProcess( const std::string& p ) { strncpy(endProcess, p.c_str(), MAXPROCESSLEN); }
+    void SetEndProcess( const std::string& p ) { endProcess = p; }
 
     double Weight() const { return weight; }
     void SetWeight( const double& w ) { weight = w; }
@@ -197,10 +197,10 @@ namespace grams {
     // primary particle, its value will be "primary". We're using
     // old-style character arrays, instead of strings, because the
     // older style is easier to view in interactive ROOT.
-    char process[MAXPROCESSLEN+1];
+    std::string process;
 
     // The process that ended this track. 
-    char endProcess[MAXPROCESSLEN+1];
+    std::string endProcess;
 
     // The list of points that make up the track's trajectory.
     MCTrajectory trajectory;
