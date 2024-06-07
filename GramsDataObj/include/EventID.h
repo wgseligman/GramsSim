@@ -83,14 +83,18 @@ namespace grams {
     int run;    // run number
     int event;  // event number within a run
 
+    // I prefer to include "write" operators for my custom classes to make
+    // it easier to examine their contents. For ROOT's dictionary
+    // definition to function properly, this must be located outside of
+    // any namespace.
+    friend ::std::ostream& operator<< (std::ostream& out, grams::EventID const& e) {
+      out << "run=" << e.Run()
+	  << " event=" << e.Event();
+      return out;
+    }
+
   };
 
 } // namespace grams
-
-// I prefer to include "write" operators for my custom classes to make
-// it easier to examine their contents. For ROOT's dictionary
-// definition to function properly, this must be located outside of
-// any namespace.
-std::ostream& operator<< (std::ostream& out, grams::EventID const& e);
 
 #endif // _grams_eventid_h_

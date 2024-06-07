@@ -25,8 +25,9 @@
 #pragma link C++ class grams::MCTrackList+;
 #pragma link C++ function operator<<(std::ostream&, const grams::MCTrackList&);
 
-// Needed for the hit objects.
+// Needed for the hit and cluster objects.
 #pragma link C++ class std::tuple<int,int>+;
+#pragma link C++ class std::tuple<int,int,int>+;
 
 // Hit objects
 #pragma link C++ struct grams::MCLArHit+;
@@ -38,6 +39,12 @@
 #pragma link C++ function operator<<(std::ostream&, const grams::MCScintHit&);
 #pragma link C++ class grams::MCScintHits+;
 #pragma link C++ function operator<<(std::ostream&, const grams::MCScintHits&);
+
+// Clusters
+#pragma link C++ struct grams::Cluster+;
+#pragma link C++ function operator<<(std::ostream&, const grams::Cluster&);
+#pragma link C++ class grams::Clusters+;
+#pragma link C++ function operator<<(std::ostream&, const grams::Clusters&);
 
 // The following statements may not be necessary, but I include them
 // for "safety"; see

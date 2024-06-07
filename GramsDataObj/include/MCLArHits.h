@@ -86,8 +86,7 @@ namespace grams {
 
   //    for ( const auto& [ key, mcLArHit ] : mcLArHits ) {
   //        ... do whatever with mcLArHit, ignoring the key, or ...
-  //       auto trackID = key.get<0>; // if you need the track ID
-  //       auto hitID = key.get<1>; // if you need the hit ID
+  //       const auto [ trackID, hitID ] = key; // if you need the key fields
   //    }
 
   typedef std::map< std::tuple<int,int>, MCLArHit > MCLArHits;

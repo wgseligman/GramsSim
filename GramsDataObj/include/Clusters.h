@@ -1,0 +1,82 @@
+/// \file Clusters.h
+/// \brief Data object that contains a list of energy deposits in a LAr TPC
+// 07-Jun-2024 WGS
+
+#ifndef _grams_clusters_h_
+#define _grams_clusters_h_
+
+#include <Math/Vector4D.h>
+
+#include <iostream>
+#include <map>
+#include <tuple>
+
+namespace grams {
+
+  // Define an electron cluster created by ionization. Instead of
+  // drifting each individual ionization, they're divided into
+  // clusters to speed up processing.
+
+  struct Cluster {
+
+    // A pointer back to the MCTrack that created the step.
+    int trackID;
+
+    // An arbitrary number assigned in Geant4. Note that 'hitID' is
+    // completely arbitrary. It does not imply time ordering, nor
+    // anything else.
+    int hitID;
+
+    // Another completely arbitrary number. Again, it does not imply
+    // time ordering, nor anything else.
+    int clusterID;
+
+    // This is the cluster energy at the readout anode.
+    double energy;
+
+    // The (x,y,z,t) of the cluster at the readout anode.
+    ROOT::Math::XYZTVector position;
+
+    // Provide accessors to avoid confusion between a C++ struct
+    // and a C++ class.
+    int TrackID() const { return trackID; }
+    int HitID() const { return hitID; }
+    int ClusterID() const { return hitID; }
+    int EAtAnode() const { return energy; }
+    int EnergyAtAnode() const { return energy; } // an extra accessor can't hurt
+
+    // For users who prefer to work with ROOT's 4D vectors, and for
+    // those who don't:
+    const ROOT::Math::XYZTVector PositionAtAnode4D() const { return position; }
+
+    double XAtAnode() const { return position.X(); }
+    double YAtAnode() const { return position.Y(); }
+    double ZAtAnode() const { return position.Z(); }
+    double TAtAnode() const { return position.T(); }
+
+  }; // Cluster
+
+  // Define a list of clusters for an event. It's defined as a
+  // map<key, Cluster>. where the key is std::tuple<trackID,hitID,clusterID>.
+  // This allows backtracking of the track, hit, and cluster.
+  //
+  // An example of iterating through a map:
+
+  //    for ( const auto& [ key, cluster ] : clusters ) {
+  //        ... do whatever with cluster, ignoring the key, or ...
+  //       const auto [ trackID, hitID, clusterID ] = key; // if you need the key fields
+  //    }
+
+  typedef std::map< std::tuple<int,int,int>, Cluster > Clusters;
+
+} // namespace grams
+
+// I prefer to define "write" operators for my custom classes to make
+// it easier to examine their contents. For these to work in ROOT's
+// dictionary-generation system, they must be located outside of any
+// namespace.
+
+std::ostream& operator<< (std::ostream& out, const grams::Cluster& cluster);
+std::ostream& operator<< (std::ostream& out, const grams::Clusters& clusters);
+
+#endif // _grams_clusters_h_

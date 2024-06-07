@@ -17,17 +17,17 @@ std::ostream& operator<< (std::ostream& out, const grams::MCScintHit& ahit) {
       << std::endl;
   
   out << "    (x,y,z,t) Start=(" 
-      << std::setprecision(5) << std::right
-      << std::setw(11) << ahit.StartX() << std::setw(1) << "," 
-      << std::setw(11) << ahit.StartY() << std::setw(1) << "," 
-      << std::setw(11) << ahit.StartZ() << std::setw(1) << "," 
-      << std::setw(11) << ahit.StartT() << std::setw(0)
+      << std::setprecision(3) << std::right
+      << std::setw(8) << ahit.StartX() << std::setw(1) << "," 
+      << std::setw(8) << ahit.StartY() << std::setw(1) << "," 
+      << std::setw(8) << ahit.StartZ() << std::setw(1) << "," 
+      << std::setw(8) << ahit.StartT() << std::setw(0)
       << ") End=("
-      << std::setprecision(5) << std::right
-      << std::setw(11) << ahit.EndX() << std::setw(1) << "," 
-      << std::setw(11) << ahit.EndY() << std::setw(1) << "," 
-      << std::setw(11) << ahit.EndZ() << std::setw(1) << "," 
-      << std::setw(11) << ahit.EndT() << std::setw(0)
+      << std::setprecision(3) << std::right
+      << std::setw(8) << ahit.EndX() << std::setw(1) << "," 
+      << std::setw(8) << ahit.EndY() << std::setw(1) << "," 
+      << std::setw(8) << ahit.EndZ() << std::setw(1) << "," 
+      << std::setw(8) << ahit.EndT() << std::setw(0)
       << std::endl;
   
   return out;
