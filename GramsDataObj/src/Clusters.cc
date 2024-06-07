@@ -13,6 +13,7 @@ std::ostream& operator<< (std::ostream& out, const grams::Cluster& acluster) {
   out << "Track ID=" << acluster.TrackID()
       << ", Hit ID=" << acluster.HitID()
       << ", Cluster ID=" << acluster.ClusterID()
+      << ", #electrons=" << acluster.NumElectrons()
       << ", at anode: Energy=" << acluster.EAtAnode()
       << " (x,y,z,t)=(" 
       << std::setprecision(3) << std::right

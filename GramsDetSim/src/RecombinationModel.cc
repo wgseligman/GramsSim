@@ -6,9 +6,8 @@
 // For processing command-line and XML file options.
 #include "Options.h" // in util/
 
-// ROOT includes
-#include "TTreeReader.h"
-#include "TTreeReaderValue.h"
+// From GramsDataObj
+#include "MCLArHits.h"
 
 // C++ includes
 #include <iostream>
@@ -18,8 +17,7 @@
 namespace gramsdetsim {
 
   // Constructor: Initializes the class.
-  RecombinationModel::RecombinationModel(TTreeReader* reader)
-    : m_reader(reader)
+  RecombinationModel::RecombinationModel()
   {
     // Get the options class. This contains all the program options
     // from options.xml and the command line.
@@ -45,47 +43,12 @@ namespace gramsdetsim {
 		<< " b= " << m_beta
 		<< " rho= " << m_rho << std::endl;
     }
-
-    // These are the columns in the ntuple that we'll require for our
-    // calculation. 
-
-    // The names of the columns, and which columns are available, come
-    // from GramsG4/src/GramsG4WriteNtuplesAction.cc.
-    m_xStart = new TTreeReaderValue<Float_t>(*m_reader, "xStart");
-    m_yStart = new TTreeReaderValue<Float_t>(*m_reader, "yStart");
-    m_zStart = new TTreeReaderValue<Float_t>(*m_reader, "zStart");
-    m_xEnd   = new TTreeReaderValue<Float_t>(*m_reader, "xEnd");
-    m_yEnd   = new TTreeReaderValue<Float_t>(*m_reader, "yEnd");
-    m_zEnd   = new TTreeReaderValue<Float_t>(*m_reader, "zEnd");
-  }
-
-  // Destructor: clean up the class
-  RecombinationModel::~RecombinationModel() {
-    // Delete any pointers we created.
-    delete m_xStart;
-    delete m_yStart;
-    delete m_zStart;
-    delete m_xEnd;
-    delete m_yEnd;
-    delete m_zEnd;
   }
 
   // Note that the "a_" prefix is a convention to remind us that the
   // variable was an argument in this method.
 
-  Double_t RecombinationModel::Calculate( double a_energy ) {
-
-    // The TTreeReaderValue variables are "in sync" with the
-    // TTreeReader. So as the main routine uses TTreeReader to go
-    // through the ntuple, the TTreeReaderValue variables in this
-    // program will automatically point to the current row within
-    // TTreeReader.
-
-    // This is a tricky part: Normally a TTreeReaderValue acts like a
-    // pointer, e.g., if you have "TTreeReaderValue<double> energy"
-    // then you refer to its value as "*energy". But in this routine,
-    // m_xStart (for example) is a pointer itself, so to get its value
-    // you need "**m_xStart" (a pointer to a pointer). 
+  Double_t RecombinationModel::Calculate( double a_energy, const grams::MCLArHit& hit ) {
 
     // Physics: The following models come from "A study of electron
     // recombination using highly ionizing particles in the ArgoNeuT
@@ -93,9 +56,9 @@ namespace gramsdetsim {
 
     // The models take as input of the change in energy across the
     // distance traveled in a single step by the particle.
-    double dx = std::sqrt( std::pow(**m_xStart - **m_xEnd, 2) + 
-			   std::pow(**m_yStart - **m_yEnd, 2) + 
-			   std::pow(**m_zStart - **m_zEnd, 2) );
+    double dx = std::sqrt( std::pow(hit.StartX() - hit.EndX(), 2) + 
+			   std::pow(hit.StartY() - hit.EndY(), 2) + 
+			   std::pow(hit.StartZ() - hit.EndZ(), 2) );
     double dEdx = a_energy / dx;
 
     // It's possible for dx to be so small that the value of dEdx

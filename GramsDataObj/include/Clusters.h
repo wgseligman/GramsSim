@@ -34,6 +34,9 @@ namespace grams {
     // This is the cluster energy at the readout anode.
     double energy;
 
+    // This is the number of electrons in the cluster.
+    int numElectrons;
+
     // The (x,y,z,t) of the cluster at the readout anode.
     ROOT::Math::XYZTVector position;
 
@@ -42,8 +45,9 @@ namespace grams {
     int TrackID() const { return trackID; }
     int HitID() const { return hitID; }
     int ClusterID() const { return hitID; }
-    int EAtAnode() const { return energy; }
-    int EnergyAtAnode() const { return energy; } // an extra accessor can't hurt
+    double EAtAnode() const { return energy; }
+    double EnergyAtAnode() const { return energy; } // an extra accessor can't hurt
+    int NumElectrons() const { return numElectrons; }
 
     // For users who prefer to work with ROOT's 4D vectors, and for
     // those who don't:

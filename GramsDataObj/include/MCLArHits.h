@@ -57,8 +57,8 @@ namespace grams {
     int NumPhotons() const { return numPhotons; }
     int CerPhotons() const { return cerPhotons; }
     int Identifier() const { return volumeID; }
-    int E() const { return energy; }
-    int Energy() const { return energy; } // an extra accessor can't hurt
+    double E() const { return energy; }
+    double Energy() const { return energy; } // an extra accessor can't hurt
 
     // For users who prefer to work with ROOT's 4D vectors, and for
     // those who don't:
