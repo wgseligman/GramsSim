@@ -14,9 +14,6 @@
 #include <set>
 #include <map>
 
-// The maximum length of the process name, as defined by Geant4.
-#define MAXPROCESSLEN 30
-
 namespace grams {
 
   // Define a point along a track's trajectory. Provide lots of
@@ -194,9 +191,7 @@ namespace grams {
     std::set<int> daughters;
 
     // The simulation process that created this track. If this is a
-    // primary particle, its value will be "primary". We're using
-    // old-style character arrays, instead of strings, because the
-    // older style is easier to view in interactive ROOT.
+    // primary particle, its value will be "primary". 
     std::string process;
 
     // The process that ended this track. 
