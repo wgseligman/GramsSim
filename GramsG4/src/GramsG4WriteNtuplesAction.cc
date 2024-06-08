@@ -538,35 +538,28 @@ namespace gramsg4 {
 	
 	if ( currentVolume == lastVolume ) {
 
-	  // Is the momentum direction identical to that of the last
-	  // trajectory point?
-	  auto currentMomentumDirection = track->GetMomentumDirection();
-	
-	  // Compute a unit vector in the momentum direction of the last
-	  // trajectory point.
+	  static const G4double small = 1.e-3;
+	  auto currentMomentum = track->GetMomentum();
+	  // Is the current momentum so small (the particle has
+	  // stopped) that it's not important to record it?
+	  if ( currentMomentum.mag() < small )
+	    return;
+
+	  // Next question: is the current momentum direction close to
+	  // that of the last trajectory point?
 	  G4ThreeVector lastMomentum( tpoint.Px(), tpoint.Py(), tpoint.Pz() );
+	
+	  // Compute unit vectors.
+	  auto currentMomentumDirection = currentMomentum.unit();
 	  auto lastMomentumDirection = lastMomentum.unit();
 
-	  // Strictly speaking, what we want to test is if the current
-	  // momentum direction is equal to the last momentum
-	  // direction. However, testing for equality with floating-point
-	  // numbers is tricky on computer systems. Instead, let's check
-	  // if the different between their components is small.
+	  // Look at the dot product of the unit vectors:
+	  auto dot = currentMomentumDirection.dot( lastMomentumDirection );
 
-	  static const G4double small = 1.e-3;
-	  auto difference = currentMomentumDirection - lastMomentumDirection;
-
-	  if (m_debug)
-	    G4cout << "WriteNtuplesAction::SteppingAction() - "
-		   << "at start in thread '" << G4Threading::G4GetThreadId()
-		   << "', about to test if direction change is small "
-		   << " current direction=" << currentMomentumDirection
-		   << " last direction=" << lastMomentumDirection
-		   << " difference=" << difference
-		   << " difference.mag()=" << difference.mag()
-		   << G4endl;
-
-	  if ( difference.mag() < small )
+	  // What we want to test is if the dot product is close to 1
+	  // (which means they're parallel).
+	  if ( std::abs(dot - 1.0) < small )
+	    // The particle's trajectory has not significantly changed.
 	    return;
 
 	} // is the volume number unchanged? 
