@@ -18,17 +18,17 @@ std::ostream& operator<< (std::ostream& out, const grams::MCTrajectoryPoint& tp)
   savedFormat.copyfmt( out );
   
   out << "(x,y,z,t)=(" 
-      << std::setprecision(3) << std::right
-      << std::setw(8) << tp.X() << std::setw(1) << "," 
-      << std::setw(8) << tp.Y() << std::setw(1) << "," 
-      << std::setw(8) << tp.Z() << std::setw(1) << "," 
-      << std::setw(8) << tp.T() << std::setw(0)
+      << std::setprecision(5) << std::right
+      << std::setw(11) << tp.X() << std::setw(1) << "," 
+      << std::setw(11) << tp.Y() << std::setw(1) << "," 
+      << std::setw(11) << tp.Z() << std::setw(1) << "," 
+      << std::setw(11) << tp.T() << std::setw(0)
       << ") (px,py,pz,E)=("
-      << std::setprecision(3) << std::right
-      << std::setw(8) << tp.Px() << std::setw(1) << "," 
-      << std::setw(8) << tp.Py() << std::setw(1) << "," 
-      << std::setw(8) << tp.Pz() << std::setw(1) << "," 
-      << std::setw(8) << tp.E() << std::setw(0)
+      << std::setprecision(5) << std::right
+      << std::setw(11) << tp.Px() << std::setw(1) << "," 
+      << std::setw(11) << tp.Py() << std::setw(1) << "," 
+      << std::setw(11) << tp.Pz() << std::setw(1) << "," 
+      << std::setw(11) << tp.E() << std::setw(0)
       << ") id="
       << tp.Identifier();
   
@@ -44,7 +44,7 @@ std::ostream& operator<< (std::ostream& out, const grams::MCTrajectory& trajecto
   for ( const auto& tp : trajectory ) {
     // Note how the following statement depends on the definition of
     // operator<< for MCTrajectoryPoint above.
-    out << "      " << tp << std::endl;
+    out << "   " << tp << std::endl;
   }
   return out;
 }
@@ -62,13 +62,13 @@ std::ostream& operator<< (std::ostream& out, const grams::MCTrack& track) {
   // whether the following is printed. However, let's keep this code
   // independent of the Options class, at least for now.
   
-  out << "   daughters:";
+  out << " daughters:";
   for ( const auto& d : track.Daughters() ) {
     out << " " << d;
   }
   out << std::endl;
   
-  out << "   trajectory points:" << std::endl;
+  out << " trajectory points:" << std::endl;
   out << track.Trajectory();
   out << std::endl;
   

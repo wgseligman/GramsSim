@@ -199,7 +199,7 @@ namespace gramsg4 {
 
   //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-  void WriteNtuplesAction::BeginOfEventAction(const G4Event*) {
+  void WriteNtuplesAction::BeginOfEventAction(const G4Event* a_event) {
     // Clear out any previous values. Since this involves manipulating
     // STL containers, lock this method so that only one instance can
     // execute at a time.
@@ -207,6 +207,8 @@ namespace gramsg4 {
     if (m_debug)
       G4cout << "WriteNtuplesAction::BeginOfEventAction() - "
 	     << "at start of method for threadID '" << G4Threading::G4GetThreadId()
+	     << " Run=" << G4RunManager::GetRunManager()->GetCurrentRun()->GetRunID()
+	     << " Event=" << a_event->GetEventID()
 	     << G4endl;
 
     G4AutoLock lock(myMutex);
@@ -229,6 +231,8 @@ namespace gramsg4 {
     if (m_debug)
       G4cout << "WriteNtuplesAction::EndOfEventAction() - "
 	     << "at start of method for threadID '" << G4Threading::G4GetThreadId()
+	     << " Run=" << G4RunManager::GetRunManager()->GetCurrentRun()->GetRunID()
+	     << " Event=" << a_event->GetEventID()
 	     << G4endl;
 
     // Anything that involves STL (like all the ROOT-based classes,
@@ -521,43 +525,51 @@ namespace gramsg4 {
 	     << "', about to test value of charge" << G4endl;
 
     if ( charge != 0.0 ) {
-      // Is the momentum direction identical to that of the last
-      // trajectory point?
-      auto currentMomentumDirection = track->GetMomentumDirection();
-      auto trajectory = m_mcTrack.Trajectory();
-
+      const auto& trajectory = m_mcTrack.Trajectory();
       // If the trajectory is empty, then we'll simply add the point.
       if ( ! trajectory.empty() ) {
-	// We want to look at the last point of the trajectory; recall
-	// that cend points to a location _after_ the last element in
-	// our list.
-	auto tpoint = trajectory.cend();
-	tpoint--;
-	
-	// Compute a unit vector in the momentum direction of the last
+	// We want to look at the last point of the trajectory.
+	auto tpoint = trajectory.back();
+
+	// If the volume ID has changed, we also want to write the
 	// trajectory point.
-	G4ThreeVector lastMomentum( (*tpoint).X(), (*tpoint).Y(), (*tpoint).Z() );
-	auto lastMomentumDirection = lastMomentum.unit();
+	auto currentVolume = track->GetVolume()->GetCopyNo();
+	auto lastVolume = tpoint.Identifier();
+	
+	if ( currentVolume == lastVolume ) {
 
-	// Strictly speaking, what we want to test is if the current
-	// momentum direction is equal to the last momentum
-	// direction. However, testing for equality with floating-point
-	// numbers is tricky on computer systems. Instead, let's check
-	// if the different between their components is small.
+	  // Is the momentum direction identical to that of the last
+	  // trajectory point?
+	  auto currentMomentumDirection = track->GetMomentumDirection();
+	
+	  // Compute a unit vector in the momentum direction of the last
+	  // trajectory point.
+	  G4ThreeVector lastMomentum( tpoint.Px(), tpoint.Py(), tpoint.Pz() );
+	  auto lastMomentumDirection = lastMomentum.unit();
 
-	if (m_debug)
-	  G4cout << "WriteNtuplesAction::SteppingAction() - "
-		 << "at start in thread '" << G4Threading::G4GetThreadId()
-		 << "', about to test if direction change is small" << G4endl;
+	  // Strictly speaking, what we want to test is if the current
+	  // momentum direction is equal to the last momentum
+	  // direction. However, testing for equality with floating-point
+	  // numbers is tricky on computer systems. Instead, let's check
+	  // if the different between their components is small.
 
-	static const G4double small = 1.e-4;
-	if ( std::abs( currentMomentumDirection.x() - lastMomentumDirection.x() ) < small
-	     &&
-	     std::abs( currentMomentumDirection.y() - lastMomentumDirection.y() ) < small
-	     &&
-	     std::abs( currentMomentumDirection.z() - lastMomentumDirection.z() ) < small )
-	  return;
+	  static const G4double small = 1.e-3;
+	  auto difference = currentMomentumDirection - lastMomentumDirection;
 
+	  if (m_debug)
+	    G4cout << "WriteNtuplesAction::SteppingAction() - "
+		   << "at start in thread '" << G4Threading::G4GetThreadId()
+		   << "', about to test if direction change is small "
+		   << " current direction=" << currentMomentumDirection
+		   << " last direction=" << lastMomentumDirection
+		   << " difference=" << difference
+		   << " difference.mag()=" << difference.mag()
+		   << G4endl;
+
+	  if ( difference.mag() < small )
+	    return;
+
+	} // is the volume number unchanged? 
       } // is trajectory empty?
     } // is charge != 0?
 
@@ -583,11 +595,11 @@ namespace gramsg4 {
 				    a_track->GetPosition().y() / m_lengthScale,
 				    a_track->GetPosition().z() / m_lengthScale,
 				    a_track->GetGlobalTime() / m_timeScale );
-    ROOT::Math::XYZTVector momentum(
-				    a_track->GetMomentum().x() / m_lengthScale,
-				    a_track->GetMomentum().y() / m_lengthScale,
-				    a_track->GetMomentum().z() / m_lengthScale,
-				    a_track->GetTotalEnergy() / m_energyScale );
+    ROOT::Math::PxPyPzEVector momentum(
+				       a_track->GetMomentum().x() / m_lengthScale,
+				       a_track->GetMomentum().y() / m_lengthScale,
+				       a_track->GetMomentum().z() / m_lengthScale,
+				       a_track->GetTotalEnergy() / m_energyScale );
     
 
     // Anything that involves STL (like all the ROOT-based classes,

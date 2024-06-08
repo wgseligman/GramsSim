@@ -13,6 +13,7 @@
 #include <cstring> // for strncpy
 #include <set>
 #include <map>
+#include <vector>
 
 namespace grams {
 
@@ -22,12 +23,12 @@ namespace grams {
 
   struct MCTrajectoryPoint {
 
+    // volume identifier
+    int volumeID;
+
     // (position, momentum)
     ROOT::Math::XYZTVector position;
     ROOT::Math::PxPyPzEVector momentum;
-
-    // volume identifier
-    int volumeID;
 
     // This is redundant, but just in case someone wants methods
     // instead of struct members:
@@ -46,19 +47,10 @@ namespace grams {
     double Pz() const { return momentum.Pz(); }
     double E()  const { return momentum.E(); }
 
-    // Define a "less-than" operator so we can have a sorted list.
-    bool operator<( const MCTrajectoryPoint& tp ) const {
-      return this->position.T() < tp.position.T();
-    }
-
   }; // MCTrajectoryPoint 
 
-  // A trajectory is a sequence of trajectory points. It's not likely
-  // we'll have two trajectory points in a track with the same time
-  // (see MCTrajectoryPoint::operator<); it's more likely that the
-  // time difference might be tiny. So allow for multiple instances of
-  // points with the same time by using a multiset.
-  typedef std::multiset< MCTrajectoryPoint > MCTrajectory;
+  // A trajectory is a sequence of trajectory points.
+  typedef std::vector< MCTrajectoryPoint > MCTrajectory;
 
   // Why is MCTrajectoryPoint a struct but MCTrack is a class? The
   // general C++ coding principle is: If an object validates its data
@@ -130,21 +122,19 @@ namespace grams {
     // trajectory points.
     size_t NumTrajectoryPoints() const { return trajectory.size(); }
     const MCTrajectoryPoint& TrajectoryPoint( const int& i ) {
-      auto t = trajectory.cbegin();
-      std::advance(t, i);
-      return *t;
+      return trajectory[i];
     }
     // Add a point to the trajectory. Typically this will be invoked
     // by something like:
     // track.AddTrajectoryPoint ( {x,y,z,t}, {px,py,pz,E}, identifier} );
     void AddTrajectoryPoint( const ROOT::Math::XYZTVector& pos,
-			     const ROOT::Math::XYZTVector& mom,
+			     const ROOT::Math::PxPyPzEVector& mom,
 			     int identifier ) {
       MCTrajectoryPoint mtp;
       mtp.position = pos;
       mtp.momentum = mom;
       mtp.volumeID = identifier;
-      trajectory.insert( mtp );
+      trajectory.push_back( mtp );
     }
 
     // Many ways to set and get a vector.
