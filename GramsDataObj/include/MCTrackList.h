@@ -27,6 +27,7 @@ namespace grams {
     int volumeID;
 
     // (position, momentum)
+    // Note that "energy" here is the total energy, kinetic+rest.
     ROOT::Math::XYZTVector position;
     ROOT::Math::PxPyPzEVector momentum;
 
@@ -70,7 +71,7 @@ namespace grams {
     MCTrack() 
       : trackID(0)
       , pdgCode(0)
-      , parentID(0)
+      , parentID(-1)
       , process("")
       , endProcess("")
       , polarization(0.,0.,0.)
@@ -159,9 +160,9 @@ namespace grams {
     // Note: While a common standard is for a class's private member
     // name is to use some kind of prefix in the variable name (e.g.,
     // fparentID, m_parentID), when using ROOT I/O with dictionary
-    // generation the branches inherit the names of the
-    // variables. This becomes awkward in the subsequent analysis.
-    // That's why the private members don't have "header prefixes".
+    // generation the branches inherit the names of the variables.
+    // These prefixes become awkward in subsequent analyses. That's
+    // why the private members don't have "header prefixes".
 
     // Note that the trackID is also used to index MCTrackList.
     int trackID;
