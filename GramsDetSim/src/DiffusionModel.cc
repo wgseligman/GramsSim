@@ -11,7 +11,7 @@
 
 // From GramsDataObj
 #include "MCLArHits.h"
-#include "Clusters.h"
+#include "ElectronClusters.h"
 
 // ROOT includes
 #include "Math/Vector4D.h"
@@ -62,8 +62,9 @@ namespace gramsdetsim {
 
   // Also note that this method returns a tuple of six vectors.
 
-  std::vector< grams::Cluster > DiffusionModel::Calculate(double a_energy, 
-							  const grams::MCLArHit& hit) {
+  std::vector< grams::ElectronCluster > 
+      DiffusionModel::Calculate(double a_energy, 
+				const grams::MCLArHit& hit) {
 
     double z_mean = 0.5 * (hit.StartZ() + hit.EndZ());
 
@@ -98,7 +99,7 @@ namespace gramsdetsim {
 
     // The vector of electron clusters that will be returned by this
     // model.
-    std::vector< grams::Cluster > vecCluster(nClus);
+    std::vector< grams::ElectronCluster > vecCluster(nClus);
 
     // Note that we're drifting along the z-axis, so the cluster
     // positions on the 1 and 2 axes (the x and y axes) are diffused

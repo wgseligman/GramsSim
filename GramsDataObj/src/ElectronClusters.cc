@@ -1,15 +1,15 @@
-/// \file Clusters.cc
-/// \brief Implementation of the longer Clusters-related methods.
+/// \file ElectronClusters.cc
+/// \brief Implementation of the longer ElectronClusters-related methods.
 // 01-Jun-2024 WGS
 
-#include "Clusters.h"
+#include "ElectronClusters.h"
 #include "iostream"
 
 #include <map>
 #include <tuple>
 
-// How to write a Cluster
-std::ostream& operator<< (std::ostream& out, const grams::Cluster& acluster) {
+// How to write a ElectronCluster
+std::ostream& operator<< (std::ostream& out, const grams::ElectronCluster& acluster) {
   out << "Track ID=" << acluster.TrackID()
       << ", Hit ID=" << acluster.HitID()
       << ", Cluster ID=" << acluster.ClusterID()
@@ -26,8 +26,8 @@ std::ostream& operator<< (std::ostream& out, const grams::Cluster& acluster) {
   return out;
 }
 
-// How to write a collection of Clusters
-std::ostream& operator<< (std::ostream& out, const grams::Clusters& clusters) {
+// How to write a collection of ElectronClusters
+std::ostream& operator<< (std::ostream& out, const grams::ElectronClusters& clusters) {
 
   for ( const auto& [ key, cluster ] : clusters ) {
     out << cluster;

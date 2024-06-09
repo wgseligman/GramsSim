@@ -41,11 +41,11 @@
 #pragma link C++ class grams::MCScintHits+;
 #pragma link C++ function operator<<(std::ostream&, const grams::MCScintHits&);
 
-// Clusters
-#pragma link C++ struct grams::Cluster+;
-#pragma link C++ function operator<<(std::ostream&, const grams::Cluster&);
-#pragma link C++ class grams::Clusters+;
-#pragma link C++ function operator<<(std::ostream&, const grams::Clusters&);
+// ElectronClusters
+#pragma link C++ struct grams::ElectronCluster+;
+#pragma link C++ function operator<<(std::ostream&, const grams::ElectronCluster&);
+#pragma link C++ class grams::ElectronClusters+;
+#pragma link C++ function operator<<(std::ostream&, const grams::ElectronClusters&);
 
 // The following statements may not be necessary, but I include them
 // for "safety"; see

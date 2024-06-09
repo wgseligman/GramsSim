@@ -1,9 +1,9 @@
-/// \file Clusters.h
+/// \file ElectronClusters.h
 /// \brief Data object that contains a list of energy deposits in a LAr TPC
 // 07-Jun-2024 WGS
 
-#ifndef _grams_clusters_h_
-#define _grams_clusters_h_
+#ifndef _grams_electronclusters_h_
+#define _grams_electronclusters_h_
 
 #include <Math/Vector4D.h>
 
@@ -17,7 +17,7 @@ namespace grams {
   // drifting each individual ionization, they're divided into
   // clusters to speed up processing.
 
-  struct Cluster {
+  struct ElectronCluster {
 
     // A pointer back to the MCTrack that created the step.
     int trackID;
@@ -58,10 +58,10 @@ namespace grams {
     double ZAtAnode() const { return position.Z(); }
     double TAtAnode() const { return position.T(); }
 
-  }; // Cluster
+  }; // ElectronCluster
 
   // Define a list of clusters for an event. It's defined as a
-  // map<key, Cluster>. where the key is std::tuple<trackID,hitID,clusterID>.
+  // map<key, ElectronCluster>. where the key is std::tuple<trackID,hitID,clusterID>.
   // This allows backtracking of the track, hit, and cluster.
   //
   // An example of iterating through a map:
@@ -71,7 +71,7 @@ namespace grams {
   //       const auto [ trackID, hitID, clusterID ] = key; // if you need the key fields
   //    }
 
-  typedef std::map< std::tuple<int,int,int>, Cluster > Clusters;
+  typedef std::map< std::tuple<int,int,int>, ElectronCluster > ElectronClusters;
 
 } // namespace grams
 
@@ -80,7 +80,7 @@ namespace grams {
 // dictionary-generation system, they must be located outside of any
 // namespace.
 
-std::ostream& operator<< (std::ostream& out, const grams::Cluster& cluster);
-std::ostream& operator<< (std::ostream& out, const grams::Clusters& clusters);
+std::ostream& operator<< (std::ostream& out, const grams::ElectronCluster& cluster);
+std::ostream& operator<< (std::ostream& out, const grams::ElectronClusters& clusters);
 
-#endif // _grams_clusters_h_
+#endif // _grams_electronclusters_h_

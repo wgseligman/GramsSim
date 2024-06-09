@@ -16,7 +16,7 @@
 // From GramsDataObj
 #include "EventID.h"
 #include "MCLArHits.h"
-#include "Clusters.h"
+#include "ElectronClusters.h"
 
 // ROOT includes
 #include "TFile.h"
@@ -118,9 +118,7 @@ int main(int argc,char **argv)
   auto reader = new TTreeReader(inputNtupleName.c_str(), input);
 
   // Create a TTreeReaderValue for each column in the ntuple whose
-  // value we'll use. Note that the variable we create must be
-  // accessed as if it were a pointer; e.g., if you want the value of
-  // "EventID", you must use *EventID in the code.
+  // value we'll use.
   TTreeReaderValue<grams::EventID> inputEventID = {*reader, "EventID"};
   TTreeReaderValue<grams::MCLArHits> LArHits    = {*reader, "LArHits"};
 
@@ -167,9 +165,9 @@ int main(int argc,char **argv)
   // output n-tuple, so we re-use the same variable.
 
   auto eventID = new grams::EventID();
-  auto clusters = new grams::Clusters();
+  auto clusters = new grams::ElectronClusters();
   outputNtuple->Branch("EventID",   &eventID);
-  outputNtuple->Branch("Clusters",  &clusters);
+  outputNtuple->Branch("ElectronClusters",  &clusters);
 
   // Are we using this particular model?
   bool doRecombination;
@@ -223,8 +221,8 @@ int main(int argc,char **argv)
   double energy_sca;
 
   // A holding place for the clusters before we add them to the formal
-  // grams::Clusters object.
-  std::vector<grams::Cluster> holdingClusters;
+  // grams::ElectronClusters object.
+  std::vector<grams::ElectronCluster> holdingClusters;
 
   if (debug) 
     std::cout << "gramsdetsim.cc - debug 1000" 
@@ -250,7 +248,7 @@ int main(int argc,char **argv)
     
       // Create a "default" cluster. This will almost certainly be
       // overwritten by the output of DiffusionModel below.
-      grams::Cluster defaultCluster;
+      grams::ElectronCluster defaultCluster;
       defaultCluster.trackID = hit.trackID;
       defaultCluster.hitID = hit.hitID;
       defaultCluster.clusterID = 0;
@@ -329,6 +327,10 @@ int main(int argc,char **argv)
     outputNtuple->Fill();
 
   } // for each event
+
+  // Build an index for this tree. This will allow downstream
+  // programs to quickly access a given EventID within the tree.
+  outputNtuple->BuildIndex("EventID.Index()");
 
   // Wrap-up. Close all files. Delete any pointers we created.
   outputNtuple->Write();
