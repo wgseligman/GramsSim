@@ -31,14 +31,14 @@ namespace grams {
     // For the default constructor, initialize the fields with values
     // that are not likely to come up in reality.
     ReadoutID()
-      : xcell( std::numeric_limits<int>::min() )
-      , ycell( std::numeric_limits<int>::min() )
+      : x_index( std::numeric_limits<int>::min() )
+      , y_index( std::numeric_limits<int>::min() )
     {}
 
     // Most likely constructor: Set the values explicitly.
-    ReadoutID( int a_xcell, int a_ycell )
-      : xcell( a_xcell )
-      , ycell( a_ycell )
+    ReadoutID( int a_x_index, int a_y_index )
+      : x_index( a_x_index )
+      , y_index( a_y_index )
     {}
 
     // In EventID, we assigned each ID a unique index. We do the same
@@ -52,7 +52,7 @@ namespace grams {
     int Index() const {
       // Note that this scheme assumes that a given readout geometry
       // won't have more than 1000000 divisions.
-      return ycell*1000000 + xcell;
+      return y_index*1000000 + x_index;
     }
 
     // Since we may want to sort by ReadoutID (for maps and such),
@@ -71,16 +71,16 @@ namespace grams {
   private:
 
     // This assumes that the readout geometry is pixel-based in x and y.
-    int xcell;   
-    int ycell;   
+    int x_index;   
+    int y_index;   
 
     // I prefer to include "write" operators for my custom classes to make
     // it easier to examine their contents. For ROOT's dictionary
     // definition to function properly, this must be located outside of
     // any namespace.
     friend ::std::ostream& operator<< (std::ostream& out, grams::ReadoutID const& e) {
-      out << "x-cell=" << e.xcell
-	  << " y-cell=" << e.ycell;
+      out << "x-index=" << e.x_index
+	  << " y-index=" << e.y_index;
       return out;
     }
 
