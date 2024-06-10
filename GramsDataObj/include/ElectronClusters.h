@@ -37,7 +37,9 @@ namespace grams {
     // This is the number of electrons in the cluster.
     int numElectrons;
 
-    // The (x,y,z,t) of the cluster at the readout anode.
+    // The (x,y,t) of the cluster at the readout anode. "z" is
+    // different; it's the value of z used to calculate the value of
+    // t.
     ROOT::Math::XYZTVector position;
 
     // Provide accessors to avoid confusion between a C++ struct

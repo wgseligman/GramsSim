@@ -81,7 +81,7 @@ int main(int argc,char **argv)
 	      << "'" << std::endl;
 
   // For any model that requires random-number generation (as of
-  // Sep-2022, only DiffusionModel), Get and set the random number
+  // Sep-2022, only DiffusionModel), get and set the random number
   // seed.
   int seed;
   options->GetOption("rngseed",seed);
@@ -160,9 +160,8 @@ int main(int argc,char **argv)
   // be "friends" with the input ntuple, we only have to include
   // columns that are unique to the detector response.
 
-  // The exception is "EventID'. We're being clever here: The
-  // grams::EventID in the input n-tuple is the same as that of the
-  // output n-tuple, so we re-use the same variable.
+  // The exception is "EventID', which we duplicate between trees, to
+  // make it easier for them to be friends.
 
   auto eventID = new grams::EventID();
   auto clusters = new grams::ElectronClusters();
@@ -298,8 +297,8 @@ int main(int argc,char **argv)
     
       //diffusion
       if ( doDiffusion  &&  ! std::isnan(energy_sca) ) {
-	// The clusters in this vector DiffusionModel will replace the
-	// default definition, if all goes well.
+	// The clusters in this vector returned by DiffusionModel will
+	// replace the "default cluster", if all goes well.
 	holdingClusters = diffusionModel->Calculate(energy_sca, hit);
       }
 
@@ -308,7 +307,7 @@ int main(int argc,char **argv)
 		  << holdingClusters.size() << std::endl;
 
       // If something went wrong, use the default cluster.
-      if ( ! holdingClusters.empty() )
+      if ( holdingClusters.empty() )
 	holdingClusters.push_back( defaultCluster );
 
       // For each cluster in the holding area:
@@ -323,7 +322,8 @@ int main(int argc,char **argv)
     } // for each hit
 
     // After all the model effects have been applied, write the
-    // detector-response value(s) for all the hits/clusters.
+    // detector-response value(s) for all the hits/clusters in the
+    // event.
     outputNtuple->Fill();
 
   } // for each event

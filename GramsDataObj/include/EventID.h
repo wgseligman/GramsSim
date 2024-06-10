@@ -42,21 +42,6 @@ namespace grams {
       , event( a_event )
     {}
 
-    // Since we may want to sort by EventID (for maps and such),
-    // define the "less-than" operator.
-    bool operator<(const EventID& e) const
-    {
-      return this->run < e.run  ||
-	    (this->run == e.run && this->event < e.event);      
-    }
-
-    // Test for equality is fine for us. 
-    bool operator==(const EventID& e) const
-    {
-      return this->run == e.run  &&
-	this->event == e.event;
-    }
-
     // This method is meant to be used with TTree::BuildIndex and
     // TTree::GetEntryWithIndex. The idea is to generate a unique
     // number for each unique EventID, which can then be used to
@@ -68,15 +53,28 @@ namespace grams {
     // run/event is not a good way to specify an EventID for a given
     // experiment.
 
+    // Note that the Index is the basis for our comparison operators <
+    // and == below. It's important that, however Index() is defined,
+    // that it should be unique among the rows of a tree.
+
     int Index() const {
       // Note that this scheme assumes that a given run won't have
       // more than 1000000 events.
       return run*1000000 + event;
     }
 
-    // I dislike these accessors, but we need them for operator<<.
-    int Run() const { return run; }
-    int Event() const { return event; }
+    // Since we may want to sort by EventID (for maps and such),
+    // define the "less-than" operator. 
+    bool operator<(const EventID& e) const
+    {
+      return this->Index() < e.Index();
+    }
+
+    // Test for equality, just in case.. 
+    bool operator==(const EventID& e) const
+    {
+      return this->Index() == e.Index();
+    }
 
   private:
 
@@ -88,8 +86,8 @@ namespace grams {
     // definition to function properly, this must be located outside of
     // any namespace.
     friend ::std::ostream& operator<< (std::ostream& out, grams::EventID const& e) {
-      out << "run=" << e.Run()
-	  << " event=" << e.Event();
+      out << "run=" << e.run
+	  << " event=" << e.event;
       return out;
     }
 

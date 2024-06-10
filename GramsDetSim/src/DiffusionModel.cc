@@ -66,6 +66,13 @@ namespace gramsdetsim {
       DiffusionModel::Calculate(double a_energy, 
 				const grams::MCLArHit& hit) {
 
+    // Note that we're drifting along the z-axis, so the cluster
+    // positions on the 1 and 2 axes (the x and y axes) are diffused
+    // using "transverse" rules, while the cluster position on the
+    // z-axis is drifting with "longitudinal" diffusion. For other
+    // detector setups or coordinate systems, the following code must
+    // be adjusted.
+
     double z_mean = 0.5 * (hit.StartZ() + hit.EndZ());
 
     double DriftDistance = m_readout_plane_coord - z_mean;
@@ -101,12 +108,6 @@ namespace gramsdetsim {
     // model.
     std::vector< grams::ElectronCluster > vecCluster(nClus);
 
-    // Note that we're drifting along the z-axis, so the cluster
-    // positions on the 1 and 2 axes (the x and y axes) are diffused
-    // using "transverse" rules, while the cluster position on the
-    // z-axis is drifting with "longitudinal" diffusion. For other
-    // detector setups or coordinate systems, the following code must
-    // be adjusted.
     double averagetransversePos1  = 0.5 * (hit.StartX() + hit.EndX());
     double averagetransversePos2  = 0.5 * (hit.StartY() + hit.EndY());
     double averagelongitudinalPos = z_mean;
@@ -121,7 +122,7 @@ namespace gramsdetsim {
 
       // For most of the clusters, the number of electrons in each
       // cluster is the same (electronclsize). However, the last
-      // cluster will constain the "leftover" electrons after dividing
+      // cluster will contain the "leftover" electrons after dividing
       // the total number of electrons by the electron-cluster size.
       if ( id == vecCluster.size() )
 	cluster.numElectrons = nElectrons - (nClus - 1) * electronclsize;
@@ -159,7 +160,7 @@ namespace gramsdetsim {
 
     } // for each cluster
 
-    // Return the vector containing the per-cluster values for (units
+    // Return the vector containing the per-cluster values (units
     // defined in the options XML file):
     return vecCluster;
   }
