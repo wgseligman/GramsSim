@@ -91,8 +91,8 @@ namespace gramsg4 {
 
     // Get the output file name, and the name of the tree we'll
     // create.
-    m_options->GetOption("outputg4file",m_filename);
-    m_options->GetOption("outputg4ntuple",m_treeName);
+    m_options->GetOption("outputG4File",m_filename);
+    m_options->GetOption("outputG4Tree",m_treeName);
   }
 
   //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

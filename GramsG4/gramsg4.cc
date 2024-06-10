@@ -395,11 +395,11 @@ int main(int argc,char **argv)
 
   // We need to fetch the name of the output file, since GDML2ROOT
   // assumes the name of the parameter is "outputfile", while the
-  // option's name was changed to "outputg4file" to avoid conflicting
+  // option's name was changed to "outputG4File" to avoid conflicting
   // with "outputfile" as used by other programs in the analysis
   // chain.
   G4String filename;
-  options->GetOption("outputg4file",filename);
+  options->GetOption("outputG4File",filename);
 
   auto geometry = util::Geometry::GetInstance();
   geometry->GDML2ROOT(filename);

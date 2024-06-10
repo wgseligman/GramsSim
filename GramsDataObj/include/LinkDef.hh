@@ -47,6 +47,10 @@
 #pragma link C++ class grams::ElectronClusters+;
 #pragma link C++ function operator<<(std::ostream&, const grams::ElectronClusters&);
 
+// Readout geometry
+#pragma link C++ class grams::ReadoutID+;
+#pragma link C++ function operator<<(std::ostream&, const grams::ReadoutID&);
+
 // The following statements may not be necessary, but I include them
 // for "safety"; see
 // https://root.cern.ch/root/htmldoc/guides/users-guide/AddingaClass.html

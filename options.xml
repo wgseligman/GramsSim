@@ -82,7 +82,7 @@
     <!-- Output HepMC3 file. If you omit an extension to this file
          name, then the program will append ".hepmc3" to the end of
          this parameter. -->
-    <option name="outputfile" short="o" value="gramssky.hepmc3" type="string" 
+    <option name="outputSkyFile" short="o" value="gramssky.hepmc3" type="string" 
         desc="output file"/>    
 
     <!-- The PDG (Particle Data Group) code of the primary
@@ -343,11 +343,11 @@
 
     <!-- The name of the output file that will contain the MC truth
 	 information. -->
-    <option name="outputg4file" short="o" value="gramsg4.root" type="string" desc="output file"/>
+    <option name="outputG4File" short="o" value="gramsg4.root" type="string" desc="output file"/>
 
     <!-- The name of the tree (or n-tuple) within the output file
 	 that will contain the MC truth information. -->
-    <option name="outputg4ntuple" value="gramsg4" type="string" desc="output n-tuple"/>
+    <option name="outputG4Tree" value="gramsg4" type="string" desc="output n-tuple"/>
 
     <!-- The physics list to be used by the detector simulation. --> 
     <option name="physicslist" short= "p" value="FTFP_BERT_LIV+OPTICAL+STEPLIMIT" type="string" 
@@ -395,7 +395,7 @@
     <!-- If # threads > 0, enable multi-threaded execution. 
     Note that this does not magically make your program thread-safe.
     While the current version of gramsg4 is thread-safe, turning this
-    option on means the order of rows in the output ntuples can't be
+    option on means the order of rows in the output tree can't be
     predicted. -->
     <option name="nthreads" short = "t" value="0" type="integer" desc="number of threads"/>
 
@@ -422,15 +422,15 @@
 
   <gramsdetsim>
 
-    <!-- Input ROOT file from GramsG4 (or at least contains a LArHits-compatible ntuple -->
-    <option name="inputdetsim" short="i" value="gramsg4.root" type="string" 
+    <!-- Input ROOT file from GramsG4 -->
+    <option name="inputDetSimFile" short="i" value="gramsg4.root" type="string" 
         desc="input file"/>    
 
-    <!-- Name of ntuple in the input file that contains the hit information. -->
-    <option name="inputhitsntuple" value="gramsg4" type="string" desc="input ntuple"/>
+    <!-- Name of TTree in the input file that contains the hit information. -->
+    <option name="inputHitsTree" value="gramsg4" type="string" desc="input ntuple"/>
 
     <!-- Output ROOT file -->
-    <option name="outputdetsim" short="o" value="gramsdetsim.root" type="string" 
+    <option name="outputDetSimFile" short="o" value="gramsdetsim.root" type="string" 
         desc="output file"/>    
 
     <!-- Name of ntuple in the output file that contains the
@@ -439,7 +439,7 @@
          used as a "friend ntuple" with the input intuple (see
          "GramsDataObj/README.md").
          -->
-    <option name="outputdetsimntuple" value="DetSim" type="string" desc="output ntuple"/>
+    <option name="outputDetSimTree" value="DetSim" type="string" desc="output ntuple"/>
 
     <!-- Physics-model options. 
 

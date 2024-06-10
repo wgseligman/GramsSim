@@ -15,9 +15,6 @@
 // ROOT includes
 #include "TFile.h"
 #include "TTree.h"
-#include <TGeoMatrix.h>
-#include <TString.h>
-#include <TRegexp.h>
 
 // C++ includes
 #include <iostream>

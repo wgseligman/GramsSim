@@ -68,16 +68,16 @@ int main(int argc,char **argv)
     options->PrintOptions();
   }
 
-  // Get the options associated with the input file and ntuple..
+  // Get the options associated with the input file and tree..
   std::string inputFileName;
-  options->GetOption("inputdetsim",inputFileName);
+  options->GetOption("inputDetSimFile",inputFileName);
   
-  std::string inputNtupleName;
-  options->GetOption("inputhitsntuple",inputNtupleName);
+  std::string inputTreeName;
+  options->GetOption("inputHitsTree",inputTreeName);
 
   if (verbose)
     std::cout << "gramsdetsim: input file = '" << inputFileName
-	      << "', input ntuple = '" << inputNtupleName
+	      << "', input tree = '" << inputTreeName
 	      << "'" << std::endl;
 
   // For any model that requires random-number generation (as of
@@ -115,23 +115,23 @@ int main(int argc,char **argv)
 
   // The standard way of reading a TTree (without using RDataFrame) in
   // C++ is using the TTreeReader.
-  auto reader = new TTreeReader(inputNtupleName.c_str(), input);
+  auto reader = new TTreeReader(inputTreeName.c_str(), input);
 
-  // Create a TTreeReaderValue for each column in the ntuple whose
+  // Create a TTreeReaderValue for each column in the tree whose
   // value we'll use.
   TTreeReaderValue<grams::EventID> inputEventID = {*reader, "EventID"};
   TTreeReaderValue<grams::MCLArHits> LArHits    = {*reader, "LArHits"};
 
-  // Now read in the options associated with the output file and ntuple. 
+  // Now read in the options associated with the output file and tree. 
   std::string outputFileName;
-  options->GetOption("outputdetsim",outputFileName);
+  options->GetOption("outputDetSimFile",outputFileName);
 
-  std::string outputNtupleName;
-  options->GetOption("outputdetsimntuple",outputNtupleName);
+  std::string outputTreeName;
+  options->GetOption("outputDetSimTree",outputTreeName);
 
   if (verbose)
     std::cout << "gramsdetsim: output file = '" << outputFileName
-	      << "', output ntuple = '" << outputNtupleName
+	      << "', output tree = '" << outputTreeName
 	      << "'" << std::endl;
 
   // Open the output file.
@@ -153,11 +153,11 @@ int main(int argc,char **argv)
 	      << "gramsdetsim: geometry copied"
 	      << std::endl;
 
-  // Define our output ntuple.
-  auto outputNtuple = new TTree(outputNtupleName.c_str(),"Detector Response");
+  // Define our output tree.
+  auto outputTree = new TTree(outputTreeName.c_str(),"Detector Response");
 
-  // Define the columns of the output ntuple. Since this ntuple will
-  // be "friends" with the input ntuple, we only have to include
+  // Define the columns of the output tree. Since this tree will
+  // be "friends" with the input tree, we only have to include
   // columns that are unique to the detector response.
 
   // The exception is "EventID', which we duplicate between trees, to
@@ -165,8 +165,8 @@ int main(int argc,char **argv)
 
   auto eventID = new grams::EventID();
   auto clusters = new grams::ElectronClusters();
-  outputNtuple->Branch("EventID",   &eventID);
-  outputNtuple->Branch("ElectronClusters",  &clusters);
+  outputTree->Branch("EventID",   &eventID);
+  outputTree->Branch("ElectronClusters",  &clusters);
 
   // Are we using this particular model?
   bool doRecombination;
@@ -227,7 +227,7 @@ int main(int argc,char **argv)
     std::cout << "gramsdetsim.cc - debug 1000" 
 	      << std::endl;
 
-  // For each row in the input ntuple:
+  // For each row in the input tree:
   while ( (*reader).Next() ) {
     
     // Clean out any cluster data from the previous event.
@@ -324,16 +324,16 @@ int main(int argc,char **argv)
     // After all the model effects have been applied, write the
     // detector-response value(s) for all the hits/clusters in the
     // event.
-    outputNtuple->Fill();
+    outputTree->Fill();
 
   } // for each event
 
   // Build an index for this tree. This will allow downstream
   // programs to quickly access a given EventID within the tree.
-  outputNtuple->BuildIndex("EventID.Index()");
+  outputTree->BuildIndex("EventID.Index()");
 
   // Wrap-up. Close all files. Delete any pointers we created.
-  outputNtuple->Write();
+  outputTree->Write();
   output->Close();
   delete recombinationModel;
   delete absorptionModel;
