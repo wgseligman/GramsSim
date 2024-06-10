@@ -542,21 +542,21 @@
 
   <gramsreadoutsim>
 
-    <!-- Input ROOT file from GramsDetSim (or at least contains a DetSim-compatible ntuple -->
-    <option name="inputfile" short="i" value="gramsdetsim.root" type="string" 
+    <!-- Input ROOT file from GramsDetSim -->
+    <option name="inputReadoutFile" short="i" value="gramsdetsim.root" type="string" 
         desc="input file"/>    
 
-    <!-- Name of ntuple in the input file that contains the electron-cluster information. -->
-    <option name="inputntuple" value="DetSim" type="string" desc="input ntuple"/>
+    <!-- Name of tree in the input file that contains the electron-cluster information. -->
+    <option name="inputReadoutTree" value="DetSim" type="string" desc="input tree"/>
 
     <!-- Output ROOT file -->
-    <option name="outputfile" short="o" value="gramsreadoutsim.root" type="string"
+    <option name="outputReadoutFile" short="o" value="gramsreadoutsim.root" type="string"
         desc="output file"/>
 
-    <!-- Name of ntuple in the output file that contains the
+    <!-- Name of tree in the output file that contains the
          readout information. 
     -->
-    <option name="outputntuple" value="ReadoutSim" type="string" desc="output ntuple"/>
+    <option name="outputReadoutTree" value="ReadoutSim" type="string" desc="output tree"/>
 
     <!-- The pixel readout geometry parameters. Units are given by "LengthUnit" in 
     the <global> section above. -->

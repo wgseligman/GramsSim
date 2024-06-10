@@ -55,21 +55,21 @@ int main(int argc,char **argv)
     options->PrintOptions();
   }
 
-    // Get the options associated with the input file and ntuple.
+    // Get the options associated with the input file and tree.
     std::string inputFileName;
-    options->GetOption("inputfile",inputFileName);
+    options->GetOption("inputReadoutFile",inputFileName);
     
-    std::string inputNtupleName;
-    options->GetOption("inputntuple",inputNtupleName);
+    std::string inputTreeName;
+    options->GetOption("inputReadoutTree",inputTreeName);
 
     if (verbose)
       std::cout << "gramsreadoutsim: input file = '" << inputFileName
-            << "', input ntuple = '" << inputNtupleName
+            << "', input tree = '" << inputTreeName
             << "'" << std::endl;
 
     auto assignPixelID = std::make_shared<gramsreadoutsim::AssignPixelID>(gramsreadoutsim::AssignPixelID());
 
-    // Define the variables in the input ntuple.
+    // Define the variables in the input tree.
     int run;
     int event;
     int trackID;
@@ -97,7 +97,7 @@ int main(int argc,char **argv)
     // track the history of how the files are created.
     options->CopyInputNtuple(input);
 
-    TTree* intree = (TTree*)input->Get(inputNtupleName.c_str());
+    TTree* intree = (TTree*)input->Get(inputTreeName.c_str());
 
     intree->SetBranchAddress("Run",           &run);
     intree->SetBranchAddress("Event",         &event);
@@ -113,16 +113,16 @@ int main(int argc,char **argv)
     intree->SetBranchAddress("timeAtAnode",   &ptimeAtAnode);
     intree->SetBranchAddress("identifier",    &identifier);
 
-    // Now read in the options associated with the output file and ntuple. 
+    // Now read in the options associated with the output file and tree. 
     std::string outputFileName;
-    options->GetOption("outputfile", outputFileName);
+    options->GetOption("outputReadoutFile", outputFileName);
 
-    std::string outputNtupleName;
-    options->GetOption("outputntuple", outputNtupleName);
+    std::string outputTreeName;
+    options->GetOption("outputReadoutTree", outputTreeName);
 
     if (verbose)
       std::cout << "gramsreadoutsim: output file = '" << outputFileName
-            << "', output ntuple = '" << outputNtupleName
+            << "', output tree = '" << outputTreeName
             << "'" << std::endl;
 
     // Open the output file.
@@ -143,8 +143,8 @@ int main(int argc,char **argv)
 		<< "gramsreadoutsim: geometry copied"
 		<< std::endl;
 
-    // Define our output ntuple.
-    TTree* outtree = new TTree(outputNtupleName.c_str(), "ReadoutSim");
+    // Define our output tree.
+    TTree* outtree = new TTree(outputTreeName.c_str(), "ReadoutSim");
 
     // The number of hits (steps) within an event. 
     int num_step = 0;
@@ -171,14 +171,14 @@ int main(int argc,char **argv)
     outtree->Branch("pixel_idy",     &p_pixel_idy);
  
     if (verbose)
-        std::cout << "gramsreadoutsim: output ntuple defined" << std::endl;
+        std::cout << "gramsreadoutsim: output tree defined" << std::endl;
 
     // The number of rows in the input ntuple.
     int num_row = intree->GetEntries();
     int current_runid = -1;
     int current_eventid = -1;
 
-    // For each row in the input ntuple (i.e., for each hit/step in
+    // For each row in the input tree (i.e., for each event in
     // the original GramsG4 simulation):
     for (int i=0; i<num_row; i++) {
 
