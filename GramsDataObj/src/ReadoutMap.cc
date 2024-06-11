@@ -11,23 +11,27 @@
 #include <set>
 #include <tuple>
 
+// How to display a list of cluster keys.
+std::ostream& operator<< (std::ostream& out, grams::ClusterKeys const& ck) {
+
+  for ( const auto& clusterKey : ck ) {
+    // Separate the cluster key into its components.
+    const auto& [ trackID, hitID, clusterID ] = clusterKey;
+    out << "  trackID=" << trackID
+	<< " hitID=" << hitID
+	<< " clusterID=" << clusterID
+	<< std::endl;
+  }
+
+  return out;
+}
+
 // How to display a ReadoutMap.
-
 std::ostream& operator<< (std::ostream& out, grams::ReadoutMap const& rm) {
-  for ( const auto& [ readoutID, clusterIDlist ] : rm ) {
-
-    // Note how this depends on the definition of operator<< in ReadoutID.h.
+  for ( const auto& [ readoutID, clusterIDList ] : rm ) {
+    // Note how this depends on previous definitions of operator<<,
     out << readoutID << std::endl;
-
-    for ( const auto& clusterKey : clusterIDlist ) {
-      // Separate the cluster key into its components.
-      const auto& [ trackID, hitID, clusterID ] = clusterKey;
-      out << "  trackID=" << trackID
-	  << " hitID=" << hitID
-	  << " clusterID=" << clusterID
-	  << std::endl;
-    }
-    out << std::endl;
+    out << clusterIDList << std::endl;
   }
   return out;
 }

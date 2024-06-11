@@ -33,8 +33,9 @@ namespace grams {
   // store their keys, which act as a "pointer" into the full
   // ElectronClusters list.
 
-  typedef std::map< ReadoutID, 
-		    std::set< ElectronClusters::key_type > > ReadoutMap;
+  typedef std::set< ElectronClusters::key_type > ClusterKeys;
+
+  typedef std::map< ReadoutID, ClusterKeys > ReadoutMap;
 
 
   // I prefer to define "write" operators for my custom classes to make
@@ -42,6 +43,7 @@ namespace grams {
   // dictionary-generation system, they must be located outside of any
   // namespace.
 
+  ::std::ostream& operator<< (std::ostream& out, grams::ClusterKeys const& ck);
   ::std::ostream& operator<< (std::ostream& out, grams::ReadoutMap const& rm);
 
 } // namespace grams

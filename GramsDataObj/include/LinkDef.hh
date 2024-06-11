@@ -51,6 +51,12 @@
 #pragma link C++ class grams::ReadoutID+;
 #pragma link C++ function operator<<(std::ostream&, const grams::ReadoutID&);
 
+// Readout maps.
+#pragma link C++ class grams::ClusterKeys+;
+#pragma link C++ function operator<<(std::ostream&, const grams::ClusterKeys&);
+#pragma link C++ class grams::ReadoutMap+;
+#pragma link C++ function operator<<(std::ostream&, const grams::ReadoutMap&);
+
 // The following statements may not be necessary, but I include them
 // for "safety"; see
 // https://root.cern.ch/root/htmldoc/guides/users-guide/AddingaClass.html
