@@ -8,7 +8,7 @@
 #include <map>
 #include <tuple>
 
-// How to write a ElectronCluster
+// How to display an ElectronCluster
 std::ostream& operator<< (std::ostream& out, const grams::ElectronCluster& acluster) {
   out << "Track ID=" << acluster.TrackID()
       << ", Hit ID=" << acluster.HitID()

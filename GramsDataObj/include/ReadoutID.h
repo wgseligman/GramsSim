@@ -3,7 +3,7 @@
 // 10-Jun-2024 WGS
 
 // This data object encapsulates the details of how a LArTPC's
-// readout cells and channel are identified.
+// readout cells and channels are identified.
 
 // As of Jun-2024, the LArTPC anode readout looks like it will be
 // pixel-based. But a couple of years ago it was going to be
