@@ -46,7 +46,7 @@ namespace grams {
     // and a C++ class.
     int TrackID() const { return trackID; }
     int HitID() const { return hitID; }
-    int ClusterID() const { return hitID; }
+    int ClusterID() const { return clusterID; }
     double EAtAnode() const { return energy; }
     double EnergyAtAnode() const { return energy; } // an extra accessor can't hurt
     int NumElectrons() const { return numElectrons; }

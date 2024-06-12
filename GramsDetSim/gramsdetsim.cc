@@ -302,9 +302,13 @@ int main(int argc,char **argv)
 	holdingClusters = diffusionModel->Calculate(energy_sca, hit);
       }
 
-      if (debug)
+      if (debug) {
 	std::cout << "gramsdetsim: after diffusion model corrections, holdingClusters.size()=" 
 		  << holdingClusters.size() << std::endl;
+	for ( const auto& c : holdingClusters ) {
+	  std::cout << c << std::endl;
+	}
+      }
 
       // If something went wrong, use the default cluster.
       if ( holdingClusters.empty() )
