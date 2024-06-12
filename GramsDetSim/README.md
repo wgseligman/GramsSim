@@ -8,6 +8,7 @@
     + [Recombination](#recombination)
     + [Absorption](#absorption)
     + [Diffusion](#diffusion)
+  * [Design note](#design-note)
 
 <small><i><a href='http://ecotrust-canada.github.io/markdown-toc/'>Table of contents generated with markdown-toc</a></i></small>
 
@@ -151,3 +152,21 @@ This is a sketch of the procedure:
 
 The output ntuple contains the energy, arrival time at the anode, and shifted
 (x,y,z) of each individual cluster.
+
+## Design note
+
+It's reasonable to ask why the functions of GramsDetSim,
+GramsReadoutSim, and GramsElecSim are in three separate prograsm.
+
+Functionally, each of these programs relates to a different aspect of
+an experiment's simulation:
+
+   - GramsDetSim relates to the physics of charge transport in the detector.
+
+   - GramsReadoutSim relates to the geometry of the readout anode.
+
+   - GramsElecSim relates to the design of the data-acquisition electronics.
+
+Experience has taught us that for the purpose of planning, testing,
+studies, and maintenance, it's best to have these functions in
+separate programs, rather than one large program.

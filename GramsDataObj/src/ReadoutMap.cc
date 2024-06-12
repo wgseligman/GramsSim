@@ -1,5 +1,5 @@
-/// \file ElectronClusters.cc
-/// \brief Implementation of the longer ElectronClusters-related methods.
+/// \file ReadoutMap.cc
+/// \brief Implementation of the longer ReadoutMap-related methods.
 // 01-Jun-2024 WGS
 
 #include "ReadoutID.h"

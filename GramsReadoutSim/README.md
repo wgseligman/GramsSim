@@ -21,4 +21,22 @@ Since the pixel readout is presently modeled as a simple 2D grid in x and y, the
 
 - `readout_centerx` and `readout_centery`: The x- and y-offset of the center of the readout geometry from the (x=0,y=0) coordinate of the detector geometry. 
 
-The output ntuple include the pixel ID assigned to each individual charge cluster in the input. 
+The output trees includes the pixel ID assigned to each individual charge cluster in the input. 
+
+## Design note
+
+It's reasonable to ask why the functions of GramsDetSim,
+GramsReadoutSim, and GramsElecSim are in three separate prograsm.
+
+Functionally, each of these programs relates to a different aspect of
+an experiment's simulation:
+
+   - GramsDetSim relates to the physics of charge transport in the detector.
+
+   - GramsReadoutSim relates to the geometry of the readout anode.
+
+   - GramsElecSim relates to the design of the data-acquisition electronics.
+
+Experience has taught us that for the purpose of planning, testing,
+studies, and maintenance, it's best to have these functions in
+separate programs, rather than one large program.

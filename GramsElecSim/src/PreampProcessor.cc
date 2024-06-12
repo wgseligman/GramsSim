@@ -88,7 +88,7 @@ namespace gramselecsim {
 
   // Compute the analog waveform based on the number of electrons seen
   // at the pixel.
-  std::vector<double> PreampProcessor::ConvoluteResponse( std::vector<int>& num_arrival_electron ) {
+  std::vector<double> PreampProcessor::ConvoluteResponse( const std::vector<int>& num_arrival_electron ) {
 
     std::vector<double> output_waveform(size_waveform_, 0.0);
     int event_start_bin;

@@ -573,18 +573,29 @@
 
   <gramselecsim>
 
-    <!-- Input ROOT file from GramsReadoutSim (or at least contains 
-	 a ReadoutSim-compatible ntuple -->
-    <option name="inputfile" short="i" value="gramsreadoutsim.root" type="string" 
-        desc="input file"/>    
+    <!-- GramsElecSim take two files as input. One contains the lists
+         of electron clusters for each event. The other contains a map
+         of which clusters are associated with which readout cells.
+    -->
 
-    <!-- Name of ntuple in the input file that contains the readout information. -->
-    <option name="inputntuple" value="ReadoutSim" type="string" desc="input ntuple"/>
+    <!-- Input ROOT file from GramsDetSim. -->
+    <option name="inputElecClustersFile" short="i" value="gramsdetsim.root" type="string" 
+        desc="input clusters file"/>    
+
+    <!-- Name of the treee in the input file that contains the cluster information. -->
+    <option name="inputElecClustersTree" value="DetSim" type="string" desc="input clusters tree"/>
+
+    <!-- Input ROOT file from GramsReadoutSim. -->
+    <option name="inputElecMapFile" short="m" value="gramsreadoutsim.root" type="string" 
+        desc="input map file"/>    
+
+    <!-- Name of the tree in the input file that contains the readout information. -->
+    <option name="inputElecMapTree" value="ReadoutSim" type="string" desc="input map tree"/>
 
     <!-- Output ROOT file -->
-    <option name="outputfile" short="o" value="gramselecsim.root" type="string"
+    <option name="outputElecFile" short="o" value="gramselecsim.root" type="string"
         desc="output file"/>
-    <option name="outputntuple"         value="ElecSim" type="string" desc="output ntuple"/>
+    <option name="outputElecTree" value="ElecSim" type="string" desc="output tree"/>
  
     <!-- 
          IMPORTANT: Note that the units associated with these

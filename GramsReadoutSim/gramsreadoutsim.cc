@@ -135,7 +135,7 @@ int main(int argc,char **argv)
 
   // Define the columns of the output tree. Since this tree will
   // be "friends" with the input tree, we only have to include
-  // columns that are unique to the detector response.
+  // columns that are unique to the detector readout geometry.
 
   // The exception is "EventID', which we duplicate between trees, to
   // make it easier for them to be friends.

@@ -57,6 +57,12 @@
 #pragma link C++ class grams::ReadoutMap+;
 #pragma link C++ function operator<<(std::ostream&, const grams::ReadoutMap&);
 
+// Readout waveformss.
+#pragma link C++ class grams::ReadoutWaveform+;
+#pragma link C++ function operator<<(std::ostream&, const grams::ReadoutWaveform&);
+#pragma link C++ class grams::ReadoutWaveforms+;
+#pragma link C++ function operator<<(std::ostream&, const grams::ReadoutWaveforms&);
+
 // The following statements may not be necessary, but I include them
 // for "safety"; see
 // https://root.cern.ch/root/htmldoc/guides/users-guide/AddingaClass.html

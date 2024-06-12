@@ -76,3 +76,22 @@ The parameters that affect this procedure are:
 - `input_max` and `input_min`: The signal is then clipped at the high and low ends by these two parameters. The parameter `input_min` also effectively serves as the ADC pedestal. 
 
 - `bit_resolution`: The last step is to convert the floating-point value from the previous steps into a number of ADC counts, as determined by the `bit_resolution` parameter.
+
+
+## Design note
+
+It's reasonable to ask why the functions of GramsDetSim,
+GramsReadoutSim, and GramsElecSim are in three separate prograsm.
+
+Functionally, each of these programs relates to a different aspect of
+an experiment's simulation:
+
+   - GramsDetSim relates to the physics of charge transport in the detector.
+
+   - GramsReadoutSim relates to the geometry of the readout anode.
+
+   - GramsElecSim relates to the design of the data-acquisition electronics.
+
+Experience has taught us that for the purpose of planning, testing,
+studies, and maintenance, it's best to have these functions in
+separate programs, rather than one large program.
