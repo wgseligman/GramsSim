@@ -9,7 +9,9 @@ Note that `gramselecsim` uses a random-number generator for its noise and pre-am
     
 ## `GramsElecSim` simulations
 
-Overall parameters:
+See `GramsSim/util/README.md` for a description of how to control the
+operation of `gramsdetsim` through the [`options.xml`](../options.xml) file and the
+command line.
 
 - `timebin_width`: The minimal time interval over which the readout can can respond to a charge.
 

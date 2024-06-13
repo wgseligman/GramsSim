@@ -11,7 +11,11 @@ In [`GramsDetSim`](../GramsDetSim), the ionization left by charged-particle trac
 | :---------------------------------------------: | 
 | <small><strong>Sketch by Satoshi Takashima of the operation of `GramsReadoutSim`. Note that after he created this diagram, he choose a different scheme for assigning a pixel ID. The pixel ID is assigned as pair of integers (x,y) instead of an consecutive integer over a grid. </strong></small> |
 
-Since the readout is presently modeled as a simple 2D grid in x and y, the `GramsReadoutSim` parameters in [options.xml](../options.xml) are equally simple:
+See `GramsSim/util/README.md` for a description of how to control the
+operation of `gramsdetsim` through the [`options.xml`](../options.xml) file and the
+command line.
+
+Since the readout is presently modeled as a simple 2D grid in x and y, the `GramsReadoutSim` parameters are equally simple:
 
 - `gdml` : The ROOT-compatible gdml file emitted by GramsG4
 
