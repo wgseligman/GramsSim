@@ -87,11 +87,12 @@ message(STATUS "rpath = ${CMAKE_INSTALL_RPATH}")
 #endforeach()
 
 #----------------------------------------------------------------------------
-# Copy all configuration files to the build directory, i.e. the directory in which we
-# build GramsSim. This is so that we can run the executables directly because they
-# relies on these scripts being in the current working directory.
+# Copy all configuration files to the build directory, i.e. the
+# directory in which we build GramsSim. Many of the programs and
+# example scripts rely on these files being in the current working
+# directory.
 #
-set(GramsSim_SCRIPTS grams.gdml pgrams.gdml options.xml xinclude.xml README.md)
+set(GramsSim_SCRIPTS grams.gdml pgrams.gdml options.xml xinclude.xml README.md rootlogon.C)
 
 foreach(_script ${GramsSim_SCRIPTS})
   configure_file(
