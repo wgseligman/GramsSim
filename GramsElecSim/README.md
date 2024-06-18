@@ -17,7 +17,7 @@ command line.
 
 - `time_window`: The total time interval over which charge would be sampled once the electronics are triggered. 
 
-The output of `gramselecsim` includes both the analog and digital versions of the waveforms created by summing the charges accumulated at each readout pixel. 
+The output of `gramselecsim` includes both the analog and digital versions of the waveforms created by summing the charges accumulated at each readout pixel. Units of the analog waveform are millivolts. 
 
 There are three segments of the electronics response modeled by `gramselecsim`.
 
