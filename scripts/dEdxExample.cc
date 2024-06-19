@@ -10,17 +10,21 @@
 // This program will automatically be compiled during the cmake/make
 // process for GramsSim, from its source in GramsSim/scripts. 
 
-// If you want to copy this program, make changes, and run your new
-// program, and assuming that you're working in a build directory set
-// up according to the instructions in
+// You can copy this program and make changes to suit your work. If
+// you do, you'll have to compile it "by hand". If the program is
+// located in the build directory you set up according to the
+// instructions in
 // https://github.com/wgseligman/GramsSim/tree/develop, you can
-// compile the program with:
+// compile it with:
 
 /*
 g++ -o <program-name> <program-name>.cc `root-config --cflags --libs` \
    -I../GramsSim/GramsDataObj/include \
    -Wl,-rpath,./GramsDataObj ./GramsDataObj/libGramsSimProjectDataObj.so
 */
+
+// If the program is located elsewhere in your directory hierarchy,
+// you'll have to adjust the paths in the above command.
 
 // From the GramsDataObj library, include all the data objects that
 // we'll read. For this particular example task, calculating dE/dx for
