@@ -31,14 +31,14 @@ tree = gDirectory.Get( 'gramsg4' )
 # we'll just make a histogram. Note that we're not doing anything
 # with that histogram, not even writing or drawing it.
 
-dEdxHistogram = TH1D("dEdx","Histogram of dE/dx",100,0.0,1.0);
+dEdxHistogram = TH1D("dEdx","Histogram of dE/dx",100,0.0,0.005);
 
 # For event row (or entry) in the tree:
 for entry in tree:
 
-    # Most of branches in GramSim files contain data objects in the
-    # form of C++ maps; a "map" is like a Python dict, in that its a
-    # container with (key,value) pairs.
+    # Most of the branches in GramSim files contain data objects in
+    # the form of C++ maps; a "map" is like a Python dict, in that its
+    # a container with (key,value) pairs.
 
     # For this calculation, we only need the 'LArHits" branch within
     # the tree, You can look up the structure of MCLArHits in

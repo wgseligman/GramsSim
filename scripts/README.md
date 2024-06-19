@@ -21,25 +21,20 @@ For examples related to working with Geant4 and GramsG4, see [`GramsSim/mac`](..
 
 ## Examples
 
-`SimpleAnalysis.C` - a very simple example of how to look at the
-ntuples produced by gramsg4.
+`SimpleAnalysis.C` - a very simple example of how to look at the trees
+produced by gramsg4 using a ROOT macro. Note that this macro depends
+on [GramsSim/rootlogon.C](../rootlogon.C), which loads the
+[GramsDataObj](../GramsDataObj) dictionary when you start an
+interactive ROOT session.
+
+`dEdxExample.cc` - An example of how to read a map-based branch in one
+of the GramsSim output files.  There are lots of detailed comments in
+here, to point the way to users developing code for their own tasks.
+
+`dEdxExample.py` - The same as above, but in Python.
 
 `RadialDistance.py` - a more realistic example of how to look at the
-ntuples produced by gramsg4, this time in Python.
-
-`dEdxExample.cc` - an example of how to link the output ntuples from
-gramsg4 and use those ntuples for a physics calculation. There are
-lots of detailed comments in here, to illustrate how to use features
-of ROOT's RDataFrame.
-
-`HitRestructure.cc` - an example of how to take the LArHits ntuple
-from the gramsg4 output, which has one row per hit, and turn the
-collection of hits for a given run/event/trackID into a single row
-with vectors of hit information.
-
-`RestructuredEdx.cc` - an example of how to read in an ntuple with
-columns that contains vectors (eg., the output of HitRestructure) and
-append a new column that also contains a vector.
+trees produced by gramsg4.
 
 `Hist2Text.C` - converts a ROOT histogram into the simple text format
 used by Geant4's General Particle Source system. Any `.root` or `.txt`

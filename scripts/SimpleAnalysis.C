@@ -9,8 +9,7 @@
 // contents of rootlogon.C.
 
 void SimpleAnalysis() {
-  // A very simple look at the tree produced by
-  // gramsg4. 
+  // A very simple look at the tree produced by gramsg4.
 
   // Open the input file.
   auto input = TFile::Open("gramsg4.root");

@@ -82,7 +82,7 @@ int main( int, char**  ) {
   // we'll just make a histogram. Note that we're not doing anything
   // with that histogram, not even writing or drawing it.
 
-  auto dEdxHistogram = new TH1D("dEdx","Histogram of dE/dx",100,0.0,1.0);
+  auto dEdxHistogram = new TH1D("dEdx","Histogram of dE/dx",100,0.0,0.005);
 
   // Read through the file.
   while ( reader->Next() ) {
