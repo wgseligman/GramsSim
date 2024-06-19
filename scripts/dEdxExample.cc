@@ -1,23 +1,25 @@
 // dEdxExample.cc
 // 18-Jun-2024 William Seligman <seligman@nevis.columbia.edu>
 
-// This is an overly-commented example program to illustrate
-// how to read the ROOT files produced by GramsSim. 
+// This is an overly-commented example program to illustrate how to
+// read the map-based ROOT files produced by GramsSim. It is _not_ an
+// example of how to perform a meaningful analysis on data. For that,
+// see the ROOT tutorial at
+// https://www.nevis.columbia.edu/~seligman/root-class/html/
 
 // This program will automatically be compiled during the cmake/make
 // process for GramsSim, from its source in GramsSim/scripts. 
 
-// If you want to copy this program, make changes, and run it, and
-// assuming that you're working in a build directory set up according
-// to the instructions in
+// If you want to copy this program, make changes, and run your new
+// program, and assuming that you're working in a build directory set
+// up according to the instructions in
 // https://github.com/wgseligman/GramsSim/tree/develop, you can
 // compile the program with:
 
 /*
-g++ <program-name>.cc `root-config --cflags --libs` \
+g++ -o <program-name> <program-name>.cc `root-config --cflags --libs` \
    -I../GramsSim/GramsDataObj/include \
-   ./GramsDataObj/libGramsSimProjectDataObj.so \
-   -o <program-name>
+   -Wl,-rpath,./GramsDataObj ./GramsDataObj/libGramsSimProjectDataObj.so
 */
 
 // From the GramsDataObj library, include all the data objects that
@@ -84,7 +86,7 @@ int main( int, char**  ) {
     // (*MCLArHits) is a std::map (you can check this by looking at
     // GramsSim/GramsDataObj/include/MCLArHits.h). A map is vaguely
     // like a Python dict, in that it stores information in key-value
-    // pairs. Here's how to loop over every value in a map:
+    // pairs. Here's how to loop over every (key,value) pair in a map:
 
     for ( const auto& [ key, mcLArHit ] : (*mcLArHits) ) {
 
@@ -96,7 +98,7 @@ int main( int, char**  ) {
       auto start = mcLArHit.Start4D();
       auto end = mcLArHit.End4D();
 
-      // We've got the "dE" in dE/dx, now we have to get the
+      // We've got the "dE" in dE/dx, now we have to compute the
       // "dx". Take the different between the 4-vectors:
       auto diff = start - end;
 
