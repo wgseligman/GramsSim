@@ -37,7 +37,7 @@ dEdxHistogram = TH1D("dEdx","Histogram of dE/dx",100,0.0,0.005);
 for entry in tree:
 
     # Most of the branches in GramSim files contain data objects in
-    # the form of C++ maps; a "map" is like a Python dict, in that its
+    # the form of C++ maps; a "map" is like a Python dict, in that it's
     # a container with (key,value) pairs.
 
     # For this calculation, we only need the 'LArHits" branch within

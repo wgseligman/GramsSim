@@ -48,21 +48,17 @@ for event in inputTree:
     TrackList = inputTree.TrackList;
     LArHits = inputTree.LArHits;
 
-    # Most of the branches in GramSim files (such as LArHits and
-    # TrackHits) contain data objects in the form of C++ maps; a "map"
-    # is like a Python dict, in that its a container with (key,value)
-    # pairs.
-
-    # For this study, we're going to build a list of all the Geant4
-    # track IDs for this event that are:
-    # - primary particles
-    # - have more than one compton scatter in the track
-
-    # This code assumes that there's only one primary particle in this event.
-
     # Build a list of the start of compton-scatter trajectories for
     # primary particles in this event.
+
+    # This code assumes that there's only one primary particle in this event.
+    # Start with an empty list: No Comptons yet!
     comptons = list()
+
+    # Most of the branches in GramSim files (such as LArHits and
+    # TrackHits) contain data objects in the form of C++ maps; a "map"
+    # is like a Python dict, in that it's a container with (key,value)
+    # pairs.
     for ( trackID, track ) in TrackList:
         if track.Process() == "Primary" :
 
@@ -86,8 +82,8 @@ for event in inputTree:
             break;
 
     # We're only interesting tracks with successive Compton
-    # scatters. If there was one (or fewer) Compton scatters in the
-    # LAr, skip this event.
+    # scatters. If there was one (or fewer) Compton scatters, skip
+    # this event.
     if len( comptons ) < 2:
         continue
 
