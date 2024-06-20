@@ -4,6 +4,12 @@ A description of major development milestones. The most recent are at
 the top. For a detailed list of all changes (basically, every time
 someone typed "git commit"), see the output of "git log".
 
+Jun-2024
+
+   - **MAJOR BREAKING CHANGE**: The n-tuples used in the previous GramsSim files have been
+     replaced with a data-object ROOT-based TTree format. There is a new package,
+     GramsDataObj, that contains all the data objects used by GramsSim. 
+
 Apr-2024
 
    - From a suggestion by Mihir Shetty: modified the Options
