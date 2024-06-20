@@ -28,8 +28,7 @@ g++ -o <program-name> <program-name>.cc `root-config --cflags --libs` \
 
 // From the GramsDataObj library, include all the data objects that
 // we'll read. For this particular example task, calculating dE/dx for
-// LAr energy deposits, these are all that we need.
-#include "EventID.h"
+// LAr energy deposits, this is all that we need.
 #include "MCLArHits.h"
 
 // ROOT classes that we'll use in this program.
@@ -69,12 +68,11 @@ int main( int, char**  ) {
   auto reader = new TTreeReader(tree);
 
   // - Define the branches (columns) within the tree that we'll
-  // read. Note that the custom classes (e.g., grams::EventID) are
+  // read. Note that the custom classes (e.g., grams::MCLArHits) are
   // defined in GramsDataObj.
 
   // Also note that the TTreeReaderValue acts like a pointer. For
-  // example, we'd have to refer to (*eventID) in the code below.
-  TTreeReaderValue<grams::EventID>   eventID( *reader, "EventID" );
+  // example, we'd have to refer to (*mcLArHits) in the code below.
   TTreeReaderValue<grams::MCLArHits> mcLArHits( *reader, "LArHits" );
 
   // The vague purpose of this example program is to calculate
