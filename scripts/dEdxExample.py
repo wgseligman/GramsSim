@@ -33,7 +33,7 @@ tree = gDirectory.Get( 'gramsg4' )
 
 dEdxHistogram = TH1D("dEdx","Histogram of dE/dx",100,0.0,0.005);
 
-# For event row (or entry) in the tree:
+# For each row (or entry) in the tree:
 for entry in tree:
 
     # Most of the branches in GramSim files contain data objects in
