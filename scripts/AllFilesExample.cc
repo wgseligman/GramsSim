@@ -106,7 +106,7 @@ int main( int, char**  ) {
   // Now we add additional columns/friends to that tree. (If you ask
   // how I knew the names of all these files and trees, I got them
   // from GramsSim/options.xml. If I were writing a more complete
-  // program, I get them all from using the Options class (see
+  // program, I'd get them from using the Options class (see
   // GramsSim/util).)
 
   tree->AddFriend("ReadoutSim","gramsreadoutsim.root");
@@ -244,7 +244,7 @@ int main( int, char**  ) {
     } // matched arbitraryEvent
 
 
-    // The above shows to "go forward" through the
+    // The above shows how to "go forward" through the
     // tracks->hits->clusters->readout chain of information. What
     // follows is the reverse: How one might back-track up the chain.
 
@@ -258,12 +258,12 @@ int main( int, char**  ) {
 
       // If the sum of the ADC counts is greater than some arbitrary
       // number that I just made up:
-      static const int madeUpNumber = 21969;
+      static const int madeUpNumber = 219697;
       if ( sumADC > madeUpNumber ) {
 
 	// The purpose of the following line is to illustrate that all
-	// the data objects in GramsDataObj have output operators
-	// defined for them.
+	// the data objects in GramsDataObj have C++-style output
+	// operators defined for them.
 	std::cout << "EventID " << (*EventID) 
 		  << " ReadoutID " << readoutID
 		  << " accumulates to " << sumADC
@@ -294,7 +294,7 @@ int main( int, char**  ) {
 
 	// If this seems complex, you can think of this arrangement as:
 	//
-	// (a) a multi-dimensional array of clusters in readouts;
+	// (a) a multi-dimensional array of indexed by [trackID][hitID][clusterID][readoutID];
 	// (b) if you're into Python, nested dictionaries (dicts of dicts).. 
 
 	for ( auto const& clusterKey : clusterKeys ) {
@@ -315,7 +315,7 @@ int main( int, char**  ) {
 	  // What can we do with an electron cluster? We might print
 	  // it out, according to some imaginary non-scientific
 	  // criteria.
-	  if ( electronCluster.NumElectrons() < 200 )
+	  if ( electronCluster.NumElectrons() < 38 )
 	    std::cout << electronCluster << std::endl;
 
 	  // We can also use it to back-track to a particular
@@ -343,7 +343,7 @@ int main( int, char**  ) {
 	  // cut on the number of scintillation photons to show how to
 	  // work with a hit.
 	  auto numPhotons = hit.NumPhotons();
-	  if ( numPhotons < 1000 ) {
+	  if ( numPhotons < 200 ) {
 
 	    // We can print out the hit if we wish.
 	    std::cout << hit << std::endl;
@@ -357,7 +357,7 @@ int main( int, char**  ) {
 	    // possible, depending on the simulation. If we introduce
 	    // energy cuts in the Geant4 output, we might get hits for
 	    // tracks that were never written, and tracks with no hits
-	    // if the track didn't deposite enough energy in the LAr.
+	    // if the track didn't deposit enough energy in the LAr.
 	    if ( findTrack != Tracks->cend() ) {
 
 	      auto& track = (*findTrack).second;
@@ -372,7 +372,7 @@ int main( int, char**  ) {
 			<< std::endl;
 	    }
 	  
-	  } // numPhotons < 1000
+	  } // numPhotons < 200
 	  
 	} // For each cluster key
 
