@@ -100,7 +100,7 @@ for entry in tree:
             if trackID in primaries:
                 # If we found one (not likely) print it out. Note that the
                 # data objects all have output operators defined.
-                print (hit)
+                print ("TrackID", hit.TrackID(), "HitID", hit.HitID(), "energy", hit.Energy())
 
         # For all the electron clusters in the event:
         for ( key, cluster ) in tree.ElectronClusters:
@@ -109,7 +109,8 @@ for entry in tree:
             # particle. (Again, probably not.)
             trackID = cluster.TrackID()
             if trackID in primaries:
-                print (cluster)
+                print ("TrackID", cluster.TrackID(), "HitID", cluster.HitID(), "ClusterID", 
+                       cluster.ClusterID(), "energy", cluster.EnergyAtAnode())
 
         # Let's look through all the readout channels in event.
         for (  readoutID, waveform ) in tree.ReadoutWaveforms:
@@ -130,7 +131,7 @@ for entry in tree:
                 # the waveform and exit the loop (there's no point in
                 # printing the waveform for every matching cluster).
                 if trackID in primaries:
-                    print (waveform)
+                    print ("ReadoutID", readoutID.Index())
                     break
                     
     # The above shows how to "go forward" through the
@@ -149,10 +150,12 @@ for entry in tree:
         madeUpNumber = 219697;
         if sumADC > madeUpNumber:
 
-            # The purpose of the following line is to illustrate that all
-            # the data objects in GramsDataObj have C++-style output
-            # operators defined for them.
-            print ( "EventID ", tree.EventID, "ReadoutID", readoutID, 
+            # The data objects in the dictionary all of the C++ operator<<
+            # defined for them, which simplifies print them out in C++. Unfortunately, 
+            # there doesn't seem to be a simple way of calling operator<< from within 
+            # Python. For these data objects, just display a few details to prove
+            # we have access to their information.
+            print ( "EventID ", tree.EventID.Index(), "ReadoutID", readoutID.Index(), 
                     "sums to", sumADC, "which is more than", madeUpNumber )
 
             # Let's assume that this means the waveform is
@@ -178,7 +181,8 @@ for entry in tree:
                 # it out, according to some imaginary non-scientific
                 # criteria.
                 if electronCluster.NumElectrons() < 38:
-                    print ( electronCluster )
+                    print ("TrackID", electronCluster.TrackID(), "HitID", electronCluster.HitID(), "ClusterID", 
+                           electronCluster.ClusterID(), "energy", electronCluster.EnergyAtAnode())
 
                     # We can also use it to back-track to a particular
                     # simulated hit in the LAr. The data object MCLArHits is,
@@ -198,7 +202,7 @@ for entry in tree:
                     if numPhotons < 200:
 
                         # We can print out the hit if we wish.
-                        print ( hit )
+                        print ("TrackID", hit.TrackID(), "HitID", hit.HitID(), "energy", hit.Energy())
 
                         # As a final example of back-tracking, let's go to the
                         # track that created the hit.
@@ -210,4 +214,5 @@ for entry in tree:
 
                         # Let's print the first point in the trajectory:
                         firstPoint = trajectory[0]
-                        print ( "First point in track ", firstPoint )
+                        print ( "First point in track (x,y,z,t)", 
+                                firstPoint.X(), firstPoint.Y(), firstPoint.Z(), firstPoint.T() )
