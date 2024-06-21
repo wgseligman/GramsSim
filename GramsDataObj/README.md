@@ -5,14 +5,20 @@ a Branch (column) of a [TTree][10] (n-tuple) in a ROOT file.
 
 [10]: https://root.cern.ch/doc/master/classTTree.html
 
-## Definitions
+## Overview
 
-The data objects are defined as header files in [the include/
+| <img src="GramsSim_trees.png" width="100%" /> |
+| :---------------------------------------------: | 
+| <small><strong>How the `GramsSim` files, trees, and data objects are connected.</strong></small> |
+
+### Definitions
+
+The data objects are defined by header files in [the GramsDataObj/include/
 directory](./include). If any implementations are needed, they're
 either in `.icc` files in the `include/` directory or in `.cc` files
 in [the src/ directory](./src).
 
-## Linkdef.hh
+### Linkdef.hh
 
 Because of the way [ROOT dictionary generation][70] works, the single
 [Linkdef.hh](./include/LinkDef.hh) file must include the necessary
@@ -21,7 +27,7 @@ object, be sure to edit this file.
 
 [70]: https://root.cern/manual/io_custom_classes/
 
-## Operators
+### Operators
 
 Each data object should include an overloaded [operator<<][20],
 whether it's a class, struct, or list. This means that the object can
@@ -46,25 +52,13 @@ sorted, or used as keys in sorted containers like `std::set`.
 [50]: https://cplusplus.com/reference/map/map/
 [60]: https://en.cppreference.com/w/cpp/language/operators
 
-## Event ID
-
-The [EventID](./include/EventID.h) encapsulates what, in many
-experiments, is simply the run and event number. However, in a balloon
-or satellite experiment, it may be that there are different methods
-for assigning an event ID; e.g., UTC time.
-
-As a precaution (and also to saving on typing `if (run == N && event
-== M)`), the `grams::EventID` class is used instead. You can sort on
-`grams::EventID` or test it for equality, without having to modify the code
-if there's a switch from "run/event" to distinguish events.
-
-## Trees containing data objects
+### Trees containing data objects
 
 Each of the main TTrees produced by the analysis programs have the following properties:
 
-### Friendly trees
+#### Friendly trees
 
-Each tree has one row for each value of EventID, They're all in sync
+Each tree has one row for each value of EventID (see below). They're all in sync
 row-for-row; if row 2345 in TTree `gramsg4` refers to a given event,
 row 2345 in TTree `DetSim` refers to the same event.
 
@@ -79,34 +73,35 @@ For example, consider tree `gramsg4` in file `gramsg4.root` and tree
 once:
 
 ```c++
-   // Open the files and trees.
-   auto myFile = TFile::Open("gramsg4.root");
-   auto tree = myFile->Get<TTree>("gramsg4");
+  // Open the files and trees.
+  auto myFile = TFile::Open("gramsdetsim.root");
+  auto tree = myFile->Get<TTree>("DetSim");
 
-   auto myFriendFile = TFile::Open("gramsdetsim.root");
-   auto friendTree = myFriendFile->Get<TTree>("DetSim");
+  // Declare that the gramsg4 tree is a friend to the DetSim tree.
+  tree->AddFriend("gramsg4","gramsg4.root");
 
-   // Declare that the DetSim tree is a friend to the gramsg4 tree.
-   tree->AddFriend(friendTree);
+  // Define the TTreeReader for this combined tree.
+  auto reader = new TTreeReader(tree);
 
-   // Set up branches. Note that just "Clusters" would be fine instead
-   // of "DetSim.Clusters" if there were no other columns named
-   // "Clusters".
-   auto mcLArHits = new grams::MCLArHits();
-   tree->SetBranchAddress("LArHits", &mcLArHits);
-   auto clusters = new grams::Clusters();
-   tree->SetBranchAddress("DetSim.Clusters", &clusters);
+  // Create a TTreeReaderValue for each column in the combined tree
+  // whose value we'll use. Note that we have multiple columns named
+  // "EventID" in the combined tree, so specify which one to use.
 
-   // Loop over the rows in the combined trees.
-   for (int iEntry = 0; tree->LoadTree(iEntry) >= 0; ++iEntry) {
-    // Load the data for the given tree entry
-    tree->GetEntry(iEntry);
+  // TTReaderValue behaves like a pointer. For example, we'll have to
+  // use (*EventID) later in the code.
+  
+  TTreeReaderValue<grams::EventID>          EventID    (*reader, "ElecSim.EventID");
+  TTreeReaderValue<grams::MCLArHits>        Hits       (*reader, "LArHits");
+  TTreeReaderValue<grams::ElectronClusters> Clusters   (*reader, "ElectronClusters");
 
-    // Do whatever with *mcLArHits and *clusters.
-   }
+  // For every event in the combined tree:
+  while (reader->Next()) {
+
+    // Do whatever with *EventID, *Hits, and *Clusters.
+  }
 ```
 
-### Indexed trees
+#### Indexed trees
 
 Each TTree has a [grams::EventID](./include/EventID.h) column, to help
 make sure the trees maintain their row-to-row correspondence. Each tree
@@ -163,10 +158,10 @@ The advantage of this approach is it uses the index to access that
 portion of the input file directly, instead of sequentially searching
 for a given entry.
 
-## Maps and keys
+### Maps and keys
 
-Many of the data objects are organized in the form of maps, with keys
-in the form of a [std:::tuple][120]. For example, in MCLArHits.h:
+Many of the data objects described below are organized in the form of maps, with keys
+in the form of a [std:::tuple][120]. For example, in [MCLArHits.h](./MCLArHits.h):
 
 [120]: https://en.cppreference.com/w/cpp/utility/tuple
 
@@ -177,12 +172,12 @@ typedef std::map< std::tuple<int,int>, MCLArHit > MCLArHits;
 
 This is to make it easier to do "back-tracing" of objects that are
 located in different columns/branches in different trees. For example,
-assume you are going through Clusters and you wish to examine the
+assume you are going through ElectronClusters and you wish to examine the
 LArHit that the cluster came from:
 
 ```c++
 auto mcLArHits = new grams::MCLArHits();
-auto clusters = new grams::Clusters();
+auto clusters = new grams::ElectronClusters();
 // Assume you've read *mcLArHits and *clusters from
 // their respective friend trees.
 
@@ -199,3 +194,20 @@ for ( const auto& [key, cluster] : (*clusters) ) {
    const auto hit& = (*mcLArHits)[ hitKey ];
 }
 ```
+
+This is illustrated in greater detail in [GramsSim/scripts/AllFilesExample.cc](../scripts/AllFilesExample.cc). 
+
+
+## Data objects
+
+### EventID
+
+The [EventID](./include/EventID.h) object encapsulates what, in many
+experiments, is simply the run and event number. However, in a balloon
+or satellite experiment, it may be that there are different methods
+for assigning an event ID; e.g., UTC time.
+
+As a precaution (and also to saving on typing `if (run == N && event
+== M)`), the `grams::EventID` class is used instead. You can sort on
+`grams::EventID` or test it for equality, without having to modify the code
+if there's a switch from "run/event" to distinguish events.

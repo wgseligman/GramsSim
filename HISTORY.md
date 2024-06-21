@@ -9,6 +9,9 @@ Jun-2024
    - **MAJOR BREAKING CHANGE**: The n-tuples used in the previous GramsSim files have been
      replaced with a data-object ROOT-based TTree format. There is a new package,
      GramsDataObj, that contains all the data objects used by GramsSim. 
+     
+   - The examples in GramsSim/scripts and the overall documentation in README.md files
+     was revised for this change. 
 
 Apr-2024
 

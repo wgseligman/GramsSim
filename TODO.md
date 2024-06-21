@@ -4,7 +4,8 @@ As of 16-Oct-2023:
 
 - In GramsReadoutSim or GramsElecSim, we may have to model induced charge on adjacent pixels. 
 - There's no trigger logic in GramsElecSim; this may have to wait until the optical and 
-  veto detector code is implemented. 
+  veto detector code is implemented. Updated Jun-2024: This proposed functionality will
+  probably be moved into a different separate program, GramsTriggerSim. 
 
 - Cluster time 
    - In GramsDetSim, the cluster arrival time at the anode

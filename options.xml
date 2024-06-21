@@ -565,9 +565,9 @@
 
     <option name="gdml" value="parsed.gdml" type="string" desc="ROOT-compatible gdml file emitted by GramsG4"/>
     <option name="anodeTileVolume" value="volTilePlane" type="string" desc="Volume in gdml file that corresponds to Anode Tile"/>
-
-    <option name="x_resolution" value="30" type="int" desc="Number of pixels along the x direction" />
-    <option name="y_resolution" value="30" type="int" desc="Number of pixels along the y direction" />
+    
+    <option name="x_resolution" value="150" type="int" desc="Number of readout elements along the x direction" />
+    <option name="y_resolution" value="150" type="int" desc="Number of readout elements along the y direction" />
 
   </gramsreadoutsim>
 

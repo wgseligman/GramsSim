@@ -48,6 +48,8 @@ subdirectory's README.md file:
    - [**GramsReadoutSim**](GramsReadoutSim): This models the readout geometry of the GRAMS detector.
 
    - [**GramsElecSim**](GramsElecSim): A simulation of the electronics response to the detector readout, including noise and shaping. 
+   
+   - [**GramsDataObj**](GramsDataObj): The ROOT-based data objects stored in the above programs' output files. 
 
    - [**util**](util): Common utilities (e.g., options processing) shared by all components. 
 
