@@ -4,10 +4,9 @@ This directory contains utility scripts to help work with GramsSim
 inputs and outputs. Some of the programs are provided solely to teach
 programming concepts for folks new to:
 
-- handling ntuples
-- working with dataframes
 - C++
 - ROOT
+- handling TTrees, both individually and as friends
 - GDML (Geant4 geometry)
 - HepMC3 (particle-physics file format)
 
@@ -31,10 +30,20 @@ interactive ROOT session.
 of the GramsSim output files.  There are lots of detailed comments in
 here, to point the way to users developing code for their own tasks.
 
-`dEdxExample.py` - The same as above, but in Python.
+`dEdxExample.py` - The same as above, in Python.
 
 `RadialDistance.py` - a more realistic example of how to look at the
 trees produced by gramsg4.
+
+`AllFilesExample.cc` - An example of how to open all the output
+files from all the GramsSim programs at once, set them up as [friend trees][80].
+This allows you to treat the entire ensemble of GramsSim files as a single
+structure. (As the comments in the code warn, don't copy this blindly. Edit it down
+to only read the files you need.)
+
+`AllFilesExample.py` - The same as above, in Python. 
+
+[80]: https://root.cern/manual/trees/#widening-a-ttree-through-friends
 
 `Hist2Text.C` - converts a ROOT histogram into the simple text format
 used by Geant4's General Particle Source system. Any `.root` or `.txt`
