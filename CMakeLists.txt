@@ -92,7 +92,7 @@ message(STATUS "rpath = ${CMAKE_INSTALL_RPATH}")
 # example scripts rely on these files being in the current working
 # directory.
 #
-set(GramsSim_SCRIPTS grams.gdml pgrams.gdml options.xml xinclude.xml README.md rootlogon.C)
+set(GramsSim_SCRIPTS grams.gdml pgrams.gdml options.xml README.md rootlogon.C)
 
 foreach(_script ${GramsSim_SCRIPTS})
   configure_file(
