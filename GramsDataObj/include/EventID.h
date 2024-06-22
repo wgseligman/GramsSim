@@ -76,6 +76,12 @@ namespace grams {
       return this->Index() == e.Index();
     }
 
+    // Please try not to use these. They will result in code that will
+    // break if we ever shift from using (run,event) to identify
+    // events.
+    int Run() const { return run; }
+    int Event() const { return event; }
+
   private:
 
     int run;    // run number
