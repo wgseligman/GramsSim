@@ -59,7 +59,7 @@ subdirectory's README.md file:
    
 This is a diagram of the overall structure of the GramsSim modules. Note that as of Oct-2022, many of these modules have not yet been formally installed in this package; these are denoted in gray text in the figure.
 
-| <img src="GramsSim_modules.png" width="100%" /> |
+| <img src="images/GramsSim_modules.png" width="100%" /> |
 | :---------------------------------------------: | 
 | <small><strong>A sketch of the organization of the `GramsSim` modules.</strong></small> |
 

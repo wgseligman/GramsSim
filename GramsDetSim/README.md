@@ -1,6 +1,8 @@
 # GramsDetSim
 *Principle author: Satoshi Takashima*
 
+_If you want a formatted (or easier-to-read) version of this file, scroll to the bottom of [`GramsSim/README.md`](../README.md) for instructions. If you're reading this on github, then it's already formatted._
+
 - [GramsDetSim](#gramsdetsim)
   * [Overview](#overview)
   * [Running `GramsDetSim`](#running--gramsdetsim-)

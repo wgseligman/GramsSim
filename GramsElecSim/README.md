@@ -1,6 +1,8 @@
 # GramsElecSim
 *Author: Satoshi Takashima*
 
+_If you want a formatted (or easier-to-read) version of this file, scroll to the bottom of [`GramsSim/README.md`](../README.md) for instructions. If you're reading this on github, then it's already formatted._
+
 This program is a simulation of the electronics response to the detector readout, including noise and shaping. It sums the energy deposited into each readout pixel as a function of time, and generates waveform simulations for each pixel. 
 
 Note that `gramselecsim` uses a random-number generator for its noise and pre-amp operations. When running this program as part of grid or batch job, you probably want to set up a process-based value for option `rngseed` as mentioned in [GramsSim/README.md](../README.md). For example, assuming that the individual process ID is stored in variable `${Process}`:

@@ -1,7 +1,7 @@
 # GramsG4
 *Author: [William Seligman](https://github.com/wgseligman)*
 
-If you want a formatted (or easier-to-read) version of this file, scroll to the bottom of [`GramsSim/README.md`](../README.md) for instructions. If you're reading this on github, then it's already formatted. 
+_If you want a formatted (or easier-to-read) version of this file, scroll to the bottom of [`GramsSim/README.md`](../README.md) for instructions. If you're reading this on github, then it's already formatted._
 
 - [GramsG4](#gramsg4)
   * [Introduction](#introduction)
@@ -16,6 +16,10 @@ If you want a formatted (or easier-to-read) version of this file, scroll to the 
   * [Events from an external generator](#events-from-an-external-generator)
       - [Notes](#notes)
   * [Program outputs](#program-outputs)
+    + [grams::EventID](#grams--eventid)
+    + [grams::MCTrackList](#grams--mctracklist)
+    + [grams::MCLArHits](#grams--mclarhits)
+    + [grams::MCScintHits](#grams--mcscinthits)
   * [Generating large numbers of events](#generating-large-numbers-of-events)
   * [Physics lists and how to extend them](#physics-lists-and-how-to-extend-them)
     + [Using the available physics lists](#using-the-available-physics-lists)
@@ -58,7 +62,7 @@ As an application, `GramsG4` is a fairly generic Geant4 program. Most of its pro
 
 |                                         |
 | :-------------------------------------: | 
-| <img src="GramsG4IO.png" width="75%" /> |
+| <img src="images/GramsG4IO.png" width="75%" /> |
 
 ### Geometry
 
@@ -261,7 +265,41 @@ The result is that the complete chain of particle generation as modeled by Geant
 | :--------------------------------------------------------------: | 
 | <small><strong>Sketch of the grams::MCLArHits data object.</strong></small> |
 
-This data object contains the "MC Truth" information associated with the ionization energy deposits in the liquid argon as determined by [GramsG4](../GramsG4); see that page for additional information. 
+Certain detector volumes are designated as [sensitive][3100]; that is, they respond in some way to energy deposited within them. For example, in a LArTPC, the liquid argon is sensitive, while the uninstrumented metal walls of a cryostat are not. Energy deposits in a sensitive volume are called [hits][3110]. To put it another way, hits are what the detector is designed to detect. 
+
+[3100]: https://geant4-userdoc.web.cern.ch/UsersGuides/ForApplicationDeveloper/html/Detector/hit.html#sensitive-detector
+
+[3110]: https://geant4-userdoc.web.cern.ch/UsersGuides/ForApplicationDeveloper/html/Detector/hit.html
+
+For a LArTPC, the key purpose of the simulation is to record the energy deposits in the liquid argon (LAr). These are primarily caused by ionization of the argon atoms due to charged particles. 
+
+The [grams::MCLArHits](../GramsDataObj/include/MCLArHits.h) data object is a record of the energy deposits in the LAr. Like `MCTrackList` described above, this is "MC Truth" information in that it contains the calculated amount of hit energy. Subsequent jobs in the analysis change will adjust this data to better match the signals that will be reported by the detector electronics. 
+
+MCLArHits is a [map][3050] containing `grams::MCLArHit` objects. These contain both the ionization energy from individual steps within the LAr, and the number of photons generated as part of the ionization process. 
+
+Geant4 tracks particles in units of [steps][3120]. In order to provide a more accurate geometric model of particle energy loss along a track, `GramsG4` has a parameter to control the maximum step size of a charged particle. This is parameter `larstepsize` in the [options XML](../options.xml) file. 
+
+[3120]: https://geant4-userdoc.web.cern.ch/UsersGuides/ForApplicationDeveloper/html/TrackingAndPhysics/tracking.html
+
+The following image shows an extremely zoomed-in view of one simulated Compton scatter within the LAr, as shown in the Geant4 event display. The "straggling" red line is the Compton electron; the straight green line is the photon. Each line segment along the electron track is an individual step, and therefore would be recorded as an MCLArHit. The maximum length of any one of those electron-track line segments is `larstepsize`, which was set to 0.2mm for this particular run of GramsG4.
+
+| <img src="images/Zoomed-in_Compton_scatter.png" width="100%" /> |
+| :-------------------------------------: | 
+| <small><strong>A zoomed-in view of a Compton scatter in Geant4.</strong></small> |
+
+Even though the value of the step size was set to a maximum of 0.2mm, the actual size of the electron-track line segments is shorter than that, on the order of 0.01mm. The overall size of the scatter in the image is about 0.5mm. This image was selected as a "dramatic" scatter (longer than typical); most scatters are shorter and have fewer hits than this. 
+
+### grams::MCScintHits
+
+
+| <img src="../GramsDataObj/images/grams_MCScintHits.png" width="50%" /> |
+| :--------------------------------------------------------------: | 
+| <small><strong>Sketch of the grams::MCScintHits data object.</strong></small> |
+
+The [grams::MCScintHits](../GramsDataObj/include/MCScintHits.h) data object is the equivalent of MCLArHits, but for energy deposits in the scintillator strips that make up the detector's time-of-flight (TOF) or veto-wall subsystems. MCScintHits is a [map][3050] containing `grams::MCScintHit` objects. 
+
+Since energy deposits in a LArTPC's scintillator subsystems are used for timing and veto of the events in the LAr, but typically not for the physics of the event. Therefore the `MCScintHit` information is not recorded to the same level of detail as an `MCLArHit`.
+
 
 ## Generating large numbers of events
 

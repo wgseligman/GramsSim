@@ -1,5 +1,7 @@
 # GramsSim scripts
 
+_If you want a formatted (or easier-to-read) version of this file, scroll to the bottom of [`GramsSim/README.md`](../README.md) for instructions. If you're reading this on github, then it's already formatted._
+
 This directory contains utility scripts to help work with GramsSim
 inputs and outputs. Some of the programs are provided solely to teach
 programming concepts for folks new to:

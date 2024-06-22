@@ -1,6 +1,8 @@
 # Directory and Namespace `util`
 *Author: [William Seligman](https://github.com/wgseligman)*
 
+_If you want a formatted (or easier-to-read) version of this file, scroll to the bottom of [`GramsSim/README.md`](../README.md) for instructions. If you're reading this on github, then it's already formatted._
+
 This directory contains modules that I find generally useful in the
 C++ programs I write. 
 

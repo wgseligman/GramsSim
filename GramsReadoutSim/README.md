@@ -1,6 +1,8 @@
 # GramsReadoutSim
 *Author: Satoshi Takashima*
 
+_If you want a formatted (or easier-to-read) version of this file, scroll to the bottom of [`GramsSim/README.md`](../README.md) for instructions. If you're reading this on github, then it's already formatted._
+
 The purpose of this program is to model the readout geometry of the GRAMS detector. 
 
 As of Nov-2022, it's anticipated that the readout of the GRAMS LArTPC will be a pixel detector. However, other LArTPC detectors have used wires, and in the future yet another charge readout technologies may be developed. Hence the readout system is modeled in a program of its own. 
