@@ -1,8 +1,8 @@
 # GramsSim
 *Principle Maintainer: [William Seligman](https://github.com/wgseligman)*
 
-If you want a formatted (or easier-to-read) version of this file, scroll to the bottom. If you're reading this on github, then it's already formatted. 
-
+_If you want a formatted (or easier-to-read) version of this file, scroll to the bottom of this page for instructions. If you're reading this on github, then it's already formatted._
+ 
 - [GramsSim](#gramssim)
   * [Introduction](#introduction)
   * [Installing GramsSim](#installing-gramssim)
