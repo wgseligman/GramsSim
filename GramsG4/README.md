@@ -199,36 +199,70 @@ If you want to write HepMC3 files, there are a couple of simple examples in the 
 
 ## Program outputs
 
-These are likely to change rapidly as the software improves. This is the state of program outputs as of 24-Oct-2023.
+These are likely to change rapidly as the software improves. This is the state of program outputs as of 21-Jun-2024.
 
-The `gramsg4` program produces only one ROOT output file containing multiple ntuples. The default name of the output file is `gramsg4.root`. This can be changed via a job option (see *Program Options* below); e.g.,
+The `gramsg4` program produces only one ROOT output file containing multiple ROOT objects. The default name of the output file is `gramsg4.root`. This can be changed via a job option (see *Program Options* below); e.g.,
 
-    ./gramsg4 -o myStudy
+    ./gramsg4 -o myStudy.root
 
 will write the output to `myStudy.root`.
 
-There are several ntuples in the ROOT file, and one other ROOT structure: 
+Two of those ROOT objects are for keeping track of the options and geometry used to simulate the events; see [the util package](../util) for more information:
 
-   - `LArHits`, which contains energy deposits in the LAr (both ionization energy and optical photons);
-   - `ScintillatorHits`, which contains energy deposits in the inner and outer scintillators in the detector;
-   - `TrackInfo`, which contains 'truth' information for all the tracks in the simulation;
    - `Options`, which includes the parsed options for the job (options XML file with the user overrides).
    - The [TGeoManager][2020] description of the detector geometry. The name of this structure comes from the `geometry` parameter in [`options.xml`](../options.xml). 
    
 [2020]: https://root.cern.ch/doc/master/classTGeoManager.html 
+
+The remaining object is a ROOT TTree with the following branches (columns); each entry (row) in the tree corresponds to a single simulated event.
+
+   - `EventID`: This contains `gramms::EventID` objects.
+   - `TrackList`: The `grams::MCTrackList` object which contains 'MC truth' information for all the simulated tracks in the event.
+   - `LArHits`: The `grams::MCLArHits` objects, which contain energy deposits in the LAr (both ionization energy and optical photons) for the event.
+   - `ScintHits`: The `grams::MCScintHits` objects, which contain energy deposits in the inner and outer scintillators for the event.
    
-To understand the structure of the ntuples, either view the contents using ROOT, or look in [`GramsSim/GramsG4/src/GramsG4WriteNtuplesAction.cc`](src/GramsG4WriteNtuplesAction.cc).
+These objects are all created in the routine [`GramsSim/GramsG4/src/GramsG4WriteNtuplesAction.cc`](src/GramsG4WriteNtuplesAction.cc). If you have any questions about the details of how the values in these objects are calculated, that routine is the place to start. The structure of the data objects themselves are defined in [GramsDataObj](../GramsDataObj/). 
 
-For information about what the term "Identifier" means, see [`grams.gdml`](../grams.gdml). (It's explained there, instead of in this documentation, because it's in `grams.gdml` that Identifiers are defined and assigned.)
+If you're looking for a place to start in accessing the trees for analysis, look at the examples in the [`scripts`](../scripts) directory which was copied to your build/work directory. 
 
-If you don't know how to browse an ROOT ntuple, I suggest this [ROOT tutorial][20].
+As you look through the description of the data objects below, consult the [GramsDataObj/include](../GramsDataObj/include) directory for the header files. These are the files that define the methods for accessing the values stored in these objects. Documentation may be inaccurate; the code is actual definition.
 
-[20]: https://www.nevis.columbia.edu/~seligman/root-class/
+### grams::EventID
 
-*Note:* The G4Track IDs will be in the order that Geant4 processes them, which is *not* in ascending numeric order (even if you don't run with multiple threads; see below). Also note that it's possible for an event to leave no energy deposits in an active TPC volume, so there may be information in `TrackInfo` with no corresponding information in `LArHits`. 
+| <img src="../GramsDataObj/images/grams_EventID.png" width="50%" /> |
+| :---------------------------------------------------------: | 
+| <small><strong>Sketch of the grams::EventID data object.</strong></small> |
 
-If you're looking for a place to start in accessing the ntuples for analysis, look at the examples in the [`scripts`](../scripts) directory which was copied to your build/work directory. 
-    
+As noted in the [GramsDataObj documentation](../GramsDataObj), `grams::EventID` is an abstraction around the specific values of "run" and "event" number. If the way we identify events were to ever change (for example, a balloon or satellite experiment might not have individual "runs") only a few lines of code would have to change. 
+
+
+### grams::MCTrackList
+
+| <img src="../GramsDataObj/images/grams_MCTrackList.png" width="75%" /> |
+| :-----------------------------------------------------------------: | 
+| <small><strong>Sketch of the grams::MCTrackList data object.</strong></small> |
+
+Geant4 transports particles through the detector geometry in the form of [tracks][3000]. A "track" represents a particle's trajectory in both position- and momentum-coordinates, its particle type (a [PDG code][3010]), which detector volume it's in, and so on. 
+
+[3000]: https://geant4-userdoc.web.cern.ch/UsersGuides/IntroductionToGeant4/html/IntroductionToG4.html#overview-of-geant4-functionality
+[3010]: https://pdg.lbl.gov/2007/reviews/montecarlorpp.pdf
+
+The [grams::MCTrackList](../GramsDataObj/include/MCTrackList.h) data object contains the "MC Truth" information for those particle tracks, accumulated as each particle is created, travels, and ends (by escaping, by decaying, by interacting, etc.). MCTrackList is a [map][3050] containing `grams::MCTrack` objects. In turn, the MCTrack object contains a `grams::MCTrajectory` object which contains a [vector][3060] of `grams::MCTrajectoryPoint`.
+
+[3050]: https://cplusplus.com/reference/map/map/
+[3060]: https://cplusplus.com/reference/vector/vector/
+
+The result is that the complete chain of particle generation as modeled by Geant4 is available through `grams::MCTrackList`.
+
+### grams::MCLArHits
+
+
+| <img src="../GramsDataObj/images/grams_MCLArHits.png" width="50%" /> |
+| :--------------------------------------------------------------: | 
+| <small><strong>Sketch of the grams::MCLArHits data object.</strong></small> |
+
+This data object contains the "MC Truth" information associated with the ionization energy deposits in the liquid argon as determined by [GramsG4](../GramsG4); see that page for additional information. 
+
 ## Generating large numbers of events
 
 Some things to consider:

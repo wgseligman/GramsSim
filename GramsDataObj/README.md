@@ -1,5 +1,25 @@
 # Data Objects
 
+- [Data Objects](#data-objects)
+  * [Overview](#overview)
+    + [Definitions](#definitions)
+    + [Linkdef.hh](#linkdefhh)
+    + [Operators](#operators)
+    + [Trees containing data objects](#trees-containing-data-objects)
+      - [Friendly trees](#friendly-trees)
+      - [Indexed trees](#indexed-trees)
+    + [Maps and keys](#maps-and-keys)
+  * [Data objects](#data-objects)
+    + [grams::EventID](#grams--eventid)
+    + [grams::MCTrackLists](#grams--mctracklist)
+    + [grams::MCLArHits](#grams--#mclarhits)
+    + [grams::MCScintHits](#grams--mcscinthits)
+    + [grams::ElectronClusters](#grams--electronclusters)
+    + [grams::ReadoutMap](#grams--readoutmap)
+    + [grams::ReadoutWaveforms](#grams--readoutwaveforms)
+
+<small><i><a href='http://ecotrust-canada.github.io/markdown-toc/'>Table of contents generated with markdown-toc</a></i></small>
+
 A "data object" is a C++ type (class, struct, etc.) that is written as
 a Branch (column) of a [TTree][10] (n-tuple) in a ROOT file.
 
@@ -210,6 +230,8 @@ This is illustrated in greater detail in [GramsSim/scripts/AllFilesExample.cc](.
 
 ## Data objects
 
+As you look through the description of the data objects below, consult the [GramsDataObj/include](../GramsDataObj/include) directory for the header files. These are the files that define the methods for accessing the values stored in these objects. Documentation may be inaccurate; the code is actual definition.
+
 ### grams::EventID
 
 The [EventID](./include/EventID.h) object encapsulates what, in many
@@ -230,16 +252,16 @@ The `grams::EventID` object is created in [GramsG4](../GramsG4), then copied
 from one file to another as the friend trees are created in subsequent programs
 in the analysis chain (such as [./GramsDetSim](./GramsDetSim)).
 
-### grams::MCTrackLists
+### grams::MCTrackList
 
 This data object contains the "MC Truth" information for the particle tracks produced
 in [GramsG4](../GramsG4); see that page for additional information. 
 
-| <img src="../GramsDataObj/images/grams_MCTrackLists.png" width="75%" /> |
+| <img src="../GramsDataObj/images/grams_MCTrackList.png" width="75%" /> |
 | :-----------------------------------------------------------------: | 
-| <small><strong>Sketch of the grams::MCTrackLists data object.</strong></small> |
+| <small><strong>Sketch of the grams::MCTrackList data object.</strong></small> |
 
-### MCLArHits
+### grams::MCLArHits
 
 This data object contains the "MC Truth" information associated with the ionization energy deposits in the liquid argon as determined by [GramsG4](../GramsG4); see that page for additional information. 
 

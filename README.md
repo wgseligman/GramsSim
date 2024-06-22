@@ -291,6 +291,8 @@ The same options apply to GramsG4:
     
 Note that if the `gramsg4` options `-r` (or `--run`) or `-e` (or `--startEvent`) are set, they will override any values that are in an HepMC3 input file specified with the `-i` or `--inputgen` option; see [`GramsSky/README.md`](GramsSky/README.md) for more information about HepMC3 files.
 
+As noted in the [GramsDataObj documentation](GramsDataObj), the run and event numbers will be stored in the form of a [grams::EventID](./GramsDataObj/include/EventID.h) object. Unless you are searching for a particular event by its ID, you will not have to be concerned with this. 
+
 ### Documenting the analysis chain
 
 In the example [`options.xml`](options.xml) there is a [documentation option](util/README.md) called `comment`. You can use this to record the purpose of a given analysis run. 
