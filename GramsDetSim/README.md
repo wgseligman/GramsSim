@@ -154,6 +154,12 @@ This is a sketch of the procedure:
 
 ## grams::ElectronClusters
 
+As you look through the description below, consult the [GramsDataObj/include](../GramsDataObj/include) directory for the header files. These are the files that define the methods for accessing the values stored in this object. Documentation may be inaccurate; the code is actual definition. If it helps, a [std::map][130] is a container whose elements are stored in (key,value) pairs. If you're familiar with Python, they're similar to [dicts][140]. 
+
+[130]: https://cplusplus.com/reference/map/map/
+[140]: https://www.w3schools.com/python/python_dictionaries.asp
+
+
 | <img src="../GramsDataObj/images/grams_ElectronClusters.png" width="50%" /> |
 | :------------------------------------------------------------: | 
 | <small><strong>Sketch of the grams::ElectronClusters data object.</strong></small> |

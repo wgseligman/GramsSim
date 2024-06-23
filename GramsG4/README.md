@@ -229,7 +229,11 @@ These objects are all created in the routine [`GramsSim/GramsG4/src/GramsG4Write
 
 If you're looking for a place to start in accessing the trees for analysis, look at the examples in the [`scripts`](../scripts) directory which was copied to your build/work directory. 
 
-As you look through the description of the data objects below, consult the [GramsDataObj/include](../GramsDataObj/include) directory for the header files. These are the files that define the methods for accessing the values stored in these objects. Documentation may be inaccurate; the code is actual definition.
+As you look through the description of the data objects below, consult the [GramsDataObj/include](../GramsDataObj/include) directory for the header files. These are the files that define the methods for accessing the values stored in these objects. Documentation may be inaccurate; the code is actual definition. If it helps, a [std::map][130] is a container whose elements are stored in (key,value) pairs.
+If you're familiar with Python, they're similar to [dicts][140]. 
+
+[130]: https://cplusplus.com/reference/map/map/
+[140]: https://www.w3schools.com/python/python_dictionaries.asp
 
 ### grams::EventID
 
@@ -275,25 +279,25 @@ Certain detector volumes are designated as [sensitive][3100]; that is, they resp
 
 For a LArTPC, the key purpose of the simulation is to record the energy deposits in the liquid argon (LAr). These are primarily caused by ionization of the argon atoms due to charged particles. 
 
-The [grams::MCLArHits](../GramsDataObj/include/MCLArHits.h) data object is a record of the energy deposits in the LAr. Like `MCTrackList` described above, this is "MC Truth" information in that it contains the calculated amount of hit energy. Subsequent jobs in the analysis change will adjust this data to better match the signals that will be reported by the detector electronics. 
+The [grams::MCLArHits](../GramsDataObj/include/MCLArHits.h) data object is a record of the energy deposits in the LAr. Like `MCTrackList` described above, this is "MC Truth" information in that it contains the calculated amount of hit energy. Subsequent jobs in the analysis chain will adjust this data to better match the signals that will be reported by the detector electronics. 
 
 MCLArHits is a [map][3050] containing `grams::MCLArHit` objects. These contain both the ionization energy from individual steps within the LAr, and the number of photons generated as part of the ionization process. 
 
 The value of "HitID" is completely arbitrary. It's assigned within [`GramsSim/GramsG4/src/GramsG4WriteNtuplesAction.cc`](src/GramsG4WriteNtuplesAction.cc) for purposes of "backtracking" through the GramsSim analysis chain. In particular, do not assume any kind of time ordering based on HitID; HitID==0 does not imply that the hit is the first or earliest energy deposit in the simulated event. 
 
-Also note that there is not a one-to-one mapping between a TrackID being present in MCTrackList and a TrackID/HitID combination being present in in MCLArHits. It is certainly possible for a track not to leave any energy deposits in the LAr; e.g., if the particle "bounces off" the cryostat and never passes through the LAr, and so MCLArHits for that event will be empty. Less frequently, it's possible for a track not to be excluded from MCTrackList (due to cuts intended to reduce the number of low-energy particles being saved by GramsG4) yet still deposit energy in the LAr and therefore recorded in MCLArHits.
+Also note that there is not a one-to-one mapping between a TrackID being present in MCTrackList and a TrackID/HitID combination being present in in MCLArHits. It is certainly possible for a track not to leave any energy deposits in the LAr; e.g., if the particle "bounces off" the cryostat and never passes through the LAr, and so MCLArHits for that event will be empty. Less frequently, it's possible for a track to be excluded from MCTrackList (due to cuts intended to reduce the number of low-energy particles being saved by GramsG4) yet still deposit energy in the LAr and therefore recorded in MCLArHits.
 
-Geant4 tracks particles in units of [steps][3120]. In order to provide a more accurate geometric model of particle energy loss along a track, `GramsG4` has a parameter to control the maximum step size of a charged particle. This is parameter `larstepsize` in the [options XML](../options.xml) file. 
+Geant4 tracks particles in units of [steps][3120]. In order to provide a more accurate geometric model of particle energy loss along a track, `GramsG4` has a parameter to control the maximum step size of a charged particle in the LAr. This is parameter `larstepsize` in the [options XML](../options.xml) file. 
 
 [3120]: https://geant4-userdoc.web.cern.ch/UsersGuides/ForApplicationDeveloper/html/TrackingAndPhysics/tracking.html
 
-The following image shows an extremely zoomed-in view of one simulated Compton scatter within the LAr, as shown in the Geant4 event display. The "straggling" red line is the Compton electron; the straight green line is the photon. Each line segment along the electron track is an individual step, and therefore would be recorded as an MCLArHit. The maximum length of any one of those electron-track line segments is `larstepsize`, which was set to 0.2mm for this particular run of GramsG4.
+The following image shows an extremely zoomed-in view of one simulated Compton scatter within the LAr, as shown in the Geant4 event display. The "straggling" red line is the Compton electron; the straight green lines are the photon's trajectory. Each line segment along the electron track is an individual step, and therefore would be recorded as an MCLArHit. The maximum length of any one of those electron-track line segments is `larstepsize`, which was set to 0.2mm for this particular run of GramsG4.
 
 | <img src="images/Zoomed-in_Compton_scatter.png" width="100%" /> |
 | :-------------------------------------: | 
 | <small><strong>A zoomed-in view of a Compton scatter in Geant4.</strong></small> |
 
-Even though the value of the step size was set to a maximum of 0.2mm, the actual size of the electron-track line segments is shorter than that, on the order of 0.01mm. The overall size of the scatter in the image is about 0.5mm. This image was selected as a "dramatic" scatter (longer than typical); most scatters are shorter and have fewer hits than this. 
+Even though the value of the step size was set to a maximum of 0.2mm, the actual size of the electron-track line segments in this image is shorter than that, on the order of 0.01mm. The overall size of the scatter in the image is about 0.5mm. This image was selected as a "dramatic" scatter (longer than typical); most scatters are shorter and have fewer hits than this. 
 
 ### grams::MCScintHits
 

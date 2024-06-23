@@ -301,8 +301,8 @@ int main(int argc,char **argv)
 	}
 
 	// We found the cluster's key in the list of electron
-	// clusters. Fetch that cluster; remember that map consists of
-	// pairs (first,second).
+	// clusters. Fetch that cluster; remember that a map consists
+	// of pairs (first,second).
 	const auto& cluster = (*search).second;
 
 	if (debug) {
