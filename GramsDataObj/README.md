@@ -30,6 +30,11 @@ a Branch (column) of a [TTree][10] (n-tuple) in a ROOT file.
 
 ## Data objects
 
+Many of the data objects are organized in the form of maps. In C++, a [std::map][130] is a container whose elements are stored in (key,value) pairs. If you're familiar with Python, they're similar to [dicts][140]. 
+
+[130]: https://cplusplus.com/reference/map/map/
+[140]: https://www.w3schools.com/python/python_dictionaries.asp
+
 As you look through the description of the data objects below, consult the [GramsDataObj/include](../GramsDataObj/include) directory for the header files. These are the files that define the methods for accessing the values stored in these objects. Documentation may be inaccurate; the code is actual definition.
 
 ### grams::EventID
@@ -261,13 +266,7 @@ other than run/event numbers, then the above code must be modified._
 
 ### Maps and keys
 
-In C++, a [std::map][130] is a container whose elements are stored in (key,value) pairs.
-If you're familiar with Python, they're similar to [dicts][140]. 
-
-[130]: https://cplusplus.com/reference/map/map/
-[140]: https://www.w3schools.com/python/python_dictionaries.asp
-
-Many of the data objects described below are organized in the form of maps, with keys
+Many of the data objects are organized in the form of maps, with keys
 in the form of a [std:::tuple][120]. For example, in [MCLArHits.h](./MCLArHits.h):
 
 [120]: https://en.cppreference.com/w/cpp/utility/tuple
