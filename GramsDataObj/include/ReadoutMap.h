@@ -2,8 +2,8 @@
 /// \brief A map of the clusters to the readout elements.
 // 11-Jun-2024 WGS
 
-// This data object is a map between the readout cells and which
-// clusters have drifted to each cell.
+// This data object is a map between the readout channels and which
+// clusters have drifted to each channel.
 
 // The detector-response simulation (DetSim) creates the clusters. The
 // electronics simulation (ElecSim) turns the cluster arrival times

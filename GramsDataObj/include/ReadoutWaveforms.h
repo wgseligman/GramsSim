@@ -1,5 +1,5 @@
 /// \file ReadoutWaveforms.h
-/// \brief Data object that contains the waveforms from each readout cell
+/// \brief Data object that contains the waveforms from each readout channel
 // 1-Jun-2024 WGS
 
 #ifndef _grams_readoutwaveforms_h_
@@ -14,7 +14,7 @@
 
 namespace grams {
 
-  // Define the waveforms produced by an individual readout cell,
+  // Define the waveforms produced by an individual readout channel,
 
   struct ReadoutWaveform {
 
@@ -25,10 +25,10 @@ namespace grams {
     // Note that the lengths of these two vectors are, in general,
     // _not_ the same.
 
-    // The output analog waveform from a given readout cell.
+    // The output analog waveform from a given readout channel.
     std::vector<double> analog;
 
-    // The output digital waveform from a given readout cell.
+    // The output digital waveform from a given readout channel.
     std::vector<int> digital;
 
     // Provide accessors to avoid confusion between a C++ struct
@@ -39,8 +39,8 @@ namespace grams {
 
   }; // ReadoutWaveform
 
-  // Define a list of waveforms for the readout cells in the
-  // event. Note that to backtrack from readout cell to cluster to
+  // Define a list of waveforms for the readout channels in the
+  // event. Note that to backtrack from readout channel to cluster to
   // energy deposit, one must read multiple trees and set them up as
   // friends.
   //

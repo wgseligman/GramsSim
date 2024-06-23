@@ -9,7 +9,7 @@
 #include <map>
 #include <vector>
 
-// How to display the waveforms for a single cell..
+// How to display the waveforms for a single channel..
 std::ostream& operator<< (std::ostream& out, grams::ReadoutWaveform const& rw) {
 
   out << rw.readoutID << std::endl;
