@@ -164,7 +164,7 @@ As you look through the description below, consult the [GramsDataObj/include](..
 | :------------------------------------------------------------: | 
 | <small><strong>Sketch of the grams::ElectronClusters data object.</strong></small> |
 
-The [grams::ElectronClusters](../GramsDataObj/include/ElectronClusters.h) data object contains all of the electron-cluster information for an event. ElectronClusters is a [map][3050] containing `grams::ElectronCluster` objects. 
+The [`grams::ElectronClusters`](../GramsDataObj/include/ElectronClusters.h) data object contains all of the electron-cluster information for an event. `ElectronClusters` is a [map][130] containing `grams::ElectronCluster` objects. 
 
 The value of "ClusterID" is completely arbitrary. It's assigned within GramsDetSim for purposes of "backtracking" through the GramsSim analysis chain. In particular, do not assume any kind of time ordering based on ClusterID; ClusterID==0 does not imply that it's the first or earliest electron cluster created for a hit. 
 

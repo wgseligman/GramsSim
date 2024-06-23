@@ -255,7 +255,7 @@ Geant4 transports particles through the detector geometry in the form of [tracks
 [3000]: https://geant4-userdoc.web.cern.ch/UsersGuides/IntroductionToGeant4/html/IntroductionToG4.html#overview-of-geant4-functionality
 [3010]: https://pdg.lbl.gov/2007/reviews/montecarlorpp.pdf
 
-The [grams::MCTrackList](../GramsDataObj/include/MCTrackList.h) data object contains the "MC Truth" information for those particle tracks, accumulated as each particle is created, travels, and ends (by escaping, by decaying, by interacting, etc.). MCTrackList is a [map][3050] containing `grams::MCTrack` objects. In turn, the MCTrack object contains a `grams::MCTrajectory` object which contains a [vector][3060] of `grams::MCTrajectoryPoint`.
+The [`grams::MCTrackList`](../GramsDataObj/include/MCTrackList.h) data object contains the "MC Truth" information for those particle tracks, accumulated as each particle is created, travels, and ends (by escaping, by decaying, by interacting, etc.). MCTrackList is a [map][3050] containing `grams::MCTrack` objects. In turn, the MCTrack object contains a `grams::MCTrajectory` object which contains a [vector][3060] of `grams::MCTrajectoryPoint`.
 
 [3050]: https://cplusplus.com/reference/map/map/
 [3060]: https://cplusplus.com/reference/vector/vector/
@@ -279,9 +279,9 @@ Certain detector volumes are designated as [sensitive][3100]; that is, they resp
 
 For a LArTPC, the key purpose of the simulation is to record the energy deposits in the liquid argon (LAr). These are primarily caused by ionization of the argon atoms due to charged particles. 
 
-The [grams::MCLArHits](../GramsDataObj/include/MCLArHits.h) data object is a record of the energy deposits in the LAr. Like `MCTrackList` described above, this is "MC Truth" information in that it contains the calculated amount of hit energy. Subsequent jobs in the analysis chain will adjust this data to better match the signals that will be reported by the detector electronics. 
+The [`grams::MCLArHits`](../GramsDataObj/include/MCLArHits.h) data object is a record of the energy deposits in the LAr for an event. Like `MCTrackList` described above, this is "MC Truth" information in that it contains the calculated amount of hit energy. Subsequent jobs in the analysis chain will adjust this data to better match the signals that will be reported by the detector electronics. 
 
-MCLArHits is a [map][3050] containing `grams::MCLArHit` objects. These contain both the ionization energy from individual steps within the LAr, and the number of photons generated as part of the ionization process. 
+`MCLArHits` is a [map][3050] containing `grams::MCLArHit` objects, which contain both the ionization energy from individual steps within the LAr, and the number of photons generated as part of the ionization process. 
 
 The value of "HitID" is completely arbitrary. It's assigned within [`GramsSim/GramsG4/src/GramsG4WriteNtuplesAction.cc`](src/GramsG4WriteNtuplesAction.cc) for purposes of "backtracking" through the GramsSim analysis chain. In particular, do not assume any kind of time ordering based on HitID; HitID==0 does not imply that the hit is the first or earliest energy deposit in the simulated event. 
 
@@ -306,7 +306,7 @@ Even though the value of the step size was set to a maximum of 0.2mm, the actual
 | :--------------------------------------------------------------: | 
 | <small><strong>Sketch of the grams::MCScintHits data object.</strong></small> |
 
-The [grams::MCScintHits](../GramsDataObj/include/MCScintHits.h) data object is the equivalent of MCLArHits, but for energy deposits in the scintillator strips that make up the detector's time-of-flight (TOF) or veto-wall subsystems. MCScintHits is a [map][3050] containing `grams::MCScintHit` objects. 
+The [`grams::MCScintHits`](../GramsDataObj/include/MCScintHits.h) data object is the equivalent of MCLArHits, but for energy deposits in the scintillator strips that make up the detector's time-of-flight (TOF) or veto-wall subsystems. MCScintHits is a [map][3050] containing `grams::MCScintHit` objects. 
 
 Since energy deposits in a LArTPC's scintillator subsystems are used for timing and veto of the events in the LAr, but typically not for the physics of the event. Therefore the `MCScintHit` information is not recorded to the same level of detail as an `MCLArHit`.
 

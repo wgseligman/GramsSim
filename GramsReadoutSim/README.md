@@ -3,6 +3,12 @@
 
 _If you want a formatted (or easier-to-read) version of this file, scroll to the bottom of [`GramsSim/README.md`](../README.md) for instructions. If you're reading this on github, then it's already formatted._
 
+- [GramsReadoutSim](#gramsreadoutsim)
+  * [grams::ReadoutMap](#grams--readoutmap)
+  * [Design note](#design-note)
+
+<small><i><a href='http://ecotrust-canada.github.io/markdown-toc/'>Table of contents generated with markdown-toc</a></i></small>
+
 The purpose of this program is to model the readout geometry of the GRAMS detector. 
 
 As of Nov-2022, it's anticipated that the readout of the GRAMS LArTPC will be a pixel detector. However, other LArTPC detectors have used wires, and in the future yet another charge readout technologies may be developed. Hence the readout system is modeled in a program of its own. 
@@ -38,15 +44,14 @@ As you look through the description below, consult the [GramsDataObj/include](..
 | :------------------------------------------------------------: | 
 | <small><strong>Sketch of the grams::ReadoutMap data object.</strong></small> |
 
-The purpose of GramsReadoutSim is to assign the electron clusters derived in [GramsDetSim](../GramsDetSim) to readout elements; the data object [`grams::ReadoutMap`](../GramsDataObj/include/ReadoutMap.h) contains the result. For each readout element (whether pixel, strip, or some other design) is assigned a `grams::ReadoutID`. The data object `grams::ReadoutMap` is a list of all the elements that have clusters. Each element has a [`std::set`][4000] 
-(the equivalent of Python [list][4010]) of electron clusters that arrive at that element.
+The purpose of GramsReadoutSim is to assign the electron clusters derived in [GramsDetSim](../GramsDetSim) to readout channels; the data object [`grams::ReadoutMap`](../GramsDataObj/include/ReadoutMap.h) contains the result. Each readout channel is assigned a `grams::ReadoutID`. The data object `grams::ReadoutMap` is a [map][130] of all the channels that have clusters. Each channel has a [`std::set`][4000] (the equivalent of Python [list][4010]) of electron clusters associated with that channel.
 
 [4000]: https://cplusplus.com/reference/set/set/
 [4010]: https://www.w3schools.com/python/python_lists.asp
 
-Rather than storing the complete [`grams::ElectronCluster`](../GramsDataObj/include/ElectronClusters.h) for each cluster, only the key to the `grams::ElectronClusters` map is stored. Therefore, to see the information for the clusters for a given readout element, you'll typically have to open both of the output files from GramsDetSim and GramsReadoutSim, and use the `grams::ReadoutMap` to look up the information within `grams::ElectronClusters`.
+Rather than storing the complete [`grams::ElectronCluster`](../GramsDataObj/include/ElectronClusters.h) for each cluster, only the key to the `grams::ElectronClusters` map is stored. Therefore, to see the information for the clusters for a given readout channel, you'll typically have to open both of the output files from GramsDetSim and GramsReadoutSim, and use the `grams::ReadoutMap` to look up the information within `grams::ElectronClusters`.
 
-If this is confusing, see the code for [GramsElecSim](../GramsElecSim/gramselecsim.cc). The code from that program (without comments or error detection) is:
+If this is confusing, see the code for [GramsElecSim](../GramsElecSim/gramselecsim.cc). Here's an excerpt from that program (without comments or error detection):
 
 ```c++
 // Define the two input trees as friends.

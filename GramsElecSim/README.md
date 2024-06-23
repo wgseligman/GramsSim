@@ -9,7 +9,7 @@ Note that `gramselecsim` uses a random-number generator for its noise and pre-am
 
     ./gramselecsim --rngseed=${Process}
     
-## `GramsElecSim` simulations
+## `GramsElecSim` simulation parameters
 
 See `GramsSim/util/README.md` for a description of how to control the
 operation of `gramsdetsim` through the [`options.xml`](../options.xml) file and the
@@ -19,15 +19,13 @@ command line.
 
 - `time_window`: The total time interval over which charge would be sampled once the electronics are triggered. 
 
-The output of `gramselecsim` includes both the analog and digital versions of the waveforms created by summing the charges accumulated at each readout pixel. Units of the analog waveform are millivolts. 
-
 There are three segments of the electronics response modeled by `gramselecsim`.
 
 ### Noise fluctuations
 
 The number of electrons arriving at given pixel is adjusted by:
 
-<img src="NoiseEq.png" width="286" />
+<img src="images/NoiseEq.png" width="286" />
 
 where
 
@@ -49,23 +47,23 @@ The parameter `preamp_func` selects which response function to use:
 
 0 -> A gaussian distribution normalized to unity: 
 
-<img src="NormGauss.png" width="100" />
+<img src="images/NormGauss.png" width="100" />
 
 1 -> A gaussian distribution:
 
-<img src="Gauss.png" width="46" />
+<img src="images/Gauss.png" width="46" />
 
 2 -> The log of a normalized gaussian distribution:
 
-<img src="LogNormGauss.png" width="118" />
+<img src="images/LogNormGauss.png" width="118" />
 
 3 -> The log of a gaussian:
 
-<img src="LogGauss.png" width="62" />
+<img src="images/LogGauss.png" width="62" />
 
 4 -> A double exponential function:
 
-<img src="TwoExp.png" width="180" />
+<img src="images/TwoExp.png" width="180" />
 
 where <em>&sigma;</em>, <em>&tau;</em><sub>1</sub>, and <em>&tau;</em><sub>2</sub> are the parameters `preamp_sigma`, `preamp_tau1`, and `preamp_tau2` respectively. 
 
@@ -81,6 +79,24 @@ The parameters that affect this procedure are:
 
 - `bit_resolution`: The last step is to convert the floating-point value from the previous steps into a number of ADC counts, as determined by the `bit_resolution` parameter.
 
+## grams::ReadoutWaveforms
+
+As you look through the description below, consult the [GramsDataObj/include](../GramsDataObj/include) directory for the header files. These are the files that define the methods for accessing the values stored in this object. Documentation may be inaccurate; the code is actual definition. If it helps, a [std::map][130] is a container whose elements are stored in (key,value) pairs. If you're familiar with Python, they're similar to [dicts][140]. 
+
+[130]: https://cplusplus.com/reference/map/map/
+[140]: https://www.w3schools.com/python/python_dictionaries.asp
+
+|         <img src="../GramsDataObj/images/grams_ReadoutWaveforms.png" width="60%" />      |
+|                                 :--------:                                         | 
+| <small><strong>Sketch of the grams::ReadoutWaveforms data object.</strong></small> |
+
+The [`grams::ReadoutWaveforms`](../GramsDataObj/include/ReadoutWaveforms.h) data object represents an approximation to the electronic signals expected to come from the detector. `ReadoutWaveforms` is a [map][3050] containing `grams::ReadoutWaveform` objects for an event. Each ReadoutWaveform has two [vectors][3060] (similar to a [Numpy array][3070]), one for the signal that's input to the analog-to-digital conversion (ADC) and one for the digitized version of the analog signal. 
+
+[3050]: https://cplusplus.com/reference/map/map/
+[3060]: https://cplusplus.com/reference/vector/vector/
+[3070]: https://www.w3schools.com/python/numpy/numpy_creating_arrays.asp
+
+The analog and digital versions of the waveforms are created by summing the charges (electron clusters) accumulated at each readout channel. Units of the analog waveform are millivolts; units of the digital waveform are ADC counts. Note that the length of these two vectors are _not_ the same; the length of the "digital" vector is scaled from the "analog" vector using the `sample_freq` parameter described above. 
 
 ## Design note
 

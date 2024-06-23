@@ -300,6 +300,6 @@ This data object, created by [GramsReadoutSim](../GramsReadoutSim), contains the
 
 This data object is created by [GramsElecSim](../GramsElecSim). It contains the analog and digital waveforms for the elements of the readout geometry as induced by the electron clusters in `grams::ElectronClusters` and mapped to the readout by `grams::ReadoutMap`. See the `GramsElecSim` page for additional information. 
 
-|         <img src="../GramsDataObj/images/grams_ReadoutWaveforms.png" width="100%" />      |
+|         <img src="../GramsDataObj/images/grams_ReadoutWaveforms.png" width="60%" />      |
 |                                 :--------:                                         | 
 | <small><strong>Sketch of the grams::ReadoutWaveforms data object.</strong></small> |
