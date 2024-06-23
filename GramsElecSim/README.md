@@ -3,6 +3,16 @@
 
 _If you want a formatted (or easier-to-read) version of this file, scroll to the bottom of [`GramsSim/README.md`](../README.md) for instructions. If you're reading this on github, then it's already formatted._
 
+- [GramsElecSim](#gramselecsim)
+  * [`GramsElecSim` simulation parameters](#-gramselecsim--simulation-parameters)
+    + [Noise fluctuations](#noise-fluctuations)
+    + [Shaping and pre-amplification](#shaping-and-pre-amplification)
+    + [Analog-to-digital conversion](#analog-to-digital-conversion)
+  * [grams::ReadoutWaveforms](#grams--readoutwaveforms)
+  * [Design note](#design-note)
+
+<small><i><a href='http://ecotrust-canada.github.io/markdown-toc/'>Table of contents generated with markdown-toc</a></i></small>
+
 This program is a simulation of the electronics response to the detector readout, including noise and shaping. It sums the energy deposited into each readout pixel as a function of time, and generates waveform simulations for each pixel. 
 
 Note that `gramselecsim` uses a random-number generator for its noise and pre-amp operations. When running this program as part of grid or batch job, you probably want to set up a process-based value for option `rngseed` as mentioned in [GramsSim/README.md](../README.md). For example, assuming that the individual process ID is stored in variable `${Process}`:
