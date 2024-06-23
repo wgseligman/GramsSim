@@ -30,15 +30,3 @@ set_target_properties( ${PROG}
    PROPERTIES RUNTIME_OUTPUT_DIRECTORY 
    "${CMAKE_BINARY_DIR}" 
    )
-
-# Copy a few files for the convenience of the user.
-set(GramsReadoutSim_FILES README.md options.xml)
-
-foreach(_file ${GramsReadoutSim_FILES})
-  configure_file(
-    ${_file}
-    ${_file}
-    COPYONLY
-    )
-endforeach()
-

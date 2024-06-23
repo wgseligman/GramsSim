@@ -40,17 +40,16 @@ import ROOT
 # The following statement assumes this program is being run from the
 # build directory you created by following the directions in
 # https://github.com/wgseligman/GramsSim/tree/develop:
-
 ROOT.gSystem.Load("./GramsDataObj/libGramsSimProjectDataObj.so")
 
 # Open the input file and access the n-tuple. 
 inputFile = ROOT.TFile("gramselecsim.root")
 tree = ROOT.gDirectory.Get( 'ElecSim' )
 
-# Now we add additional columns/friends to that tree. (If you ask
-# how I knew the names of all these files and trees, I got them
-# from GramsSim/options.xml. If I were writing a more complete
-# program, I'd get them from using the Options class (see
+# Now we add additional columns/friends to that tree. (If you ask how
+# I knew the names of all these files and trees, I got them from
+# GramsSim/options.xml. If I were writing a more complete program, I'd
+# get the names below from using the Options class (see
 # GramsSim/util).)
 
 tree.AddFriend("ReadoutSim","gramsreadoutsim.root");
@@ -69,12 +68,15 @@ for entry in tree:
     # information in the data objects, see the header files in
     # GramsSim/GramsDataObj/include.
 
-    # Let's pick an arbitrary event. How about run=0, event=3,
-    # which corresponds to a grams::EventID.Index() of 3? 
-    arbitraryEvent = 3
+    # Let's pick an arbitrary event. How about run=0, event=3? (Note
+    # how by using the prefix "ROOT." we have access to all the C++
+    # methods in the GramsDataObj dictionary; in particular, we can
+    # construct a new grams::EventID object. The C++ namespace
+    # "grams::" is replaced by "grams." in Python.)
+    arbitraryEvent = ROOT.grams.EventID(0,3)
 
     # For only that event:
-    if ( tree.EventID.Index() == arbitraryEvent ):
+    if ( tree.EventID == arbitraryEvent ):
 
         # For this event, let's go through all the tracks. Most of the
         # data objects based on maps, which are like Python dicts in
@@ -98,8 +100,7 @@ for entry in tree:
             # photon.)
             trackID = hit.TrackID()
             if trackID in primaries:
-                # If we found one (not likely) print it out. Note that the
-                # data objects all have output operators defined.
+                # If we found one (not likely) print it out.
                 print ("TrackID", hit.TrackID(), "HitID", hit.HitID(), "energy", hit.Energy())
 
         # For all the electron clusters in the event:
@@ -121,10 +122,9 @@ for entry in tree:
             # electron clusters. Look for this readoutID in that list.
             clusterKeys = tree.ReadoutMap[ readoutID ];
 
-            # Let's look through the list of keys. A "cluster key" is a
-            # triplet (std::tuple) of numbers: (trackID, hitID,
-            # clusterID). The last two are arbitrary, and we're only
-            # interested in the first value.
+            # Let's look through the list of keys. A "cluster key" is
+            # a triplet (trackID, hitID, clusterID). The last two are
+            # arbitrary, and we're only interested in the first value.
             for ( trackID, hitID, clusterID ) in clusterKeys:
 
                 # If the waveform came from a primary particle, print out
@@ -135,7 +135,7 @@ for entry in tree:
                     break
                     
     # The above shows how to "go forward" through the
-    # tracks.hits.clusters.readout chain of information. What
+    # tracks->hits->clusters->readout chain of information. What
     # follows is the reverse: How one might back-track up the chain.
 
     # For every waveform in the event:
@@ -150,19 +150,18 @@ for entry in tree:
         madeUpNumber = 219697;
         if sumADC > madeUpNumber:
 
-            # The data objects in the dictionary all of the C++ operator<<
-            # defined for them, which simplifies print them out in C++. Unfortunately, 
-            # there doesn't seem to be a simple way of calling operator<< from within 
-            # Python. For these data objects, just display a few details to prove
-            # we have access to their information.
+            # The data objects in the dictionary all of the C++
+            # operator<< defined for them, which simplifies printing
+            # them out in C++. Unfortunately, there doesn't seem to be
+            # a simple way of calling operator<< from within
+            # Python. For these data objects, just display a few
+            # details to prove we have access to their information.
             print ( "EventID ", tree.EventID.Index(), "ReadoutID", readoutID.Index(), 
                     "sums to", sumADC, "which is more than", madeUpNumber )
 
             # Let's assume that this means the waveform is
             # "interesting". Look at all the electron clusters that went
             # into creating this waveform.
-            # 'ReadoutMap' is a map of (readoutID, clusterKeys). The
-            # cluster keys are the second element in this pair.
             clusterKeys = tree.ReadoutMap[ readoutID ]
 
             # The cluster keys are, in turn, a set of keys into the
@@ -171,7 +170,7 @@ for entry in tree:
 
             # If this seems complex, you can think of this arrangement as:
             #
-            # (a) a multi-dimensional array of indexed by [trackID][hitID][clusterID][readoutID];
+            # (a) a multi-dimensional array indexed by [trackID][hitID][clusterID][readoutID];
             # (b) if you're into Python, nested dictionaries (dicts of dicts).. 
 
             for clusterKey in clusterKeys:
@@ -180,7 +179,8 @@ for entry in tree:
                 # What can we do with an electron cluster? We might print
                 # it out, according to some imaginary non-scientific
                 # criteria.
-                if electronCluster.NumElectrons() < 38:
+                imaginaryCriteria = 38
+                if electronCluster.NumElectrons() < imaginaryCriteria:
                     print ("TrackID", electronCluster.TrackID(), "HitID", electronCluster.HitID(), "ClusterID", 
                            electronCluster.ClusterID(), "energy", electronCluster.EnergyAtAnode())
 
@@ -199,7 +199,8 @@ for entry in tree:
                     # cut on the number of scintillation photons to show how to
                     # work with a hit.
                     numPhotons = hit.NumPhotons()
-                    if numPhotons < 200:
+                    unscientificCut = 200
+                    if numPhotons < unscientificCut:
 
                         # We can print out the hit if we wish.
                         print ("TrackID", hit.TrackID(), "HitID", hit.HitID(), "energy", hit.Energy())

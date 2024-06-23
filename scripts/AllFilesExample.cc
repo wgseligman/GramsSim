@@ -315,7 +315,8 @@ int main( int, char**  ) {
 	  // What can we do with an electron cluster? We might print
 	  // it out, according to some imaginary non-scientific
 	  // criteria.
-	  if ( electronCluster.NumElectrons() < 38 )
+	  static const int imaginaryCriteria = 38;
+	  if ( electronCluster.NumElectrons() < imaginaryCriteria )
 	    std::cout << electronCluster << std::endl;
 
 	  // We can also use it to back-track to a particular
@@ -343,7 +344,8 @@ int main( int, char**  ) {
 	  // cut on the number of scintillation photons to show how to
 	  // work with a hit.
 	  auto numPhotons = hit.NumPhotons();
-	  if ( numPhotons < 200 ) {
+	  static const int unscientificCut = 200;
+	  if ( numPhotons < unscientificCut ) {
 
 	    // We can print out the hit if we wish.
 	    std::cout << hit << std::endl;
@@ -372,7 +374,7 @@ int main( int, char**  ) {
 			<< std::endl;
 	    }
 	  
-	  } // numPhotons < 200
+	  } // numPhotons < unscientificCut
 	  
 	} // For each cluster key
 
