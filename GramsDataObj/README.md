@@ -3,6 +3,14 @@
 _If you want a formatted (or easier-to-read) version of this file, scroll to the bottom of [`GramsSim/README.md`](../README.md) for instructions. If you're reading this on github, then it's already formatted._
 
 - [GramsDataObj](#gramsdataobj)
+  * [Data objects](#data-objects)
+    + [grams::EventID](#gramseventid)
+    + [grams::MCTrackLists](#gramsmctracklist)
+    + [grams::MCLArHits](#gramsmclarhits)
+    + [grams::MCScintHits](#gramsmcscinthits)
+    + [grams::ElectronClusters](#gramselectronclusters)
+    + [grams::ReadoutMap](#gramsreadoutmap)
+    + [grams::ReadoutWaveforms](#gramsreadoutwaveforms)
   * [Overview](#overview)
     + [Definitions](#definitions)
     + [Linkdef.hh](#linkdefhh)
@@ -11,14 +19,6 @@ _If you want a formatted (or easier-to-read) version of this file, scroll to the
       - [Friendly trees](#friendly-trees)
       - [Indexed trees](#indexed-trees)
     + [Maps and keys](#maps-and-keys)
-  * [Data objects](#data-objects)
-    + [grams::EventID](#grams--eventid)
-    + [grams::MCTrackLists](#grams--mctracklist)
-    + [grams::MCLArHits](#grams--#mclarhits)
-    + [grams::MCScintHits](#grams--mcscinthits)
-    + [grams::ElectronClusters](#grams--electronclusters)
-    + [grams::ReadoutMap](#grams--readoutmap)
-    + [grams::ReadoutWaveforms](#grams--readoutwaveforms)
 
 <small><i><a href='http://ecotrust-canada.github.io/markdown-toc/'>Table of contents generated with markdown-toc</a></i></small>
 
@@ -26,6 +26,86 @@ A "data object" is a C++ type (class, struct, etc.) that is written as
 a Branch (column) of a [TTree][10] (n-tuple) in a ROOT file.
 
 [10]: https://root.cern.ch/doc/master/classTTree.html
+
+
+## Data objects
+
+Many of the data objects are organized in the form of maps. In C++, a [std::map][130] is a container whose elements are stored in (key,value) pairs. If you're familiar with Python, they're similar to [dicts][140]. 
+
+[130]: https://cplusplus.com/reference/map/map/
+[140]: https://www.w3schools.com/python/python_dictionaries.asp
+
+As you look through the description of the data objects below, consult the [GramsDataObj/include](../GramsDataObj/include) directory for the header files. These are the files that define the methods for accessing the values stored in these objects. Documentation may be inaccurate; the code is actual definition.
+
+### grams::EventID
+
+The [EventID](./include/EventID.h) object encapsulates what, in many
+experiments, is simply the run and event number. However, in a balloon
+or satellite experiment, it may be that there are different methods
+for assigning an event ID; e.g., UTC time.
+
+As a precaution (and also to saving on typing `if (run == N && event
+== M)`), the `grams::EventID` class is used instead. You can sort on
+`grams::EventID` or test it for equality, without having to modify the code
+if there's a switch from "run/event" to distinguish events.
+
+| <img src="../GramsDataObj/images/grams_EventID.png" width="50%" /> |
+| :---------------------------------------------------------: | 
+| <small><strong>Sketch of the grams::EventID data object.</strong></small> |
+
+The `grams::EventID` object is created in [GramsG4](../GramsG4), then copied 
+from one file to another as the friend trees are created in subsequent programs
+in the analysis chain (such as [GramsDetSim](./GramsDetSim)).
+
+### grams::MCTrackList
+
+This data object contains the "MC Truth" information for the particle tracks produced
+in [GramsG4](../GramsG4) for a single event; see that page for additional information. 
+
+| <img src="../GramsDataObj/images/grams_MCTrackList.png" width="75%" /> |
+| :-----------------------------------------------------------------: | 
+| <small><strong>Sketch of the grams::MCTrackList data object.</strong></small> |
+
+### grams::MCLArHits
+
+This data object contains the "MC Truth" information associated with the ionization energy deposits in the liquid argon as determined by [GramsG4](../GramsG4) for a single event; see that page for additional information. 
+
+| <img src="../GramsDataObj/images/grams_MCLArHits.png" width="50%" /> |
+| :--------------------------------------------------------------: | 
+| <small><strong>Sketch of the grams::MCLArHits data object.</strong></small> |
+
+
+### grams::MCScintHits
+
+This data object contains the "MC Truth" information for ionization energy deposited in the scintillator strips by the [GramsG4](../GramsG4) simulation for a single event; see that page for additional information. 
+
+| <img src="../GramsDataObj/images/grams_MCScintHits.png" width="50%" /> |
+| :----------------------------------------------------------------: | 
+| <small><strong>Sketch of the grams::MCScintHits data object.</strong></small> |
+
+### grams::ElectronClusters
+
+This data object contains electron-cluster information produced by [GramsDetSim](../GramsDetSim) for a single event, which models the drift of the ionization deposited in the LAr as recorded in MCLArHits; see the `GramsDetSim` page for additional information. 
+
+| <img src="../GramsDataObj/images/grams_ElectronClusters.png" width="50%" /> |
+| :------------------------------------------------------------: | 
+| <small><strong>Sketch of the grams::ElectronClusters data object.</strong></small> |
+
+### grams::ReadoutMap
+
+This data object, created by [GramsReadoutSim](../GramsReadoutSim) for each event, contains the association of the electron clusters created in [GramsDetSim](../GramsDetSim) to the elements of the readout geometry. See the `GramsReadoutSim` page for additional information. 
+
+| <img src="../GramsDataObj/images/grams_ReadoutMap.png" width="85%" /> |
+| :------------------------------------------------------------: | 
+| <small><strong>Sketch of the grams::ReadoutMap data object.</strong></small> |
+
+### grams::ReadoutWaveforms
+
+This data object is created by [GramsElecSim](../GramsElecSim) for each event. It contains the analog and digital waveforms for the elements of the readout geometry as induced by the electron clusters in `grams::ElectronClusters` and mapped to the readout by `grams::ReadoutMap`. See the `GramsElecSim` page for additional information. 
+
+|         <img src="../GramsDataObj/images/grams_ReadoutWaveforms.png" width="60%" />      |
+|                                 :--------:                                         | 
+| <small><strong>Sketch of the grams::ReadoutWaveforms data object.</strong></small> |
 
 ## Overview
 
@@ -186,13 +266,7 @@ other than run/event numbers, then the above code must be modified._
 
 ### Maps and keys
 
-In C++, a [std::map][130] is a container whose elements are stored in (key,value) pairs.
-If you're familiar with Python, they're similar to [dicts][140]. 
-
-[130]: https://cplusplus.com/reference/map/map/
-[140]: https://www.w3schools.com/python/python_dictionaries.asp
-
-Many of the data objects described below are organized in the form of maps, with keys
+Many of the data objects are organized in the form of maps, with keys
 in the form of a [std:::tuple][120]. For example, in [MCLArHits.h](./MCLArHits.h):
 
 [120]: https://en.cppreference.com/w/cpp/utility/tuple
@@ -228,78 +302,3 @@ for ( const auto& [key, cluster] : (*clusters) ) {
 ```
 
 This is illustrated in greater detail in [GramsSim/scripts/AllFilesExample.cc](../scripts/AllFilesExample.cc) [GramsSim/scripts/AllFilesExample.py](../scripts/AllFilesExample.py). 
-
-
-## Data objects
-
-As you look through the description of the data objects below, consult the [GramsDataObj/include](../GramsDataObj/include) directory for the header files. These are the files that define the methods for accessing the values stored in these objects. Documentation may be inaccurate; the code is actual definition.
-
-### grams::EventID
-
-The [EventID](./include/EventID.h) object encapsulates what, in many
-experiments, is simply the run and event number. However, in a balloon
-or satellite experiment, it may be that there are different methods
-for assigning an event ID; e.g., UTC time.
-
-As a precaution (and also to saving on typing `if (run == N && event
-== M)`), the `grams::EventID` class is used instead. You can sort on
-`grams::EventID` or test it for equality, without having to modify the code
-if there's a switch from "run/event" to distinguish events.
-
-| <img src="../GramsDataObj/images/grams_EventID.png" width="50%" /> |
-| :---------------------------------------------------------: | 
-| <small><strong>Sketch of the grams::EventID data object.</strong></small> |
-
-The `grams::EventID` object is created in [GramsG4](../GramsG4), then copied 
-from one file to another as the friend trees are created in subsequent programs
-in the analysis chain (such as [GramsDetSim](./GramsDetSim)).
-
-### grams::MCTrackList
-
-This data object contains the "MC Truth" information for the particle tracks produced
-in [GramsG4](../GramsG4) for a single event; see that page for additional information. 
-
-| <img src="../GramsDataObj/images/grams_MCTrackList.png" width="75%" /> |
-| :-----------------------------------------------------------------: | 
-| <small><strong>Sketch of the grams::MCTrackList data object.</strong></small> |
-
-### grams::MCLArHits
-
-This data object contains the "MC Truth" information associated with the ionization energy deposits in the liquid argon as determined by [GramsG4](../GramsG4) for a single event; see that page for additional information. 
-
-| <img src="../GramsDataObj/images/grams_MCLArHits.png" width="50%" /> |
-| :--------------------------------------------------------------: | 
-| <small><strong>Sketch of the grams::MCLArHits data object.</strong></small> |
-
-
-### grams::MCScintHits
-
-This data object contains the "MC Truth" information for ionization energy deposited in the scintillator strips by the [GramsG4](../GramsG4) simulation for a single event; see that page for additional information. 
-
-| <img src="../GramsDataObj/images/grams_MCScintHits.png" width="50%" /> |
-| :----------------------------------------------------------------: | 
-| <small><strong>Sketch of the grams::MCScintHits data object.</strong></small> |
-
-### grams::ElectronClusters
-
-This data object contains electron-cluster information produced by [GramsDetSim](../GramsDetSim) for a single event, which models the drift of the ionization deposited in the LAr as recorded in MCLArHits; see the `GramsDetSim` page for additional information. 
-
-| <img src="../GramsDataObj/images/grams_ElectronClusters.png" width="50%" /> |
-| :------------------------------------------------------------: | 
-| <small><strong>Sketch of the grams::ElectronClusters data object.</strong></small> |
-
-### grams::ReadoutMap
-
-This data object, created by [GramsReadoutSim](../GramsReadoutSim) for each event, contains the association of the electron clusters created in [GramsDetSim](../GramsDetSim) to the elements of the readout geometry. See the `GramsReadoutSim` page for additional information. 
-
-| <img src="../GramsDataObj/images/grams_ReadoutMap.png" width="85%" /> |
-| :------------------------------------------------------------: | 
-| <small><strong>Sketch of the grams::ReadoutMap data object.</strong></small> |
-
-### grams::ReadoutWaveforms
-
-This data object is created by [GramsElecSim](../GramsElecSim) for each event. It contains the analog and digital waveforms for the elements of the readout geometry as induced by the electron clusters in `grams::ElectronClusters` and mapped to the readout by `grams::ReadoutMap`. See the `GramsElecSim` page for additional information. 
-
-|         <img src="../GramsDataObj/images/grams_ReadoutWaveforms.png" width="60%" />      |
-|                                 :--------:                                         | 
-| <small><strong>Sketch of the grams::ReadoutWaveforms data object.</strong></small> |

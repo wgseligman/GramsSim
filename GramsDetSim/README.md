@@ -5,12 +5,12 @@ _If you want a formatted (or easier-to-read) version of this file, scroll to the
 
 - [GramsDetSim](#gramsdetsim)
   * [Overview](#overview)
-  * [Running `GramsDetSim`](#running--gramsdetsim-)
+  * [Running `GramsDetSim`](#running-gramsdetsim)
   * [Detector-response functions](#detector-response-functions)
     + [Recombination](#recombination)
     + [Absorption](#absorption)
     + [Diffusion](#diffusion)
-  * [grams::ElectronClusters](#grams--electronclusters)
+  * [grams::ElectronClusters](#gramselectronclusters)
   * [Design note](#design-note)
 
 <small><i><a href='http://ecotrust-canada.github.io/markdown-toc/'>Table of contents generated with markdown-toc</a></i></small>

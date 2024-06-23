@@ -4,7 +4,7 @@
 _If you want a formatted (or easier-to-read) version of this file, scroll to the bottom of [`GramsSim/README.md`](../README.md) for instructions. If you're reading this on github, then it's already formatted._
 
 - [GramsReadoutSim](#gramsreadoutsim)
-  * [grams::ReadoutMap](#grams--readoutmap)
+  * [grams::ReadoutMap](#gramsreadoutmap)
   * [Design note](#design-note)
 
 <small><i><a href='http://ecotrust-canada.github.io/markdown-toc/'>Table of contents generated with markdown-toc</a></i></small>

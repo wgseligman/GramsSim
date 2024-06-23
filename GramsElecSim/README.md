@@ -4,11 +4,11 @@
 _If you want a formatted (or easier-to-read) version of this file, scroll to the bottom of [`GramsSim/README.md`](../README.md) for instructions. If you're reading this on github, then it's already formatted._
 
 - [GramsElecSim](#gramselecsim)
-  * [`GramsElecSim` simulation parameters](#-gramselecsim--simulation-parameters)
+  * [`GramsElecSim` simulation parameters](#gramselecsim-simulation-parameters)
     + [Noise fluctuations](#noise-fluctuations)
     + [Shaping and pre-amplification](#shaping-and-pre-amplification)
     + [Analog-to-digital conversion](#analog-to-digital-conversion)
-  * [grams::ReadoutWaveforms](#grams--readoutwaveforms)
+  * [grams::ReadoutWaveforms](#gramsreadoutwaveforms)
   * [Design note](#design-note)
 
 <small><i><a href='http://ecotrust-canada.github.io/markdown-toc/'>Table of contents generated with markdown-toc</a></i></small>
