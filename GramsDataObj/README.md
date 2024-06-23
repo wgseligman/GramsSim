@@ -1,8 +1,8 @@
-# Data Objects
+# GramsDataObj
 
 _If you want a formatted (or easier-to-read) version of this file, scroll to the bottom of [`GramsSim/README.md`](../README.md) for instructions. If you're reading this on github, then it's already formatted._
 
-- [Data Objects](#data-objects)
+- [GramsDataObj](#gramsdataobj)
   * [Overview](#overview)
     + [Definitions](#definitions)
     + [Linkdef.hh](#linkdefhh)
@@ -227,7 +227,7 @@ for ( const auto& [key, cluster] : (*clusters) ) {
 }
 ```
 
-This is illustrated in greater detail in [GramsSim/scripts/AllFilesExample.cc](../scripts/AllFilesExample.cc). 
+This is illustrated in greater detail in [GramsSim/scripts/AllFilesExample.cc](../scripts/AllFilesExample.cc) [GramsSim/scripts/AllFilesExample.py](../scripts/AllFilesExample.py). 
 
 
 ## Data objects
@@ -252,12 +252,12 @@ if there's a switch from "run/event" to distinguish events.
 
 The `grams::EventID` object is created in [GramsG4](../GramsG4), then copied 
 from one file to another as the friend trees are created in subsequent programs
-in the analysis chain (such as [./GramsDetSim](./GramsDetSim)).
+in the analysis chain (such as [GramsDetSim](./GramsDetSim)).
 
 ### grams::MCTrackList
 
 This data object contains the "MC Truth" information for the particle tracks produced
-in [GramsG4](../GramsG4); see that page for additional information. 
+in [GramsG4](../GramsG4) for a single event; see that page for additional information. 
 
 | <img src="../GramsDataObj/images/grams_MCTrackList.png" width="75%" /> |
 | :-----------------------------------------------------------------: | 
@@ -265,7 +265,7 @@ in [GramsG4](../GramsG4); see that page for additional information.
 
 ### grams::MCLArHits
 
-This data object contains the "MC Truth" information associated with the ionization energy deposits in the liquid argon as determined by [GramsG4](../GramsG4); see that page for additional information. 
+This data object contains the "MC Truth" information associated with the ionization energy deposits in the liquid argon as determined by [GramsG4](../GramsG4) for a single event; see that page for additional information. 
 
 | <img src="../GramsDataObj/images/grams_MCLArHits.png" width="50%" /> |
 | :--------------------------------------------------------------: | 
@@ -274,7 +274,7 @@ This data object contains the "MC Truth" information associated with the ionizat
 
 ### grams::MCScintHits
 
-This data object contains the "MC Truth" information for ionization energy deposited in the scintillator strips by the [GramsG4](../GramsG4) simulation; see that page for additional information. 
+This data object contains the "MC Truth" information for ionization energy deposited in the scintillator strips by the [GramsG4](../GramsG4) simulation for a single event; see that page for additional information. 
 
 | <img src="../GramsDataObj/images/grams_MCScintHits.png" width="50%" /> |
 | :----------------------------------------------------------------: | 
@@ -282,7 +282,7 @@ This data object contains the "MC Truth" information for ionization energy depos
 
 ### grams::ElectronClusters
 
-This data object contains electron-cluster information produced by [GramsDetSim](../GramsDetSim), which models the drift of the ionization deposited in the LAr as recorded in MCLArHits; see the `GramsDetSim` page for additional information. 
+This data object contains electron-cluster information produced by [GramsDetSim](../GramsDetSim) for a single event, which models the drift of the ionization deposited in the LAr as recorded in MCLArHits; see the `GramsDetSim` page for additional information. 
 
 | <img src="../GramsDataObj/images/grams_ElectronClusters.png" width="50%" /> |
 | :------------------------------------------------------------: | 
@@ -290,7 +290,7 @@ This data object contains electron-cluster information produced by [GramsDetSim]
 
 ### grams::ReadoutMap
 
-This data object, created by [GramsReadoutSim](../GramsReadoutSim), contains the association of the electron clusters created in [GramsDetSim](../GramsDetSim) to the elements of the readout geometry. See the `GramsReadoutSim` page for additional information. 
+This data object, created by [GramsReadoutSim](../GramsReadoutSim) for each event, contains the association of the electron clusters created in [GramsDetSim](../GramsDetSim) to the elements of the readout geometry. See the `GramsReadoutSim` page for additional information. 
 
 | <img src="../GramsDataObj/images/grams_ReadoutMap.png" width="85%" /> |
 | :------------------------------------------------------------: | 
@@ -298,7 +298,7 @@ This data object, created by [GramsReadoutSim](../GramsReadoutSim), contains the
 
 ### grams::ReadoutWaveforms
 
-This data object is created by [GramsElecSim](../GramsElecSim). It contains the analog and digital waveforms for the elements of the readout geometry as induced by the electron clusters in `grams::ElectronClusters` and mapped to the readout by `grams::ReadoutMap`. See the `GramsElecSim` page for additional information. 
+This data object is created by [GramsElecSim](../GramsElecSim) for each event. It contains the analog and digital waveforms for the elements of the readout geometry as induced by the electron clusters in `grams::ElectronClusters` and mapped to the readout by `grams::ReadoutMap`. See the `GramsElecSim` page for additional information. 
 
 |         <img src="../GramsDataObj/images/grams_ReadoutWaveforms.png" width="60%" />      |
 |                                 :--------:                                         | 

@@ -44,7 +44,7 @@ As you look through the description below, consult the [GramsDataObj/include](..
 | :------------------------------------------------------------: | 
 | <small><strong>Sketch of the grams::ReadoutMap data object.</strong></small> |
 
-The purpose of GramsReadoutSim is to assign the electron clusters derived in [GramsDetSim](../GramsDetSim) to readout channels; the data object [`grams::ReadoutMap`](../GramsDataObj/include/ReadoutMap.h) contains the result. Each readout channel is assigned a `grams::ReadoutID`. The data object `grams::ReadoutMap` is a [map][130] of all the channels that have clusters. Each channel has a [`std::set`][4000] (the equivalent of Python [list][4010]) of electron clusters associated with that channel.
+The purpose of GramsReadoutSim is to assign the electron clusters derived in [GramsDetSim](../GramsDetSim) to readout channels for an event; the data object [`grams::ReadoutMap`](../GramsDataObj/include/ReadoutMap.h) contains the result. Each readout channel is assigned a `grams::ReadoutID`. The data object `grams::ReadoutMap` is a [map][130] of all the channels that have clusters. Each channel has a [`std::set`][4000] (the equivalent of Python [list][4010]) of electron clusters associated with that channel.
 
 [4000]: https://cplusplus.com/reference/set/set/
 [4010]: https://www.w3schools.com/python/python_lists.asp

@@ -4,7 +4,7 @@ _If you want a formatted (or easier-to-read) version of this file, scroll to the
 
 Like most "cmake" directories within a distribution, this directory
 contains build scripts for packages that are external to the main
-distribution described in CMakeLists.txt.
+distribution described in [CMakeLists.txt](../CMakeLists.txt).
 
 Pretty much everything in this directory is copied from Beam Delivery
 Simulation (BDSIM), developed at the University of London.

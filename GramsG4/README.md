@@ -262,10 +262,10 @@ The [`grams::MCTrackList`](../GramsDataObj/include/MCTrackList.h) data object co
 
 The result is that the complete chain of particle generation as modeled by Geant4 is available through `grams::MCTrackList`.
 
-The value of "TrackID" is a number assigned by Geant4 to each particle track modeled in the simulation. The value of TrackID should be treated as an arbitrary number. While is generally true that higher values of TrackID are assigned to particles that occur later in a sequence of simulated particles (e.g., a parent's TrackID will always be lower than a daughter's), there is no time-ordering associated with the TrackID number. In particular, it is _not_ safe to assume that a primary particle will always have a TrackID of 0. 
+The value of "TrackID" is a number assigned by Geant4 to each particle track modeled in the simulation. This value should be treated as an arbitrary number. While is generally true that higher values of TrackID are assigned to particles that occur later in a sequence of simulated particles (e.g., a parent's TrackID will always be lower than a daughter's), there is no time-ordering associated with the TrackID number. In particular, it is _not_ safe to assume that a primary particle will always have a TrackID of 0. 
+
 
 ### grams::MCLArHits
-
 
 | <img src="../GramsDataObj/images/grams_MCLArHits.png" width="50%" /> |
 | :--------------------------------------------------------------: | 
@@ -299,6 +299,7 @@ The following image shows an extremely zoomed-in view of one simulated Compton s
 
 Even though the value of the step size was set to a maximum of 0.2mm, the actual size of the electron-track line segments in this image is shorter than that, on the order of 0.01mm. The overall size of the scatter in the image is about 0.5mm. This image was selected as a "dramatic" scatter (longer than typical); most scatters are shorter and have fewer hits than this. 
 
+
 ### grams::MCScintHits
 
 
@@ -308,7 +309,7 @@ Even though the value of the step size was set to a maximum of 0.2mm, the actual
 
 The [`grams::MCScintHits`](../GramsDataObj/include/MCScintHits.h) data object is the equivalent of MCLArHits, but for energy deposits in the scintillator strips that make up the detector's time-of-flight (TOF) or veto-wall subsystems. MCScintHits is a [map][3050] containing `grams::MCScintHit` objects. 
 
-Since energy deposits in a LArTPC's scintillator subsystems are used for timing and veto of the events in the LAr, but typically not for the physics of the event. Therefore the `MCScintHit` information is not recorded to the same level of detail as an `MCLArHit`.
+Energy deposits in a LArTPC's scintillator subsystems are used for timing and veto of the events in the LAr, but typically not for the physics of the event. Therefore the `MCScintHit` information is not recorded to the same level of detail as an `MCLArHit`.
 
 
 ## Generating large numbers of events
@@ -319,10 +320,9 @@ Some things to consider:
    
          ./gramsg4 --nthreads 4
       
-     will run with 4 simultaneous threads. The potential disadvantage of this is that the information in the output ntuples will *not* be in ascending order; while all the rows associated with a particular event will be adjacent to each other, the events will be written in a random order to the output ntuple. 
+     will run with 4 simultaneous threads. The potential disadvantage of this is that the events in the output trees will *not* be in ascending order. 
        
-   - If you are running multiple jobs to generate events, by default they'll all run with the same random number seed;i.e., in the options XML file there is a parameter `rngseed` which is set to -1 by default. To generate a different set
-   of events for each job, you will want to vary the seed for each job. 
+   - If you are running multiple jobs to generate events, by default they'll all run with the same random number seed;i.e., in the options XML file there is a parameter `rngseed` which is set to -1 by default. To generate a different set of events for each job, you will want to vary the seed for each job. 
    
       For example, if the job has a unique process ID in the variable `${Process}`, then you probably want something like this:
       

@@ -22,37 +22,37 @@ For examples related to working with Geant4 and GramsG4, see [`GramsSim/mac`](..
 
 ## Examples
 
-`SimpleAnalysis.C` - a very simple example of how to look at the trees
+[`SimpleAnalysis.C`](./SimpleAnalysis.C) - a simple example of how to look at the trees
 produced by gramsg4 using a ROOT macro. Note that this macro depends
 on [GramsSim/rootlogon.C](../rootlogon.C), which loads the
 [GramsDataObj](../GramsDataObj) dictionary when you start an
 interactive ROOT session.
 
-`dEdxExample.cc` - An example of how to read a map-based branch in one
+[`dEdxExample.cc`](dEdxExample.cc) - An example of how to read a map-based branch in one
 of the GramsSim output files.  There are lots of detailed comments in
 here, to point the way to users developing code for their own tasks.
 
-`dEdxExample.py` - The same as above, in Python.
+[`dEdxExample.py`](dEdxExample.py) - The same as above, in Python.
 
-`RadialDistance.py` - a more realistic example of how to look at the
+[`RadialDistance.py`](RadialDistance.py) - a more realistic example of how to look at the
 trees produced by gramsg4.
 
-`AllFilesExample.cc` - An example of how to open all the output
+[`AllFilesExample.cc`](AllFilesExample.cc) - An example of how to open all the output
 files from all the GramsSim programs at once, set them up as [friend trees][80].
 This allows you to treat the entire ensemble of GramsSim files as a single
 structure. (As the comments in the code warn, don't copy this blindly. Edit it down
 to only read the files you need.)
 
-`AllFilesExample.py` - The same as above, in Python. 
+[`AllFilesExample.py`](AllFilesExample.py) - The same as above, in Python. 
 
 [80]: https://root.cern/manual/trees/#widening-a-ttree-through-friends
 
-`Hist2Text.C` - converts a ROOT histogram into the simple text format
+[`Hist2Text.C`](Hist2Text.C) - converts a ROOT histogram into the simple text format
 used by Geant4's General Particle Source system. Any `.root` or `.txt`
 files in this directory are used as example inputs and outputs for
 `Hist2Text.C`.
 
-`gdmlsearch.cc` - an example of how to use ROOT to search through a
+[`gdmlsearch.cc`](gdmlsearch.cc) - an example of how to use ROOT to search through a
 geometry specified in GDML and extract information from it.
 
 ## HepMC3 tests
