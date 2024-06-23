@@ -85,7 +85,7 @@ The parameters that affect this procedure are:
 ## Design note
 
 It's reasonable to ask why the functions of GramsDetSim,
-GramsReadoutSim, and GramsElecSim are in three separate prograsm.
+GramsReadoutSim, and GramsElecSim are in three separate programs.
 
 Functionally, each of these programs relates to a different aspect of
 an experiment's simulation:

@@ -10,6 +10,7 @@ _If you want a formatted (or easier-to-read) version of this file, scroll to the
     + [Recombination](#recombination)
     + [Absorption](#absorption)
     + [Diffusion](#diffusion)
+  * [grams::ElectronClusters](#grams--electronclusters)
   * [Design note](#design-note)
 
 <small><i><a href='http://ecotrust-canada.github.io/markdown-toc/'>Table of contents generated with markdown-toc</a></i></small>
@@ -48,12 +49,12 @@ From your project build directory (see
 ./gramsdetsim
 ```
 
-This program will read in an ntuple file created by the `GramsG4`
-simulation and create a "friend ntuple" to the `GramsG4`'s "hits"
-ntuple. In other words, the ntuple created by this program will
-contain, row-by-row, the hit energy adjusted by the detector response.
+This program will read in a file created by the [`GramsG4`](../GramsG4)
+simulation and create a friend tree, adding a column of 
+[ElectronClusters](../GramsDataObj/include/ElectronCluster.h) data objects, described below. See 
+[GramsDataObj/README.md](../GramsDataObj/README.md) for a detailed description of "friend trees".
 
-See `GramsSim/util/README.md` for a description of how to control the
+See [GramsSim/util/README.md](../util/README.md) for a description of how to control the
 operation of `gramsdetsim` through the [`options.xml`](../options.xml) file and the
 command line.
 
@@ -65,7 +66,7 @@ to include a random-number seed on the command line as described [`GramsG4`](../
 
 ## Detector-response functions
 
-Again recall that the parameters for all of the following functions can be found in the `options.xml` file. 
+Again recall that the parameters for all of the following functions can be found in the [`options.xml`](../options.xml) file. 
 
 ### Recombination
 
@@ -87,11 +88,11 @@ The specific recombination model is selected by the parameter `RecombinationMode
 
 - Modified box model
 
-<img src="BoxModel.png" width="25%"/>
+<img src="images/BoxModel.png" width="25%"/>
 
 - Birk's model
 
-<img src="BirksModel.png" width="35%"/>
+<img src="images/BirksModel.png" width="35%"/>
 
 where:
 
@@ -118,7 +119,7 @@ electrons drift towards the anode of the TPC.
 
 As of Sep-2022, the absorption model in the code is:
 
-<img src="absorption.png" width="20%"/>
+<img src="images/absorption.png" width="20%"/>
 
 where
 
@@ -141,24 +142,35 @@ longitudinal directions of the drift.
 
 The spread of the electron clusters is given by:
 
-<img src="DiffusionFormulas.png" width="20%" />
+<img src="images/DiffusionFormulas.png" width="20%" />
 
 where _N(a,b)_ is a normal distribution with a mean of _a_ and a width of _b_, and _D_<sub>T</sub> and _D_<sub>L</sub> are parameters supplied in the `options.xml` file. 
 
 This is a sketch of the procedure:
 
-| <img src="Diffusion.png" width="50%" /> |
+| <img src="images/Diffusion.png" width="50%" /> |
 | :---------------------------------------: | 
 | <small><strong>Sketch by Satoshi Takashima of the operation of `GramsReadoutSim`. Note the separate values for <i>D<sub>L</sub></i> and <i>D<sub>T</sub></i>, the longitudinal and traverse diffusion respectively. </strong></small> |
 
+## grams::ElectronClusters
 
-The output ntuple contains the energy, arrival time at the anode, and shifted
-(x,y,z) of each individual cluster.
+| <img src="../GramsDataObj/images/grams_ElectronClusters.png" width="50%" /> |
+| :------------------------------------------------------------: | 
+| <small><strong>Sketch of the grams::ElectronClusters data object.</strong></small> |
+
+The [grams::ElectronClusters](../GramsDataObj/include/ElectronClusters.h) data object contains all of the electron-cluster information for an event. ElectronClusters is a [map][3050] containing `grams::ElectronCluster` objects. 
+
+The value of "ClusterID" is completely arbitrary. It's assigned within GramsDetSim for purposes of "backtracking" through the GramsSim analysis chain. In particular, do not assume any kind of time ordering based on ClusterID; ClusterID==0 does not imply that it's the first or earliest electron cluster created for a hit. 
+
+GramsDetSim groups electrons into clusters whose size is given by the `ElectronClusterSize` parameter in [`options.xml`](../options.xml). There are usually some electrons remaining, which are assigned to the last cluster for a given HitID. This means that if you examine the sequence of `grams::ElectronCluster` objects for a given HitID, the `energy` and `numElectrons` fields will be the same for all but the last one in the sequence; that cluster contains the remaining electrons after the total number of electrons is divided into groups of size `ElectronClusterSize`.
+
+The `position` field within `grams::ElectronCluster` contains the _(x,y,t)_ values of the cluster at the readout anode, in units given by the parameters in the `<global>` section of [`options.xml`](../options.xml). The _z_-coordinate is the exception; since its value would always be 0 (the origin of the _z_-axis in the detector geometry is the anode), instead `position.Z()` contains the _z_-position of the cluster when it was first generated.
+
 
 ## Design note
 
 It's reasonable to ask why the functions of GramsDetSim,
-GramsReadoutSim, and GramsElecSim are in three separate prograsm.
+GramsReadoutSim, and GramsElecSim are in three separate programs.
 
 Functionally, each of these programs relates to a different aspect of
 an experiment's simulation:

@@ -258,6 +258,8 @@ The [grams::MCTrackList](../GramsDataObj/include/MCTrackList.h) data object cont
 
 The result is that the complete chain of particle generation as modeled by Geant4 is available through `grams::MCTrackList`.
 
+The value of "TrackID" is a number assigned by Geant4 to each particle track modeled in the simulation. The value of TrackID should be treated as an arbitrary number. While is generally true that higher values of TrackID are assigned to particles that occur later in a sequence of simulated particles (e.g., a parent's TrackID will always be lower than a daughter's), there is no time-ordering associated with the TrackID number. In particular, it is _not_ safe to assume that a primary particle will always have a TrackID of 0. 
+
 ### grams::MCLArHits
 
 
@@ -276,6 +278,10 @@ For a LArTPC, the key purpose of the simulation is to record the energy deposits
 The [grams::MCLArHits](../GramsDataObj/include/MCLArHits.h) data object is a record of the energy deposits in the LAr. Like `MCTrackList` described above, this is "MC Truth" information in that it contains the calculated amount of hit energy. Subsequent jobs in the analysis change will adjust this data to better match the signals that will be reported by the detector electronics. 
 
 MCLArHits is a [map][3050] containing `grams::MCLArHit` objects. These contain both the ionization energy from individual steps within the LAr, and the number of photons generated as part of the ionization process. 
+
+The value of "HitID" is completely arbitrary. It's assigned within [`GramsSim/GramsG4/src/GramsG4WriteNtuplesAction.cc`](src/GramsG4WriteNtuplesAction.cc) for purposes of "backtracking" through the GramsSim analysis chain. In particular, do not assume any kind of time ordering based on HitID; HitID==0 does not imply that the hit is the first or earliest energy deposit in the simulated event. 
+
+Also note that there is not a one-to-one mapping between a TrackID being present in MCTrackList and a TrackID/HitID combination being present in in MCLArHits. It is certainly possible for a track not to leave any energy deposits in the LAr; e.g., if the particle "bounces off" the cryostat and never passes through the LAr, and so MCLArHits for that event will be empty. Less frequently, it's possible for a track not to be excluded from MCTrackList (due to cuts intended to reduce the number of low-energy particles being saved by GramsG4) yet still deposit energy in the LAr and therefore recorded in MCLArHits.
 
 Geant4 tracks particles in units of [steps][3120]. In order to provide a more accurate geometric model of particle energy loss along a track, `GramsG4` has a parameter to control the maximum step size of a charged particle. This is parameter `larstepsize` in the [options XML](../options.xml) file. 
 
