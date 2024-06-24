@@ -45,9 +45,9 @@ include(macros)
 #
 option(WITH_GEANT4_VIS "Build example with Geant4 Vis drivers" ON)
 if(WITH_GEANT4_VIS)
-  find_package(Geant4 COMPONENTS gdml vis_all)
+  find_package(Geant4 COMPONENTS gdml vis_all QUIET)
 else()
-  find_package(Geant4 COMPONENTS gdml)
+  find_package(Geant4 COMPONENTS gdml QUIET)
 endif()
 
 #----------------------------------------------------------------------------
