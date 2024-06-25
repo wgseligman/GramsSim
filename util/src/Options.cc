@@ -1123,7 +1123,14 @@ namespace util {
 	      try {
 		double test = std::stod(value);
 		m_options[name].type = e_double;
-		m_options[name].value = std::to_string(test);
+                // This is an "antique" method of converting a
+                // double-precision variable to a string. The reason
+                // to use it here is that std::to_string only uses
+                // 'sprintf %f", so it can't handle small
+                // double-precision numbers on the order of 1e-9.
+                char buffer[32];
+                snprintf(buffer, sizeof(buffer), "%g", test);
+                m_options[name].value = std::string(buffer);
 	      } catch ( std::invalid_argument& e ) {
 		success = false;
 		std::cerr << "WARNING: File " << __FILE__ << " Line " << __LINE__ << " " 
