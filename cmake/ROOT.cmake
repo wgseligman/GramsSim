@@ -36,7 +36,7 @@ string(REPLACE "-stdlib=libc++"  "" ROOT_LIBRARIES ${ROOT_LIBRARIES})
 # 30-Dec-2021 WGS: Include the geometry libraries, so that ROOT
 # programs can manage a detector geometry.
 # 06-Jan-2022 WGS: Also include the EG library, so ROOT has access 
-# to the particle database.
+# to is particle database.
 string(CONCAT ROOT_LIBRARIES ${ROOT_LIBRARIES} " -lGeom -lEG")
 #message(STATUS "ROOT_LIBRARIES = ${ROOT_LIBRARIES}")
 

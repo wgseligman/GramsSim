@@ -26,19 +26,14 @@ set(LibName ${CMAKE_PROJECT_NAME}DataObj)
 # This ROOT CMake macro is incredibly picky. The order of these
 # statements matters (first the macro, then add_library, then the rest).
 
-ROOT_GENERATE_DICTIONARY ( ${Dictionary} ${headerList}
-			 MODULE ${LibName}
-			 LINKDEF ${LinkDef}
-			 )
+ROOT_GENERATE_DICTIONARY ( ${Dictionary} ${headerList} LINKDEF ${LinkDef} )
 
 # Add any source files, including the dictionary .cxx file, to the
 # library dependencies.
 
-add_library (${LibName} SHARED ${DataObjSrc})
-#add_library (${LibName} SHARED ${Dictionary}.cxx ${DataObjSrc})
-#message(STATUS "GramsDataObj create library ${LibName}")
-#target_link_libraries (${LibName} PRIVATE ROOT::RIO ROOT::Core)
-
+add_library (${LibName} SHARED ${Dictionary}.cxx ${DataObjSrc})
+#message(STATUS "GramsDataObj create library ${CMAKE_PROJECT_NAME}DataObj")
+ 
 # Make sure the compiler can find include files for our library when
 # other libraries or executables link to it.
 
