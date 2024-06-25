@@ -28,12 +28,17 @@ set(LibName ${CMAKE_PROJECT_NAME}DataObj)
 
 ROOT_GENERATE_DICTIONARY ( ${Dictionary} ${headerList} LINKDEF ${LinkDef} )
 
+# The following line is not needed on Linux, but it allows for the
+# linking of libraries in Mac OS X Darwin. 
+link_libraries (${ROOT_LIBRARIES})
+
 # Add any source files, including the dictionary .cxx file, to the
 # library dependencies.
 
 add_library (${LibName} SHARED ${Dictionary}.cxx ${DataObjSrc})
 #message(STATUS "GramsDataObj create library ${CMAKE_PROJECT_NAME}DataObj")
- 
+message (STATUS "ROOT_LIBRARIES=${ROOT_LIBRARIES}")
+
 # Make sure the compiler can find include files for our library when
 # other libraries or executables link to it.
 
