@@ -76,7 +76,9 @@ foreach(_filename ${script_progs})
    target_link_libraries(${_prog} ${CMAKE_PROJECT_NAME}Utilities )
    target_link_libraries(${_prog} ${CMAKE_PROJECT_NAME}DataObj)
    # The following line is needed to make sure DataObj is linked with the executable.
-   target_link_options(${_prog} PRIVATE "LINKER:-no-as-needed")
+   if( NOT MACOSX )
+       target_link_options(${PROG} PRIVATE "LINKER:-no-as-needed")
+   endif()
 
    if (HepMC3_FOUND)
      target_link_libraries(${_prog} ${HEPMC3_LIBRARIES} )

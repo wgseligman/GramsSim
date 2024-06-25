@@ -15,9 +15,11 @@ add_executable(${PROG} gramselecsim.cc ${ElecSimSrc})
 # Include any internal libraries, such as this project's utilities and
 # its data objects.
 target_link_libraries(${PROG} ${CMAKE_PROJECT_NAME}Utilities )
-target_link_libraries(${PROG} ${CMAKE_PROJECT_NAME}DataObj )
+target_link_libraries(${PROG} ${CMAKE_PROJECT_NAME}DataObj)
 # The following line is needed to make sure DataObj is linked with the executable.
-target_link_options(${PROG} PRIVATE "LINKER:-no-as-needed")
+if( NOT MACOSX )
+    target_link_options(${PROG} PRIVATE "LINKER:-no-as-needed")
+endif()
 
 target_link_libraries(${PROG} ${ROOT_LIBRARIES} )
 target_link_libraries(${PROG} ${XercesC_LIBRARY} )
