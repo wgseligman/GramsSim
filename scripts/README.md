@@ -28,6 +28,9 @@ on [GramsSim/rootlogon.C](../rootlogon.C), which loads the
 [GramsDataObj](../GramsDataObj) dictionary when you start an
 interactive ROOT session.
 
+[`SimpleAnalysis.py`](./SimpleAnalysis.py) - a Python script that performs the
+same function as `SimpleAnalysis.C`. 
+
 [`dEdxExample.cc`](dEdxExample.cc) - An example of how to read a map-based branch in one
 of the GramsSim output files.  There are lots of detailed comments in
 here, to point the way to users developing code for their own tasks.
