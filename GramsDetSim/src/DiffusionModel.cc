@@ -37,10 +37,8 @@ namespace gramsdetsim {
     options->GetOption("debug",              m_debug);
 
     options->GetOption("MeVToElectrons",        m_MeVToElectrons);
-    //Only for diffusion constant, the units are mm^2/ms
     options->GetOption("LongitudinalDiffusion", m_LongitudinalDiffusion);
     options->GetOption("TransverseDiffusion",   m_TransverseDiffusion);
-
     options->GetOption("ElectronClusterSize",   m_ElectronClusterSize);
     options->GetOption("ReadoutPlaneCoord",     m_readout_plane_coord);
     options->GetOption("ElectronDriftVelocity", m_DriftVel);
@@ -48,11 +46,14 @@ namespace gramsdetsim {
 
     m_RecipDriftVel = 1.0 / m_DriftVel;
 
-    if (m_verbose) {
+    if (m_verbose || m_debug) {
       std::cout << "gramsdetsim::DiffusionModel - "
 		<< "LongitudinalDiffusion= " << m_LongitudinalDiffusion
 		<< " TransverseDiffusion= " << m_TransverseDiffusion
 		<< " ElectronClusterSize=" << m_ElectronClusterSize 
+		<< " m_MeVToElectrons=" << m_MeVToElectrons
+		<< " m_DriftVel=" << m_DriftVel
+		<< " m_RecipDriftVel=" << m_RecipDriftVel
 		<< std::endl;
     }
   }
@@ -84,6 +85,18 @@ namespace gramsdetsim {
   
     double LDiffSig = SqrtT * fLDiff_const;
     double TDiffSig = SqrtT * fTDiff_const;
+
+    if ( m_debug ) {
+      std::cout << "gramsdetsim::DiffusionModel::Calculate - "
+		<< " DriftDistance=" << DriftDistance
+		<< " mean_TDrift=" << mean_TDrift
+		<< " SqrtT=" << SqrtT
+		<< " fLDiff_const=" << fLDiff_const
+		<< " fTDiff_const=" << fTDiff_const
+		<< " LDiffSig=" << LDiffSig
+		<< " TDiffSig=" << TDiffSig
+		<< std::endl;
+    }
   
     // Break up the ionization energy into separate electron clusters.
 

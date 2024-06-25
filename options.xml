@@ -504,13 +504,11 @@
     <option name="ElectronLifeTimeCorr" value="50000.0" type="double"
         desc="mean life of electrons (ns)"/>
 
-    <option name="ElectronDriftVelocity" value="0.01" type="double"
+    <option name="ElectronDriftVelocity" value="0.00016" type="double"
         desc="drift velocity (cm/ns)"/>
 
     Options associated with the diffusion model. These values come
-    from MicroBooNE:
-  https://github.com/LArSoft/larsim/blob/develop/larsim/Simulation/simulationservices.fcl
-  https://github.com/MicroBooNE/uboonecode/blob/develop/uboone/Simulation/simulationservices_microboone.fcl
+    from https://arxiv.org/pdf/1508.07059
 
     <option name="diffusion" value="true" type="boolean"
         desc="model diffusion effects"/>
@@ -518,7 +516,7 @@
     <option name="MeVToElectrons" value="4.237e4" type="double"
         desc="the number of generated electrons per 1MeV"/>
 
-    <option name="LongitudinalDiffusion" value="6.2e-9" type="double"
+    <option name="LongitudinalDiffusion" value="2.4e-9" type="double"
         desc="[cm^2/ns]"/>
 
     <option name="TransverseDiffusion" value="16.3e-9" type="double"

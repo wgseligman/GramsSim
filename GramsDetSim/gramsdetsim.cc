@@ -305,9 +305,11 @@ int main(int argc,char **argv)
       if (debug) {
 	std::cout << "gramsdetsim: after diffusion model corrections, holdingClusters.size()=" 
 		  << holdingClusters.size() << std::endl;
+	std::cout << hit << std::endl;
 	for ( const auto& c : holdingClusters ) {
 	  std::cout << c << std::endl;
 	}
+	std::cout << std::endl;
       }
 
       // If something went wrong, use the default cluster.
