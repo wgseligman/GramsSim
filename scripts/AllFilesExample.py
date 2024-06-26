@@ -9,12 +9,6 @@
 # tutorial at
 # https://www.nevis.columbia.edu/~seligman/root-class/html/
 
-#    TTTTT   H   H   IIIII   N   N   K   K 
-#      T     H   H     I     NN  N   K  K  
-#      T     HHHHH     I     N N N   KKK   
-#      T     H   H     I     N  NN   K  K  
-#      T     H   H   IIIII   N   N   K   K 
-
 # At this moment, you're tempted to just copy this program and
 # blindly place your analysis code in the main program loop. DON'T DO
 # THIS WITHOUT THINKING ABOUT WHAT YOU'RE DOING! This program is
@@ -25,12 +19,6 @@
 # multiple trees in multiple files to accomplish your analysis
 # task. Only use the files/trees/columns that you need. The
 # 'dEdxExample' programs show this.
-
-# If you just copy-and-page this code and automatically read every
-# GramsSim file in the analysis without considering which
-# files/trees/columns you need, you'll get a program that will run
-# slowly, use more memory, and be more error prone. THINK! THINK!
-# THINK!
 
 import ROOT
 
