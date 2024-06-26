@@ -1350,21 +1350,23 @@ namespace util {
 
     // For each value in the vector...
     for ( auto i = a_vector.cbegin(); i != a_vector.cend(); ++i ) {
+      auto value = (*i);
       // Convert to string.
       std::ostringstream os;
-      os << (*i);
+      os << value;
       std::string svalue = os.str();
       
       // Solely for display purposes, remove any trailing zeros and a
       // final "." if there is one.
-      svalue.erase ( svalue.find_last_not_of('0') + 1, std::string::npos );
+      if ( value != 0 )
+	svalue.erase ( svalue.find_last_not_of('0') + 1, std::string::npos );
       svalue.erase ( svalue.find_last_not_of('.') + 1, std::string::npos );
 
       // append the formatted number to the end of the result. 
       result += svalue;
 
       // If it's not the last value, append a comma. 
-      if ( i != ( a_vector.end() - 1) )
+      if ( i != ( a_vector.cend() - 1 ) )
 	result += ",";
     }
 
