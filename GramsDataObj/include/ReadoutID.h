@@ -55,6 +55,11 @@ namespace grams {
       return y_index*1000000 + x_index;
     }
 
+    // Folks working on CNNs will want to have simple access to (X,Y)
+    // channel numbers.
+    int X() const { return x_index; }
+    int Y() const { return y_index; }
+
     // Since we may want to sort by ReadoutID (for maps and such),
     // define the "less-than" operator. 
     bool operator<(const ReadoutID& e) const

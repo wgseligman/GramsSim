@@ -1,8 +1,14 @@
 # HISTORY
 
 A description of major development milestones. The most recent are at
-the top. For a detailed list of all changes (basically, every time
+the top. 
+
+- For a detailed list of all changes (basically, every time
 someone typed "git commit"), see the output of "git log".
+
+- For tagged commits (important milestones), use "git tag -n1".
+
+- [More on git.](https://git-scm.com/book/en/v2)
 
 Jun-2024
 
@@ -13,11 +19,22 @@ Jun-2024
    - The examples in GramsSim/scripts and the overall documentation in README.md files
      was revised for this change. 
 
+   - git tag -a v2.0 <-- The first tag assigned for the start of the
+     tree-based output format.
+
+   - From this point forward, tags will be assigned in the classic
+     scheme: vX.Y.Z, where X is a breaking change, Y is a feature
+     change, and Z is a minor or bug-fix change.
+
+   - git tag -a v1.6 <-- The last tag assigned for the code that uses
+     the older n-tuple output format.
+
 Apr-2024
 
    - From a suggestion by Mihir Shetty: modified the Options
      processing to allow the user to specify lower and upper limits
      for numeric parameters in the Options XML file.
+   - git tag -a v1.5.1
 
 Mar-2024
 
@@ -31,6 +48,7 @@ Feb-2024
    - GramsG4 now accumulates Cerenkov photons (in addition to the existing accumulation
      of scintillation photons). This new field is passed on and through GramsDetSim
      and GramsReadoutSim. 
+   - git tag -a v1.5
 
 Nov-2023
 
@@ -46,6 +64,7 @@ Oct-2023
    - Restructure the GDML file slightly to allow for a cryostat that is not a "skin-tight" fit
      around the TPC, and for a potential offset of the TPC from the geometric center of the
      cryostat. 
+   - git tag -a v1.4-Options-Geometry
 
 Sep-2023
 
@@ -70,6 +89,7 @@ Nov-2022
    - Added GramsReadoutSim and GramsElecsim to the repository.
    - Revised Options class to better support saving and restoring
      options along an entire analysis chain. 
+   - git tag -a v1.3-GramsReadoutSim-GramsElecSim
 
 Oct-2022
 
@@ -113,6 +133,8 @@ Jan-2022:
    - Improved the build process so that it can continue if the libraries for Geant4, HepMC3, and/or FITSIO/HEALPix cannot be detected on the system. 
    - `healpix-maps.cc` is a simple bit of code that tests reading HEALPix maps from a FITS file.
    - Added unit options to Options XML file and modified GramsSky and GramsG4 to insure consistency of units between the programs. 
+   - git tag -a v1.1-GramsSky
+   - git tag -a v1.2-GramsDetSim
 
 Dec-2021:
 
@@ -124,6 +146,7 @@ Nov-2021:
    - Create a "skeleton" for GramsDetSim.
    - Restructure the directories. Each program now has its own directory with a README: GramsG4, GramsDetSim. The overall repository is now GramsSim.
    - Created util::WriteOptions, to save a program's options in its output file.
+   - git tag -a v1.0
 
 Oct-2021:
 
@@ -169,6 +192,7 @@ Feb-2021:
 Jan-2021:
 
    - Added the ability to read primary events from files using HepMC3. 
+   - git tag -a v0.5
    
 Aug-2021:
 
@@ -177,4 +201,4 @@ Aug-2021:
 May-2021:
 
    - Initial set-up of GramsG4.
-   
+   - git tag -a v0.1
