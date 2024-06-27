@@ -57,6 +57,13 @@ The `grams::EventID` object is created in [GramsG4](../GramsG4), then copied
 from one file to another as the friend trees are created in subsequent programs
 in the analysis chain (such as [GramsDetSim](./GramsDetSim)).
 
+As of Jun-2024, an EventID object identifies a single simulated
+particle, but that may change. One point made by Georgia Karagiorgi:
+Don't limit an "event" to be a single particle. As we begin to
+incorporate overlays and pile-up in the analysis, the "EventID" may
+refer to a trigger window or something similar.
+
+
 ### grams::MCTrackList
 
 This data object contains the "MC Truth" information for the particle tracks produced

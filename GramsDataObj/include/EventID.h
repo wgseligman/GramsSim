@@ -2,8 +2,8 @@
 /// \brief Data object to identify an event.
 // 29-May-2024 WGS
 
-// This data object encapsulates the details of how should be
-// identified in a GramsSim n-tuple. 
+// This data object encapsulates the details of how an event is
+// identified in a GramsSim TTree branch. 
 
 // As of May-2024, EventID seems almost too simple: Just a run number
 // and an event number. However, the event ID may become more complex
@@ -13,9 +13,14 @@
 // sense to identify events by date/time. Or perhaps we may need to
 // introduct the concept of "sub-runs".
 
+// One point made by Georgia Karagiorgi: As we begin to incorporate
+// overlays and pile-up in the analysis, an "event" may refer to a
+// trigger window or something similar. It doesn't have to be tied to
+// a single process in the simulation.
+
 // The idea is that no matter how we might have to revise this data
-// object, in the code we can simply search, sort, and test against
-// EventID types.
+// object, in the code we can search, sort, and test with the
+// grams::EventID type.
 
 #ifndef _grams_eventid_h_
 #define _grams_eventid_h_

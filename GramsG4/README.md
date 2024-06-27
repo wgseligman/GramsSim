@@ -241,7 +241,13 @@ If you're familiar with Python, they're similar to [dicts][140].
 | :---------------------------------------------------------: | 
 | <small><strong>Sketch of the grams::EventID data object.</strong></small> |
 
-As noted in the [GramsDataObj documentation](../GramsDataObj), `grams::EventID` is an abstraction around the specific values of "run" and "event" number. If the way we identify events were to ever change (for example, a balloon or satellite experiment might not have individual "runs") only a few lines of code would have to change. 
+As noted in the [GramsDataObj documentation](../GramsDataObj),
+`grams::EventID` is an abstraction around the specific values of "run"
+and "event" number. If the way we identify events were to ever change
+(for example, a balloon or satellite experiment might not have
+individual "runs", or may start to include information related to
+trigger windows or pileup) only a few lines of code would have to
+change.
 
 
 ### grams::MCTrackList
