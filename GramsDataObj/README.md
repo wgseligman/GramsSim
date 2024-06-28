@@ -3,7 +3,7 @@
 _If you want a formatted (or easier-to-read) version of this file, scroll to the bottom of [`GramsSim/README.md`](../README.md) for instructions. If you're reading this on github, then it's already formatted._
 
 - [GramsDataObj](#gramsdataobj)
-  * [Using the dictionary](#using-the-dictionary)
+  * [How to use a dictionary](#how-to-use-a-dictionary)
   * [Using the data objects](#using-the-data-objects)
     + [Definitions](#definitions)
     + [Linkdef.hh](#linkdefhh)
@@ -29,7 +29,7 @@ a Branch (column) of a [TTree][10] (n-tuple) in a ROOT file. ROOT requires a [di
 [10]: https://root.cern.ch/doc/master/classTTree.html
 [15]: https://root.cern/manual/io_custom_classes/
 
-## Using the dictionary
+## How to use a dictionary
 
 Without the dictionary, files created by `GramsSim` are generally unreadable. This section describes what you have to do to make sure your programs can "see" the dictionary. 
 
