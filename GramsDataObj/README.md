@@ -33,34 +33,23 @@ a Branch (column) of a [TTree][10] (n-tuple) in a ROOT file. ROOT requires a [di
 
 Without the dictionary, files created by `GramsSim` are generally unreadable. This section describes what you have to do to make sure your programs can "see" the dictionary. 
 
-The short version of the rest of this section: If you do all your work in your build directory, and follow the examples in the [`scripts`](../scripts) directory, you don't have to anything more.
+The short version of the rest of this section: Follow the examples in the [`scripts`](../scripts) directory. Make sure the files `Dictionary_rdict.pcm` and `libDictionary.so` are in the same directory as your programs.
 
-__Reminder__: The "build directory" is the directory in which you built `GramsSim`. If you followed the exact directions in [GramsSim/README.md](../README.md), that directory will be named `GramsSim-work`, but it can have any name you choose. 
+Your "build directory" is the one in which you built `GramsSim`. If you followed the exact directions in [GramsSim/README.md](../README.md), that directory will be named `GramsSim-work`, but it can have any name you choose. 
 
-If you decide to move things around:
+Once you've compiled `GramsSim` (via `make`), you will see two files in the build directory: `Dictionary_rdict.pcm` and `libDictionary.so`.[^dylib] If you work with code that's outside your original build directory, these files must be present in the dictionary that contains your programs. 
 
-Once you've compiled `GramsSim` (via `make`), you will see two files in the build directory: one ending in `.so` and the other in `.pcm`.[^dylib] If you move programs into other directories, these programs must go with them. 
-
-[^dylib]: If you're running a Mac, the binary library file ends in `.dylib` instead of `.so`. However, as of Jun-2024 `GramsSim` does not compile properly on the Mac operating system. 
+[^dylib]: If you're running a Mac, that second file will be `libDictionary.dylib`. However, as of Jun-2024 `GramsSim` does not execute properly on the Mac operating system. 
 
 There are three kinds of programs that might use the dictionary:
 
-- Compiled executables, from the `.cc` files in the `GramsSim` source directory. 
+- If you want to compile a C++ program (the code is in a file that ends in `.cc` or `.cxx`), see the examples in the [`scripts`](../scripts). You can start with [`dEdxExample.cc`](../scripts/dEdxExample.cc); the comments at the top of the file show how to compile the program. 
 
-  These executables are in the build directory (`gramsg4`, `gramsdetsim`. etc.) or in the `bin` sub-directory of your build directory (e.g., [`bin/dEdxExample`](../scripts/dEdxExample.cc)). 
-
-  These executables go with the dictionary. For example, if you move a binary to `MyDirectory`, then you'll want to do something like this:
-  
-      cd MyDirectory
-      cp <build-directory>/*.so <build-directory>/*.pcm $PWD
-
-- Python scripts, such as those in the `scripts` sub-directory. 
-
-  If you examine the scripts that use the dictionary (e.g, [`SimpleAnalysis.py`](../scripts/SimpleAnalysis.py)), you'll see a line similar to:
+- For Python scripts, you need this line near the top of your code: 
 
       ROOT.gSystem.Load("./libDictionary.so")
-      
-  A line like this is needed in any Python script that reads the GramsSim output files. If you relocate the dictionary or the Python script, the above line has to be revised. 
+
+  See [`SimpleAnalysis.py`](../scripts/SimpleAnalysis.py)) for an example. 
   
 - ROOT macros; that is, files ending in `.C` that are meant to be executed from within an interactive ROOT session; an example is [`SimpleAnalysis.C`](../scripts/SimpleAnalysis.C)).
 
@@ -68,10 +57,8 @@ There are three kinds of programs that might use the dictionary:
   
       root scripts/SimpleAnalysis.C
       
-  If you examine `rootlogon.C`, you'll see it loads the dictionary in a similar manner to the Python scripts. It also sets the path to the header (`.h` files) for the data objects. If you want to run a ROOT macro from a different location, you'll have to copy `rootlogon.C` to the new location and either edit the file paths in it, or copy the `.so` and `.pcm` file of the dictionary to the same directory. 
-  
-  Due to the way ROOT interprets macros, the lines in `rootlogon.C` cannot be moved to a `.C` file. They have to be "pre-executed" by ROOT before it interprets any macros. 
-  
+  If you examine `rootlogon.C`, you'll see it loads both the dictionary and the header (`.h` files) for the data objects. If you want to run a ROOT macro from a different location, you'll have to copy `Dictionary_rdict.pcm`, `libDictionary.so`, _and_ `rootlogon.C` to the new location and possibly edit `rootlogon.C` for the header file path. 
+    
   An advantage of having `rootlogon.C` in in your current directory is that you can run ROOT, invoke the TBrowser, and use the the dictionary classes directory; e.g.,
   
   root
