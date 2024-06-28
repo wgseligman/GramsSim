@@ -8,7 +8,8 @@ _If you want a formatted (or easier-to-read) version of this file, scroll to the
   * [Installing GramsSim](#installing-gramssim)
     + [Working with github](#working-with-github)
   * [Setting up GramsSim](#setting-up-gramssim)
-  * [Making changes](#making-changes)
+  * [Developing analysis code](#developing-analysis-code)
+  * [Making changes to GramsSim itself](#making-changes-to-gramssim-itself)
     + [Advanced git commands](#advanced-git-commands)
     + [Work files](#work-files)
     + [Development "flow"](#development--flow-)
@@ -91,7 +92,7 @@ Once this is done, you can download a copy of the GramsSim repository:
 
 ## Setting up GramsSim
 
-To make things easier, I'm going to define a variable for the repository
+To make things easier, I'm going to define a variable for the source-code
 directory in your area. You may want to include a suitably modified version
 of this command in one of your shell startup files:
 
@@ -107,7 +108,7 @@ To build/compile:[^make]
     conda activate /nevis/amsterdam/share/seligman/conda/grams
     
     # Create a separate build/work directory. This directory should
-    # not be the GramsG4 directory or a sub-directory of it. This
+    # not be the GramsSim directory or a sub-directory of it. This
     # only has to be done once. 
     cd $GSDIR
     mkdir GramsSim-work
@@ -129,9 +130,15 @@ To run the programs:
 
 ...and so on. Consult the `README.md` in the individual program directories for details. 
 
-## Making changes
+## Developing analysis code
 
-If you want to develop your own code to analyze the `GramsSim` output files, see the discussion on [how to use a dictionary](./GramsDataObj).
+If you want to develop code to analyze the `GramsSim` output files, there are two places to look:
+
+- The [example scripts](./scripts). These include examples in C++, Python, and ROOT macros. 
+
+- This discussion on [how to use a dictionary](./GramsDataObj). You will need this if you want to read `GramsSim` files using a program you've written that's not in your build directory. 
+
+## Making changes to GramsSim itself
 
 Obviously, you can make any changes you want to GramsSim for your own use. This section is for when you want to start making changes to be added to the official repository. 
 
