@@ -39,7 +39,9 @@ __Reminder__: The "build directory" is the directory in which you built `GramsSi
 
 If you decide to move things around:
 
-Once you've compiled `GramsSim` (via `make`), the binary dictionary is located in the `GramsDataObj` sub-directory of your build directory. It's in two files, one ending in `.so` and the other in `.pcm`. If you choose relocate the dictionary `.so` file, the `.pcm` must be kept with it. 
+Once you've compiled `GramsSim` (via `make`), you will see two files in the build directory: one ending in `.so` and the other in `.pcm`.[^dylib] If you move programs into other directories, these programs must go with them. 
+
+[^dylib]: If you're running a Mac, the binary library file ends in `.dylib` instead of `.so`. However, as of Jun-2024 `GramsSim` does not compile properly on the Mac operating system. 
 
 There are three kinds of programs that might use the dictionary:
 
@@ -47,17 +49,16 @@ There are three kinds of programs that might use the dictionary:
 
   These executables are in the build directory (`gramsg4`, `gramsdetsim`. etc.) or in the `bin` sub-directory of your build directory (e.g., [`bin/dEdxExample`](../scripts/dEdxExample.cc)). 
 
-  These executables are compiled with the dictionary path hard-coded within them. If you relocate the binaries outside of your build directory, the dictionary must be located in that relative path to the executable. For example, if you move a binary to `MyDirectory`, then you'll want to do something like this:
+  These executables go with the dictionary. For example, if you move a binary to `MyDirectory`, then you'll want to do something like this:
   
       cd MyDirectory
-      mkdir GramsDataObj
-      cp <build-directory>/GramsDataObj/*.so <build-directory>/GramsDataObj/*.pcm GramsDataObj
+      cp <build-directory>/*.so <build-directory>/*.pcm $PWD
 
 - Python scripts, such as those in the `scripts` sub-directory. 
 
   If you examine the scripts that use the dictionary (e.g, [`SimpleAnalysis.py`](../scripts/SimpleAnalysis.py)), you'll see a line similar to:
 
-      ROOT.gSystem.Load("./GramsDataObj/libGramsSimProjectDataObj.so")
+      ROOT.gSystem.Load("./libDictionary.so")
       
   A line like this is needed in any Python script that reads the GramsSim output files. If you relocate the dictionary or the Python script, the above line has to be revised. 
   
@@ -67,9 +68,9 @@ There are three kinds of programs that might use the dictionary:
   
       root scripts/SimpleAnalysis.C
       
-  If you examine `rootlogon.C`, you'll see it loads the dictionary in a similar manner to the Python scripts. If you want to run a ROOT macro from a different location, you'll have to copy `rootlogon.C` to the new location and either edit the file paths in it, or copy the `.so` and `.pcm` file of the dictionary to the same relative path. 
+  If you examine `rootlogon.C`, you'll see it loads the dictionary in a similar manner to the Python scripts. It also sets the path to the header (`.h` files) for the data objects. If you want to run a ROOT macro from a different location, you'll have to copy `rootlogon.C` to the new location and either edit the file paths in it, or copy the `.so` and `.pcm` file of the dictionary to the same directory. 
   
-  Due to the way ROOT interprets macros, the lines in `rootlogon.C` cannot be included in a `.C` file. 
+  Due to the way ROOT interprets macros, the lines in `rootlogon.C` cannot be moved to a `.C` file. They have to be "pre-executed" by ROOT before it interprets any macros. 
   
   An advantage of having `rootlogon.C` in in your current directory is that you can run ROOT, invoke the TBrowser, and use the the dictionary classes directory; e.g.,
   
@@ -77,6 +78,7 @@ There are three kinds of programs that might use the dictionary:
   TBrowser tb
   auto event = grams::EventID(0,23);
   cout << event << endl;
+  
 ## Using the data objects
 
 | <img src="../GramsDataObj/images/GramsSim_trees.png" width="100%" /> |
