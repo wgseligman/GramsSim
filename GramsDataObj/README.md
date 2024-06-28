@@ -3,15 +3,8 @@
 _If you want a formatted (or easier-to-read) version of this file, scroll to the bottom of [`GramsSim/README.md`](../README.md) for instructions. If you're reading this on github, then it's already formatted._
 
 - [GramsDataObj](#gramsdataobj)
-  * [Data objects](#data-objects)
-    + [grams::EventID](#gramseventid)
-    + [grams::MCTrackLists](#gramsmctracklist)
-    + [grams::MCLArHits](#gramsmclarhits)
-    + [grams::MCScintHits](#gramsmcscinthits)
-    + [grams::ElectronClusters](#gramselectronclusters)
-    + [grams::ReadoutMap](#gramsreadoutmap)
-    + [grams::ReadoutWaveforms](#gramsreadoutwaveforms)
-  * [Overview](#overview)
+  * [Using the dictionary](#using-the-dictionary)
+  * [Using the data objects](#using-the-data-objects)
     + [Definitions](#definitions)
     + [Linkdef.hh](#linkdefhh)
     + [Operators](#operators)
@@ -19,102 +12,72 @@ _If you want a formatted (or easier-to-read) version of this file, scroll to the
       - [Friendly trees](#friendly-trees)
       - [Indexed trees](#indexed-trees)
     + [Maps and keys](#maps-and-keys)
+  * [The data objects](#the-data-objects)
+    + [grams::EventID](#grams--eventid)
+    + [grams::MCTrackList](#grams--mctracklist)
+    + [grams::MCLArHits](#grams--mclarhits)
+    + [grams::MCScintHits](#grams--mcscinthits)
+    + [grams::ElectronClusters](#grams--electronclusters)
+    + [grams::ReadoutMap](#grams--readoutmap)
+    + [grams::ReadoutWaveforms](#grams--readoutwaveforms)
 
 <small><i><a href='http://ecotrust-canada.github.io/markdown-toc/'>Table of contents generated with markdown-toc</a></i></small>
 
 A "data object" is a C++ type (class, struct, etc.) that is written as
-a Branch (column) of a [TTree][10] (n-tuple) in a ROOT file.
+a Branch (column) of a [TTree][10] (n-tuple) in a ROOT file. ROOT requires a [dictionary][15] to read and write data objects. The `GramsDataObj` package defines the data objects and creates the dictionary. 
 
 [10]: https://root.cern.ch/doc/master/classTTree.html
+[15]: https://root.cern/manual/io_custom_classes/
 
+## Using the dictionary
 
-## Data objects
+Without the dictionary, files created by `GramsSim` are generally unreadable. This section describes what you have to do to make sure your programs can "see" the dictionary. 
 
-Many of the data objects are organized in the form of maps. In C++, a [std::map][130] is a container whose elements are stored in (key,value) pairs. If you're familiar with Python, they're similar to [dicts][140]. 
+The short version of the rest of this section: If you do all your work in your build directory, and follow the examples in the [`scripts`](../scripts) directory, you don't have to anything more.
 
-[130]: https://cplusplus.com/reference/map/map/
-[140]: https://www.w3schools.com/python/python_dictionaries.asp
+__Reminder__: The "build directory" is the directory in which you built `GramsSim`. If you followed the exact directions in [GramsSim/README.md](../README.md), that directory will be named `GramsSim-work`, but it can have any name you choose. 
 
-As you look through the description of the data objects below, consult the [GramsDataObj/include](../GramsDataObj/include) directory for the header files. These are the files that define the methods for accessing the values stored in these objects. Documentation may be inaccurate; the code is actual definition.
+If you decide to move things around:
 
-### grams::EventID
+Once you've compiled `GramsSim` (via `make`), the binary dictionary is located in the `GramsDataObj` sub-directory of your build directory. It's in two files, one ending in `.so` and the other in `.pcm`. If you choose relocate the dictionary `.so` file, the `.pcm` must be kept with it. 
 
-The [EventID](./include/EventID.h) object encapsulates what, in many
-experiments, is simply the run and event number. However, in a balloon
-or satellite experiment, it may be that there are different methods
-for assigning an event ID; e.g., UTC time.
+There are three kinds of programs that might use the dictionary:
 
-As a precaution (and also to saving on typing `if (run == N && event
-== M)`), the `grams::EventID` class is used instead. You can sort on
-`grams::EventID` or test it for equality, without having to modify the code
-if there's a switch from "run/event" to distinguish events.
+- Compiled executables, from the `.cc` files in the `GramsSim` source directory. 
 
-| <img src="../GramsDataObj/images/grams_EventID.png" width="50%" /> |
-| :---------------------------------------------------------: | 
-| <small><strong>Sketch of the grams::EventID data object.</strong></small> |
+  These executables are in the build directory (`gramsg4`, `gramsdetsim`. etc.) or in the `bin` sub-directory of your build directory (e.g., [`bin/dEdxExample`](../scripts/dEdxExample.cc)). 
 
-The `grams::EventID` object is created in [GramsG4](../GramsG4), then copied 
-from one file to another as the friend trees are created in subsequent programs
-in the analysis chain (such as [GramsDetSim](./GramsDetSim)).
+  These executables are compiled with the dictionary path hard-coded within them. If you relocate the binaries outside of your build directory, the dictionary must be located in that relative path to the executable. For example, if you move a binary to `MyDirectory`, then you'll want to do something like this:
+  
+      cd MyDirectory
+      mkdir GramsDataObj
+      cp <build-directory>/GramsDataObj/*.so <build-directory>/GramsDataObj/*.pcm GramsDataObj
 
-As of Jun-2024, an EventID object identifies a single simulated
-particle, but that may change. One point made by Georgia Karagiorgi:
-Don't limit an "event" to be a single particle. As we begin to
-incorporate overlays and pile-up in the analysis, the "EventID" may
-refer to a trigger window or something similar.
+- Python scripts, such as those in the `scripts` sub-directory. 
 
+  If you examine the scripts that use the dictionary (e.g, [`SimpleAnalysis.py`](../scripts/SimpleAnalysis.py)), you'll see a line similar to:
 
-### grams::MCTrackList
+      ROOT.gSystem.Load("./GramsDataObj/libGramsSimProjectDataObj.so")
+      
+  A line like this is needed in any Python script that reads the GramsSim output files. If you relocate the dictionary or the Python script, the above line has to be revised. 
+  
+- ROOT macros; that is, files ending in `.C` that are meant to be executed from within an interactive ROOT session; an example is [`SimpleAnalysis.C`](../scripts/SimpleAnalysis.C)).
 
-This data object contains the "MC Truth" information for the particle tracks produced
-in [GramsG4](../GramsG4) for a single event; see that page for additional information. 
-
-| <img src="../GramsDataObj/images/grams_MCTrackList.png" width="75%" /> |
-| :-----------------------------------------------------------------: | 
-| <small><strong>Sketch of the grams::MCTrackList data object.</strong></small> |
-
-### grams::MCLArHits
-
-This data object contains the "MC Truth" information associated with the ionization energy deposits in the liquid argon as determined by [GramsG4](../GramsG4) for a single event; see that page for additional information. 
-
-| <img src="../GramsDataObj/images/grams_MCLArHits.png" width="50%" /> |
-| :--------------------------------------------------------------: | 
-| <small><strong>Sketch of the grams::MCLArHits data object.</strong></small> |
-
-
-### grams::MCScintHits
-
-This data object contains the "MC Truth" information for ionization energy deposited in the scintillator strips by the [GramsG4](../GramsG4) simulation for a single event; see that page for additional information. 
-
-| <img src="../GramsDataObj/images/grams_MCScintHits.png" width="50%" /> |
-| :----------------------------------------------------------------: | 
-| <small><strong>Sketch of the grams::MCScintHits data object.</strong></small> |
-
-### grams::ElectronClusters
-
-This data object contains electron-cluster information produced by [GramsDetSim](../GramsDetSim) for a single event, which models the drift of the ionization deposited in the LAr as recorded in MCLArHits; see the `GramsDetSim` page for additional information. 
-
-| <img src="../GramsDataObj/images/grams_ElectronClusters.png" width="50%" /> |
-| :------------------------------------------------------------: | 
-| <small><strong>Sketch of the grams::ElectronClusters data object.</strong></small> |
-
-### grams::ReadoutMap
-
-This data object, created by [GramsReadoutSim](../GramsReadoutSim) for each event, contains the association of the electron clusters created in [GramsDetSim](../GramsDetSim) to the elements of the readout geometry. See the `GramsReadoutSim` page for additional information. 
-
-| <img src="../GramsDataObj/images/grams_ReadoutMap.png" width="85%" /> |
-| :------------------------------------------------------------: | 
-| <small><strong>Sketch of the grams::ReadoutMap data object.</strong></small> |
-
-### grams::ReadoutWaveforms
-
-This data object is created by [GramsElecSim](../GramsElecSim) for each event. It contains the analog and digital waveforms for the elements of the readout geometry as induced by the electron clusters in `grams::ElectronClusters` and mapped to the readout by `grams::ReadoutMap`. See the `GramsElecSim` page for additional information. 
-
-|         <img src="../GramsDataObj/images/grams_ReadoutWaveforms.png" width="60%" />      |
-|                                 :--------:                                         | 
-| <small><strong>Sketch of the grams::ReadoutWaveforms data object.</strong></small> |
-
-## Overview
+  If you run the `root` command from within the build directory, interactive ROOT will execute [`rootlogon.C`](../rootlogon.C). This applies to both interactive sessions, and to running macros from the command line; e.g.,
+  
+      root scripts/SimpleAnalysis.C
+      
+  If you examine `rootlogon.C`, you'll see it loads the dictionary in a similar manner to the Python scripts. If you want to run a ROOT macro from a different location, you'll have to copy `rootlogon.C` to the new location and either edit the file paths in it, or copy the `.so` and `.pcm` file of the dictionary to the same relative path. 
+  
+  Due to the way ROOT interprets macros, the lines in `rootlogon.C` cannot be included in a `.C` file. 
+  
+  An advantage of having `rootlogon.C` in in your current directory is that you can run ROOT, invoke the TBrowser, and use the the dictionary classes directory; e.g.,
+  
+  root
+  TBrowser tb
+  auto event = grams::EventID(0,23);
+  cout << event << endl;
+## Using the data objects
 
 | <img src="../GramsDataObj/images/GramsSim_trees.png" width="100%" /> |
 | :-----------------------------------------------------------: | 
@@ -309,3 +272,92 @@ for ( const auto& [key, cluster] : (*clusters) ) {
 ```
 
 This is illustrated in greater detail in [GramsSim/scripts/AllFilesExample.cc](../scripts/AllFilesExample.cc) [GramsSim/scripts/AllFilesExample.py](../scripts/AllFilesExample.py). 
+
+
+## The data objects
+
+Many of the data objects are organized in the form of maps. In C++, a [std::map][130] is a container whose elements are stored in (key,value) pairs. If you're familiar with Python, they're similar to [dicts][140]. 
+
+[130]: https://cplusplus.com/reference/map/map/
+[140]: https://www.w3schools.com/python/python_dictionaries.asp
+
+As you look through the description of the data objects below, consult the [GramsDataObj/include](../GramsDataObj/include) directory for the header files. These are the files that define the methods for accessing the values stored in these objects. Documentation may be inaccurate; the code is actual definition.
+
+### grams::EventID
+
+The [EventID](./include/EventID.h) object encapsulates what, in many
+experiments, is simply the run and event number. However, in a balloon
+or satellite experiment, it may be that there are different methods
+for assigning an event ID; e.g., UTC time.
+
+As a precaution (and also to saving on typing `if (run == N && event
+== M)`), the `grams::EventID` class is used instead. You can sort on
+`grams::EventID` or test it for equality, without having to modify the code
+if there's a switch from "run/event" to distinguish events.
+
+| <img src="../GramsDataObj/images/grams_EventID.png" width="50%" /> |
+| :---------------------------------------------------------: | 
+| <small><strong>Sketch of the grams::EventID data object.</strong></small> |
+
+The `grams::EventID` object is created in [GramsG4](../GramsG4), then copied 
+from one file to another as the friend trees are created in subsequent programs
+in the analysis chain (such as [GramsDetSim](./GramsDetSim)).
+
+As of Jun-2024, an EventID object identifies a single simulated
+particle, but that may change. One point made by Georgia Karagiorgi:
+Don't limit an "event" to be a single particle. As we begin to
+incorporate overlays and pile-up in the analysis, the "EventID" may
+refer to a trigger window or something similar.
+
+
+### grams::MCTrackList
+
+This data object contains the "MC Truth" information for the particle tracks produced
+in [GramsG4](../GramsG4) for a single event; see that page for additional information. 
+
+| <img src="../GramsDataObj/images/grams_MCTrackList.png" width="75%" /> |
+| :-----------------------------------------------------------------: | 
+| <small><strong>Sketch of the grams::MCTrackList data object.</strong></small> |
+
+### grams::MCLArHits
+
+This data object contains the "MC Truth" information associated with the ionization energy deposits in the liquid argon as determined by [GramsG4](../GramsG4) for a single event; see that page for additional information. 
+
+| <img src="../GramsDataObj/images/grams_MCLArHits.png" width="50%" /> |
+| :--------------------------------------------------------------: | 
+| <small><strong>Sketch of the grams::MCLArHits data object.</strong></small> |
+
+
+### grams::MCScintHits
+
+This data object contains the "MC Truth" information for ionization energy deposited in the scintillator strips by the [GramsG4](../GramsG4) simulation for a single event; see that page for additional information. 
+
+| <img src="../GramsDataObj/images/grams_MCScintHits.png" width="50%" /> |
+| :----------------------------------------------------------------: | 
+| <small><strong>Sketch of the grams::MCScintHits data object.</strong></small> |
+
+### grams::ElectronClusters
+
+This data object contains electron-cluster information produced by [GramsDetSim](../GramsDetSim) for a single event, which models the drift of the ionization deposited in the LAr as recorded in MCLArHits; see the `GramsDetSim` page for additional information. 
+
+| <img src="../GramsDataObj/images/grams_ElectronClusters.png" width="50%" /> |
+| :------------------------------------------------------------: | 
+| <small><strong>Sketch of the grams::ElectronClusters data object.</strong></small> |
+
+### grams::ReadoutMap
+
+This data object, created by [GramsReadoutSim](../GramsReadoutSim) for each event, contains the association of the electron clusters created in [GramsDetSim](../GramsDetSim) to the elements of the readout geometry. See the `GramsReadoutSim` page for additional information. 
+
+| <img src="../GramsDataObj/images/grams_ReadoutMap.png" width="85%" /> |
+| :------------------------------------------------------------: | 
+| <small><strong>Sketch of the grams::ReadoutMap data object.</strong></small> |
+
+### grams::ReadoutWaveforms
+
+This data object is created by [GramsElecSim](../GramsElecSim) for each event. It contains the analog and digital waveforms for the elements of the readout geometry as induced by the electron clusters in `grams::ElectronClusters` and mapped to the readout by `grams::ReadoutMap`. See the `GramsElecSim` page for additional information. 
+
+|         <img src="../GramsDataObj/images/grams_ReadoutWaveforms.png" width="60%" />      |
+|                                 :--------:                                         | 
+| <small><strong>Sketch of the grams::ReadoutWaveforms data object.</strong></small> |
+
+
