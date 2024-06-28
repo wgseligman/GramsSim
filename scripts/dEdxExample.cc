@@ -20,7 +20,7 @@
 /*
 g++ -o <program-name> <program-name>.cc `root-config --cflags --libs` \
    -I../GramsSim/GramsDataObj/include \
-   -Wl,-rpath,./GramsDataObj ./GramsDataObj/libGramsSimProjectDataObj.so
+   ./libDictionary.so
 */
 
 // If the program is located elsewhere in your directory hierarchy,

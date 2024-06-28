@@ -10,5 +10,5 @@
 
 {
   gSystem->AddIncludePath("../GramsSim/GramsDataObj/include");
-  gSystem->Load("GramsDataObj/libGramsSimProjectDataObj.so");
+  gSystem->Load("./libDictionary.so");
 }

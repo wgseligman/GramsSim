@@ -70,14 +70,14 @@ foreach(_filename ${script_progs})
    add_executable(${_prog} ${_filename})
    target_link_libraries(${_prog} ${ROOT_LIBRARIES} )
 
-   # Make sure that the Utilities and DataObj libraries are
+   # Make sure that the Utilities and Dictionary libraries are
    # available to the compiled programs, even if the program
    # may not use them. 
    target_link_libraries(${_prog} ${CMAKE_PROJECT_NAME}Utilities )
-   target_link_libraries(${_prog} ${CMAKE_PROJECT_NAME}DataObj)
-   # The following line is needed to make sure DataObj is linked with the executable.
+   target_link_libraries(${_prog} Dictionary)
+   # The following line is needed to make sure Dictionary is linked with the executable.
    if (NOT MACOSX)
-      # The following line is needed to make sure DataObj is linked with the executable.
+      # The following line is needed to make sure Dictionary is linked with the executable.
       target_link_options(${_prog} PRIVATE "LINKER:-no-as-needed")
    endif()
 

@@ -20,7 +20,7 @@ from ROOT import TFile, TTree, gSystem, gDirectory, TH1D
 # build directory you created by following the directions in
 # https://github.com/wgseligman/GramsSim/tree/develop:
 
-gSystem.Load("./GramsDataObj/libGramsSimProjectDataObj.so")
+gSystem.Load("./libDictionary.so")
 
 # Open the input file and access the n-tuple. 
 inputFile = TFile("gramsg4.root")

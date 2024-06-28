@@ -28,7 +28,7 @@ import ROOT
 # The following statement assumes this program is being run from the
 # build directory you created by following the directions in
 # https://github.com/wgseligman/GramsSim/tree/develop:
-ROOT.gSystem.Load("./GramsDataObj/libGramsSimProjectDataObj.so")
+ROOT.gSystem.Load("./libDictionary.so")
 
 # Open the input file and access the n-tuple. 
 inputFile = ROOT.TFile("gramselecsim.root")

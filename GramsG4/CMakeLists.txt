@@ -30,13 +30,13 @@ add_executable(${PROG} gramsg4.cc ${sources})
 # Include any internal libraries, such as this project's utilities and
 # its data objects.
 target_link_libraries(${PROG} ${CMAKE_PROJECT_NAME}Utilities )
-target_link_libraries(${PROG} ${CMAKE_PROJECT_NAME}DataObj)
+target_link_libraries(${PROG} Dictionary)
 if (NOT MACOSX)
-   # The following line is needed to make sure DataObj is linked with the executable.
+   # The following line is needed to make sure Dictionary is linked with the executable.
    target_link_options(${PROG} PRIVATE "LINKER:-no-as-needed")
 endif()
 #message(STATUS "GramsG4 link library ${CMAKE_PROJECT_NAME}Utilities")
-#message(STATUS "GramsG4 link library ${CMAKE_PROJECT_NAME}DataObj")
+#message(STATUS "GramsG4 link library Dictionary")
 
 target_link_libraries(${PROG} ${HEPMC3_LIBRARIES} )
 target_link_libraries(${PROG} ${ROOT_LIBRARIES} )

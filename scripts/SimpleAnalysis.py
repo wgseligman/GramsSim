@@ -18,7 +18,7 @@ import ROOT
 # (see GramsSim/GramsDataObj/README.md and
 # https://www.nevis.columbia.edu/~seligman/root-class/html/appendix/dictionary/index.html).
 
-ROOT.gSystem.Load("./GramsDataObj/libGramsSimProjectDataObj.so")
+ROOT.gSystem.Load("./libDictionary.so")
 
 # Open the input file and access the n-tuple. 
 inputFile = ROOT.TFile("gramsg4.root")

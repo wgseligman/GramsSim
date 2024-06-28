@@ -19,7 +19,7 @@ import math
 # build directory you created by following the directions in
 # https://github.com/wgseligman/GramsSim/tree/develop:
 
-ROOT.gSystem.Load("./GramsDataObj/libGramsSimProjectDataObj.so")
+ROOT.gSystem.Load("./libDictionary.so")
 
 # Fetch the input file. (If I were fancier, I'd get the
 # name of the file from an argument to this program.)
