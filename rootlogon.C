@@ -10,5 +10,9 @@
 
 {
   gSystem->AddIncludePath("../GramsSim/GramsDataObj/include");
-  gSystem->Load("./libDictionary.so");
+  std::string arch(gSystem->GetBuildArch());
+  if ( arch.substr(0,3) == "mac" )
+    gSystem->Load("./libDictionary.dylib");
+  else
+    gSystem->Load("./libDictionary.so");
 }
