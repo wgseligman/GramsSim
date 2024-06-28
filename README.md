@@ -131,6 +131,8 @@ To run the programs:
 
 ## Making changes
 
+If you want to develop your own code to analyze the `GramsSim` output files, see the discussion on [how to use a dictionary](./GramsDataObj).
+
 Obviously, you can make any changes you want to GramsSim for your own use. This section is for when you want to start making changes to be added to the official repository. 
 
 I strongly suggest becoming familiar with [git][46], at least to the extent of understanding what a [branch][4] is. 
