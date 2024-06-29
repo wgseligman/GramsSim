@@ -69,6 +69,18 @@ foreach(_filename ${script_progs})
    # from HepMC3, ROOT, and FITS.
    add_executable(${_prog} ${_filename})
    target_link_libraries(${_prog} ${ROOT_LIBRARIES} )
+
+   # Make sure that the Utilities and Dictionary libraries are
+   # available to the compiled programs, even if the program
+   # may not use them. 
+   target_link_libraries(${_prog} ${CMAKE_PROJECT_NAME}Utilities )
+   target_link_libraries(${_prog} Dictionary)
+   # The following line is needed to make sure Dictionary is linked with the executable.
+   if (NOT MACOSX)
+      # The following line is needed to make sure Dictionary is linked with the executable.
+      target_link_options(${_prog} PRIVATE "LINKER:-no-as-needed")
+   endif()
+
    if (HepMC3_FOUND)
      target_link_libraries(${_prog} ${HEPMC3_LIBRARIES} )
    endif()

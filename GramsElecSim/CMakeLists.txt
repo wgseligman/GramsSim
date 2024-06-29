@@ -12,8 +12,14 @@ set (PROG "gramselecsim${EXE}")
 
 add_executable(${PROG} gramselecsim.cc ${ElecSimSrc})
 
-# Include any internal libraries, such as this project's utilities.
+# Include any internal libraries, such as this project's utilities and
+# its data objects.
 target_link_libraries(${PROG} ${CMAKE_PROJECT_NAME}Utilities )
+target_link_libraries(${PROG} Dictionary )
+if (NOT MACOSX)
+   # The following line is needed to make sure Dictionary is linked with the executable.
+   target_link_options(${PROG} PRIVATE "LINKER:-no-as-needed")
+endif()
 
 target_link_libraries(${PROG} ${ROOT_LIBRARIES} )
 target_link_libraries(${PROG} ${XercesC_LIBRARY} )
@@ -26,15 +32,3 @@ set_target_properties( ${PROG}
    PROPERTIES RUNTIME_OUTPUT_DIRECTORY 
    "${CMAKE_BINARY_DIR}" 
    )
-
-# Copy a few files for the convenience of the user.
-set(GramsElecSim_FILES README.md options.xml)
-
-foreach(_file ${GramsElecSim_FILES})
-  configure_file(
-    ${_file}
-    ${_file}
-    COPYONLY
-    )
-endforeach()
-

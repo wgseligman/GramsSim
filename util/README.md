@@ -1,6 +1,8 @@
 # Directory and Namespace `util`
 *Author: [William Seligman](https://github.com/wgseligman)*
 
+_If you want a formatted (or easier-to-read) version of this file, scroll to the bottom of [`GramsSim/README.md`](../README.md) for instructions. If you're reading this on github, then it's already formatted._
+
 This directory contains modules that I find generally useful in the
 C++ programs I write. 
 
@@ -775,7 +777,7 @@ Perhaps you are focussed on a particular set of options associated with one prog
 program's options. Or perhaps the default [`options.xml`](../options.xml) file seems too long and scrolling through it
 takes a long time. 
 
-In these cases, you can include a section of one XML file within another using [XInclude][70]. There's an example of this in [`GramsSim/xinclude.xml`](../xinclude.xml). The basic recipe is:
+In these cases, you can include a section of one XML file within another using [XInclude][70]. The basic recipe is:
 
 [70]: https://www.xml.com/pub/a/2002/07/31/xinclude.html
 

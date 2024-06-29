@@ -1,7 +1,7 @@
 # GramsG4
 *Author: [William Seligman](https://github.com/wgseligman)*
 
-If you want a formatted (or easier-to-read) version of this file, scroll to the bottom of [`GramsSim/README.md`](../README.md) for instructions. If you're reading this on github, then it's already formatted. 
+_If you want a formatted (or easier-to-read) version of this file, scroll to the bottom of [`GramsSim/README.md`](../README.md) for instructions. If you're reading this on github, then it's already formatted._
 
 - [GramsG4](#gramsg4)
   * [Introduction](#introduction)
@@ -16,6 +16,10 @@ If you want a formatted (or easier-to-read) version of this file, scroll to the 
   * [Events from an external generator](#events-from-an-external-generator)
       - [Notes](#notes)
   * [Program outputs](#program-outputs)
+    + [grams::EventID](#gramseventid)
+    + [grams::MCTrackList](#gramsmctracklist)
+    + [grams::MCLArHits](#gramsmclarhits)
+    + [grams::MCScintHits](#gramsmcscinthits)
   * [Generating large numbers of events](#generating-large-numbers-of-events)
   * [Physics lists and how to extend them](#physics-lists-and-how-to-extend-them)
     + [Using the available physics lists](#using-the-available-physics-lists)
@@ -58,7 +62,7 @@ As an application, `GramsG4` is a fairly generic Geant4 program. Most of its pro
 
 |                                         |
 | :-------------------------------------: | 
-| <img src="GramsG4IO.png" width="75%" /> |
+| <img src="images/GramsG4IO.png" width="75%" /> |
 
 ### Geometry
 
@@ -199,36 +203,121 @@ If you want to write HepMC3 files, there are a couple of simple examples in the 
 
 ## Program outputs
 
-These are likely to change rapidly as the software improves. This is the state of program outputs as of 24-Oct-2023.
+These are likely to change rapidly as the software improves. This is the state of program outputs as of 21-Jun-2024.
 
-The `gramsg4` program produces only one ROOT output file containing multiple ntuples. The default name of the output file is `gramsg4.root`. This can be changed via a job option (see *Program Options* below); e.g.,
+The `gramsg4` program produces only one ROOT output file containing multiple ROOT objects. The default name of the output file is `gramsg4.root`. This can be changed via a job option (see *Program Options* below); e.g.,
 
-    ./gramsg4 -o myStudy
+    ./gramsg4 -o myStudy.root
 
 will write the output to `myStudy.root`.
 
-There are several ntuples in the ROOT file, and one other ROOT structure: 
+Two of those ROOT objects are for keeping track of the options and geometry used to simulate the events; see [the util package](../util) for more information:
 
-   - `LArHits`, which contains energy deposits in the LAr (both ionization energy and optical photons);
-   - `ScintillatorHits`, which contains energy deposits in the inner and outer scintillators in the detector;
-   - `TrackInfo`, which contains 'truth' information for all the tracks in the simulation;
    - `Options`, which includes the parsed options for the job (options XML file with the user overrides).
    - The [TGeoManager][2020] description of the detector geometry. The name of this structure comes from the `geometry` parameter in [`options.xml`](../options.xml). 
    
 [2020]: https://root.cern.ch/doc/master/classTGeoManager.html 
+
+The remaining object is a ROOT TTree with the following branches (columns); each entry (row) in the tree corresponds to a single simulated event.
+
+   - `EventID`: This contains `gramms::EventID` objects.
+   - `TrackList`: The `grams::MCTrackList` object which contains 'MC truth' information for all the simulated tracks in the event.
+   - `LArHits`: The `grams::MCLArHits` objects, which contain energy deposits in the LAr (both ionization energy and optical photons) for the event.
+   - `ScintHits`: The `grams::MCScintHits` objects, which contain energy deposits in the inner and outer scintillators for the event.
    
-To understand the structure of the ntuples, either view the contents using ROOT, or look in [`GramsSim/GramsG4/src/GramsG4WriteNtuplesAction.cc`](src/GramsG4WriteNtuplesAction.cc).
+These objects are all created in the routine [`GramsSim/GramsG4/src/GramsG4WriteNtuplesAction.cc`](src/GramsG4WriteNtuplesAction.cc). If you have any questions about the details of how the values in these objects are calculated, that routine is the place to start. The structure of the data objects themselves are defined in [GramsDataObj](../GramsDataObj/). 
 
-For information about what the term "Identifier" means, see [`grams.gdml`](../grams.gdml). (It's explained there, instead of in this documentation, because it's in `grams.gdml` that Identifiers are defined and assigned.)
+If you're looking for a place to start in accessing the trees for analysis, look at the examples in the [`scripts`](../scripts) directory which was copied to your build/work directory. 
 
-If you don't know how to browse an ROOT ntuple, I suggest this [ROOT tutorial][20].
+As you look through the description of the data objects below, consult the [GramsDataObj/include](../GramsDataObj/include) directory for the header files. These are the files that define the methods for accessing the values stored in these objects. Documentation may be inaccurate; the code is actual definition. If it helps, a [std::map][130] is a container whose elements are stored in (key,value) pairs.
+If you're familiar with Python, they're similar to [dicts][140]. 
 
-[20]: https://www.nevis.columbia.edu/~seligman/root-class/
+[130]: https://cplusplus.com/reference/map/map/
+[140]: https://www.w3schools.com/python/python_dictionaries.asp
 
-*Note:* The G4Track IDs will be in the order that Geant4 processes them, which is *not* in ascending numeric order (even if you don't run with multiple threads; see below). Also note that it's possible for an event to leave no energy deposits in an active TPC volume, so there may be information in `TrackInfo` with no corresponding information in `LArHits`. 
+### grams::EventID
 
-If you're looking for a place to start in accessing the ntuples for analysis, look at the examples in the [`scripts`](../scripts) directory which was copied to your build/work directory. 
-    
+| <img src="../GramsDataObj/images/grams_EventID.png" width="50%" /> |
+| :---------------------------------------------------------: | 
+| <small><strong>Sketch of the grams::EventID data object.</strong></small> |
+
+As noted in the [GramsDataObj documentation](../GramsDataObj),
+`grams::EventID` is an abstraction around the specific values of "run"
+and "event" number. If the way we identify events were to ever change
+(for example, a balloon or satellite experiment might not have
+individual "runs", or may start to include information related to
+trigger windows or pileup) only a few lines of code would have to
+change.
+
+
+### grams::MCTrackList
+
+| <img src="../GramsDataObj/images/grams_MCTrackList.png" width="75%" /> |
+| :-----------------------------------------------------------------: | 
+| <small><strong>Sketch of the grams::MCTrackList data object.</strong></small> |
+
+Geant4 transports particles through the detector geometry in the form of [tracks][3000]. A "track" represents a particle's trajectory in both position- and momentum-coordinates, its particle type (a [PDG code][3010]), which detector volume it's in, and so on. 
+
+[3000]: https://geant4-userdoc.web.cern.ch/UsersGuides/IntroductionToGeant4/html/IntroductionToG4.html#overview-of-geant4-functionality
+[3010]: https://pdg.lbl.gov/2007/reviews/montecarlorpp.pdf
+
+The [`grams::MCTrackList`](../GramsDataObj/include/MCTrackList.h) data object contains the "MC Truth" information for those particle tracks, accumulated as each particle is created, travels, and ends (by escaping, by decaying, by interacting, etc.). MCTrackList is a [map][3050] containing `grams::MCTrack` objects. In turn, the MCTrack object contains a `grams::MCTrajectory` object which contains a [vector][3060] of `grams::MCTrajectoryPoint`.
+
+[3050]: https://cplusplus.com/reference/map/map/
+[3060]: https://cplusplus.com/reference/vector/vector/
+
+The result is that the complete chain of particle generation as modeled by Geant4 is available through `grams::MCTrackList`.
+
+The value of "TrackID" is a number assigned by Geant4 to each particle track modeled in the simulation. This value should be treated as an arbitrary number. While is generally true that higher values of TrackID are assigned to particles that occur later in a sequence of simulated particles (e.g., a parent's TrackID will always be lower than a daughter's), there is no time-ordering associated with the TrackID number. In particular, it is _not_ safe to assume that a primary particle will always have a TrackID of 0. 
+
+
+### grams::MCLArHits
+
+| <img src="../GramsDataObj/images/grams_MCLArHits.png" width="50%" /> |
+| :--------------------------------------------------------------: | 
+| <small><strong>Sketch of the grams::MCLArHits data object.</strong></small> |
+
+Certain detector volumes are designated as [sensitive][3100]; that is, they respond in some way to energy deposited within them. For example, in a LArTPC, the liquid argon is sensitive, while the uninstrumented metal walls of a cryostat are not. Energy deposits in a sensitive volume are called [hits][3110]. To put it another way, hits are what the detector is designed to detect. 
+
+[3100]: https://geant4-userdoc.web.cern.ch/UsersGuides/ForApplicationDeveloper/html/Detector/hit.html#sensitive-detector
+
+[3110]: https://geant4-userdoc.web.cern.ch/UsersGuides/ForApplicationDeveloper/html/Detector/hit.html
+
+For a LArTPC, the key purpose of the simulation is to record the energy deposits in the liquid argon (LAr). These are primarily caused by ionization of the argon atoms due to charged particles. 
+
+The [`grams::MCLArHits`](../GramsDataObj/include/MCLArHits.h) data object is a record of the energy deposits in the LAr for an event. Like `MCTrackList` described above, this is "MC Truth" information in that it contains the calculated amount of hit energy. Subsequent jobs in the analysis chain will adjust this data to better match the signals that will be reported by the detector electronics. 
+
+`MCLArHits` is a [map][3050] containing `grams::MCLArHit` objects, which contain both the ionization energy from individual steps within the LAr, and the number of photons generated as part of the ionization process. 
+
+The value of "HitID" is completely arbitrary. It's assigned within [`GramsSim/GramsG4/src/GramsG4WriteNtuplesAction.cc`](src/GramsG4WriteNtuplesAction.cc) for purposes of "backtracking" through the GramsSim analysis chain. In particular, do not assume any kind of time ordering based on HitID; HitID==0 does not imply that the hit is the first or earliest energy deposit in the simulated event. 
+
+Also note that there is not a one-to-one mapping between a TrackID being present in MCTrackList and a TrackID/HitID combination being present in in MCLArHits. It is certainly possible for a track not to leave any energy deposits in the LAr; e.g., if the particle "bounces off" the cryostat and never passes through the LAr, and so MCLArHits for that event will be empty. Less frequently, it's possible for a track to be excluded from MCTrackList (due to cuts intended to reduce the number of low-energy particles being saved by GramsG4) yet still deposit energy in the LAr and therefore recorded in MCLArHits.
+
+Geant4 tracks particles in units of [steps][3120]. In order to provide a more accurate geometric model of particle energy loss along a track, `GramsG4` has a parameter to control the maximum step size of a charged particle in the LAr. This is parameter `larstepsize` in the [options XML](../options.xml) file. 
+
+[3120]: https://geant4-userdoc.web.cern.ch/UsersGuides/ForApplicationDeveloper/html/TrackingAndPhysics/tracking.html
+
+The following image shows an extremely zoomed-in view of one simulated Compton scatter within the LAr, as shown in the Geant4 event display. The "straggling" red line is the Compton electron; the straight green lines are the photon's trajectory. Each line segment along the electron track is an individual step, and therefore would be recorded as an MCLArHit. The maximum length of any one of those electron-track line segments is `larstepsize`, which was set to 0.2mm for this particular run of GramsG4.
+
+| <img src="images/Zoomed-in_Compton_scatter.png" width="100%" /> |
+| :-------------------------------------: | 
+| <small><strong>A zoomed-in view of a Compton scatter in Geant4.</strong></small> |
+
+Even though the value of the step size was set to a maximum of 0.2mm, the actual size of the electron-track line segments in this image is shorter than that, on the order of 0.01mm. The overall size of the scatter in the image is about 0.5mm. This image was selected as a "dramatic" scatter (longer than typical); most scatters are shorter and have fewer hits than this. 
+
+
+### grams::MCScintHits
+
+
+| <img src="../GramsDataObj/images/grams_MCScintHits.png" width="50%" /> |
+| :--------------------------------------------------------------: | 
+| <small><strong>Sketch of the grams::MCScintHits data object.</strong></small> |
+
+The [`grams::MCScintHits`](../GramsDataObj/include/MCScintHits.h) data object is the equivalent of MCLArHits, but for energy deposits in the scintillator strips that make up the detector's time-of-flight (TOF) or veto-wall subsystems. MCScintHits is a [map][3050] containing `grams::MCScintHit` objects. 
+
+Energy deposits in a LArTPC's scintillator subsystems are used for timing and veto of the events in the LAr, but typically not for the physics of the event. Therefore the `MCScintHit` information is not recorded to the same level of detail as an `MCLArHit`.
+
+
 ## Generating large numbers of events
 
 Some things to consider:
@@ -237,10 +326,9 @@ Some things to consider:
    
          ./gramsg4 --nthreads 4
       
-     will run with 4 simultaneous threads. The potential disadvantage of this is that the information in the output ntuples will *not* be in ascending order; while all the rows associated with a particular event will be adjacent to each other, the events will be written in a random order to the output ntuple. 
+     will run with 4 simultaneous threads. The potential disadvantage of this is that the events in the output trees will *not* be in ascending order. 
        
-   - If you are running multiple jobs to generate events, by default they'll all run with the same random number seed;i.e., in the options XML file there is a parameter `rngseed` which is set to -1 by default. To generate a different set
-   of events for each job, you will want to vary the seed for each job. 
+   - If you are running multiple jobs to generate events, by default they'll all run with the same random number seed;i.e., in the options XML file there is a parameter `rngseed` which is set to -1 by default. To generate a different set of events for each job, you will want to vary the seed for each job. 
    
       For example, if the job has a unique process ID in the variable `${Process}`, then you probably want something like this:
       

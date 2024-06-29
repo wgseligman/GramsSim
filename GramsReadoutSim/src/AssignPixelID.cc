@@ -1,5 +1,9 @@
 #include "AssignPixelID.h"
 
+// From GramsDataObj
+#include "ReadoutID.h"
+#include "ElectronClusters.h"
+
 #include "Options.h"
 
 #include <iostream>
@@ -86,8 +90,8 @@ namespace gramsreadoutsim {
     }
 
     // Get the pixel geometry options from the XML file/command line.
-    options->GetOption("offset_x",    m_offset_x);
-    options->GetOption("offset_y",    m_offset_y);
+    options->GetOption("readout_centerx",    m_offset_x);
+    options->GetOption("readout_centery",    m_offset_y);
 
     int x_resolution;
     int y_resolution;
@@ -111,28 +115,29 @@ namespace gramsreadoutsim {
   
   AssignPixelID::~AssignPixelID() {}
 
-  // Accept the (x,y) positions of the electron clusters at the
-  // anode. For each cluster, determine its (x,y) pixel ID
-  // numbers.
+  // Accept the (x,y) position of the electron cluster at the
+  // anode. Determine its (x,y) pixel ID numbers.
   
-  std::tuple<std::vector<int>, std::vector<int>> 
-		   AssignPixelID::Assign(std::vector<double>* x_cl, std::vector<double>* y_cl) 
+  const grams::ReadoutID AssignPixelID::Assign(const grams::ElectronCluster& cluster) 
   {
-    // Initialize the electron-cluster vectors.
-    int n_cl = x_cl[0].size();
-    m_pixel_idx.clear();
-    m_pixel_idy.clear();
-    m_pixel_idx.resize(n_cl);
-    m_pixel_idy.resize(n_cl);
-    
-    // For each electron cluster...
-    for (int i=0; i<n_cl; i++) {
-      // Map the cluster's (x,y) position to a particular pixel.
-      m_pixel_idx[i] = std::floor((x_cl[0][i] - m_offset_x) / m_pixel_sizex);
-      m_pixel_idy[i] = std::floor((y_cl[0][i] - m_offset_y) / m_pixel_sizey);
-    }
-    
-    return std::make_tuple(m_pixel_idx, m_pixel_idy);
+    int pixel_idx = std::floor((cluster.XAtAnode() - m_offset_x) / m_pixel_sizex);
+    int pixel_idy = std::floor((cluster.YAtAnode() - m_offset_y) / m_pixel_sizey);
+   
+    if (m_debug) {
+      std::cout << "gramsreadoutsim::AssignPixelID - "
+		<< " m_offset_x=" << m_offset_x
+		<< " m_offset_y=" << m_offset_y
+		<< " m_pixel_sizex=" << m_pixel_sizex
+		<< " m_pixel_sizey=" << m_pixel_sizey
+		<< std::endl
+		<< " cluster.XAtAnode()=" << cluster.XAtAnode()
+		<< " cluster.YAtAnode()=" << cluster.YAtAnode()
+		<< " pixel_idx=" << pixel_idx
+		<< " pixel_idy=" << pixel_idy
+		<< std::endl;
+    }    
+ 
+    return grams::ReadoutID(pixel_idx, pixel_idy);
   }
   
 } // namespace gramsreadoutsim

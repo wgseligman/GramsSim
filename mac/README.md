@@ -1,5 +1,7 @@
 # Example GramsG4 macro files
 
+_If you want a formatted (or easier-to-read) version of this file, scroll to the bottom of [`GramsSim/README.md`](../README.md) for instructions. If you're reading this on github, then it's already formatted._
+
 To get you started, here are examples of how to set up event
 generation and the interactive display for [GramsG4](../GramsG4). To use one of
 these files, e.g., mac/test.mac:

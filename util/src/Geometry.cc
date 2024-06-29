@@ -149,14 +149,14 @@ namespace util {
 
   // See the comments in GramsSim/util/include/Geometry.h
 
-  bool Geometry::GDML2ROOT( const std::string a_gdmlFile,
-			    const std::string a_rootFile,
+  bool Geometry::GDML2ROOT( const std::string a_rootFile,
+			    const std::string a_gdmlFile,
 			    const std::string a_geometry )
   {
     // Copy the input arguments, so that we don't try to overwrite
     // them.
-    std::string gdmlFile = a_gdmlFile;
     std::string rootFile = a_rootFile;
+    std::string gdmlFile = a_gdmlFile;
     std::string geometry = a_geometry;
 
     // Get access to the parameters in the Options XML file.

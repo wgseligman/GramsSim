@@ -1,5 +1,7 @@
 # GRAMS GDML files
 
+_If you want a formatted (or easier-to-read) version of this file, scroll to the bottom of [`GramsSim/README.md`](../README.md) for instructions. If you're reading this on github, then it's already formatted._
+
 This is an archive directory for various versions of the GRAMS
 geometry as defined using the
 [GDML](http://lcgapp.cern.ch/project/simu/framework/GDML/doc/GDMLmanual.pdf)

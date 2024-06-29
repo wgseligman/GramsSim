@@ -2,23 +2,33 @@
 /// \brief User-action class to write out hits.
 
 /// This is a user-action class that writes out the event hits and
-/// truth information. At present, the output takes the form of basic
-/// (and inefficient) ROOT n-tuples.
+/// truth information. At present, the output takes the form of a ROOT
+/// Tree with several branches, with each branch containing a data
+/// object defined in GramsDataObj.
 
 #ifndef GramsG4WriteNtuplesAction_H
 #define GramsG4WriteNtuplesAction_H
 
+// From GramsDataObj: The TTree branches we'll write.
+#include "EventID.h"
+#include "MCTrackList.h"
+#include "MCLArHits.h"
+#include "MCScintHits.h"
+
+// For Geant4
 #include "GramsG4LArHit.hh"
 #include "UserAction.h" // in g4util/
 
 #include <vector>
 
-// Forward declarations
+// Forward declarations.
 namespace util {
   class Options;
 }
 class G4Run;
 class G4Event;
+class TFile;
+class TTree;
 
 namespace gramsg4 {
 
@@ -53,14 +63,8 @@ namespace gramsg4 {
     G4int m_LArHitCollectionID;
     G4int m_ScintillatorHitCollectionID;
 
-    // ID numbers for the n-tuples we'll create. Ntuples are
-    // automatically assigned IDs in the order we create them.
-    G4int m_LArNTID;
-    G4int m_ScintNTID;
-    G4int m_TrackNTID;
-    G4int m_optionsNTID;
-
-    // Save the debugging state.
+    // Save the output states.
+    G4bool m_verbose;
     G4bool m_debug;
 
     // Trajectory fields and methods. Eventually all of the following
@@ -76,29 +80,6 @@ namespace gramsg4 {
     // (t,x,y,z), (E,px,py,pz).
     void AddTrajectoryPoint( const G4Track* );
 
-    // Create trajectory information for each track. In this case, a
-    // trajectory will be set of (t,x,y,z) and (E,px,py,pz)
-    // points. The Geant4 analysis manager won't let us store
-    // 4-vectors in an ntuple, much less a vector of four-vectors,
-    // so we have to maintain a separate std::vector for each
-    // component of the 4-vectors.
-
-    // 15-Mar-2021 WGS: Include the Identifier number for the volumes
-    // in the trajectory; see the GDML file's comments for more.
-
-    // 18-Aug-2021 WGS: Save some disk space by only using single
-    // precision to save some values.
-    std::vector<G4double> m_time;
-    std::vector<G4float> m_xpos;
-    std::vector<G4float> m_ypos;
-    std::vector<G4float> m_zpos;
-    std::vector<G4double> m_energy;
-    std::vector<G4float> m_xmom;
-    std::vector<G4float> m_ymom;
-    std::vector<G4float> m_zmom;
-    std::vector<int> m_identifier;
-
-
     // Pointer to instance of the Options class (see
     // GramsSim/util/README.md).
     util::Options* m_options;
@@ -110,6 +91,18 @@ namespace gramsg4 {
 
     // The name of the ROOT output file.
     G4String m_filename;
+
+    // The name of the ROOT tree (or n-tuple) that will contain the
+    // branches for our output objects.
+    G4String m_treeName;
+
+    // The objects (defined in GramsDataObj) that will be written to
+    // the above n-tuple.
+    grams::EventID*     m_eventID;
+    grams::MCTrack      m_mcTrack; // Does not have to be a pointer, since it's not written to a branch directly.
+    grams::MCTrackList* m_mcTrackList;
+    grams::MCLArHits*   m_mcLArHits;
+    grams::MCScintHits* m_mcScintHits;
   };
 
 } // namespace gramsg4

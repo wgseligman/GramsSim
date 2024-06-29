@@ -6,6 +6,13 @@
 
 // 25-Oct-2022 Satoshi Takashima
 
+// 12-Jun-2024 William Seligman:
+// This routine was never used, and is now obsolete. We now store
+// output values using ROOT trees instead of n-ntuples. If we
+// determine that we want to store these values, the procedure is to
+// edit GramsDataObj/include/ReadoutWaveform.h and any associated code
+// in GramsDataObj/src/ReadoutWaveform.cc in gramselecsim.cc.
+
 #ifndef ElecStructure_h
 #define ElecStructure_h
 

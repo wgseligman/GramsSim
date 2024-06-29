@@ -1,14 +1,15 @@
 # GramsSim
 *Principle Maintainer: [William Seligman](https://github.com/wgseligman)*
 
-If you want a formatted (or easier-to-read) version of this file, scroll to the bottom. If you're reading this on github, then it's already formatted. 
-
+_If you want a formatted (or easier-to-read) version of this file, scroll to the bottom of this page for instructions. If you're reading this on github, then it's already formatted._
+ 
 - [GramsSim](#gramssim)
   * [Introduction](#introduction)
   * [Installing GramsSim](#installing-gramssim)
     + [Working with github](#working-with-github)
   * [Setting up GramsSim](#setting-up-gramssim)
-  * [Making changes](#making-changes)
+  * [Developing analysis code](#developing-analysis-code)
+  * [Making changes to GramsSim itself](#making-changes-to-gramssim-itself)
     + [Advanced git commands](#advanced-git-commands)
     + [Work files](#work-files)
     + [Development "flow"](#development--flow-)
@@ -48,6 +49,8 @@ subdirectory's README.md file:
    - [**GramsReadoutSim**](GramsReadoutSim): This models the readout geometry of the GRAMS detector.
 
    - [**GramsElecSim**](GramsElecSim): A simulation of the electronics response to the detector readout, including noise and shaping. 
+   
+   - [**GramsDataObj**](GramsDataObj): The ROOT-based data objects stored in the above programs' output files. 
 
    - [**util**](util): Common utilities (e.g., options processing) shared by all components. 
 
@@ -57,7 +60,7 @@ subdirectory's README.md file:
    
 This is a diagram of the overall structure of the GramsSim modules. Note that as of Oct-2022, many of these modules have not yet been formally installed in this package; these are denoted in gray text in the figure.
 
-| <img src="GramsSim_modules.png" width="100%" /> |
+| <img src="images/GramsSim_modules.png" width="100%" /> |
 | :---------------------------------------------: | 
 | <small><strong>A sketch of the organization of the `GramsSim` modules.</strong></small> |
 
@@ -89,7 +92,7 @@ Once this is done, you can download a copy of the GramsSim repository:
 
 ## Setting up GramsSim
 
-To make things easier, I'm going to define a variable for the repository
+To make things easier, I'm going to define a variable for the source-code
 directory in your area. You may want to include a suitably modified version
 of this command in one of your shell startup files:
 
@@ -105,7 +108,7 @@ To build/compile:[^make]
     conda activate /nevis/amsterdam/share/seligman/conda/grams
     
     # Create a separate build/work directory. This directory should
-    # not be the GramsG4 directory or a sub-directory of it. This
+    # not be the GramsSim directory or a sub-directory of it. This
     # only has to be done once. 
     cd $GSDIR
     mkdir GramsSim-work
@@ -127,7 +130,15 @@ To run the programs:
 
 ...and so on. Consult the `README.md` in the individual program directories for details. 
 
-## Making changes
+## Developing analysis code
+
+If you want to develop code to analyze the `GramsSim` output files, there are two places to look:
+
+- The [example scripts](./scripts). These include examples in C++, Python, and ROOT macros. 
+
+- This discussion on [how to use a dictionary](./GramsDataObj). You will need this if you want to read `GramsSim` files using a program you've written that's not in your build directory. 
+
+## Making changes to GramsSim itself
 
 Obviously, you can make any changes you want to GramsSim for your own use. This section is for when you want to start making changes to be added to the official repository. 
 
@@ -288,6 +299,8 @@ The same options apply to GramsG4:
     ./gramsg4 -r 1234 -e 4321 -i myEvents.hepmc3 -m mac/hepmc3.mac
     
 Note that if the `gramsg4` options `-r` (or `--run`) or `-e` (or `--startEvent`) are set, they will override any values that are in an HepMC3 input file specified with the `-i` or `--inputgen` option; see [`GramsSky/README.md`](GramsSky/README.md) for more information about HepMC3 files.
+
+As noted in the [GramsDataObj documentation](GramsDataObj), the run and event numbers will be stored in the form of a [grams::EventID](./GramsDataObj/include/EventID.h) object. Unless you are searching for a particular event by its ID, you will not have to be concerned with this. 
 
 ### Documenting the analysis chain
 
