@@ -22,19 +22,31 @@ set(LinkDef ${CMAKE_CURRENT_SOURCE_DIR}/include/LinkDef.hh)
 set(LibName Dictionary)
 
 # Create a ROOT dictionary using the headers and the LinkDef file.
-# This ROOT CMake macro is incredibly picky. The order of these
-# statements matters (first the macro, then add_library, then the rest).
 
 # We want both the .so file and the .pcm to be in
 # ${PROJECT_BINARY_DIR}, that is, the main build directory as seen by
-# the user.
+# the user. This makes it easier for the user to copy these files to
+# other directories for other analysis tasks.
 
-ROOT_GENERATE_DICTIONARY ( 
-  ${CMAKE_CURRENT_BINARY_DIR}/Dictionary 
-  ${headerList} 
-  LINKDEF ${LinkDef} 
-  OPTIONS -s ${PROJECT_BINARY_DIR}/Dictionary
-)
+# Linux systems don't need a .rootmap, but it Mac OS systems do.
+if ( MACOSX )
+   ROOT_GENERATE_DICTIONARY ( 
+      ${CMAKE_CURRENT_BINARY_DIR}/Dictionary 
+      ${headerList} 
+      LINKDEF ${LinkDef} 
+      OPTIONS
+	-s ${PROJECT_BINARY_DIR}/Dictionary
+	-rmf ${PROJECT_BINARY_DIR}/Dictionary.rootmap
+   )	 
+else()
+   ROOT_GENERATE_DICTIONARY ( 
+      ${CMAKE_CURRENT_BINARY_DIR}/Dictionary 
+      ${headerList} 
+      LINKDEF ${LinkDef} 
+      OPTIONS
+	-s ${PROJECT_BINARY_DIR}/Dictionary
+   )	 
+endif()
 
 # The following line is not needed on Linux, but it allows for the
 # linking of libraries in Mac OS X Darwin. 
