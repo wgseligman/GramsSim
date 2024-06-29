@@ -72,7 +72,7 @@ namespace util {
 
     // gdmlFile = The name of the input geometry file in GDML
     // format. Note that this file must either have been written by
-    // Geant4's G4GDMLParser, or it must be fully ROOT-compatiable (no
+    // Geant4's G4GDMLParser, or it must be fully ROOT-compatible (no
     // formulas or loops). If this is empty, this value will be taken
     // from the 'gdmlout' parameter in Options.
 
@@ -93,8 +93,8 @@ namespace util {
     // the 'main' routine. It's primarily within this class just in
     // case there is another use-case for it.
 
-    bool GDML2ROOT( std::string gdmlFile = "",
-		    std::string rootFile = "",
+    bool GDML2ROOT( std::string rootFile = "",
+		    std::string gdmlFile = "",
 		    std::string geometry = "" );
 
   protected:

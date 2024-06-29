@@ -38,15 +38,3 @@ set_target_properties( ${PROG}
    PROPERTIES RUNTIME_OUTPUT_DIRECTORY 
    "${CMAKE_BINARY_DIR}" 
    )
-
-# Copy a few files for the convenience of the user.
-set(GramsSky_FILES README.md SkyDiagram.jpg options.xml)
-
-foreach(_file ${GramsSky_FILES})
-  configure_file(
-    ${_file}
-    ${_file}
-    COPYONLY
-    )
-endforeach()
-

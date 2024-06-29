@@ -1,7 +1,7 @@
 # 10-Jan-2021 WGS
 
 # Quietly detect if we have HepMC library available - not required
-find_package(HepMC3 3.2.0 REQUIRED)
+find_package(HepMC3 3.2.0 QUIET)
 
 if (HepMC3_FOUND)
   option( USE_HEPMC3 "Include HepMC3 library support." ON)

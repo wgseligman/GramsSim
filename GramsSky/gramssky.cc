@@ -72,7 +72,7 @@ int main(int argc, char** argv) {
 
   // Get output file name.
   std::string outputFileName;
-  options->GetOption("outputfile",outputFileName);
+  options->GetOption("outputSkyFile",outputFileName);
 
   // Does the output file have an extension (like ".txt")?
   if ( outputFileName.find(".") == std::string::npos ) {

@@ -13,10 +13,17 @@
 // For copying and accessing the detectory geometry.
 #include "Geometry.h" // in util/
 
+// From GramsDataObj
+#include "EventID.h"
+#include "MCLArHits.h"
+#include "ElectronClusters.h"
+
 // ROOT includes
 #include "TFile.h"
 #include "TTreeReader.h"
+#include "TTreeReaderValue.h"
 #include "TRandom.h"
+#include "Math/Vector4D.h"
 
 // C++ includes
 #include <iostream>
@@ -61,20 +68,20 @@ int main(int argc,char **argv)
     options->PrintOptions();
   }
 
-  // Get the options associated with the input file and ntuple..
+  // Get the options associated with the input file and tree..
   std::string inputFileName;
-  options->GetOption("inputfile",inputFileName);
+  options->GetOption("inputDetSimFile",inputFileName);
   
-  std::string inputNtupleName;
-  options->GetOption("inputntuple",inputNtupleName);
+  std::string inputTreeName;
+  options->GetOption("inputHitsTree",inputTreeName);
 
   if (verbose)
     std::cout << "gramsdetsim: input file = '" << inputFileName
-	      << "', input ntuple = '" << inputNtupleName
+	      << "', input tree = '" << inputTreeName
 	      << "'" << std::endl;
 
   // For any model that requires random-number generation (as of
-  // Sep-2022, only DiffusionModel), Get and set the random number
+  // Sep-2022, only DiffusionModel), get and set the random number
   // seed.
   int seed;
   options->GetOption("rngseed",seed);
@@ -108,38 +115,23 @@ int main(int argc,char **argv)
 
   // The standard way of reading a TTree (without using RDataFrame) in
   // C++ is using the TTreeReader.
-  auto reader = new TTreeReader(inputNtupleName.c_str(), input);
+  auto reader = new TTreeReader(inputTreeName.c_str(), input);
 
-  // Create a TTreeReaderValue for each column in the ntuple whose
-  // value we'll use. Note that the variable we create must be
-  // accessed as if it were a pointer; e.g., if you want the value of
-  // "energy", you must use *energy in the code.
-  TTreeReaderValue<Int_t> Run        = {*reader, "Run"};
-  TTreeReaderValue<Int_t> Event      = {*reader, "Event"};
-  TTreeReaderValue<Int_t> TrackID    = {*reader, "TrackID"};
-  TTreeReaderValue<Int_t> PDGCode    = {*reader, "PDGCode"};
-  TTreeReaderValue<Int_t> NumPhotons = {*reader, "numPhotons"}; // scintillation photons
-  TTreeReaderValue<Int_t> CerPhotons = {*reader, "cerPhotons"}; // Cerenkov photons
-  TTreeReaderValue<Double_t> energy  = {*reader, "energy"};
-  TTreeReaderValue<Float_t> xStart   = {*reader, "xStart"};
-  TTreeReaderValue<Float_t> yStart   = {*reader, "yStart"};
-  TTreeReaderValue<Float_t> zStart   = {*reader, "zStart"};
-  TTreeReaderValue<Float_t> xEnd     = {*reader, "xEnd"};
-  TTreeReaderValue<Float_t> yEnd     = {*reader, "yEnd"};
-  TTreeReaderValue<Float_t> zEnd     = {*reader, "zEnd"};
-  TTreeReaderValue<Int_t> Identifier = {*reader, "identifier"};
+  // Create a TTreeReaderValue for each column in the tree whose
+  // value we'll use.
+  TTreeReaderValue<grams::EventID> inputEventID = {*reader, "EventID"};
+  TTreeReaderValue<grams::MCLArHits> LArHits    = {*reader, "LArHits"};
 
-  // Now read in the options associated with the output file and ntuple. 
+  // Now read in the options associated with the output file and tree. 
   std::string outputFileName;
-  options->GetOption("outputfile",outputFileName);
+  options->GetOption("outputDetSimFile",outputFileName);
 
-  std::string outputNtupleName;
-  options->GetOption("outputntuple",outputNtupleName);
-
+  std::string outputTreeName;
+  options->GetOption("outputDetSimTree",outputTreeName);
 
   if (verbose)
     std::cout << "gramsdetsim: output file = '" << outputFileName
-	      << "', output ntuple = '" << outputNtupleName
+	      << "', output tree = '" << outputTreeName
 	      << "'" << std::endl;
 
   // Open the output file.
@@ -161,50 +153,20 @@ int main(int argc,char **argv)
 	      << "gramsdetsim: geometry copied"
 	      << std::endl;
 
-  // Define our output ntuple.
-  auto outputNtuple = new TTree(outputNtupleName.c_str(),"Detector Response");
+  // Define our output tree.
+  auto outputTree = new TTree(outputTreeName.c_str(),"Detector Response");
 
-  // Define the columns of the output ntuple. Since this ntuple will
-  // be "friends" with the input ntuple, we only have to include
+  // Define the columns of the output tree. Since this tree will
+  // be "friends" with the input tree, we only have to include
   // columns that are unique to the detector response.
 
-  // In this case, we're giving the column in the friend ntuple the
-  // same name as the column in the main ntuple. This means that we'd
-  // have to qualify the column name with the name of the ntuple in
-  // subsequent code; e.g., if the output ntuple name is "DetSim",
-  // then this new column would be called "DetSim.energy".
+  // The exception is "EventID', which we duplicate between trees, to
+  // make it easier for them to be friends.
 
-  Int_t run;
-  Int_t event;
-  Int_t trackID;
-  Int_t numPhotons; // scintillation photons
-  Int_t cerPhotons; // Cerenkov photons
-  Int_t pdgCode;
-  Int_t identifier;
-
-  // DiffusionModel will break up the ionization into electron
-  // clusters. Define the vectors for the cluster energies and
-  // (x,y,z,t) of each cluster.
-  std::vector<Double_t> energyAtAnode;
-  std::vector<Double_t> electronAtAnode;
-  std::vector<Double_t> xPosAtAnode;
-  std::vector<Double_t> yPosAtAnode;
-  std::vector<Double_t> zPosAtAnode;
-  std::vector<Double_t> timeAtAnode;
-
-  outputNtuple->Branch("Run",           &run);
-  outputNtuple->Branch("Event",         &event);
-  outputNtuple->Branch("TrackID",       &trackID);
-  outputNtuple->Branch("PDGCode",       &pdgCode);
-  outputNtuple->Branch("numPhotons",    &numPhotons); // scintillation photons
-  outputNtuple->Branch("cerPhotons",    &cerPhotons); // Cerenkov photons
-  outputNtuple->Branch("energy",        &energyAtAnode);
-  outputNtuple->Branch("numElectrons",  &electronAtAnode);
-  outputNtuple->Branch("x",             &xPosAtAnode);
-  outputNtuple->Branch("y",             &yPosAtAnode);
-  outputNtuple->Branch("z",             &zPosAtAnode);
-  outputNtuple->Branch("timeAtAnode",   &timeAtAnode);
-  outputNtuple->Branch("identifier",    &identifier);
+  auto eventID = new grams::EventID();
+  auto clusters = new grams::ElectronClusters();
+  outputTree->Branch("EventID",   &eventID);
+  outputTree->Branch("ElectronClusters",  &clusters);
 
   // Are we using this particular model?
   bool doRecombination;
@@ -213,7 +175,7 @@ int main(int argc,char **argv)
   // If we're using this model, initialize it. 
   gramsdetsim::RecombinationModel* recombinationModel = NULL;
   if ( doRecombination ) {
-    recombinationModel = new gramsdetsim::RecombinationModel(reader);
+    recombinationModel = new gramsdetsim::RecombinationModel();
     if (verbose)
       std::cout << "gramsdetsim: RecombinationModel turned on" << std::endl;
   }
@@ -229,7 +191,7 @@ int main(int argc,char **argv)
   // If we're using this model, initialize it. 
   gramsdetsim::AbsorptionModel* absorptionModel = NULL;
   if ( doAbsorption ) {
-    absorptionModel = new gramsdetsim::AbsorptionModel(reader);
+    absorptionModel = new gramsdetsim::AbsorptionModel();
     if (verbose)
       std::cout << "gramsdetsim: AbsorptionModel turned on" << std::endl;
   }
@@ -244,7 +206,7 @@ int main(int argc,char **argv)
 
   gramsdetsim::DiffusionModel* diffusionModel = NULL;
   if ( doDiffusion ) {
-    diffusionModel = new gramsdetsim::DiffusionModel(reader);
+    diffusionModel = new gramsdetsim::DiffusionModel();
     if (verbose)
       std::cout << "gramsdetsim: DiffusionModel turned on" << std::endl;
   }
@@ -253,102 +215,131 @@ int main(int argc,char **argv)
       std::cout << "gramsdetsim: DiffusionModel turned off" << std::endl;
   }
 
+  // The total hit energy, which is gradually adjusted by the models
+  // during this routine.
   double energy_sca;
+
+  // A holding place for the clusters before we add them to the formal
+  // grams::ElectronClusters object.
+  std::vector<grams::ElectronCluster> holdingClusters;
 
   if (debug) 
     std::cout << "gramsdetsim.cc - debug 1000" 
 	      << std::endl;
 
-  // For each row in the input ntuple:
+  // For each row in the input tree:
   while ( (*reader).Next() ) {
-
-    if (debug) 
-      std::cout << "gramsdetsim.cc - debug 1100" 
-		<< std::endl;
-
-    // Remember that given the TTreeReaderValue definitions above, a
-    // variable read from the input ntuple must be accessed like a
-    // pointer.
-
-    run = *Run;
-    event = *Event;
-    trackID = *TrackID;
-    numPhotons = *NumPhotons; // scintillation photons
-    cerPhotons = *CerPhotons; // Cerenkov photons
-    pdgCode = *PDGCode;
-    identifier = *Identifier;
     
-    energyAtAnode.clear();
-    electronAtAnode.clear();
-    xPosAtAnode.clear();
-    yPosAtAnode.clear();
-    zPosAtAnode.clear();
-    timeAtAnode.clear();
+    // Clean out any cluster data from the previous event.
+    clusters->clear();
 
-    if (debug)
-      std::cout << "gramsdetsim: at entry " << reader->GetCurrentEntry() << std::endl;
+    // Copy the event ID from one tree to another.
+    (*eventID) = (*inputEventID);
+
+    // For each hit in the event:
+    for ( const auto& [ key, hit ] : (*LArHits) ) {
+
+      // Clear out the holding area.
+      holdingClusters.clear();
+
+      if (debug)
+	std::cout << "gramsdetsim: at entry " << reader->GetCurrentEntry() << std::endl;
     
-    // Set up some preliminary default values, which will be recalculated
-    // below. 
-    energy_sca = *energy;
-    energyAtAnode.push_back(energy_sca);
-    electronAtAnode.push_back(energy_sca * m_MeVToElectrons);
-    xPosAtAnode.push_back(0.5 * (*xStart + *xEnd));
-    yPosAtAnode.push_back(0.5 * (*yStart + *yEnd));
-    zPosAtAnode.push_back(0.5 * (*zStart + *zEnd));
-    timeAtAnode.push_back((m_readout_plane_coord - zPosAtAnode[0]) / m_DriftVel);
+      // Create a "default" cluster. This will almost certainly be
+      // overwritten by the output of DiffusionModel below.
+      grams::ElectronCluster defaultCluster;
+      defaultCluster.trackID = hit.trackID;
+      defaultCluster.hitID = hit.hitID;
+      defaultCluster.clusterID = 0;
+      energy_sca = hit.energy;
+      defaultCluster.energy = energy_sca;
+      defaultCluster.numElectrons = energy_sca * m_MeVToElectrons;
+      double zPos = (0.5 * (hit.StartZ() + hit.EndZ()));
+      defaultCluster.position 
+	= ROOT::Math::XYZTVector(
+				 (0.5 * (hit.StartX() + hit.EndX())), 
+				 (0.5 * (hit.StartY() + hit.EndY())), 
+				 zPos,
+				 ((m_readout_plane_coord - zPos) / m_DriftVel)
+				 );
 
-    if (debug)
-        std::cout << "gramsdetsim: before model corrections, energyAtAnode=" 
+      if (debug)
+        std::cout << "gramsdetsim: before model corrections, energy=" 
 		  << energy_sca 
-		  << " timeAtAnode=" << (m_readout_plane_coord - zPosAtAnode[0]) / m_DriftVel << std::endl;
+		  << " timeAtAnode=" << defaultCluster.position.T() << std::endl;
 
-    // Apply the model(s). Handle potential computation errors (i.e.,
-    // if dx is zero) within the different models.
+      // Apply the model(s). Handle potential computation errors (i.e.,
+      // if dx is zero) within the different models.
 
-    if ( doRecombination ) {
-      energy_sca = recombinationModel->Calculate(energy_sca);
-      if ( std::isnan(energy_sca) ) 
-	energyAtAnode[0] = 0.0;
+      if ( doRecombination ) {
+	energy_sca = recombinationModel->Calculate(energy_sca, hit);
+	if ( std::isnan(energy_sca) ) 
+	  defaultCluster.energy = 0.0;
+	else
+	  defaultCluster.energy = energy_sca;
+      }
+
+      if (debug)
+	std::cout << "gramsdetsim: after recombination model corrections, energyAtAnode=" 
+		  << energy_sca << std::endl;
+    
+      //absorption
+      if ( doAbsorption  &&  ! std::isnan(energy_sca) ) {
+	energy_sca = absorptionModel->Calculate(energy_sca, hit);
+	defaultCluster.energy = energy_sca;
+      }
       else
-	energyAtAnode[0] = energy_sca;
-    }
-
-    if (debug)
-      std::cout << "gramsdetsim: after recombination model corrections, energyAtAnode=" 
-	  	<< energy_sca << std::endl;
-    
-    //absorption
-    if ( doAbsorption  &&  ! std::isnan(energy_sca) ) {
-      energy_sca = absorptionModel->Calculate(energy_sca);
-      energyAtAnode[0] = energy_sca;
-    }
-    else
-      energyAtAnode[0] = 0.0;
+	defaultCluster.energy = 0.0;
       
-    if (debug)
-      std::cout << "gramsdetsim: after absorption model corrections, energyAtAnode=" 
-	  	<< energy_sca << std::endl;
+      if (debug)
+	std::cout << "gramsdetsim: after absorption model corrections, energyAtAnode=" 
+		  << energy_sca << std::endl;
     
-    //diffusion
-    if ( doDiffusion  &&  ! std::isnan(energy_sca) ) {
-      // This an "STL trick" to return a number of different vectors
-      // at once from a single method.
-      std::tie(electronAtAnode, energyAtAnode, xPosAtAnode, yPosAtAnode, zPosAtAnode, timeAtAnode)
-	= diffusionModel->Calculate(energy_sca);
-    }
+      //diffusion
+      if ( doDiffusion  &&  ! std::isnan(energy_sca) ) {
+	// The clusters in this vector returned by DiffusionModel will
+	// replace the "default cluster", if all goes well.
+	holdingClusters = diffusionModel->Calculate(energy_sca, hit);
+      }
 
-    if (debug)
-      std::cout << "gramsdetsim: after diffusion model corrections, energyAtAnode.size()=" 
-	  	<< energyAtAnode.size() << std::endl;
+      if (debug) {
+	std::cout << "gramsdetsim: after diffusion model corrections, holdingClusters.size()=" 
+		  << holdingClusters.size() << std::endl;
+	std::cout << hit << std::endl;
+	for ( const auto& c : holdingClusters ) {
+	  std::cout << c << std::endl;
+	}
+	std::cout << std::endl;
+      }
+
+      // If something went wrong, use the default cluster.
+      if ( holdingClusters.empty() )
+	holdingClusters.push_back( defaultCluster );
+
+      // For each cluster in the holding area:
+      for ( auto& cluster : holdingClusters ) {
+	// Create the key for this cluster.
+	auto ckey = std::make_tuple( cluster.trackID, cluster.hitID, cluster.clusterID );
+
+	// Append this cluster to the overall list of clusters for this event.
+	clusters->insert( std::make_pair( ckey, cluster ) );
+      }
+
+    } // for each hit
 
     // After all the model effects have been applied, write the
-    // detector-response value(s).
-    outputNtuple->Fill();
-  }
+    // detector-response value(s) for all the hits/clusters in the
+    // event.
+    outputTree->Fill();
+
+  } // for each event
+
+  // Build an index for this tree. This will allow downstream
+  // programs to quickly access a given EventID within the tree.
+  outputTree->BuildIndex("EventID.Index()");
 
   // Wrap-up. Close all files. Delete any pointers we created.
-  outputNtuple->Write();
+  outputTree->Write();
   output->Close();
   delete recombinationModel;
   delete absorptionModel;

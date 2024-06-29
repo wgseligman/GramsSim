@@ -3,7 +3,7 @@
 
 #----------------------------------------------------------------------------
 # Setup the project
-cmake_minimum_required(VERSION 3.6 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.14 FATAL_ERROR)
 
 # Note: Do NOT make the project name the same as any executable
 # name, including case. When the project was GramsG4 and the 
@@ -45,9 +45,9 @@ include(macros)
 #
 option(WITH_GEANT4_VIS "Build example with Geant4 Vis drivers" ON)
 if(WITH_GEANT4_VIS)
-  find_package(Geant4 COMPONENTS gdml vis_all)
+  find_package(Geant4 COMPONENTS gdml vis_all QUIET)
 else()
-  find_package(Geant4 COMPONENTS gdml)
+  find_package(Geant4 COMPONENTS gdml QUIET)
 endif()
 
 #----------------------------------------------------------------------------
@@ -87,11 +87,12 @@ message(STATUS "rpath = ${CMAKE_INSTALL_RPATH}")
 #endforeach()
 
 #----------------------------------------------------------------------------
-# Copy all configuration files to the build directory, i.e. the directory in which we
-# build GramsSim. This is so that we can run the executables directly because they
-# relies on these scripts being in the current working directory.
+# Copy all configuration files to the build directory, i.e. the
+# directory in which we build GramsSim. Many of the programs and
+# example scripts rely on these files being in the current working
+# directory.
 #
-set(GramsSim_SCRIPTS grams.gdml pgrams.gdml options.xml xinclude.xml README.md)
+set(GramsSim_SCRIPTS grams.gdml pgrams.gdml options.xml README.md rootlogon.C)
 
 foreach(_script ${GramsSim_SCRIPTS})
   configure_file(
@@ -103,6 +104,9 @@ endforeach()
 
 # Create the util library.
 add_subdirectory (util)
+
+# Create the data object dictionary
+add_subdirectory (GramsDataObj)
 
 # Copy/compile the sub-projects and work files.
 add_subdirectory(GramsSky)

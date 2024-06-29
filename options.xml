@@ -82,7 +82,7 @@
     <!-- Output HepMC3 file. If you omit an extension to this file
          name, then the program will append ".hepmc3" to the end of
          this parameter. -->
-    <option name="outputfile" short="o" value="gramssky.hepmc3" type="string" 
+    <option name="outputSkyFile" short="o" value="gramssky.hepmc3" type="string" 
         desc="output file"/>    
 
     <!-- The PDG (Particle Data Group) code of the primary
@@ -341,9 +341,13 @@
     <option name="startEvent" short="e" value="-1" type="integer" 
 	    desc="starting event number" />
 
-    <!-- The name of the output file. The G4 Analysis Manager will automatically
-    append '.root' to this name if it's omitted. -->
-    <option name="outputfile" short="o" value="gramsg4.root" type="string" desc="output file"/>
+    <!-- The name of the output file that will contain the MC truth
+	 information. -->
+    <option name="outputG4File" short="o" value="gramsg4.root" type="string" desc="output file"/>
+
+    <!-- The name of the tree (or n-tuple) within the output file
+	 that will contain the MC truth information. -->
+    <option name="outputG4Tree" value="gramsg4" type="string" desc="output n-tuple"/>
 
     <!-- The physics list to be used by the detector simulation. --> 
     <option name="physicslist" short= "p" value="FTFP_BERT_LIV+OPTICAL+STEPLIMIT" type="string" 
@@ -391,7 +395,7 @@
     <!-- If # threads > 0, enable multi-threaded execution. 
     Note that this does not magically make your program thread-safe.
     While the current version of gramsg4 is thread-safe, turning this
-    option on means the order of rows in the output ntuples can't be
+    option on means the order of rows in the output tree can't be
     predicted. -->
     <option name="nthreads" short = "t" value="0" type="integer" desc="number of threads"/>
 
@@ -418,23 +422,24 @@
 
   <gramsdetsim>
 
-    <!-- Input ROOT file from GramsG4 (or at least contains a LArHits-compatible ntuple -->
-    <option name="inputfile" short="i" value="gramsg4.root" type="string" 
+    <!-- Input ROOT file from GramsG4 -->
+    <option name="inputDetSimFile" short="i" value="gramsg4.root" type="string" 
         desc="input file"/>    
 
-    <!-- Name of ntuple in the input file that contains the hit information. -->
-    <option name="inputntuple" value="LArHits" type="string" desc="input ntuple"/>
+    <!-- Name of TTree in the input file that contains the hit information. -->
+    <option name="inputHitsTree" value="gramsg4" type="string" desc="input ntuple"/>
 
     <!-- Output ROOT file -->
-    <option name="outputfile" short="o" value="gramsdetsim.root" type="string" 
+    <option name="outputDetSimFile" short="o" value="gramsdetsim.root" type="string" 
         desc="output file"/>    
 
-    <!-- Name of ntuple in the output file that contains the
-         detector-response information. This ntuple will be a
+    <!-- Name of tree in the output file that contains the
+         detector-response information. This tree will be a
          row-for-row match with the input ntuple, and can therefore be
-         used as a "friend ntuple" with the input intuple (see "friend
-         TTrees" in the ROOT documentation.  -->
-    <option name="outputntuple" value="DetSim" type="string" desc="output ntuple"/>
+         used as a "friend ntuple" with the input intuple (see
+         "GramsDataObj/README.md").
+         -->
+    <option name="outputDetSimTree" value="DetSim" type="string" desc="output ntuple"/>
 
     <!-- Physics-model options. 
 
@@ -499,13 +504,11 @@
     <option name="ElectronLifeTimeCorr" value="50000.0" type="double"
         desc="mean life of electrons (ns)"/>
 
-    <option name="ElectronDriftVelocity" value="0.01" type="double"
+    <option name="ElectronDriftVelocity" value="0.00016" type="double"
         desc="drift velocity (cm/ns)"/>
 
     Options associated with the diffusion model. These values come
-    from MicroBooNE:
-  https://github.com/LArSoft/larsim/blob/develop/larsim/Simulation/simulationservices.fcl
-  https://github.com/MicroBooNE/uboonecode/blob/develop/uboone/Simulation/simulationservices_microboone.fcl
+    from https://arxiv.org/pdf/1508.07059
 
     <option name="diffusion" value="true" type="boolean"
         desc="model diffusion effects"/>
@@ -513,7 +516,7 @@
     <option name="MeVToElectrons" value="4.237e4" type="double"
         desc="the number of generated electrons per 1MeV"/>
 
-    <option name="LongitudinalDiffusion" value="6.2e-9" type="double"
+    <option name="LongitudinalDiffusion" value="2.4e-9" type="double"
         desc="[cm^2/ns]"/>
 
     <option name="TransverseDiffusion" value="16.3e-9" type="double"
@@ -537,21 +540,21 @@
 
   <gramsreadoutsim>
 
-    <!-- Input ROOT file from GramsDetSim (or at least contains a DetSim-compatible ntuple -->
-    <option name="inputfile" short="i" value="gramsdetsim.root" type="string" 
+    <!-- Input ROOT file from GramsDetSim -->
+    <option name="inputReadoutFile" short="i" value="gramsdetsim.root" type="string" 
         desc="input file"/>    
 
-    <!-- Name of ntuple in the input file that contains the electron-cluster information. -->
-    <option name="inputntuple" value="DetSim" type="string" desc="input ntuple"/>
+    <!-- Name of tree in the input file that contains the electron-cluster information. -->
+    <option name="inputReadoutTree" value="DetSim" type="string" desc="input tree"/>
 
     <!-- Output ROOT file -->
-    <option name="outputfile" short="o" value="gramsreadoutsim.root" type="string"
+    <option name="outputReadoutFile" short="o" value="gramsreadoutsim.root" type="string"
         desc="output file"/>
 
-    <!-- Name of ntuple in the output file that contains the
+    <!-- Name of tree in the output file that contains the
          readout information. 
     -->
-    <option name="outputntuple" value="ReadoutSim" type="string" desc="output ntuple"/>
+    <option name="outputReadoutTree" value="ReadoutSim" type="string" desc="output tree"/>
 
     <!-- The pixel readout geometry parameters. Units are given by "LengthUnit" in 
     the <global> section above. -->
@@ -560,26 +563,37 @@
 
     <option name="gdml" value="parsed.gdml" type="string" desc="ROOT-compatible gdml file emitted by GramsG4"/>
     <option name="anodeTileVolume" value="volTilePlane" type="string" desc="Volume in gdml file that corresponds to Anode Tile"/>
-
-    <option name="x_resolution" value="30" type="int" desc="Number of pixels along the x direction" />
-    <option name="y_resolution" value="30" type="int" desc="Number of pixels along the y direction" />
+    
+    <option name="x_resolution" value="150" type="int" desc="Number of readout elements along the x direction" />
+    <option name="y_resolution" value="150" type="int" desc="Number of readout elements along the y direction" />
 
   </gramsreadoutsim>
 
   <gramselecsim>
 
-    <!-- Input ROOT file from GramsReadoutSim (or at least contains 
-	 a ReadoutSim-compatible ntuple -->
-    <option name="inputfile" short="i" value="gramsreadoutsim.root" type="string" 
-        desc="input file"/>    
+    <!-- GramsElecSim take two files as input. One contains the lists
+         of electron clusters for each event. The other contains a map
+         of which clusters are associated with which readout cells.
+    -->
 
-    <!-- Name of ntuple in the input file that contains the readout information. -->
-    <option name="inputntuple" value="ReadoutSim" type="string" desc="input ntuple"/>
+    <!-- Input ROOT file from GramsDetSim. -->
+    <option name="inputElecClustersFile" short="i" value="gramsdetsim.root" type="string" 
+        desc="input clusters file"/>    
+
+    <!-- Name of the treee in the input file that contains the cluster information. -->
+    <option name="inputElecClustersTree" value="DetSim" type="string" desc="input clusters tree"/>
+
+    <!-- Input ROOT file from GramsReadoutSim. -->
+    <option name="inputElecMapFile" short="m" value="gramsreadoutsim.root" type="string" 
+        desc="input map file"/>    
+
+    <!-- Name of the tree in the input file that contains the readout information. -->
+    <option name="inputElecMapTree" value="ReadoutSim" type="string" desc="input map tree"/>
 
     <!-- Output ROOT file -->
-    <option name="outputfile" short="o" value="gramselecsim.root" type="string"
+    <option name="outputElecFile" short="o" value="gramselecsim.root" type="string"
         desc="output file"/>
-    <option name="outputntuple"         value="ElecSim" type="string" desc="output ntuple"/>
+    <option name="outputElecTree" value="ElecSim" type="string" desc="output tree"/>
  
     <!-- 
          IMPORTANT: Note that the units associated with these

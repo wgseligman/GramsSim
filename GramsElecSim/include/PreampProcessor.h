@@ -16,7 +16,7 @@ namespace gramselecsim {
         PreampProcessor(int);
         virtual ~PreampProcessor();
 
-        std::vector<double> ConvoluteResponse(std::vector<int>&);
+        std::vector<double> ConvoluteResponse(const std::vector<int>&);
 
     private:
 
