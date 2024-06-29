@@ -341,7 +341,7 @@ The main GramsSim programs (e.g., `gramssky`, `gramsg4`, `gramsdetsim`) are comp
 
 The programs in [`GramsSim/scripts`](scripts) are intended to be short examples or single-use programs. For example, no one expects that a program with a name like [`dEdxExample.cc`](scripts/dEdxExample.cc) will be used as part of a regular analysis. Those programs are placed in the `bin/` directory so they're available for tests, but don't clutter the build directory with programs that might never be used. 
 
-So if you want to run `gramsdetsim`, within your build directory you just type
+Therefore, if you want to run `gramsdetsim`, within your build directory you just type
 ```
 ./gramsdetsim
 ```
@@ -352,22 +352,20 @@ If you want to run `dEdxExample` to see what it does:
 
 **Q: I just updated GramsSim from the repository, and now I'm having trouble compiling the code.**
 
-Typically this happens after the `CMakeLists.txt` files are updated due to a change in the build procedure. The best way to fix this is to delete your build directory, create a new one, and start the `cmake`/`make` procedure from scratch. 
+Typically this happens after the `CMakeLists.txt` files are updated due to a change in the build procedure. One  way to fix this is to delete your build directory, create a new one, and start the `cmake`/`make` procedure from scratch. 
 
-If that's inconvenient (e.g., you've created many useful outputs or work files in your build directory), try removing the `cmake` work files:
+If that's inconvenient (e.g., you've created many useful outputs or work files in your build directory), try removing the `cmake` work files and directories. 
+
+_Be careful with the following command!_ You want to execute it within your build directory, not anywhere else. You may also want to verify that none of your own work files begin with "`Grams`". 
 ```
-rm -rf CMake* cmake*
+rm -rf CMake* cmake* Grams* *Dict*
 cmake ../GramsSim
-```
-In rare cases that might not be enough. It might be necessary to force the rebuild of `cmake` work directories within each major sub-directory:
-```
-find . -iname cmake\* -exec rm -rf {} \;
-cmake ../GramsSim
+make
 ```
 
 **Q. On Mac OS X, the program names end in `.exe`. Why?**
 
-This is to avoid problems in the build procedure caused by a common version of the Mac OS X filesystem being case-insensitive with respect to file and directory names; e.g., `GramsSky` and `gramssky` are the same in OS X. When the build procedure tries to create the executable `gramssky`, it fails (with a mysterious error message) because the directory `GramsSky` already exists. In this case, it's safer to make the name of the executable `gramssky.exe`.
+This is to avoid problems in the build procedure caused by the most common version of the Mac OS X filesystem being case-insensitive with respect to file and directory names; e.g., `GramsSky` and `gramssky` are the same in OS X. When the build procedure tries to create the executable `gramssky`, it fails (with a mysterious error message) because the directory `GramsSky` already exists. In this case, it's safer to make the name of the executable `gramssky.exe`.
 
 So if you see an example like this in the documentation:
 

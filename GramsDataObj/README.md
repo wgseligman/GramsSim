@@ -37,9 +37,9 @@ The short version of the rest of this section: Follow the examples in the [`scri
 
 Your "build directory" is the one in which you built `GramsSim`. If you followed the exact directions in [GramsSim/README.md](../README.md), that directory will be named `GramsSim-work`, but it can have any name you choose. 
 
-Once you've compiled `GramsSim` (via `make`), you will see two files in the build directory: `Dictionary_rdict.pcm` and `libDictionary.so`.[^dylib] If you work with code that's outside your original build directory, these files must be present in the dictionary that contains your programs. 
+Once you've compiled `GramsSim` (via `make`), you will see two files in the build directory: `Dictionary_rdict.pcm` and `libDictionary.so`.[^dylib] If you work with code that's outside your original build directory, these files must be copied from the build directory to the dictionary that contains your programs. 
 
-[^dylib]: If you're running a Mac, that second file will be `libDictionary.dylib`. There will also be a third file that must be copied: `Dictionary.rootmap`. However, as of Jun-2024 `GramsSim` does not reliably execute on the Mac operating system. 
+[^dylib]: If you're running a Mac, the files that must be copied will be different: `Dictionary_rdict.pcm`, `libDictionary.dylib`, and `Dictionary.rootmap`. The reason for the difference is that Mac OS X Darwin handles its shared libraries in a different manner than other systems. 
 
 There are three kinds of programs that might use the dictionary:
 
