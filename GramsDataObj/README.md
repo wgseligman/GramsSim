@@ -39,7 +39,7 @@ Your "build directory" is the one in which you built `GramsSim`. If you followed
 
 Once you've compiled `GramsSim` (via `make`), you will see two files in the build directory: `Dictionary_rdict.pcm` and `libDictionary.so`.[^dylib] If you work with code that's outside your original build directory, these files must be present in the dictionary that contains your programs. 
 
-[^dylib]: If you're running a Mac, that second file will be `libDictionary.dylib`. However, as of Jun-2024 `GramsSim` does not execute properly on the Mac operating system. 
+[^dylib]: If you're running a Mac, that second file will be `libDictionary.dylib`. There will also be a third file that must be copied: `Dictionary.rootmap`. However, as of Jun-2024 `GramsSim` does not reliably execute on the Mac operating system. 
 
 There are three kinds of programs that might use the dictionary:
 
