@@ -12,12 +12,16 @@ someone typed "git commit"), see the output of "git log".
 
 Jun-2024
 
+   - The dictionary now works on Mac OS X; check footnote in [GramsSim/GramsDataObj/README.md](./GramsDataObj) for files to copy if you're working outside your build area. 
+
    - **MAJOR BREAKING CHANGE**: The n-tuples used in the previous GramsSim files have been
      replaced with a data-object ROOT-based TTree format. There is a new package,
      GramsDataObj, that contains all the data objects used by GramsSim. 
      
    - The examples in GramsSim/scripts and the overall documentation in README.md files
      was revised for this change. 
+     
+   - Read [GramsSim/GramsDataObj/README.md](./GramsDataObj) for the files to copy if you're working outside your build area. 
 
    - git tag -a v2.0 <-- The first tag assigned for the start of the
      tree-based output format.
