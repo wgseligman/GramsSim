@@ -12,13 +12,16 @@
 # are running the script with the above command in that directory. If
 # you've moved the script, then you'll have to adjust the gSystem.Load line.
 
-import ROOT
+import platform, ROOT
 
 # We'll also need the GramsSim custom dictionary for its data objects
 # (see GramsSim/GramsDataObj/README.md and
 # https://www.nevis.columbia.edu/~seligman/root-class/html/appendix/dictionary/index.html).
 
-ROOT.gSystem.Load("./libDictionary.so")
+if ( platform.system() == "Darwin"):
+    ROOT.gSystem.Load("./libDictionary.dylib")
+else:
+    ROOT.gSystem.Load("./libDictionary.so")
 
 # Open the input file and access the n-tuple. 
 inputFile = ROOT.TFile("gramsg4.root")

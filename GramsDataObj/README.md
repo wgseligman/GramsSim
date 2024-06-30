@@ -37,21 +37,23 @@ The short version of the rest of this section: Follow the examples in the [`scri
 
 Your "build directory" is the one in which you built `GramsSim`. If you followed the exact directions in [GramsSim/README.md](../README.md), that directory will be named `GramsSim-work`, but it can have any name you choose. 
 
-Once you've compiled `GramsSim` (via `make`), you will see two files in the build directory: `Dictionary_rdict.pcm` and `libDictionary.so`.[^dylib] If you work with code that's outside your original build directory, these files must be copied from the build directory to the dictionary that contains your programs. 
+Once you've compiled `GramsSim` (via `make`), you will see two files in the build directory: `Dictionary_rdict.pcm` and `libDictionary.so` (these are different in Mac OS[^dylib]) If you want to develop code outside your original build directory, these files must be copied from the build directory to the dictionary that contains your programs. 
 
-[^dylib]: If you're running a Mac, the files that must be copied will be different: `Dictionary_rdict.pcm`, `libDictionary.dylib`, and `Dictionary.rootmap`. The reason for the difference is that Mac OS X Darwin handles its shared libraries in a different manner than other systems. 
+[^dylib]: If you're running a Mac, the files that must be copied are: `Dictionary_rdict.pcm`, `libDictionary.dylib`, and `Dictionary.rootmap`. The reason for the difference is that Mac OS X Darwin handles its shared libraries in a different manner than other systems. 
 
 There are three kinds of programs that might use the dictionary:
 
 - If you want to compile a C++ program (the code is in a file that ends in `.cc` or `.cxx`), see the examples in the [`scripts`](../scripts). You can start with [`dEdxExample.cc`](../scripts/dEdxExample.cc); the comments at the top of the file show how to compile the program. 
 
-- For Python scripts, you need this line near the top of your code: 
+- For Python scripts, you need this line near the top of your code (in Linux[^moredy]):
 
       ROOT.gSystem.Load("./libDictionary.so")
 
-  See [`SimpleAnalysis.py`](../scripts/SimpleAnalysis.py)) for an example. 
+  See [`SimpleAnalysis.py`](../scripts/SimpleAnalysis.py) for an example. 
   
-- ROOT macros; that is, files ending in `.C` that are meant to be executed from within an interactive ROOT session; an example is [`SimpleAnalysis.C`](../scripts/SimpleAnalysis.C)).
+[^moredy]: On a Mac, the file's name will be `libDictionary.dylib`.
+  
+- ROOT macros; that is, files ending in `.C` that are meant to be executed from within an interactive ROOT session; an example is [`SimpleAnalysis.C`](../scripts/SimpleAnalysis.C).
 
   If you run the `root` command from within the build directory, interactive ROOT will execute [`rootlogon.C`](../rootlogon.C). This applies to both interactive sessions, and to running macros from the command line; e.g.,
   
@@ -61,10 +63,10 @@ There are three kinds of programs that might use the dictionary:
     
   An advantage of having `rootlogon.C` in in your current directory is that you can run ROOT, invoke the TBrowser, and use the the dictionary classes directory; e.g.,
   
-  root
-  TBrowser tb
-  auto event = grams::EventID(0,23);
-  cout << event << endl;
+      root
+      TBrowser tb
+      auto event = grams::EventID(0,23);
+      cout << event << endl;
   
 ## Using the data objects
 

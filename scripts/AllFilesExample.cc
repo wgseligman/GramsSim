@@ -29,7 +29,7 @@
 // compile it "by hand". If the program is located in the build
 // directory you set up according to the instructions in
 // https://github.com/wgseligman/GramsSim/tree/develop, you can
-// compile it with:
+// compile it with (replace .so with .dylib in Mac OS):
 
 /*
   g++ -o <program-name> <program-name>.cc `root-config --cflags --libs` \

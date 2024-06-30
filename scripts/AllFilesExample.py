@@ -20,7 +20,7 @@
 # task. Only use the files/trees/columns that you need. The
 # 'dEdxExample' programs show this.
 
-import ROOT
+import platform, ROOT
 
 # We'll also need the GramsSim custom dictionary for its data objects
 # (see GramsSim/GramsDataObj/README.md and
@@ -28,7 +28,10 @@ import ROOT
 # The following statement assumes this program is being run from the
 # build directory you created by following the directions in
 # https://github.com/wgseligman/GramsSim/tree/develop:
-ROOT.gSystem.Load("./libDictionary.so")
+if ( platform.system() == "Darwin"):
+    ROOT.gSystem.Load("./libDictionary.dylib")
+else:
+    ROOT.gSystem.Load("./libDictionary.so")
 
 # Open the input file and access the n-tuple. 
 inputFile = ROOT.TFile("gramselecsim.root")
@@ -113,8 +116,13 @@ for entry in tree:
             # Let's look through the list of keys. A "cluster key" is
             # a triplet (trackID, hitID, clusterID). The last two are
             # arbitrary, and we're only interested in the first value.
-            for ( trackID, hitID, clusterID ) in clusterKeys:
+            for ckey in clusterKeys:
 
+                # ckey is a C++ tuple, not a python tuple. The access
+                # rules can be different. We access the 0th, 1st, 2nd, ...
+                # elements of a C++ tuple with get[0], get[1], get[2], ...
+                trackID = ROOT.std.get[0]( ckey )
+                
                 # If the waveform came from a primary particle, print out
                 # the waveform and exit the loop (there's no point in
                 # printing the waveform for every matching cluster).
@@ -135,7 +143,7 @@ for entry in tree:
 
         # If the sum of the ADC counts is greater than some arbitrary
         # number that I just made up:
-        madeUpNumber = 219697;
+        madeUpNumber = 21969;
         if sumADC > madeUpNumber:
 
             # The data objects in the dictionary all of the C++
