@@ -9,7 +9,7 @@
 // lines.
 
 {
-  gSystem->AddIncludePath("../GramsSim/GramsDataObj/include");
+  gInterpreter->AddIncludePath("../GramsSim/GramsDataObj/include");
   std::string arch(gSystem->GetBuildArch());
   if ( arch.substr(0,3) == "mac" )
     gSystem->Load("./libDictionary.dylib");
