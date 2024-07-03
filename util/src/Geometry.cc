@@ -1,4 +1,5 @@
 #include "Geometry.h"
+#include "Options.h"
 
 // ROOT includes
 #include "TDirectory.h"
@@ -12,6 +13,15 @@
 #include <memory>
 
 namespace util {
+
+  /// This is a singleton class.
+  /// According to <https://stackoverflow.com/questions/12248747/singleton-with-multithreads>
+  /// this method is compatible with multi-threaded running. 
+  Geometry* Geometry::GetInstance()
+  {
+    static Geometry instance;
+    return &instance;
+  }
 
   std::shared_ptr<TGeoManager> Geometry::CopyGeometry(const TDirectory* a_input, 
 						      TDirectory* a_output, 

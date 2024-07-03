@@ -18,13 +18,7 @@ namespace util {
   public:
     
     /// This is a singleton class.
-    /// According to <https://stackoverflow.com/questions/12248747/singleton-with-multithreads>
-    /// this method is compatible with multi-threaded running. 
-    static Options* GetInstance()
-    {
-      static Options instance;
-      return &instance;
-    }
+    static Options* GetInstance();
 
     /// ParseOptions initializes the options from an XML file or a
     /// ROOT file. This should be called just once, from the main
@@ -83,11 +77,14 @@ namespace util {
 
     bool CopyInputNtuple(TDirectory* input, std::string inputNtupleName = "Options");
 
-  protected:
+    /// Prevent copy construction for a singleton class.
+    Options(const Options&) = delete; 
+    void operator=(Options const&) = delete;
+
+  private:
     /// Standard null constructor for a singleton class.
     Options() {}
     
-  private:
     enum m_option_type { e_string, e_double, e_integer, e_boolean, e_flag, e_vector};
     struct m_option_attributes {
       std::string value;   ///< The option's value
