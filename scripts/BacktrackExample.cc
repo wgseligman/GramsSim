@@ -1,5 +1,10 @@
-// AllFilesExample.cc
-// 29-Jun-2024 William Seligman <seligman@nevis.columbia.edu>
+// BackTrackExample.cc
+// 08-Jul-2024 William Seligman <seligman@nevis.columbia.edu>
+
+// This code does the "reverse" of AllFilesExample. That program works
+// its way forward through the GramsSim classes:
+// tracks->hits->clusters->waveforms. This program goes in the other
+// direction: waveforms->clusters->hits->tracks.
 
 // This is an overly-commented example program to illustrate how to
 // read multiple map-based ROOT files produced by GramsSim as if they
@@ -145,66 +150,32 @@ int main( int, char**  ) {
     // information in the data objects, see the header files in
     // GramsSim/GramsDataObj/include.
 
-    // Let's pick an arbitrary event. How about run=0, event=3?
-    static const auto arbitraryEvent = grams::EventID(0,3);
+    // For every waveform in the event:
+    for ( auto const& [ readoutID, waveform ] : (*Waveforms) ) {
 
-    // For only that event:
-    if ( (*EventID) == arbitraryEvent ) {
+      // Sum the ADC counts in all the bins in the digital
+      // waveform. (There is no scientific reason to do this.)
+      const auto& digital = waveform.Digital();
+      const auto sumADC = std::accumulate( digital.cbegin(), digital.cend(), 0 );
 
-      // For this event, let's go through all the tracks. Most of the
-      // data objects based on maps, which are like Python dicts in
-      // that they are (key,value) pairs. This is an example of how to
-      // loop over all the (trackID, MCTrack) pairs in a MCTrackList.
-      
-      // A vector to save track IDs.
-      std::vector<int> primaries;
-      for ( const auto& [ trackID, track ] : (*Tracks) ) {
-	
-	// Let's look only for primary particles in the event.
-	if ( track.Process() == "Primary" ) {
-	  // Save the ID of this track.
-	  primaries.push_back( trackID );
-	}	  
-      } // for each track in the event
-      
-      // Now look through all the hits.
-      for ( const auto& [ hitID, hit ] : (*Hits) ) {
+      // If the sum of the ADC counts is greater than some arbitrary
+      // number that I just made up:
+      static const int madeUpNumber = 21969;
+      if ( sumADC > madeUpNumber ) {
 
-	// See if this hit was produced by a primary particle. (The
-	// answer is likely to be "no" if the primary particle is a
-	// photon.)
-	const auto trackID = hit.TrackID();
-	const auto search = std::find(primaries.cbegin(), primaries.cend(), trackID );
+	// The purpose of the following line is to illustrate that all
+	// the data objects in GramsDataObj have C++-style output
+	// operators defined for them.
+	std::cout << "EventID " << (*EventID) 
+		  << " ReadoutID " << readoutID
+		  << " accumulates to " << sumADC
+		  << " which is more than " << madeUpNumber
+		  << std::endl;
 
-	// If we found one (not likely) print it out. Note that the
-	// data objects all have output operators defined.
-	if ( search != primaries.cend() ) 
-	  std::cout << hit << std::endl;
-
-      } // for each hit in the event
-
-      // For all the electron clusters in the event:
-      for ( const auto& [ key, cluster ] : (*Clusters) ) {
-
-	// See if this cluster was produced by a primary
-	// particle. (Again, probably not.)
-	const auto trackID = cluster.TrackID();
-	const auto search = std::find(primaries.cbegin(), primaries.cend(), trackID );
-
-	// If we found one, print it out.
-	if ( search != primaries.cend() ) 
-	  std::cout << cluster << std::endl;
-
-      } // for each cluster in the event.
-
-      // Let's look through all the readout channels in event.
-      for ( const auto& [ readoutID, waveform ] : (*Waveforms) ) {
-
-	// Did any primary particle contribute to this waveform?
-	// That's a trickier question to answer. There's a separate
-	// object, ReadoutMaps, that links the waveforms to the
-	// electron clusters. Look for this readoutID in that list.
-	const auto search = ReadoutMap->find( readoutID );
+	// Let's assume that this means the waveform is
+	// "interesting". Look at all the electron clusters that went
+	// into creating this waveform.
+	auto const search = ReadoutMap->find( readoutID );
 	if ( search == ReadoutMap->cend() ) {
 	  // This should not happen. It would mean that somehow a
 	  // readout waveform exists but the corresponding electron
@@ -219,24 +190,99 @@ int main( int, char**  ) {
 	// cluster keys are the second element in this pair.
 	auto& clusterKeys = (*search).second;
 
-	// Let's look through the list of keys. A "cluster key" is a
-	// triplet (std::tuple) of numbers: (trackID, hitID,
-	// clusterID). The last two are arbitrary, and we're only
-	// interested in the first value.
-	for ( auto const& clusterKey : clusterKeys ) {
-	  const auto [ trackID, hitID, clusterID ] = clusterKey;
-	  const auto result = std::find(primaries.cbegin(), primaries.cend(), trackID );
+	// The cluster keys are, in turn, a set of keys into the
+	// ElectronClusters map. The following looks at all the
+	// electron clusters associated with those keys.
 
-	  // If the waveform came from a primary particle, print out
-	  // the waveform and exit the loop (there's no point in
-	  // printing the waveform for every matching cluster).
-	  if ( result != primaries.cend() ) {
-	    std::cout << waveform << std::endl;
-	    break;
+	// If this seems complex, you can think of this arrangement as:
+	//
+	// (a) a multi-dimensional array of indexed by [trackID][hitID][clusterID][readoutID];
+	// (b) if you're into Python, nested dictionaries (dicts of dicts).. 
+
+	for ( auto const& clusterKey : clusterKeys ) {
+
+	  auto const result = Clusters->find( clusterKey ); 
+	  if ( result == Clusters->cend() ) {
+	    // Again, this should not happen.
+	    std::cerr << "File " << __FILE__ << " Line " << __LINE__ << " " << std::endl
+		      << "Inconsist readout->electron cluster map"
+		      << std::endl;
+	    exit(EXIT_FAILURE);
 	  }
-	} // for every cluster key
-      } // for every waveform
-    } // matched arbitraryEvent
+
+	  // As above, the electron cluster is second element in a map
+	  // (key, value) pair. 
+	  auto& electronCluster = (*result).second; 
+
+	  // What can we do with an electron cluster? We might print
+	  // it out, according to some imaginary non-scientific
+	  // criteria.
+	  static const int imaginaryCriteria = 38;
+	  if ( electronCluster.NumElectrons() < imaginaryCriteria )
+	    std::cout << electronCluster << std::endl;
+
+	  // We can also use it to back-track to a particular
+	  // simulated hit in the LAr. The data object MCLArHits is,
+	  // once again, a map of (key,value) pairs, with the the key
+	  // itself being a pair of (trackID,hitID):
+	  auto trackID = electronCluster.TrackID();
+	  auto hitID   = electronCluster.HitID();
+	  auto const hitKey = std::make_pair( trackID, hitID );
+	  auto const hitSearch = Hits->find( hitKey );
+
+	  // Another test for something that's not supposed to happen.  
+	  if ( hitSearch == Hits->cend() ) {
+	    std::cerr << "File " << __FILE__ << " Line " << __LINE__ << " " << std::endl
+		      << "could not find trackID=" << trackID << " hitID=" << hitID
+		      << " in MCLArHits map"
+		      << std::endl;
+	    exit(EXIT_FAILURE);
+	  }
+	  
+	  auto& hit = (*hitSearch).second;
+
+	  // Now we have the MCLArHit associated with this particular
+	  // electron cluster. Let's apply an arbitrary non-scientific
+	  // cut on the number of scintillation photons to show how to
+	  // work with a hit.
+	  auto numPhotons = hit.NumPhotons();
+	  static const int unscientificCut = 200;
+	  if ( numPhotons < unscientificCut ) {
+
+	    // We can print out the hit if we wish.
+	    std::cout << hit << std::endl;
+
+	    // As a final example of back-tracking, let's go to the
+	    // track that created the hit.
+	    const auto createID = hit.TrackID();
+	    const auto findTrack = Tracks->find( createID );
+
+	    // Unlike the previous "impossible" searches, this one is
+	    // possible, depending on the simulation. If we introduce
+	    // energy cuts in the Geant4 output, we might get hits for
+	    // tracks that were never written, and tracks with no hits
+	    // if the track didn't deposit enough energy in the LAr.
+	    if ( findTrack != Tracks->cend() ) {
+
+	      auto& track = (*findTrack).second;
+
+	      // Now that we have a track, let's look at its trajectory.
+	      const auto& trajectory = track.Trajectory();
+
+	      // Let's print the first point in the trajectory:
+	      const auto& firstPoint = trajectory[0];
+	      std::cout << "First point in track " << createID << " "
+			<< firstPoint
+			<< std::endl;
+	    }
+	  
+	  } // numPhotons < unscientificCut
+	  
+	} // For each cluster key
+
+      } // sumADC > madeUpNumber
+
+    } // Loop over waveforms in the event
 
   } // for every event in the combined trees
 

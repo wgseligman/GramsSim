@@ -10,6 +10,14 @@ someone typed "git commit"), see the output of "git log".
 
 - [More on git.](https://git-scm.com/book/en/v2)
 
+Jul-2024
+
+   - Refine the examples a bit. `AllFilesExample` (in both C++ and
+     Python) is split into two programs: AllFilesExample and
+     BacktrackExample. The first shows how to go "forward" in the data
+     objects (tracks->hits->clusters->waveforms); the latter shows how
+     to backtrack through those objects.
+
 Jun-2024
 
    - The dictionary now works on Mac OS X; check footnote in [GramsSim/GramsDataObj/README.md](./GramsDataObj) for files to copy if you're working outside your build area. 

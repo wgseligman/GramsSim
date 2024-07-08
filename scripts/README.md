@@ -42,13 +42,25 @@ here, to point the way to users developing code for their own tasks.
 [`RadialDistance.py`](RadialDistance.py) - a more realistic example of how to look at the
 trees produced by `gramsg4`.
 
-[`AllFilesExample.cc`](AllFilesExample.cc) - An example of how to open all the output
-files from all the `GramsSim` programs at once, set them up as [friend trees][80].
-This allows you to treat the entire ensemble of `GramsSim` output files as a single
-structure. (As the comments in the code warn, don't copy this blindly. Edit it down
-to only read the files you need.)
+[`AllFilesExample.cc`](AllFilesExample.cc) - An example of how to open
+all the output files from all the `GramsSim` programs at once, set
+them up as [friend trees][80].  This allows you to treat the entire
+ensemble of `GramsSim` output files as a single structure. (As the
+comments in the code warn, don't copy this blindly. Edit it down to
+only read the files you need. Much of the code in the main loop serves
+no useful purpose.)
 
 [`AllFilesExample.py`](AllFilesExample.py) - The same as above, in Python. 
+
+[`BacktrackExample.cc`](BacktrackExample.cc) - `AllFileExample` shows
+how to use all the files at once to go through the GramsSim objects in
+the "foward direction": tracks->hits->clusters->waveforms. This
+program shows how to go in opposite direction:
+waveforms->clusters->hits->tracks. Again, as the comments warn, think
+about what you're copying; about half the code in the analysis loop
+serves no useful analysis purpose.
+
+[`BacktrackExample.py`](Backtrackxample.py) - The same as above, in Python. 
 
 [80]: https://root.cern/manual/trees/#widening-a-ttree-through-friends
 
