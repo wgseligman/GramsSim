@@ -12,6 +12,8 @@ someone typed "git commit"), see the output of "git log".
 
 Jul-2024
 
+   - Improved rootlogon.C to be a bit more OS-independent. 
+
    - Refine the examples a bit. `AllFilesExample` (in both C++ and
      Python) is split into two programs: AllFilesExample and
      BacktrackExample. The first shows how to go "forward" in the data

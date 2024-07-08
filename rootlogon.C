@@ -10,9 +10,9 @@
 
 {
   gInterpreter->AddIncludePath("../GramsSim/GramsDataObj/include");
-  std::string arch(gSystem->GetBuildArch());
-  if ( arch.substr(0,3) == "mac" )
-    gSystem->Load("./libDictionary.dylib");
-  else
-    gSystem->Load("./libDictionary.so");
+  // This line creates a text string containing the library name, with
+  // the appropriate extension (.so or .dylib) for this operating
+  // system.
+  TString lib(Form("./libDictionary.%s", gSystem->GetSoExt()));
+  gSystem->Load(lib.Data());
 }
