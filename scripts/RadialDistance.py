@@ -19,9 +19,9 @@ import platform, ROOT, math
 # https://github.com/wgseligman/GramsSim/tree/develop:
 
 if ( platform.system() == "Darwin"):
-    ROOT.gSystem.Load("./libDictionary.dylib")
+    ROOT.gSystem.Load("libDictionary.dylib")
 else:
-    ROOT.gSystem.Load("./libDictionary.so")
+    ROOT.gSystem.Load("libDictionary.so")
 
 # Fetch the input file. (If I were fancier, I'd get the
 # name of the file from an argument to this program.)

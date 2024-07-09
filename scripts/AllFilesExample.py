@@ -29,9 +29,9 @@ import platform, ROOT
 # build directory you created by following the directions in
 # https://github.com/wgseligman/GramsSim/tree/develop:
 if ( platform.system() == "Darwin"):
-    ROOT.gSystem.Load("./libDictionary.dylib")
+    ROOT.gSystem.Load("libDictionary.dylib")
 else:
-    ROOT.gSystem.Load("./libDictionary.so")
+    ROOT.gSystem.Load("libDictionary.so")
 
 # Open the input file and access the n-tuple. 
 inputFile = ROOT.TFile("gramselecsim.root")
@@ -57,7 +57,7 @@ for entry in tree:
 
     # For a list of the various methods you can use to access the
     # information in the data objects, see the header files in
-    # GramsSim/GramsDataObj/include.
+    # in the include/ sub-directory.
 
     # IF YOU'RE COPYING THIS CODE LINE-FOR-LINE AND LOOP-FOR-LOOP,
     # STOP! Most of what the code does has no purpose other than to

@@ -33,8 +33,7 @@
 
 /*
   g++ -o <program-name> <program-name>.cc `root-config --cflags --libs` \
-  -I../GramsSim/GramsDataObj/include \
-  ./libDictionary.so
+  -Iinclude libDictionary.so
 */
 
 // If the program is located elsewhere in your directory hierarchy,

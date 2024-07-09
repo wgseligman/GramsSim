@@ -34,9 +34,9 @@ import platform, ROOT
 # build directory you created by following the directions in
 # https://github.com/wgseligman/GramsSim/tree/develop:
 if ( platform.system() == "Darwin"):
-    ROOT.gSystem.Load("./libDictionary.dylib")
+    ROOT.gSystem.Load("libDictionary.dylib")
 else:
-    ROOT.gSystem.Load("./libDictionary.so")
+    ROOT.gSystem.Load("libDictionary.so")
 
 # Open the input file and access the n-tuple. 
 inputFile = ROOT.TFile("gramselecsim.root")

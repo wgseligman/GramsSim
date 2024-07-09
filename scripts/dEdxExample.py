@@ -22,9 +22,9 @@ from ROOT import TFile, TTree, gSystem, gDirectory, TH1D
 
 import platform
 if ( platform.system() == "Darwin"):
-    ROOT.gSystem.Load("./libDictionary.dylib")
+    ROOT.gSystem.Load("libDictionary.dylib")
 else:
-    ROOT.gSystem.Load("./libDictionary.so")
+    ROOT.gSystem.Load("libDictionary.so")
 
 # Open the input file and access the n-tuple. 
 inputFile = TFile("gramsg4.root")
