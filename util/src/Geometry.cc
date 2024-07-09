@@ -29,7 +29,7 @@ namespace util {
   {
     // Initialize the options from the XML file.
     auto options = util::Options::GetInstance();
-
+    
     // Fetch the debug and verbose flags, just in case.
     bool debug;
     options->GetOption("debug",debug);
