@@ -10,4 +10,9 @@ file(COPY
   DESTINATION ${CMAKE_BINARY_DIR}/include
   FILES_MATCHING PATTERN "*.h"
   )
+
+file(COPY
+  README.md
+  DESTINATION ${CMAKE_BINARY_DIR}/include
+  )
       
