@@ -8,36 +8,25 @@
 // tutorial at
 // https://www.nevis.columbia.edu/~seligman/root-class/html/
 
-// At this moment, you're tempted to just copy this program and
-// blindly place your analysis code in the main program loop. DON'T DO
-// THIS WITHOUT THINKING ABOUT WHAT YOU'RE DOING! This program is
-// meant as an example of the code needed to access a group of friend
-// trees in parallel, and how the GramsSim maps link to each other.
+// At this moment, you're tempted to copy this program and blindly
+// place your analysis code in the main program loop. DON'T DO THIS
+// WITHOUT THINKING ABOUT WHAT YOU'RE DOING! Look at the smaller and
+// perhaps more realistic examples in SimpleAnalysis, dEdxExample, and
+// RadialDistance.
 
-// The odds are high that you don't need to read multiple columns from
-// multiple trees in multiple files to accomplish your analysis
-// task. Only use the files/trees/columns that you need. The
-// 'dEdxExample' programs show this.
-
-// Now that you've been warned:
-
-// This program will automatically be compiled during the cmake/make
-// process for GramsSim, from its source in GramsSim/scripts. 
-
-// You can copy this program and make changes to suit your work,
-// heeding the above histrionic warning. If you do, you'll have to
-// compile it "by hand". If the program is located in the build
-// directory you set up according to the instructions in
+// This programs in GramsSim/scripts will automatically be compiled
+// during the cmake/make process for GramsSim. For your own program,
+// you'll have to compile it "by hand". If <program-name>.cc is
+// located in the build directory you set up according to the
+// instructions in
 // https://github.com/wgseligman/GramsSim/tree/develop, you can
-// compile it with (replace .so with .dylib in Mac OS):
+// compile it with:
 
 /*
-  g++ -o <program-name> <program-name>.cc `root-config --cflags --libs` \
-  -Iinclude libDictionary.so
+g++ -o <program-name> <program-name>.cc \
+   `root-config --cflags --libs` \
+   -Iinclude -Wl,-rpath,. -L. -lDictionary
 */
-
-// If the program is located elsewhere in your directory hierarchy,
-// you'll have to adjust the paths in the above command.
 
 // From the GramsDataObj library, include all the data objects that
 // we'll read. Since this is an example of how to read all the

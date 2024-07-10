@@ -14,16 +14,11 @@
 # tutorial at
 # https://www.nevis.columbia.edu/~seligman/root-class/html/
 
-# At this moment, you're tempted to just copy this program and
-# blindly place your analysis code in the main program loop. DON'T DO
-# THIS WITHOUT THINKING ABOUT WHAT YOU'RE DOING! This program is
-# meant as an example of the code needed to access a group of friend
-# trees in parallel, and how the GramsSim maps link to each other.
-
-# The odds are high that you don't need to read multiple columns from
-# multiple trees in multiple files to accomplish your analysis
-# task. Only use the files/trees/columns that you need. The
-# 'dEdxExample' programs show this.
+# At this moment, you're tempted to copy this program and blindly
+# place your analysis code in the main program loop. DON'T DO THIS
+# WITHOUT THINKING ABOUT WHAT YOU'RE DOING! Look at the smaller and
+# perhaps more realistic examples in SimpleAnalysis, dEdxExample, and
+# RadialDistance.
 
 import platform, ROOT
 

@@ -10,8 +10,7 @@
 
 # You can copy this program and make changes to suit your work.
 
-# The ROOT classes we'll need:
-from ROOT import TFile, TTree, gSystem, gDirectory, TH1D
+import ROOT
 
 # We'll also need the GramsSim custom dictionary for its data objects
 # (see GramsSim/GramsDataObj/README.md and
@@ -27,15 +26,15 @@ else:
     ROOT.gSystem.Load("libDictionary.so")
 
 # Open the input file and access the n-tuple. 
-inputFile = TFile("gramsg4.root")
-tree = gDirectory.Get( 'gramsg4' )
+inputFile = ROOT.TFile("gramsg4.root")
+tree = ROOT.gDirectory.Get( 'gramsg4' )
 
 # The vague purpose of this example program is to calculate
 # dE/dx. What we do with that value is up to us. As an example,
 # we'll just make a histogram. Note that we're not doing anything
 # with that histogram, not even writing or drawing it.
 
-dEdxHistogram = TH1D("dEdx","Histogram of dE/dx",100,0.0,0.005);
+dEdxHistogram = ROOT.TH1D("dEdx","Histogram of dE/dx",100,0.0,0.005);
 
 # For each row (or entry) in the tree:
 for entry in tree:

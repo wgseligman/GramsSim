@@ -10,7 +10,8 @@
 # following the recipe in the documentation:
 # https://github.com/wgseligman/GramsSim/blob/develop/README.md and
 # are running the script with the above command in that directory. If
-# you've moved the script, then you'll have to adjust the gSystem.Load line.
+# you've moved the script, then you'll have to adjust the gSystem.Load
+# lines below.
 
 import platform, ROOT
 

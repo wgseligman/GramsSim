@@ -9,16 +9,11 @@
 # tutorial at
 # https://www.nevis.columbia.edu/~seligman/root-class/html/
 
-# At this moment, you're tempted to just copy this program and
-# blindly place your analysis code in the main program loop. DON'T DO
-# THIS WITHOUT THINKING ABOUT WHAT YOU'RE DOING! This program is
-# meant as an example of the code needed to access a group of friend
-# trees in parallel, and how the GramsSim maps link to each other.
-
-# The odds are high that you don't need to read multiple columns from
-# multiple trees in multiple files to accomplish your analysis
-# task. Only use the files/trees/columns that you need. The
-# 'dEdxExample' programs show this.
+# At this moment, you're tempted to copy this program and blindly
+# place your analysis code in the main program loop. DON'T DO THIS
+# WITHOUT THINKING ABOUT WHAT YOU'RE DOING! Look at the smaller and
+# perhaps more realistic examples in SimpleAnalysis, dEdxExample, and
+# RadialDistance.
 
 import platform, ROOT
 
@@ -58,11 +53,6 @@ for entry in tree:
     # For a list of the various methods you can use to access the
     # information in the data objects, see the header files in
     # in the include/ sub-directory.
-
-    # IF YOU'RE COPYING THIS CODE LINE-FOR-LINE AND LOOP-FOR-LOOP,
-    # STOP! Most of what the code does has no purpose other than to
-    # serve as an example. Look at what the code is doing, and ask if
-    # that's what you want to do.
 
     # Let's pick an arbitrary event. How about run=0, event=3? (Note
     # how by using the prefix "ROOT." we have access to all the C++
