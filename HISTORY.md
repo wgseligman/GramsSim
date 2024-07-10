@@ -14,7 +14,7 @@ Jul-2024
 
    - Create an include/ sub-directory within the build directory, and
      populate it with the header files that the scripts need. Refine
-     the scripts their comments to remove "relative" directory
+     the scripts and their comments to remove "relative" directory
      references like `../GramsSim/GramsDataObj/include` to make life
      easier.
 

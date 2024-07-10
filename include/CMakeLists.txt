@@ -11,6 +11,7 @@ file(COPY
   FILES_MATCHING PATTERN "*.h"
   )
 
+# Also copy the README file.
 file(COPY
   README.md
   DESTINATION ${CMAKE_BINARY_DIR}/include

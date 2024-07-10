@@ -11,8 +11,8 @@ and assumes that the source directory and the build directory share a
 common parent directory.
 
 **IMPORTANT**: Making changes in this directory is a bad idea. Any
-such changes will be over-written the next time you type a `cmake`
+such changes will be over-written the next time you type a `make`
 command. If you need to change a header file, change it in the [source
-directory](../GramsSim) and issue the appropriate `cmake` command in
+directory](../GramsSim) and issue the appropriate `make` command in
 the build directory.
 
