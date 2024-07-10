@@ -3,18 +3,18 @@
 - [GramsSky](#gramssky)
   * [The process of GramsSky generation](#the-process-of-gramssky-generation)
   * [Position generators](#position-generators)
-    + [`"Point"`](#--point--)
-    + [`"Iso"`](#--iso--)
+    + [`"Point"`](#point)
+    + [`"Iso"`](#iso)
   * [Energy generators](#energy-generators)
-    + [`"Fixed"`](#--fixed--)
-    + [`"Flat"`](#--flat--)
-    + [`"Gaus"`](#--gaus--)
-    + [`"BlackBody"`](#--blackbody--)
-    + [`"PowerLaw"`](#--powerlaw--)
-    + [`"Hist"`](#--hist--)
+    + [`"Fixed"`](#fixed)
+    + [`"Flat"`](#flat)
+    + [`"Gaus"`](#gaus)
+    + [`"BlackBody"`](#blackbody)
+    + [`"PowerLaw"`](#powerlaw)
+    + [`"Hist"`](#hist)
   * [Combined position and energy generators](#combined-position-and-energy-generators)
-    + [`"MapPowerLaw"`](#--mappowerlaw--)
-    + [`"MapEnergyBands"`](#--mapenergybands--)
+    + [`"MapPowerLaw"`](#mappowerlaw)
+    + [`"MapEnergyBands"`](#mapenergybands)
 
 <small><i><a href='http://ecotrust-canada.github.io/markdown-toc/'>Table of contents generated with markdown-toc</a></i></small>
 
@@ -70,7 +70,7 @@ The number of events to generate comes from the __`events`__ parameter in the op
    
 [15]: https://github.com/LArSoft
    
-   - The particle's energy _E_ is generated according to the energy algorithm selected by the user; again, see below.
+   - The particle's energy _E_ is generated according to the energy algorithm selected by the user; again, see below. Note that this is the _total_ energy of the particle, not just the _kinetic_ energy. 
    
    - The magnitude of the particle's momentum is calculated by _p = sqrt(E^2 - m^2)_, where _m_ is the particle's mass from ROOT's [TParticlePDG][10] database based on the value of __`PrimaryPDG`__.
    
