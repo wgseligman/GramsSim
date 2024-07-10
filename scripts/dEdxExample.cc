@@ -83,15 +83,14 @@ int main( int, char**  ) {
   while ( reader->Next() ) {
 
     // (*MCLArHits) is a std::map (you can check this by looking at
-    // GramsSim/GramsDataObj/include/MCLArHits.h). A map is vaguely
-    // like a Python dict, in that it stores information in key-value
-    // pairs. Here's how to loop over every (key,value) pair in a map:
+    // include/MCLArHits.h). A map is vaguely like a Python dict, in
+    // that it stores information in key-value pairs. Here's how to
+    // loop over every (key,value) pair in a map:
 
     for ( const auto& [ key, mcLArHit ] : (*mcLArHits) ) {
 
       // For the list of ways to access the information in
-      // grams::MCLArHit, again see
-      // GramsSim/GramsDataObj/include/MCLArHits.h.
+      // grams::MCLArHit, again see include/MCLArHits.h.
 
       auto energy = mcLArHit.Energy();
       auto start = mcLArHit.Start4D();
@@ -104,6 +103,7 @@ int main( int, char**  ) {
       // Now take the 3D magnitude of the difference.
       auto dx = diff.R();
 
+      // Accumulate the dE/dx values in a histogram. 
       if ( dx > 0. ) {
 	auto dEdx = energy / dx;
 	dEdxHistogram->Fill( dEdx );

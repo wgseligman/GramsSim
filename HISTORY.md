@@ -6,11 +6,17 @@ the top.
 - For a detailed list of all changes (basically, every time
 someone typed "git commit"), see the output of "git log".
 
-- For tagged commits (important milestones), use "git tag -n1".
+- For a list of tagged commits (important milestones), use "git tag -n1".
 
 - [More on git.](https://git-scm.com/book/en/v2)
 
 Jul-2024
+
+   - Create an include/ sub-directory within the build directory, and
+     populate it with the header files that the scripts need. Refine
+     the scripts their comments to remove "relative" directory
+     references like `../GramsSim/GramsDataObj/include` to make life
+     easier.
 
    - git tag -a v2.1 to reflect Mac OS compatibility relese. 
 
