@@ -138,6 +138,22 @@ namespace grams {
       trajectory.push_back( mtp );
     }
 
+    // For convenience, offer easy access to the data stored in the
+    // first trajectory point. This may be a mistake; these are the
+    // values at the _start_ of a track only.
+    int Identifier() const { return trajectory[0].Identifier(); }
+    
+    double X() const { return trajectory[0].X(); }
+    double Y() const { return trajectory[0].Y(); }
+    double Z() const { return trajectory[0].Z(); }
+    double T() const { return trajectory[0].T(); }
+
+    double Px() const { return trajectory[0].Px(); }
+    double Py() const { return trajectory[0].Py(); }
+    double Pz() const { return trajectory[0].Pz(); }
+    double E()  const { return trajectory[0].E(); }
+    double Energy() const { return trajectory[0].E(); }
+    
     // Many ways to set and get a vector.
     ROOT::Math::XYZVector Polarization() const { return polarization; }
     void SetPolarization( const ROOT::Math::XYZVector& p ) { polarization = p; }

@@ -135,7 +135,7 @@ namespace gramsg4 {
 
       // Define the branches within that tree.
       s_tree->Branch("EventID",  &m_eventID);
-      s_tree->Branch("TrackList",&m_mcTrackList,32000);
+      s_tree->Branch("TrackList",&m_mcTrackList);
       s_tree->Branch("LArHits",  &m_mcLArHits);
       s_tree->Branch("ScintHits",&m_mcScintHits);
 
