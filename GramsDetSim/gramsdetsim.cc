@@ -165,8 +165,10 @@ int main(int argc,char **argv)
 
   auto eventID = new grams::EventID();
   auto clusters = new grams::ElectronClusters();
-  outputTree->Branch("EventID",   &eventID);
-  outputTree->Branch("ElectronClusters",  &clusters);
+  // By experimenting, it turns out that setting the splitlevel to 0
+  // improves potential issues with ROOT's TBrowser.
+  outputTree->Branch("EventID",          &eventID,  32000, 0);
+  outputTree->Branch("ElectronClusters", &clusters, 32000, 0);
 
   // Are we using this particular model?
   bool doRecombination;
