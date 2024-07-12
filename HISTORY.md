@@ -12,6 +12,9 @@ someone typed "git commit"), see the output of "git log".
 
 Jul-2024
 
+   - GramsSky->GramsG4: The energy from GramsSky is now interpreted as
+     kinetic energy, not total energy.
+
    - Create an include/ sub-directory within the build directory, and
      populate it with the header files that the scripts need. Refine
      the scripts and their comments to remove "relative" directory
