@@ -70,7 +70,7 @@ The number of events to generate comes from the __`events`__ parameter in the op
    
 [15]: https://github.com/LArSoft
    
-   - The particle's energy _E_ is generated according to the energy algorithm selected by the user; again, see below. Note that this is the _total_ energy of the particle, not just the _kinetic_ energy. 
+   - The particle's kinetic energy _E_ is generated according to the energy algorithm selected by the user; again, see below.
    
    - The magnitude of the particle's momentum is calculated by _p = sqrt(E^2 - m^2)_, where _m_ is the particle's mass from ROOT's [TParticlePDG][10] database based on the value of __`PrimaryPDG`__.
    

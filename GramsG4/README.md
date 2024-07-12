@@ -161,8 +161,6 @@ Of particular interest is the file [`mac/sky.mac`](../mac/sky.mac), which shows 
 
 For more on the gps commands, see the [References](#references) section near the end of this document. 
 
-Note that "energy" as supplied via a G4 macro file is the particle's _total_ energy, not its _kinetic_ energy. 
-
 ## Visualization
 
 See [`GramsSim/mac/README.md`](../mac/README.md) for a description of the visualization examples in the [`GramsSim/mac`](../mac) directory.
