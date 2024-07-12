@@ -495,13 +495,13 @@ for example, to save the options in an ntuple for later reference. The following
 
 The `Options` class offers several methods for saving, restoring, and tracking the values of options in your analysis. For this discussion, consider the following case:
 
-|  <img src="UsingOptions.png" width="75%"/> |
+|  <img src="/images/UsingOptions.png" width="75%"/> |
 | :---------------------------------------------: | 
 |  <small><strong>Fig 1. A typical use of the `Options` class. Note that in this and the following figures, the options for Program A would be contained in a tag block such as `<programa>...</programa>`; this is omitted from these figures for clarity. </strong></small> |
 
 It's common for set of programs to be organized as a "chain": You run program A, whose output is the input to program B, whose output in turn is used by program C, and so on. For example:
 
-|  <img src="AnalysisChain.png" width="75%"/> |
+|  <img src="images/AnalysisChain.png" width="75%"/> |
 | :---------------------------------------------: | 
 |  <small><strong>Fig 2. An example analysis chain. Each program has its own options. Typically you'd have separate tag blocks within a single XML file, such as `<programa>...</programa> <programb>...</programb> <programc>...</programc>`. However, you could also set up separate XML files for each program if you wished. </strong></small> |
 
@@ -524,7 +524,7 @@ options->WriteNtuple(output);
 
 `WriteNtuple` can take a second argument, the name of the options ntuple. If you don't supply one, the default is `Options`. This is a sketch of how that `Options` ntuple is placed within the output file:
 
-|  <img src="UsingWriteNtuple.png" width="75%"/> |
+|  <img src="images/UsingWriteNtuple.png" width="75%"/> |
 | :---------------------------------------------: | 
 |  <small><strong>Fig 3. The effects of using `WriteNtuple`. Note that the `Options` ntuple embedded within the output file will contain the options within the example `<programa>...</programa>` tag block, with the changes from any command-line options. </strong></small> |
 
@@ -548,7 +548,7 @@ Take care! In this particular example, the default output file for `gramsdetsim`
 
     ./gramsdetsim -v --options gramsdetsim.root --rho 1.5 --outputfile gramsdetsim-revised.root
 
-|  <img src="UsingROOTforOptions.png" width="75%"/> |
+|  <img src="images/UsingROOTforOptions.png" width="75%"/> |
 | :---------------------------------------------: | 
 |  <small><strong>Fig 4. Using a ROOT file from a previous run to get the options used for that run.  </strong></small> |
 
@@ -556,7 +556,7 @@ Take care! In this particular example, the default output file for `gramsdetsim`
 
 If you just use `WriteOptions` as described above, each program's output file will contain an `Options` ntuple that contains just the options used for that run of the program. Consider how this would look for an analysis chain:
 
-|  <img src="AnalysisChainWriteNtuple.png" width="75%"/> |
+|  <img src="images/AnalysisChainWriteNtuple.png" width="75%"/> |
 | :---------------------------------------------: | 
 |  <small><strong>Fig 5. Using a ROOT file from a previous run to get the options used for that run.  </strong></small> |
 
@@ -613,7 +613,7 @@ int main( int argc, char** argv ) {
 
 Here a sketch of the result:
 
-|  <img src="UsingCopyInputNtuple.png" width="75%"/> |
+|  <img src="images/UsingCopyInputNtuple.png" width="75%"/> |
 | :---------------------------------------------: | 
 |  <small><strong>Fig 6. A sketch of how `CopyInputNtuple` works. </strong></small> |
 
@@ -830,7 +830,7 @@ In use this approach:
    
 Here's a sketch of the idea:
 
-|  <img src="UpdateFile.png" width="75%"/> |
+|  <img src="images/UpdateFile.png" width="75%"/> |
 | :---------------------------------------------: | 
 |  <small><strong>Fig 7. A sketch of the single-file approach for managing program output ntuples, including the programs' options. </strong></small> |
 
