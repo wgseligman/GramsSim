@@ -60,7 +60,7 @@ The general operation of `GramsSky` is similar to the [General Particle Source][
 
 |                                          |
 | :--------------------------------------: | 
-| <img src="SkyDiagram.jpg" width="75%" /> |
+| <img src="images/SkyDiagram.jpg" width="75%" /> |
 
 The number of events to generate comes from the __`events`__ parameter in the options file. For each such event: 
 
@@ -136,7 +136,7 @@ _E_ is generated uniformly between the values of parameters __`EnergyMin`__ and 
 
 The gaussian distribution is of the form:
 
-<img src="gaussian.png" width="18%"/>
+<img src="images/gaussian.png" width="18%"/>
 
 where _&mu;_ is the mean of the distribution and _&sigma;_ is the width. _E_ is generated with _&mu;_ given by __`GausMean`__ and _&sigma;_ given by __`GausWidth`__. 
 
@@ -146,7 +146,7 @@ where _&mu;_ is the mean of the distribution and _&sigma;_ is the width. _E_ is 
 
 The black-body radiation function is of the form:
 
-<img src="black-body.png" width="20%"/>
+<img src="images/black-body.png" width="20%"/>
 
 where _kT_ is the "radiation temperature". _E_ is generated according to a black-body distribution with _kT_ given by parameter __`RadTemp`__. 
 
@@ -157,7 +157,7 @@ where _kT_ is the "radiation temperature". _E_ is generated according to a black
 
 The power-law function is of the form:
 
-<img src="power-law.png" width="15%"/>
+<img src="images/power-law.png" width="15%"/>
 
 where
 
@@ -190,7 +190,7 @@ As of Feb-2022, all the generators in this category make use of the [FITSIO][20]
    
    |                                       |
    | :-----------------------------------: | 
-   | <img src="healpix.png" width="50%" /> |
+   | <img src="images/healpix.png" width="50%" /> |
    | Courtesy NASA/JPL-Caltech             |
    
    - Credit to Naomi Tsuji and Hiroki Yoneda, who provided me with the code and files to incorporate the following into GramsSky. 
@@ -205,7 +205,7 @@ This method uses three HEALPix maps, one for each parameter in a [power-law](#--
 
    |                                       |
    | :-----------------------------------: | 
-   | <img src="power-law%20map%20diagram.png" width="75%" /> |
+   | <img src="images/power-law%20map%20diagram.png" width="75%" /> |
    
 The procedure is to randomly select a pixel, then randomly generate the energy according to the power-law distribution at that position. 
 
@@ -235,7 +235,7 @@ This method uses a series of HEALPix maps, one for each of an increasing set of 
 
    |                                       |
    | :-----------------------------------: | 
-   | <img src="energy-band%20map%20diagram.png" width="75%" /> |
+   | <img src="images/energy-band%20map%20diagram.png" width="75%" /> |
 
 
 The procedure is to randomly select an energy band, then randomly select a pixel from the flux in that band, and finally generate an energy distribution for that particular pixel from a power-law distribution. 

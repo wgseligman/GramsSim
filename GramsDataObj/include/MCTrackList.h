@@ -43,10 +43,20 @@ namespace grams {
     double Z() const { return position.Z(); }
     double T() const { return position.T(); }
 
+    double x() const { return position.X(); }
+    double y() const { return position.Y(); }
+    double z() const { return position.Z(); }
+    double t() const { return position.T(); }
+
     double Px() const { return momentum.Px(); }
     double Py() const { return momentum.Py(); }
     double Pz() const { return momentum.Pz(); }
     double E()  const { return momentum.E(); }
+
+    double px() const { return momentum.Px(); }
+    double py() const { return momentum.Py(); }
+    double pz() const { return momentum.Pz(); }
+    double e()  const { return momentum.E(); }
 
   }; // MCTrajectoryPoint 
 
@@ -147,12 +157,23 @@ namespace grams {
     double Y() const { return trajectory[0].Y(); }
     double Z() const { return trajectory[0].Z(); }
     double T() const { return trajectory[0].T(); }
+    
+    double x() const { return trajectory[0].X(); }
+    double y() const { return trajectory[0].Y(); }
+    double z() const { return trajectory[0].Z(); }
+    double t() const { return trajectory[0].T(); }
 
     double Px() const { return trajectory[0].Px(); }
     double Py() const { return trajectory[0].Py(); }
     double Pz() const { return trajectory[0].Pz(); }
     double E()  const { return trajectory[0].E(); }
     double Energy() const { return trajectory[0].E(); }
+
+    double px() const { return trajectory[0].Px(); }
+    double py() const { return trajectory[0].Py(); }
+    double pz() const { return trajectory[0].Pz(); }
+    double e()  const { return trajectory[0].E(); }
+    double energy() const { return trajectory[0].E(); }
     
     // Many ways to set and get a vector.
     ROOT::Math::XYZVector Polarization() const { return polarization; }
