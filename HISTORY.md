@@ -12,6 +12,9 @@ someone typed "git commit"), see the output of "git log".
 
 Jul-2024
 
+   - In GramsDetSim, increase the cluster ID across all the hits in
+     the event, instead of just within each hit.
+
    - GramsSky->GramsG4: The energy from GramsSky is now interpreted as
      kinetic energy, not total energy.
 

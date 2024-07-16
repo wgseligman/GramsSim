@@ -61,11 +61,15 @@ namespace gramsdetsim {
   // Note that the "a_" prefix is a convention to remind us that the
   // variable was an argument in this method.
 
-  // Also note that this method returns a tuple of six vectors.
-
+  // Also note that clusterID is an int&. That's to make sure that
+  // when we increment the clusterID in this routine, it's reflected
+  // in the calling routine. That's to keep the clusterID increasing
+  // over all the hits in the events.
+  
   std::vector< grams::ElectronCluster > 
       DiffusionModel::Calculate(double a_energy, 
-				const grams::MCLArHit& hit) {
+				const grams::MCLArHit& a_hit,
+				int& a_clusterID ) {
 
     // Note that we're drifting along the z-axis, so the cluster
     // positions on the 1 and 2 axes (the x and y axes) are diffused
@@ -74,7 +78,7 @@ namespace gramsdetsim {
     // detector setups or coordinate systems, the following code must
     // be adjusted.
 
-    double z_mean = 0.5 * (hit.StartZ() + hit.EndZ());
+    double z_mean = 0.5 * (a_hit.StartZ() + a_hit.EndZ());
 
     double DriftDistance = m_readout_plane_coord - z_mean;
     double mean_TDrift = std::abs(DriftDistance * m_RecipDriftVel);
@@ -121,23 +125,26 @@ namespace gramsdetsim {
     // model.
     std::vector< grams::ElectronCluster > vecCluster(nClus);
 
-    double averagetransversePos1  = 0.5 * (hit.StartX() + hit.EndX());
-    double averagetransversePos2  = 0.5 * (hit.StartY() + hit.EndY());
+    double averagetransversePos1  = 0.5 * (a_hit.StartX() + a_hit.EndX());
+    double averagetransversePos2  = 0.5 * (a_hit.StartY() + a_hit.EndY());
     double averagelongitudinalPos = z_mean;
 
     // For each cluster:
-    size_t id = 0;
+    int clusterCount = 0;
     for ( auto& cluster : vecCluster ) {
-      cluster.trackID = hit.trackID;
-      cluster.hitID = hit.hitID;
-      cluster.clusterID = id++; // an arbitrary assignment of cluster ID.
+      cluster.trackID = a_hit.trackID;
+      cluster.hitID = a_hit.hitID;
+      // An arbitrary assignment of cluster ID, incremented across all
+      // the clusters in the event.
+      cluster.clusterID = a_clusterID++;
       cluster.numElectrons = electronclsize;
 
       // For most of the clusters, the number of electrons in each
       // cluster is the same (electronclsize). However, the last
       // cluster will contain the "leftover" electrons after dividing
       // the total number of electrons by the electron-cluster size.
-      if ( id == vecCluster.size() )
+      clusterCount++;
+      if ( clusterCount == vecCluster.size() )
 	cluster.numElectrons = nElectrons - (nClus - 1) * electronclsize;
 
       if (nElectrons > 0)

@@ -23,7 +23,9 @@ namespace gramsdetsim {
 
     // The meat of this routine: Given the variables in the current
     // entry of the ntuple, calculate a list of clusters.
-    std::vector< grams::ElectronCluster > Calculate(double energy, const grams::MCLArHit& hit);
+    std::vector< grams::ElectronCluster > Calculate(double energy,
+						    const grams::MCLArHit& hit,
+						    int& clusterID);
 
   private:
 

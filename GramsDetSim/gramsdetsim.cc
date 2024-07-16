@@ -231,6 +231,9 @@ int main(int argc,char **argv)
 
   // For each row in the input tree:
   while ( (*reader).Next() ) {
+
+    // Increase the clusterID across all the hits in this event.
+    int clusterID = 0;
     
     // Clean out any cluster data from the previous event.
     clusters->clear();
@@ -252,7 +255,7 @@ int main(int argc,char **argv)
       grams::ElectronCluster defaultCluster;
       defaultCluster.trackID = hit.trackID;
       defaultCluster.hitID = hit.hitID;
-      defaultCluster.clusterID = 0;
+      defaultCluster.clusterID = clusterID;
       energy_sca = hit.energy;
       defaultCluster.energy = energy_sca;
       defaultCluster.numElectrons = energy_sca * m_MeVToElectrons;
@@ -300,8 +303,10 @@ int main(int argc,char **argv)
       //diffusion
       if ( doDiffusion  &&  ! std::isnan(energy_sca) ) {
 	// The clusters in this vector returned by DiffusionModel will
-	// replace the "default cluster", if all goes well.
-	holdingClusters = diffusionModel->Calculate(energy_sca, hit);
+	// replace the "default cluster", if all goes well. Maintain
+	// and increment the cluster ID across all the clusters in
+	// this event.
+	holdingClusters = diffusionModel->Calculate(energy_sca, hit, clusterID);
       }
 
       if (debug) {
@@ -315,8 +320,10 @@ int main(int argc,char **argv)
       }
 
       // If something went wrong, use the default cluster.
-      if ( holdingClusters.empty() )
+      if ( holdingClusters.empty() ) {
 	holdingClusters.push_back( defaultCluster );
+	clusterID++;
+      }
 
       // For each cluster in the holding area:
       for ( auto& cluster : holdingClusters ) {
