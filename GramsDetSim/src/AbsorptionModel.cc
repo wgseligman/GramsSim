@@ -51,6 +51,14 @@ namespace gramsdetsim {
 
     double effect = std::exp( -1.0 * TDrift / m_LifeTimeCorr_const);
 
+    if (m_debug) {
+      std::cout << "GramsDetSim::AbsorptionModel  z_mean=" << z_mean
+		<< " DriftDistance=" << DriftDistance
+		<< " TDrift=" << TDrift
+		<< " effect=" << effect
+		<< std::endl;
+    }
+    
     return a_energy *  effect;
   }
 
