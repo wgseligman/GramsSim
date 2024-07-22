@@ -149,31 +149,44 @@ namespace grams {
     }
 
     // For convenience, offer easy access to the data stored in the
-    // first trajectory point. This may be a mistake; these are the
-    // values at the _start_ of a track only.
-    int Identifier() const { return trajectory[0].Identifier(); }
-    
-    double X() const { return trajectory[0].X(); }
-    double Y() const { return trajectory[0].Y(); }
-    double Z() const { return trajectory[0].Z(); }
-    double T() const { return trajectory[0].T(); }
-    
-    double x() const { return trajectory[0].X(); }
-    double y() const { return trajectory[0].Y(); }
-    double z() const { return trajectory[0].Z(); }
-    double t() const { return trajectory[0].T(); }
+    // trajectory.
 
-    double Px() const { return trajectory[0].Px(); }
-    double Py() const { return trajectory[0].Py(); }
-    double Pz() const { return trajectory[0].Pz(); }
-    double E()  const { return trajectory[0].E(); }
-    double Energy() const { return trajectory[0].E(); }
+    // Notes:
 
-    double px() const { return trajectory[0].Px(); }
-    double py() const { return trajectory[0].Py(); }
-    double pz() const { return trajectory[0].Pz(); }
-    double e()  const { return trajectory[0].E(); }
-    double energy() const { return trajectory[0].E(); }
+    // These methods all use the ::at() method, which is slow but
+    // provides constant checks if its argument goes out of range.
+    // However, if the user supplies an out-of-bounds argument (e.g.,
+    // 'track.E(-1)') they may have difficulty understanding the error
+    // message.
+
+    // By default (e.g., 'track.E()') they return the value at the
+    // start of the trajectory. This may be a mistake; it may lead the
+    // users to think that these values are constant over the entire
+    // length of a track.
+    
+    int Identifier( size_t i=0 ) const { return trajectory.at(i).Identifier(); }
+    
+    double X( size_t i=0 ) const { return trajectory.at(i).X(); }
+    double Y( size_t i=0 ) const { return trajectory.at(i).Y(); }
+    double Z( size_t i=0 ) const { return trajectory.at(i).Z(); }
+    double T( size_t i=0 ) const { return trajectory.at(i).T(); }
+    
+    double x( size_t i=0 ) const { return trajectory.at(i).X(); }
+    double y( size_t i=0 ) const { return trajectory.at(i).Y(); }
+    double z( size_t i=0 ) const { return trajectory.at(i).Z(); }
+    double t( size_t i=0 ) const { return trajectory.at(i).T(); }
+
+    double Px( size_t i=0 ) const { return trajectory.at(i).Px(); }
+    double Py( size_t i=0 ) const { return trajectory.at(i).Py(); }
+    double Pz( size_t i=0 ) const { return trajectory.at(i).Pz(); }
+    double E ( size_t i=0 ) const { return trajectory.at(i).E(); }
+    double Energy ( size_t i=0 ) const { return trajectory.at(i).E(); }
+
+    double px( size_t i=0 ) const { return trajectory.at(i).Px(); }
+    double py( size_t i=0 ) const { return trajectory.at(i).Py(); }
+    double pz( size_t i=0 ) const { return trajectory.at(i).Pz(); }
+    double e ( size_t i=0 ) const { return trajectory.at(i).E(); }
+    double energy ( size_t i=0 ) const { return trajectory.at(i).E(); }
     
     // Many ways to set and get a vector.
     ROOT::Math::XYZVector Polarization() const { return polarization; }

@@ -108,10 +108,26 @@ namespace gramsdetsim {
     const double nElectrons = a_energy * m_MeVToElectrons;
     double electronclsize = m_ElectronClusterSize;
 
+    if ( m_debug ) {
+      std::cout << "gramsdetsim::DiffusionModel::Calculate - "
+		<< " nElectrons=" << nElectrons
+		<< " electronclsize=" << electronclsize
+		<< " a_energy=" << a_energy
+		<< " m_MeVToElectrons=" << m_MeVToElectrons
+		<< std::endl;
+    }
+    
     // Compute the number of electron clusters. This will depend on
     // m_ElectronClusterSize, the number of electrons per cluster,
     // which comes from the options XML file.
-    int nClus = (int)std::ceil(nElectrons / m_ElectronClusterSize);
+    int nClus = (int)std::ceil(nElectrons / electronclsize);
+
+    if ( m_debug ) {
+      std::cout << "gramsdetsim::DiffusionModel::Calculate - before adjust"
+		<< " nClus=" << nClus
+		<< " m_MinNumberOfElCluster=" << m_MinNumberOfElCluster
+		<< std::endl;
+    }
 
     // Adjust values if the number of electron cluster calculated
     // above is less than the user-supplied minimum number.
@@ -119,6 +135,13 @@ namespace gramsdetsim {
       electronclsize = nElectrons / m_MinNumberOfElCluster;
       if (electronclsize < 1.0) { electronclsize = 1.0; }
       nClus = (int)std::ceil(nElectrons / electronclsize);
+    }
+
+    if ( m_debug ) {
+      std::cout << "gramsdetsim::DiffusionModel::Calculate - after adjust"
+		<< " electronclsize=" << electronclsize
+		<< " nClus=" << nClus
+		<< std::endl;
     }
 
     // The vector of electron clusters that will be returned by this

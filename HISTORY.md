@@ -12,6 +12,9 @@ someone typed "git commit"), see the output of "git log".
 
 Jul-2024
 
+   - Provides easier accessors (both easier to use and easier to
+     abuse) to an MCTrack's trajectory information.
+
    - In GramsDetSim, increase the cluster ID across all the hits in
      the event, instead of just within each hit.
 

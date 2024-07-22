@@ -60,7 +60,20 @@ namespace gramsdetsim {
 			   std::pow(hit.StartY() - hit.EndY(), 2) + 
 			   std::pow(hit.StartZ() - hit.EndZ(), 2) );
     double dEdx = a_energy / dx;
-
+    if (m_debug) {
+      // Compare the above dx calculation with ROOT's:
+      auto start = hit.Start4D();
+      auto end = hit.End4D();
+      auto diff = start - end;
+      auto dR = diff.R();
+      std::cout << "gramsdetsim::RecombinationModel - "
+		<< " a_energy= " << a_energy
+		<< " dx= " << dx
+		<< " dR= " << dR
+		<< " dEdx= " << dEdx
+		<< std::endl;
+    }
+    
     // It's possible for dx to be so small that the value of dEdx
     // becomes NaN (for "not a number"). If this happens, skip the
     // calculation.
@@ -87,12 +100,16 @@ namespace gramsdetsim {
 			  std::log(m_alpha + effective_efield) / effective_efield, 
 			  1.0e-6);
 	
-	if (m_debug)
+	if (m_debug) {
 	  std::cout << "gramsdetsim::RecombinationModel - "
-		    << "dx= " << dx
-		    << " dEdx= " << dEdx
+		    << " m_alpha= " << m_alpha
+		    << " m_beta= " << m_beta
+		    << " m_field= " << m_field
+		    << " m_rho= " << m_rho
 		    << " effective_efield= " << effective_efield
-		    << " effect= " << effect << std::endl;
+		    << " effect= " << effect
+		    << std::endl;
+	}
       }
       break;
 
