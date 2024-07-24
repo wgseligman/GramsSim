@@ -232,7 +232,7 @@ namespace grams {
     std::set<int> daughters;
 
     // The simulation process that created this track. If this is a
-    // primary particle, its value will be "primary". 
+    // primary particle, its value will be "Primary". 
     std::string process;
 
     // The process that ended this track. 
