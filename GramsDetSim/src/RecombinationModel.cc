@@ -106,6 +106,15 @@ namespace gramsdetsim {
 		    << " m_beta= " << m_beta
 		    << " m_field= " << m_field
 		    << " m_rho= " << m_rho
+		    << std::endl
+		    << " (m_beta*dEdx)= " << m_beta*dEdx
+		    << " (m_field*m_rho)= " << m_field*m_rho
+		    << " m_alpha + effective_efield=" << m_alpha + effective_efield
+		    << std::endl
+		    << " std::log(m_alpha + effective_efield)=" << std::log(m_alpha + effective_efield)
+		    << " std::log(m_alpha + effective_efield)/ effective_efield="
+		    << std::log(m_alpha + effective_efield)/ effective_efield
+		    << std::endl
 		    << " effective_efield= " << effective_efield
 		    << " effect= " << effect
 		    << std::endl;

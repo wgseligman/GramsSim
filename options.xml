@@ -302,6 +302,8 @@
     interactive graphical mode. It will then execute the contents
     of the Geant4 macro file specified by option 'uimacrofile' -->
     <option name="ui" type="flag" desc="start UI session"/>
+    <!-- Note: Make sure that the UI macro file is one set up for UI;
+    e.g., it has a /vis/open command. See mac/vis.mac for an example. -->
     <option name="uimacrofile" value="mac/vis-menus.mac" type="string" desc="G4 macro file for UI"/>
 
     <!-- The name of an input file containing events from some external
