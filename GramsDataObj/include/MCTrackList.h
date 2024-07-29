@@ -187,6 +187,14 @@ namespace grams {
     double pz( size_t i=0 ) const { return trajectory.at(i).Pz(); }
     double e ( size_t i=0 ) const { return trajectory.at(i).E(); }
     double energy ( size_t i=0 ) const { return trajectory.at(i).E(); }
+
+    // If the above additional accessors are a mistake, then this is
+    // probably an even bigger one: Give users a method that they're
+    // used to using to get the number of trajectory points. The
+    // problem is that they may start thinking that a track _is_ a
+    // trajectory vector, rather than understanding that a track _has_ a
+    // trajectory vector.
+    size_t size() const { return trajectory.size(); }
     
     // Many ways to set and get a vector.
     ROOT::Math::XYZVector Polarization() const { return polarization; }
