@@ -5,9 +5,13 @@
 // of the ROOT dictionary for GramsSim.
 {
   gInterpreter->AddIncludePath("include");
-  // This line creates a text string containing the library name, with
-  // the appropriate extension (.so or .dylib) for this operating
-  // system.
-  TString lib(Form("libDictionary.%s", gSystem->GetSoExt()));
-  gSystem->Load(lib.Data());
+  std::string arch(gSystem->GetBuildArch());
+  if ( arch.substr(0,3) == "mac" ) {
+    gSystem->Load("libUtilities.dylib");
+    gSystem->Load("libDictionary.dylib");
+  }
+  else {
+    gSystem->Load("libUtilities.so");
+    gSystem->Load("libDictionary.so");
+  }
 }
