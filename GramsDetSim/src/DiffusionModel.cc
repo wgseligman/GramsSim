@@ -61,11 +61,15 @@ namespace gramsdetsim {
   // Note that the "a_" prefix is a convention to remind us that the
   // variable was an argument in this method.
 
-  // Also note that this method returns a tuple of six vectors.
-
+  // Also note that clusterID is an int&. That's to make sure that
+  // when we increment the clusterID in this routine, it's reflected
+  // in the calling routine. That's to keep the clusterID increasing
+  // over all the hits in the events.
+  
   std::vector< grams::ElectronCluster > 
       DiffusionModel::Calculate(double a_energy, 
-				const grams::MCLArHit& hit) {
+				const grams::MCLArHit& a_hit,
+				int& a_clusterID ) {
 
     // Note that we're drifting along the z-axis, so the cluster
     // positions on the 1 and 2 axes (the x and y axes) are diffused
@@ -74,7 +78,7 @@ namespace gramsdetsim {
     // detector setups or coordinate systems, the following code must
     // be adjusted.
 
-    double z_mean = 0.5 * (hit.StartZ() + hit.EndZ());
+    double z_mean = 0.5 * (a_hit.StartZ() + a_hit.EndZ());
 
     double DriftDistance = m_readout_plane_coord - z_mean;
     double mean_TDrift = std::abs(DriftDistance * m_RecipDriftVel);
@@ -104,10 +108,26 @@ namespace gramsdetsim {
     const double nElectrons = a_energy * m_MeVToElectrons;
     double electronclsize = m_ElectronClusterSize;
 
+    if ( m_debug ) {
+      std::cout << "gramsdetsim::DiffusionModel::Calculate - "
+		<< " nElectrons=" << nElectrons
+		<< " electronclsize=" << electronclsize
+		<< " a_energy=" << a_energy
+		<< " m_MeVToElectrons=" << m_MeVToElectrons
+		<< std::endl;
+    }
+    
     // Compute the number of electron clusters. This will depend on
     // m_ElectronClusterSize, the number of electrons per cluster,
     // which comes from the options XML file.
-    int nClus = (int)std::ceil(nElectrons / m_ElectronClusterSize);
+    int nClus = (int)std::ceil(nElectrons / electronclsize);
+
+    if ( m_debug ) {
+      std::cout << "gramsdetsim::DiffusionModel::Calculate - before adjust"
+		<< " nClus=" << nClus
+		<< " m_MinNumberOfElCluster=" << m_MinNumberOfElCluster
+		<< std::endl;
+    }
 
     // Adjust values if the number of electron cluster calculated
     // above is less than the user-supplied minimum number.
@@ -117,27 +137,37 @@ namespace gramsdetsim {
       nClus = (int)std::ceil(nElectrons / electronclsize);
     }
 
+    if ( m_debug ) {
+      std::cout << "gramsdetsim::DiffusionModel::Calculate - after adjust"
+		<< " electronclsize=" << electronclsize
+		<< " nClus=" << nClus
+		<< std::endl;
+    }
+
     // The vector of electron clusters that will be returned by this
     // model.
     std::vector< grams::ElectronCluster > vecCluster(nClus);
 
-    double averagetransversePos1  = 0.5 * (hit.StartX() + hit.EndX());
-    double averagetransversePos2  = 0.5 * (hit.StartY() + hit.EndY());
+    double averagetransversePos1  = 0.5 * (a_hit.StartX() + a_hit.EndX());
+    double averagetransversePos2  = 0.5 * (a_hit.StartY() + a_hit.EndY());
     double averagelongitudinalPos = z_mean;
 
     // For each cluster:
-    size_t id = 0;
+    int clusterCount = 0;
     for ( auto& cluster : vecCluster ) {
-      cluster.trackID = hit.trackID;
-      cluster.hitID = hit.hitID;
-      cluster.clusterID = id++; // an arbitrary assignment of cluster ID.
+      cluster.trackID = a_hit.trackID;
+      cluster.hitID = a_hit.hitID;
+      // An arbitrary assignment of cluster ID, incremented across all
+      // the clusters in the event.
+      cluster.clusterID = a_clusterID++;
       cluster.numElectrons = electronclsize;
 
       // For most of the clusters, the number of electrons in each
       // cluster is the same (electronclsize). However, the last
       // cluster will contain the "leftover" electrons after dividing
       // the total number of electrons by the electron-cluster size.
-      if ( id == vecCluster.size() )
+      clusterCount++;
+      if ( clusterCount == vecCluster.size() )
 	cluster.numElectrons = nElectrons - (nClus - 1) * electronclsize;
 
       if (nElectrons > 0)

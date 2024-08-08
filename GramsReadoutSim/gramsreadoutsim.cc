@@ -142,8 +142,10 @@ int main(int argc,char **argv)
 
   auto eventID = new grams::EventID();
   auto readoutMap = new grams::ReadoutMap();
-  outputTree->Branch("EventID",    &eventID);
-  outputTree->Branch("ReadoutMap", &readoutMap);
+  // By experimenting, it turns out that setting the splitlevel to 0
+  // improves potential issues with ROOT's TBrowser.
+  outputTree->Branch("EventID",    &eventID,    32000, 0);
+  outputTree->Branch("ReadoutMap", &readoutMap, 32000, 0);
 
   if (verbose)
     std::cout << "gramsreadoutsim: output tree defined" << std::endl;

@@ -21,7 +21,7 @@ set (PROG "gramssky${EXE}")
 add_executable(${PROG} gramssky.cc ${SkySrc})
 
 # Include any internal libraries, such as this project's utilities.
-target_link_libraries(${PROG} ${CMAKE_PROJECT_NAME}Utilities )
+target_link_libraries(${PROG} Utilities )
 
 target_link_libraries(${PROG} ${ROOT_LIBRARIES} )
 target_link_libraries(${PROG} ${XercesC_LIBRARIES} )
