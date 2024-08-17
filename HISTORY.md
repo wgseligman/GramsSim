@@ -10,6 +10,10 @@ someone typed "git commit"), see the output of "git log".
 
 - [More on git.](https://git-scm.com/book/en/v2)
 
+Aug-2024
+
+   - git tag -a v2.2 to mark the changes made in July 2024. 
+
 Jul-2024
 
    - Provides easier accessors (both easier to use and easier to
