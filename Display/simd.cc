@@ -34,7 +34,7 @@ void simd()
 {
   // Create a new display within the ROOT client program that's
   // running.
-  new grams::SimulationDisplay(gClient->GetRoot());
+  new SimulationDisplay(gClient->GetRoot());
 }
 
 // ....ooooOOOOoooo....ooooOOOOoooo....ooooOOOOoooo....ooooOOOOoooo....
