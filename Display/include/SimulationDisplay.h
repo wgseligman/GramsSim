@@ -17,6 +17,9 @@
 // This page was also quite helpful:
 // https://root.cern/root/htmldoc/guides/users-guide/WritingGUI.html
 
+#ifndef _SIMULATIONDISPLAY_H_
+#define _SIMULATIONDISPLAY_H_
+
 // GramsSim includes
 #include "Options.h"
 #include "EventID.h"
@@ -36,7 +39,7 @@
 #include <TGeoManager.h>
 #include <TDatabasePDG.h>
 #include <TParticlePDG.h>
-#include <Math/Vector3D.h>
+#include <TPaveText.h>
 #include <Math/Vector4D.h>
 #include <TPolyLine.h>
 #include <TPolyLine3D.h>
@@ -101,16 +104,6 @@ namespace grams {
     M_PLOT_WAVEFORMS,
     M_FILE_EXIT,
   };
-  
-  // This character array is used in HandleFileMenu. It defines the
-  // filters that a user can select to restrict the files that are
-  // shown in the file dialog box.
-  const char* MyFileTypes[] =
-  { "All files",     "*",
-    "ROOT files",    "*.root",
-    "ROOT macros",   "*.C",
-    "PDF files",     "*.[pP][dD][fF]",
-    nullptr,         nullptr };
 
   // ....ooooOOOOoooo....ooooOOOOoooo....ooooOOOOoooo....ooooOOOOoooo....
   
@@ -274,3 +267,5 @@ namespace grams {
   };
 
 } // namespace grams
+
+#endif // _SIMULATIONDISPLAY_H_

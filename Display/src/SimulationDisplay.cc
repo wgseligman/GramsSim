@@ -17,6 +17,8 @@
 // This page was also quite helpful:
 // https://root.cern/root/htmldoc/guides/users-guide/WritingGUI.html
 
+#include "SimulationDisplay.h"
+
 // GramsSim includes
 #include "Options.h"
 #include "EventID.h"
@@ -28,12 +30,19 @@
 #include "ReadoutWaveforms.h"
 
 // ROOT includes
+#include <TStyle.h>
 #include <TString.h>
 #include <TFile.h>
 #include <TTree.h>
 #include <TCanvas.h>
+#include <TH1.h>
+#include <TH2D.h>
 #include <TH3D.h>
+#include <TPaletteAxis.h>
+#include <TColor.h>
 #include <TGeoManager.h>
+#include <TRegexp.h>
+#include <TGeoBBox.h>
 #include <TDatabasePDG.h>
 #include <TParticlePDG.h>
 #include <Math/Vector3D.h>
@@ -63,6 +72,8 @@
 #include <cmath>
 
 // ....ooooOOOOoooo....ooooOOOOoooo....ooooOOOOoooo....ooooOOOOoooo....
+
+bool debug=false;
 
 namespace grams {
 
@@ -1518,7 +1529,17 @@ namespace grams {
 
 	// Offer the users some filters to restrict the list of files
 	// displayed in the dialog.
-	fileInfo.fFileTypes = MyFileTypes;
+	  
+	// This character array is used in HandleFileMenu. It defines the
+	// filters that a user can select to restrict the files that are
+	// shown in the file dialog box.
+	const char* fileTypes[] =
+	  { "All files",     "*",
+	    "ROOT files",    "*.root",
+	    "ROOT macros",   "*.C",
+	    "PDF files",     "*.[pP][dD][fF]",
+	    nullptr,         nullptr };
+	fileInfo.fFileTypes = fileTypes;
 	
 	// Display the dialog box.
 	new TGFileDialog(gClient->GetRoot(), this, kFDSave, &fileInfo);
