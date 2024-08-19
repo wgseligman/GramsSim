@@ -263,7 +263,7 @@ class SimulationDisplay : public TGMainFrame {
   void AccumulateReadout();
   void AccumulateWaveforms();
 
-  //  ClassDef(SimulationDisplay,0);
+  ClassDef(SimulationDisplay,0);
 };
 
 #endif // _SIMULATIONDISPLAY_H_

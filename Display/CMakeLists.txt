@@ -11,7 +11,7 @@ include_directories(include
                     ${ROOT_INCLUDE_DIR}
                     ${XercesC_INCLUDE_DIR})
 
-set(headerList ${CMAKE_CURRENT_SOURCE_DIR}/include/SimulationDisplay.h)
+set(DisplayHeaders ${CMAKE_CURRENT_SOURCE_DIR}/include/SimulationDisplay.h)
 
 # The source code to compile
 set(DisplaySrc ${CMAKE_CURRENT_SOURCE_DIR}/src/SimulationDisplay.cc )
@@ -21,7 +21,7 @@ set(DisplaySrc ${CMAKE_CURRENT_SOURCE_DIR}/src/SimulationDisplay.cc )
 set(LinkDef ${CMAKE_CURRENT_SOURCE_DIR}/include/LinkDef.hh)
 set(SimdDict DisplayDictionary)
 set(LibName ${SimdDict})
-set (PROG "simd")
+set (PROG simd)
 
 add_executable(${PROG} simd.cc ${DisplaySrc})
 set_property(TARGET ${name} PROPERTY ENABLE_EXPORTS 1)
@@ -47,7 +47,7 @@ if ( MACOSX )
 
    ROOT_GENERATE_DICTIONARY ( 
       ${SimdDict} 
-      ${headerList} 
+      ${DisplayHeaders} 
       LINKDEF ${LinkDef}
       MODULE ${PROG}
 #      OPTIONS
@@ -64,7 +64,7 @@ else()
 
    ROOT_GENERATE_DICTIONARY ( 
       ${SimdDict} 
-      ${headerList} 
+      ${DisplayHeaders} 
       LINKDEF ${LinkDef}
       MODULE ${PROG}
 #      OPTIONS
@@ -76,17 +76,18 @@ endif()
 # Add any source files, including the dictionary .cxx file, to the
 # library dependencies.
 
-#add_library (${LibName} SHARED 
-#  ${CMAKE_CURRENT_BINARY_DIR}/${SimdDict}.cxx 
-#  ${DisplaySrc}
-#  )
+add_library ( ${LibName} ${DisplaySrc}
+  ${CMAKE_CURRENT_BINARY_DIR}/${SimdDict}.cxx 
+  )
 message(STATUS "Display create library ${LibName}")
 message (STATUS "ROOT_LIBRARIES=${ROOT_LIBRARIES}")
+
+target_link_libraries( ${LibName} PUBLIC ${ROOT_LIBRARIES} )
 
 # Make sure the compiler can find include files for our library when
 # other libraries or executables link to it.
 
-#target_include_directories (${LibName} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
+target_include_directories (${LibName} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
 # Put the compiled binary into the main GramsSim build directory.
 # Without this statement, the binary would be placed in
