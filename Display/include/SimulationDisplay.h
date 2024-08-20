@@ -57,7 +57,7 @@
 #include <TGMenu.h>
 #include <TGCanvas.h>
 #include <TRootEmbeddedCanvas.h>
-#include <Riostream.h>
+//#include <Riostream.h>
 
 // C++ includes
 #include <iostream>
@@ -263,6 +263,7 @@ class SimulationDisplay : public TGMainFrame {
   void AccumulateReadout();
   void AccumulateWaveforms();
 
+  // The following line is mandatory for a ROOT GUI application.
   ClassDef(SimulationDisplay,0);
 };
 
