@@ -78,7 +78,7 @@
 SimulationDisplay::SimulationDisplay(const TGWindow* a_window)
   : TGMainFrame(a_window, 10, 10, kMainFrame | kVerticalFrame)
 {
-  debug = false;
+  debug = true;
   
   // These numbers come a size that looks nice on my screen. This
   // may not be ideal for everyone. Fortunately, the size of the
@@ -340,16 +340,40 @@ SimulationDisplay::SimulationDisplay(const TGWindow* a_window)
   MyClusters   = new grams::ElectronClusters;
   MyReadoutMap = new grams::ReadoutMap;
   MyWaveforms  = new grams::ReadoutWaveforms;
-      
-  // Open the first file and its tree.
-  MyFile = TFile::Open("gramselecsim.root");
-  MyTree = MyFile->Get<TTree>("ElecSim");
+
+  // Set up the Options class, so we can get the options that were
+  // used to generate these trees.
+  options = util::Options::GetInstance();
+  if (debug) {
+    options->PrintOptions();
+  }
+
+  // For this program to work properly, we need all the files and
+  // trees described in GramsDataObj/README.md:
+  // https://github.com/wgseligman/GramsSim/tree/develop/GramsDataObj
+
+  std::string g4File, detsimFile, readoutsimFile, elecsimFile;
+  std::string g4Tree, detsimTree, readoutsimTree, elecsimTree;
+
+  options->GetOption("outputG4File",g4File);
+  options->GetOption("outputG4Tree",g4Tree);
+  options->GetOption("outputDetSimFile",detsimFile);
+  options->GetOption("outputDetSimFile",detsimTree);
+  options->GetOption("outputReadoutFile",readoutsimFile);
+  options->GetOption("outputReadoutFile",readoutsimTree);
+  options->GetOption("outputElecFile",elecsimFile);
+  options->GetOption("outputElecTree",elecsimTree);
+  
+  // Open the first file and its tree. Note that ROOT's methods still
+  // expect C-style strings as arguments.
+  MyFile = TFile::Open( elecsimFile.c_str() );
+  MyTree = MyFile->Get<TTree>( elecsimTree.c_str() );
    
   // Declare the friend trees; that is, the files that contain
   // the other columns for this tree.
-  MyTree->AddFriend("gramsg4",    "gramsg4.root");
-  MyTree->AddFriend("DetSim",     "gramsdetsim.root");
-  MyTree->AddFriend("ReadoutSim", "gramsreadoutsim.root");
+  MyTree->AddFriend( g4Tree.c_str(),         g4File.c_str() );
+  MyTree->AddFriend( detsimFile.c_str(),     detsimTree.c_str() );
+  MyTree->AddFriend( readoutsimTree.c_str(), readoutsimFile.c_str() );
    
   // Define the branches we'll read from the collection of friend
   // trees.
@@ -359,16 +383,6 @@ SimulationDisplay::SimulationDisplay(const TGWindow* a_window)
   MyTree->SetBranchAddress("TrackList",        &MyTrackList);
   MyTree->SetBranchAddress("ReadoutMap",       &MyReadoutMap);
   MyTree->SetBranchAddress("ReadoutWaveforms", &MyWaveforms);
-
-  // Set up the Options class, so we can get the options that were
-  // used to generate these trees.
-  options = util::Options::GetInstance();
-  // Copy the Options n-tuple from the first ROOT file we opened
-  // above.
-  options->CopyInputNtuple(MyFile);
-  if (debug) {
-    options->PrintOptions();
-  }
 
   // Set up the histogram parameters.
   SetUpHistogram();

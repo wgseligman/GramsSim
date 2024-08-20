@@ -48,7 +48,7 @@ namespace util {
   // Why don't we get this flag from the command line? Because this is
   // the routine that parses the command line! At this point in the
   // processing we don't know the state of the --debug option yet.
-  const bool debug = false;
+  const bool debug = true;
 
   bool Options::ParseOptions(int argc, char** argv, const std::string a_programName)
   {
@@ -457,7 +457,8 @@ namespace util {
       } // for each option
 
     if (debug) PrintOptions();
-
+    if (debug) std::cout << "Options::ParseOptions - at end " << std::endl;
+    
     return success;
   }
 

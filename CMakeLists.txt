@@ -17,8 +17,16 @@ if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
     set(MACOSX TRUE)
 endif()
 
+# There's a peril to being flexible: There's no minimum C++ compiler
+# standard in this CMakeLists.txt file. As a result, if we're using a
+# current version of ROOT, there's a long stream of warning messages
+# on how cmake is set up for C++17 but ROOT was compiled with
+# C++20. These messages are meaningless and annoying. So, at a slight
+# risk, turn off warning messages from the compiler.
+add_compile_options(-w)
+
 # For a Mac OS compilation, we have to avoid the program names having
-# the same names as the subidrectories; e.g., in Linux we can have
+# the same names as the subdirectories; e.g., in Linux we can have
 # directory GramsSky and executable gramssky, but in Mac OS we
 # can't. 
 #

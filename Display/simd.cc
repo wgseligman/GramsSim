@@ -32,6 +32,9 @@ const bool debug = false;
 // In interactive ROOT, this is the main routine that's called.
 void simd()
 {
+
+  std::cout << "Trace 6" << std::endl;
+
   // Create a new display within the ROOT client program that's
   // running.
   new SimulationDisplay(gClient->GetRoot());
@@ -41,6 +44,27 @@ void simd()
 
 int main(int argc, char **argv)
 {
+  std::cout << "Trace 1" << std::endl;
+
+  // Access all the options in the XML file. We'll need values from
+  // throughout the simulation chain.
+  auto options = util::Options::GetInstance();
+
+  std::cout << "Trace 1.5" << std::endl;
+
+  auto result = options->ParseOptions(argc, argv, "ALL");
+
+  std::cout << "Trace 2" << std::endl;
+  
+  if (! result) {
+    std::cerr << "File " << __FILE__ << " Line " << __LINE__ << " " << std::endl
+              << "sund: Aborting job due to failure to parse options"
+              << std::endl;
+    exit(EXIT_FAILURE);
+  }
+
+  std::cout << "Trace 3" << std::endl;
+
   TApplication theApp("App", &argc, argv);
 
   if (gROOT->IsBatch()) {
@@ -48,7 +72,11 @@ int main(int argc, char **argv)
     return 1;
   }
 
+  std::cout << "Trace 4" << std::endl;
+
   simd();
+
+  std::cout << "Trace 5" << std::endl;
 
   theApp.Run();
 
