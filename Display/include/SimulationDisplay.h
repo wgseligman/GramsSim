@@ -31,18 +31,10 @@
 #include "ReadoutWaveforms.h"
 
 // ROOT includes
-#include <TString.h>
 #include <TFile.h>
 #include <TTree.h>
 #include <TCanvas.h>
-#include <TH3D.h>
-#include <TGeoManager.h>
-#include <TDatabasePDG.h>
-#include <TParticlePDG.h>
 #include <TPaveText.h>
-#include <Math/Vector4D.h>
-#include <TPolyLine.h>
-#include <TPolyLine3D.h>
 #include <TApplication.h>
 #include <TGClient.h>
 #include <TGButton.h>
@@ -57,13 +49,10 @@
 #include <TGMenu.h>
 #include <TGCanvas.h>
 #include <TRootEmbeddedCanvas.h>
-//#include <Riostream.h>
 
 // C++ includes
-#include <iostream>
 #include <string>
 #include <map>
-#include <cmath>
 
 // ....ooooOOOOoooo....ooooOOOOoooo....ooooOOOOoooo....ooooOOOOoooo....
 
@@ -192,6 +181,7 @@ class SimulationDisplay : public TGMainFrame {
   TTree* MyTree;
   TH1* MyHist;
   TPaveText* MyTextBox;
+  TPaveText* MyEventBox;
   TPaveText* MyDescBox;
   TPaveText* MyEmptyBox;
   TGNumberEntry* MyRunEntry;

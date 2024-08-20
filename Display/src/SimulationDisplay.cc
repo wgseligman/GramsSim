@@ -78,7 +78,13 @@
 SimulationDisplay::SimulationDisplay(const TGWindow* a_window)
   : TGMainFrame(a_window, 10, 10, kMainFrame | kVerticalFrame)
 {
-  debug = true;
+  // Set up the Options class, so we can get the options that were
+  // used to generate these trees.
+  options = util::Options::GetInstance();
+  options->GetOption("debug",debug);
+  if (debug) {
+    options->PrintOptions();
+  }
   
   // These numbers come a size that looks nice on my screen. This
   // may not be ideal for everyone. Fortunately, the size of the
@@ -323,6 +329,7 @@ SimulationDisplay::SimulationDisplay(const TGWindow* a_window)
   MyFile = nullptr;
   MyHist = nullptr;
   MyTextBox = nullptr;
+  MyEventBox = nullptr;
   MyDescBox = nullptr;
   MyEmptyBox = nullptr;
 
@@ -341,13 +348,6 @@ SimulationDisplay::SimulationDisplay(const TGWindow* a_window)
   MyReadoutMap = new grams::ReadoutMap;
   MyWaveforms  = new grams::ReadoutWaveforms;
 
-  // Set up the Options class, so we can get the options that were
-  // used to generate these trees.
-  options = util::Options::GetInstance();
-  if (debug) {
-    options->PrintOptions();
-  }
-
   // For this program to work properly, we need all the files and
   // trees described in GramsDataObj/README.md:
   // https://github.com/wgseligman/GramsSim/tree/develop/GramsDataObj
@@ -358,11 +358,19 @@ SimulationDisplay::SimulationDisplay(const TGWindow* a_window)
   options->GetOption("outputG4File",g4File);
   options->GetOption("outputG4Tree",g4Tree);
   options->GetOption("outputDetSimFile",detsimFile);
-  options->GetOption("outputDetSimFile",detsimTree);
+  options->GetOption("outputDetSimTree",detsimTree);
   options->GetOption("outputReadoutFile",readoutsimFile);
-  options->GetOption("outputReadoutFile",readoutsimTree);
+  options->GetOption("outputReadoutTree",readoutsimTree);
   options->GetOption("outputElecFile",elecsimFile);
   options->GetOption("outputElecTree",elecsimTree);
+
+  if (debug) {
+    std::cout << "SimulationDisplay options: " << std::endl
+	      << "g4File=" << g4File << " g4Tree=" << g4Tree << std::endl
+	      << "detsimFile=" << detsimFile << " detsimTree=" << detsimTree << std::endl
+	      << "readoutsimFile=" << readoutsimFile << " readoutsimTree=" << readoutsimTree << std::endl
+	      << "elecsimFile=" << elecsimFile << " elecsimTree=" << elecsimTree << std::endl;
+  }
   
   // Open the first file and its tree. Note that ROOT's methods still
   // expect C-style strings as arguments.
@@ -372,7 +380,7 @@ SimulationDisplay::SimulationDisplay(const TGWindow* a_window)
   // Declare the friend trees; that is, the files that contain
   // the other columns for this tree.
   MyTree->AddFriend( g4Tree.c_str(),         g4File.c_str() );
-  MyTree->AddFriend( detsimFile.c_str(),     detsimTree.c_str() );
+  MyTree->AddFriend( detsimTree.c_str(),     detsimFile.c_str() );
   MyTree->AddFriend( readoutsimTree.c_str(), readoutsimFile.c_str() );
    
   // Define the branches we'll read from the collection of friend
@@ -1144,6 +1152,21 @@ void SimulationDisplay::UpdateDisplay() {
   MyDescBox->SetTextFont(42);
   MyDescBox->Draw();
 
+  // Define the event ID text box.
+  if ( MyEventBox == nullptr )
+    MyEventBox = new TPaveText(0.687,0.945,0.988,0.987,"brNDC");
+  MyEventBox->Clear();
+  std::ostringstream evLine;
+  evLine << "Event: " << (*MyEventID);
+  std::string evString = evLine.str();
+  auto eventText = MyEventBox->AddText(evString.c_str());
+  MyEventBox->SetBorderSize(0);
+  MyEventBox->SetFillColor(0);
+  MyEventBox->SetFillStyle(0);
+  MyEventBox->SetTextAlign(kHAlignRight + kVAlignCenter);
+  MyEventBox->SetTextFont(42);
+  MyEventBox->Draw();
+  
   // Define the supplementary text box in the canvas.
   std::string geomDesc = "Geometry: " + GeometryFile;
 
@@ -1451,9 +1474,13 @@ void SimulationDisplay::SetUpHistogram() {
   MyScaleFactor[ M_VIEW_MEDIUM ] = 2;
   MyScaleFactor[ M_VIEW_COARSE ] = 4;
 
-  // By default debug mode is off. 
-  MyMenuView->UnCheckEntry( M_VIEW_DEBUG );
-    
+  // Let the debug menu item be in sync with the value in the Options
+  // class (see the constructor).
+  if ( debug )
+    MyMenuView->CheckEntry( M_VIEW_DEBUG );
+  else
+    MyMenuView->UnCheckEntry( M_VIEW_DEBUG );
+        
   // Let the initial view be the 3D view.
   HistView = M_VIEW_3D;
   MyMenuView->CheckEntry(M_VIEW_3D);
