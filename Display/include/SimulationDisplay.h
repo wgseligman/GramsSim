@@ -79,6 +79,7 @@ enum ESignal {
   M_VIEW_MEDIUM,
   M_VIEW_COARSE,
   M_VIEW_ADD_TRACKS,
+  M_VIEW_DEBUG,
   M_RUN_ENTRY,
   M_EVENT_ENTRY,
   M_SAVEAS_C,
@@ -111,6 +112,9 @@ enum ESignal {
 class SimulationDisplay : public TGMainFrame {
 
  private:
+
+  bool debug;
+  
   // The interface elements used to display the menus at the top of
   // the frame.
   TGDockableFrame* fMenuDock;
@@ -264,7 +268,7 @@ class SimulationDisplay : public TGMainFrame {
   void AccumulateWaveforms();
 
   // The following line is mandatory for a ROOT GUI application.
-  ClassDef(SimulationDisplay,0);
+  ClassDefOverride (SimulationDisplay,0);
 };
 
 #endif // _SIMULATIONDISPLAY_H_

@@ -73,13 +73,13 @@
 
 // ....ooooOOOOoooo....ooooOOOOoooo....ooooOOOOoooo....ooooOOOOoooo....
 
-bool debug=false;
-
 // Constructor. Define all the widgets that will appear within the
 // main frame.
 SimulationDisplay::SimulationDisplay(const TGWindow* a_window)
   : TGMainFrame(a_window, 10, 10, kMainFrame | kVerticalFrame)
 {
+  debug = false;
+  
   // These numbers come a size that looks nice on my screen. This
   // may not be ideal for everyone. Fortunately, the size of the
   // window can be adjusted by the user by dragging on its lower
@@ -202,6 +202,8 @@ SimulationDisplay::SimulationDisplay(const TGWindow* a_window)
   MyMenuView->AddEntry("Coarse",       M_VIEW_COARSE);
   MyMenuView->AddSeparator();
   MyMenuView->AddEntry("Show tracks",  M_VIEW_ADD_TRACKS);
+  MyMenuView->AddSeparator();
+  MyMenuView->AddEntry("Debug mode",   M_VIEW_DEBUG);
 
   // The menu handler for the View menu. 
   MyMenuView->Connect("Activated(Int_t)", "SimulationDisplay", this,
@@ -930,14 +932,24 @@ void SimulationDisplay::UpdateDisplay() {
   if ( CurrentEntry > lastEntry ) CurrentEntry = lastEntry;
   if ( CurrentEntry < 0 ) CurrentEntry = 0;
 
+  if (debug) std::cout << "Trace 0210"
+		       << " Event=" << (*MyEventID)
+		       << std::endl;
+
   // Get the current entry.
   MyTree->GetEntry( CurrentEntry );
+
+  if (debug) std::cout << "Trace 0220"
+		       << " Event=" << (*MyEventID)
+		       << std::endl;
 
   // Set the number fields on the display.
   MyRunEntry->SetNumber( MyEventID->Run() );
   MyEventEntry->SetNumber( MyEventID->Event() );
-    
-  if (debug) std::cout << "Trace 0500" << std::endl;
+
+  if (debug) std::cout << "Trace 0500"
+		       << " Event=" << (*MyEventID)
+		       << std::endl;
 
   // Replace the "Save" menu entries with ones that reflect the
   // current plot type and event index.
@@ -1424,6 +1436,9 @@ void SimulationDisplay::SetUpHistogram() {
   MyScaleFactor[ M_VIEW_FINE   ] = 1;
   MyScaleFactor[ M_VIEW_MEDIUM ] = 2;
   MyScaleFactor[ M_VIEW_COARSE ] = 4;
+
+  // By default debug mode is off. 
+  MyMenuView->UnCheckEntry( M_VIEW_DEBUG );
     
   // Let the initial view be the 3D view.
   HistView = M_VIEW_3D;
@@ -1470,7 +1485,7 @@ void SimulationDisplay::SetEventEntry() {
   auto run = MyRunEntry->GetNumberEntry()->GetIntNumber();
   auto event = MyEventEntry->GetNumberEntry()->GetIntNumber();
 
-  // Create a "dummy" EventID, and convert it an index number.
+  // Create a "dummy" EventID, and convert it to an index number.
   grams::EventID theEventID(run,event);
   auto index = theEventID.Index();
 
@@ -1491,7 +1506,7 @@ void SimulationDisplay::SetRunEntry() {
   grams::EventID theEventID(run,event);
   auto index = theEventID.Index();
 
-  CurrentEntry = MyTree->GetEntryNumberWithIndex( index );
+  CurrentEntry = MyTree->GetEntryNumberWithBestIndex( index );
   UpdateDisplay();
 }
 
@@ -1690,6 +1705,19 @@ void SimulationDisplay::HandleViewMenu(Int_t id)
       MyMenuView->UnCheckEntry( M_VIEW_ADD_TRACKS );
     else
       MyMenuView->CheckEntry( M_VIEW_ADD_TRACKS );
+    UpdateDisplay();
+    break;
+
+  case M_VIEW_DEBUG:
+    // Toggle the selection: If on, turn it off and vice-versa.
+    if ( MyMenuView->IsEntryChecked( M_VIEW_DEBUG ) ) {
+      MyMenuView->UnCheckEntry( M_VIEW_DEBUG );
+      debug = false;
+    }
+    else {
+      MyMenuView->CheckEntry( M_VIEW_DEBUG );
+      debug = true;
+    }
     UpdateDisplay();
     break;
       
