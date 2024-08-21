@@ -1,8 +1,8 @@
 // To run this ROOT macro, you can do something like this:
-//    root scripts/SimpleAnalysis.C
+//    root scripts/skyview.C
 
 // This macro assumes that you're moderately familiar with
-// SimpleAnalysis.C. I don't repeat every single comment in that
+// SimpleAnalysis.C. I don't repeat every single comment from that
 // macro.
 
 bool debug = false;
