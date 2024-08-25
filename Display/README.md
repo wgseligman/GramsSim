@@ -7,9 +7,9 @@ The `GramsSim/Display` directory contains programs used to display results of th
 
 ## `simd`
 
-`simd` is short for "Simulation Display". It shows histograms of key values that comes from the main stages of [GramsSim](../README.md).
+`simd` is short for "Simulation Display". It shows histograms of key values that come from the main stages of [GramsSim](../README.md).
 
-- Note that `simd` is _not_ an event display. It does not show the detector geometry. The "boxes" that you see in the plot are histograms, not geometric objects. 
+- Note that `simd` is _not_ an event display. It does not show the detector geometry. The "boxes" that you see in the plot are histograms, not images of the LArTPC. 
 
 - The main purpose of this tool is to understand the simulation, diagnose problems, and improve our understanding of the detector. It's not intended to produce plots for publication. 
 
@@ -44,11 +44,11 @@ If you just type this command, `simd` will read those files by default and displ
 
 If you're doing several different runs of the simulation chain with different sets of files, you can either:
 
-- Create several Options XML files. `simd` accepts options on the command line [in the same way as the main GramsSim programs](../util/README.md), so you can just give an alternate options file as an argument to the command; e.g.,
+- Create several Options XML files. `simd` accepts options on the command line [in the same way as the main GramsSim programs](../util/README.md), so you can give an alternate options file as an argument to the command; e.g.,
 
       ./simd options-other.xml
       
-- You can specify the names of all the files created by the simulations chain on the command line, overriding the values in `options.xml` as you can with the main GramsSim programs; e.g.,
+- You can specify the names of all the files created by the simulations chain on the command line, overriding the values in `options.xml` [as you can with the main GramsSim programs](../util/README.md); e.g.,
 
       ./simd \
           --outputG4File=g4-other.root \
@@ -67,7 +67,9 @@ If you're doing several different runs of the simulation chain with different se
 
 #### Speed issues
 
-#### User-interfaces issues
+#### User-interface issues
+
+#### Consistency between files
 
 ### `simd` code tips
 
