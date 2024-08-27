@@ -63,8 +63,6 @@ After conda has been installed, the following will set up a suitable development
 
 *Note 2: This `conda create` command can take a very long time to execute as it resolves all the package dependencies; I've seen a `strict` priority install take days. You may want to consider installing the [libmamba][200] solver, which greatly speeds up all conda `create` and `install` commands.*
 
-*Note 3: __For M1-series Macs only__: As of Jul-2024, there is no working version of the hepmc3 package, either in [conda](https://github.com/conda-forge/hepmc3-feedstock/issues/18) or by using [pip](https://gitlab.cern.ch/hepmc/HepMC3/-/issues/91). I've issued tickets for both package managers, but until this is resolved (if ever!) hepmc3 cannot be installed unless you compile it from scratch. The practical consequence is that [GramsSky](../GramsSky) won't be built as part of a GramsSim installation. *
-
 [200]: https://www.anaconda.com/blog/a-faster-conda-for-a-growing-community
 
 Afterwards, the following must be executed once per login session:

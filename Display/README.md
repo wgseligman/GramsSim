@@ -63,6 +63,11 @@ If you're doing several different runs of the simulation chain with different se
   
 ### Using `simd`
 
+When you start `simd`, you'll see a view that looks something like this. Note that the details will differ depending on the contents of the GramsSim output files. 
+
+| <img src="images/simd_starting_view.png" width="75%" /> |
+
+
 ### Warnings
 
 #### Speed issues

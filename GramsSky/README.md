@@ -24,11 +24,6 @@ Note:
 
 - If the HepMC3 libraries are not found during the [build process](../DEPENDENCIES.md), then this package will not be compiled.
 
-- In particular, if you're using [conda][1009] on an M1-series Mac, the [HepMC3][1010] libraries are not yet part of the conda repositories, which means `GramsSky` won't be compiled.
-
-[1009]: https://docs.conda.io/en/latest/
-[1010]: https://anaconda.org/conda-forge/hepmc3
-
 - If the [FITSIO][20] and [HEALPix][21] libraries are not found during the build process, then any generators involving HEALPix maps won't be compiled into `GramsSky`. 
 
 In the following documentation, names in __`this format`__ are parameters in the [options XML file](../options.xml). 
