@@ -3,15 +3,15 @@
 
 _If you want a formatted (or easier-to-read) version of this file, scroll to the bottom of [`GramsSim/README.md`](../README.md) for instructions. If you're reading this on github, then it's already formatted._
 
-The `GramsSim/Display` directory contains programs used to display results of the simulation. (As of Aug-2024, there's just one: `simd`).
+The `GramsSim/Display` directory contains programs used to display results of the simulation. As of Aug-2024, there's just one: `simd`.
 
 ## `simd`
 
 `simd` is short for "Simulation Display". It shows histograms of key values that come from the main stages of [GramsSim](../README.md).
 
-- Note that `simd` is _not_ an event display. It does not show the detector geometry. The "boxes" that you see in the plot are histograms, not images of the LArTPC. 
+- `simd` is _not_ an event display. It does not show the detector geometry. The "boxes" that you see in the plot are histograms, not images of the LArTPC. 
 
-- The main purpose of this tool is to understand the simulation, diagnose problems, and improve our understanding of the detector. It's not intended to produce plots for publication. 
+- The main purpose of this tool is to understand the simulation, diagnose problems, and improve our understanding of the detector. It might be useful for making plots for publication, but that's not its focus. 
 
 ### Invoking `simd`
 
@@ -58,7 +58,7 @@ If you're doing several different runs of the simulation chain with different se
 
   This second approach is more verbose, but it may be useful in some cases. 
           
-  The above example assumes that all other options are the same as those found in `options.xml`. For example, `simd` gets the name of the original GDML geometry file from option `gdmlfile`. If you're running GramsSim multiple times  with different geometries, while you can add `--gdmlfile=geometry-other.gdml` to the command line, the first approach is probably the better one to take. 
+  The above example assumes that all other options are the same as those found in `options.xml`. For example, `simd` gets the name of the original GDML geometry file from option `gdmlfile`. If you're running GramsSim multiple times  with different geometries, while you can add `--gdmlfile=geometry-other.gdml` to the `simd` command line, the first approach is probably the better one to take. 
   
   
 ### Using `simd`
