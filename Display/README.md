@@ -63,9 +63,39 @@ If you're doing several different runs of the simulation chain with different se
   
 ### Using `simd`
 
+#### Electron-cluster energies
+
 When you start `simd`, you'll see a view that looks something like this. Note that the details will differ depending on the contents of the GramsSim output files. 
 
 | <img src="images/simd_starting_view.png" width="75%" /> |
+
+As of Sep-2024, the initial view will show a 3D plot of electron-cluster energies versus cluster arrival time at the anode. 
+
+#### LAr Hits
+
+To see the energy deposits due to ionization in the LAr (the "hits"), select *LAr MC Hits* from the Plot menu:
+
+| <img src="images/simd_hits.png" width="75%" /> |
+
+#### MC Tracks
+
+To see the original particle tracks that are the source of the hits, select *MC Tracks* from the Plot menu:
+
+| <img src="images/simd_tracks.png" width="75%" /> |
+
+The convention is the same as that of [GramsG4 user-interface view](../mac/README.md): green is used for neutral particles; red for negatively-charged particles; blue for positively-charged particles. At the scale of the plot, the red tracks for Compton scatters may be invisible. 
+
+What can be more useful is to see the MC tracks superimposed on the hits. To see this, select the *LAr MC Hits* from the Plot menu, and select the *Show Tracks* option from the View menu:
+
+| <img src="images/simd_hits_ShowTracks.png" width="75%" /> |
+
+#### Readout channel energies
+
+
+
+#### Navigating events
+
+
 
 
 ### Warnings
