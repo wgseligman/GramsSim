@@ -45,7 +45,7 @@ for event in inputTree:
     # There are three branches in the input tree. We'll only use one
     # of them, but I'll show all three here so you know how the
     # process works. You can see the properties of all these data
-    # objects in GramsSim/GramsDataObj/include.
+    # objects in the include/ sub-directory.
     eventID = inputTree.EventID;
     TrackList = inputTree.TrackList;
     LArHits = inputTree.LArHits;

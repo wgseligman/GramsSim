@@ -24,7 +24,7 @@ Note:
 
 - If the HepMC3 libraries are not found during the [build process](../DEPENDENCIES.md), then this package will not be compiled.
 
-- If the [FITSIO][20] and [HEALPix][21] libraries are not found during the build process, then any generators involving HEALPix maps won't be compiled. 
+- If the [FITSIO][20] and [HEALPix][21] libraries are not found during the build process, then any generators involving HEALPix maps won't be compiled into `GramsSky`. 
 
 In the following documentation, names in __`this format`__ are parameters in the [options XML file](../options.xml). 
 

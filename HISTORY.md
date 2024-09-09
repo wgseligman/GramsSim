@@ -12,6 +12,8 @@ someone typed "git commit"), see the output of "git log".
 
 Aug-2024
 
+   - Added a new simple example in scripts, a both a C macro and a python script: skyview, which takes a quick look at primary particle distribution in GramsG4. 
+
    - git tag -a v2.2 to mark the changes made in July 2024. 
 
 Jul-2024

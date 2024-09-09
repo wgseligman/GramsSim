@@ -81,6 +81,9 @@ directory](./include). If any implementations are needed, they're
 either in `.icc` files in the `include/` directory or in `.cc` files
 in [the src/ directory](./src).
 
+If you want to look up the header files, a copy of all the user-related headers is made
+into the `include/` directory within your build directory. 
+
 ### Linkdef.hh
 
 Because of the way [ROOT dictionary generation][70] works, the single
@@ -107,7 +110,7 @@ be displayed easily in C++. For example:
 Some of the data objects are lists ([std::set][30],
 [std::multiset][40], [std::map][50], etc.). Others are C++ types such
 as `struct` or `class`. For the non-list types, an explicit or
-implicit [operator<][60] is defined. This means that these objects can be
+implicit [operator<<][60] is defined. This means that these objects can be
 sorted, or used as keys in sorted containers like `std::set`.
 
 [30]: https://cplusplus.com/reference/set/set/
@@ -262,7 +265,7 @@ for ( const auto& [key, cluster] : (*clusters) ) {
 }
 ```
 
-This is illustrated in greater detail in [GramsSim/scripts/AllFilesExample.cc](../scripts/AllFilesExample.cc) [GramsSim/scripts/AllFilesExample.py](../scripts/AllFilesExample.py). 
+This is illustrated in greater detail in [scripts/AllFilesExample.cc](../scripts/AllFilesExample.cc) and [scripts/AllFilesExample.py](../scripts/AllFilesExample.py). 
 
 
 ## The data objects
@@ -272,7 +275,7 @@ Many of the data objects are organized in the form of maps. In C++, a [std::map]
 [130]: https://cplusplus.com/reference/map/map/
 [140]: https://www.w3schools.com/python/python_dictionaries.asp
 
-As you look through the description of the data objects below, consult the [GramsDataObj/include](../GramsDataObj/include) directory for the header files. These are the files that define the methods for accessing the values stored in these objects. Documentation may be inaccurate; the code is actual definition.
+As you look through the description of the data objects below, consult the `include/` directory within your build directory for the header files. These are the files that define the methods for accessing the values stored in these objects. Documentation may be inaccurate; the code is the actual definition.
 
 ### grams::EventID
 

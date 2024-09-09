@@ -192,9 +192,9 @@ namespace util {
       int index = 0;
       // For the passing of the options to findOption to work correctly, I have
       // to make sure that each option name is in its own char* memory location that's
-      // not going to change. Hence this array: up to 100 options that are up to
+      // not going to change. Hence this array: up to 500 options that are up to
       // 50 characters long. 
-      char cname[100][50];
+      char cname[500][50];
       // For every entry in the options map...
       for ( auto option_iter = m_options.cbegin(); option_iter != m_options.cend(); ++option_iter )
 	{
@@ -457,7 +457,8 @@ namespace util {
       } // for each option
 
     if (debug) PrintOptions();
-
+    if (debug) std::cout << "Options::ParseOptions - at end " << std::endl;
+    
     return success;
   }
 
