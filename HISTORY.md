@@ -10,6 +10,14 @@ someone typed "git commit"), see the output of "git log".
 
 - [More on git.](https://git-scm.com/book/en/v2)
 
+Sep-2024
+
+   - git tag -a v2.3 to mark the new `simd` program. 
+
+   - Added a new sub-directory, `Display`, for general views and diagnostics.
+   
+   - Added the first program within `Display`: `simd`, a simulations display. 
+
 Aug-2024
 
    - Added a new simple example in scripts, a both a C macro and a python script: skyview, which takes a quick look at primary particle distribution in GramsG4. 
