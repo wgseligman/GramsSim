@@ -6,11 +6,54 @@ the top.
 - For a detailed list of all changes (basically, every time
 someone typed "git commit"), see the output of "git log".
 
-- For tagged commits (important milestones), use "git tag -n1".
+- For a list of tagged commits (important milestones), use "git tag -n1".
 
 - [More on git.](https://git-scm.com/book/en/v2)
 
+Sep-2024
+
+   - git tag -a v2.3 to mark the new `simd` program. 
+
+   - Added a new sub-directory, `Display`, for general views and diagnostics.
+   
+   - Added the first program within `Display`: `simd`, a simulations display. 
+
+Aug-2024
+
+   - Added a new simple example in scripts, a both a C macro and a python script: skyview, which takes a quick look at primary particle distribution in GramsG4. 
+
+   - git tag -a v2.2 to mark the changes made in July 2024. 
+
+Jul-2024
+
+   - Provides easier accessors (both easier to use and easier to
+     abuse) to an MCTrack's trajectory information.
+
+   - In GramsDetSim, increase the cluster ID across all the hits in
+     the event, instead of just within each hit.
+
+   - GramsSky->GramsG4: The energy from GramsSky is now interpreted as
+     kinetic energy, not total energy.
+
+   - Create an include/ sub-directory within the build directory, and
+     populate it with the header files that the scripts need. Refine
+     the scripts and their comments to remove "relative" directory
+     references like `../GramsSim/GramsDataObj/include` to make life
+     easier.
+
+   - git tag -a v2.1 to reflect Mac OS compatibility relese. 
+
+   - Improved rootlogon.C to be a bit more OS-independent. 
+
+   - Refine the examples a bit. `AllFilesExample` (in both C++ and
+     Python) is split into two programs: AllFilesExample and
+     BacktrackExample. The first shows how to go "forward" in the data
+     objects (tracks->hits->clusters->waveforms); the latter shows how
+     to backtrack through those objects.
+
 Jun-2024
+
+   - The dictionary now works on Mac OS X; check footnote in [GramsSim/GramsDataObj/README.md](./GramsDataObj) for files to copy if you're working outside your build area. 
 
    - **MAJOR BREAKING CHANGE**: The n-tuples used in the previous GramsSim files have been
      replaced with a data-object ROOT-based TTree format. There is a new package,
@@ -18,6 +61,8 @@ Jun-2024
      
    - The examples in GramsSim/scripts and the overall documentation in README.md files
      was revised for this change. 
+     
+   - Read [GramsSim/GramsDataObj/README.md](./GramsDataObj) for the files to copy if you're working outside your build area. 
 
    - git tag -a v2.0 <-- The first tag assigned for the start of the
      tree-based output format.

@@ -24,14 +24,20 @@ For examples related to working with Geant4 and GramsG4, see [`GramsSim/mac`](..
 
 ## Examples
 
-[`SimpleAnalysis.C`](./SimpleAnalysis.C) - a simple example of how to look at the trees
+[`SimpleAnalysis.C`](./SimpleAnalysis.C) - A simple example of how to look at the trees
 produced by gramsg4 using a ROOT macro. Note how this macro depends
 on [GramsSim/rootlogon.C](../rootlogon.C), which loads the
 [dictionary](../GramsDataObj) when you start an
 interactive ROOT session.
 
-[`SimpleAnalysis.py`](./SimpleAnalysis.py) - a Python script that performs the
+[`SimpleAnalysis.py`](./SimpleAnalysis.py) - A Python script that performs the
 same function as `SimpleAnalysis.C`. 
+
+[`skyview.C`](./skyview.C) - Another simple example. This creates a 3D histogram of the
+primary particles in the [GramsG4](../GramsG4) output file.
+
+[`skyview.py`](./skyview.py) - A Python script that performs a similar
+function as `skyview.C`. 
 
 [`dEdxExample.cc`](dEdxExample.cc) - An example of how to read a map-based branch in one
 of the GramsSim output files.  There are lots of detailed comments in
@@ -39,25 +45,37 @@ here, to point the way to users developing code for their own tasks.
 
 [`dEdxExample.py`](dEdxExample.py) - The same as above, in Python.
 
-[`RadialDistance.py`](RadialDistance.py) - a more realistic example of how to look at the
+[`RadialDistance.py`](RadialDistance.py) - A more realistic example of how to look at the
 trees produced by `gramsg4`.
 
-[`AllFilesExample.cc`](AllFilesExample.cc) - An example of how to open all the output
-files from all the `GramsSim` programs at once, set them up as [friend trees][80].
-This allows you to treat the entire ensemble of `GramsSim` output files as a single
-structure. (As the comments in the code warn, don't copy this blindly. Edit it down
-to only read the files you need.)
+[`AllFilesExample.cc`](AllFilesExample.cc) - An example of how to open
+all the output files from all the `GramsSim` programs at once, set
+them up as [friend trees][80].  This allows you to treat the entire
+ensemble of `GramsSim` output files as a single structure. (As the
+comments in the code warn, don't copy this blindly. Edit it down to
+only read the files you need. Much of the code in the main loop serves
+no useful purpose.)
 
 [`AllFilesExample.py`](AllFilesExample.py) - The same as above, in Python. 
 
+[`BacktrackExample.cc`](BacktrackExample.cc) - `AllFileExample` shows
+how to use all the files at once to go through the GramsSim objects in
+the "foward direction": tracks->hits->clusters->waveforms. This
+program shows how to go in opposite direction:
+waveforms->clusters->hits->tracks. Again, as the comments warn, think
+about what you're copying; about half the code in the analysis loop
+serves no useful purpose.
+
+[`BacktrackExample.py`](Backtrackxample.py) - The same as above, in Python. 
+
 [80]: https://root.cern/manual/trees/#widening-a-ttree-through-friends
 
-[`Hist2Text.C`](Hist2Text.C) - converts a ROOT histogram into the simple text format
+[`Hist2Text.C`](Hist2Text.C) - Converts a ROOT histogram into the simple text format
 used by Geant4's General Particle Source system. Any `.root` or `.txt`
 files in this directory are used as example inputs and outputs for
 `Hist2Text.C`.
 
-[`gdmlsearch.cc`](gdmlsearch.cc) - an example of how to use ROOT to search through a
+[`gdmlsearch.cc`](gdmlsearch.cc) - An example of how to use ROOT to search through a
 geometry specified in GDML and extract information from it.
 
 ## HepMC3 tests

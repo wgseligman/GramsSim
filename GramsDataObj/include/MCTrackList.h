@@ -43,10 +43,20 @@ namespace grams {
     double Z() const { return position.Z(); }
     double T() const { return position.T(); }
 
+    double x() const { return position.X(); }
+    double y() const { return position.Y(); }
+    double z() const { return position.Z(); }
+    double t() const { return position.T(); }
+
     double Px() const { return momentum.Px(); }
     double Py() const { return momentum.Py(); }
     double Pz() const { return momentum.Pz(); }
     double E()  const { return momentum.E(); }
+
+    double px() const { return momentum.Px(); }
+    double py() const { return momentum.Py(); }
+    double pz() const { return momentum.Pz(); }
+    double e()  const { return momentum.E(); }
 
   }; // MCTrajectoryPoint 
 
@@ -138,6 +148,54 @@ namespace grams {
       trajectory.push_back( mtp );
     }
 
+    // For convenience, offer easy access to the data stored in the
+    // trajectory.
+
+    // Notes:
+
+    // These methods all use the ::at() method, which is slow but
+    // provides constant checks if its argument goes out of range.
+    // However, if the user supplies an out-of-bounds argument (e.g.,
+    // 'track.E(-1)') they may have difficulty understanding the error
+    // message.
+
+    // By default (e.g., 'track.E()') they return the value at the
+    // start of the trajectory. This may be a mistake; it may lead the
+    // users to think that these values are constant over the entire
+    // length of a track.
+    
+    int Identifier( size_t i=0 ) const { return trajectory.at(i).Identifier(); }
+    
+    double X( size_t i=0 ) const { return trajectory.at(i).X(); }
+    double Y( size_t i=0 ) const { return trajectory.at(i).Y(); }
+    double Z( size_t i=0 ) const { return trajectory.at(i).Z(); }
+    double T( size_t i=0 ) const { return trajectory.at(i).T(); }
+    
+    double x( size_t i=0 ) const { return trajectory.at(i).X(); }
+    double y( size_t i=0 ) const { return trajectory.at(i).Y(); }
+    double z( size_t i=0 ) const { return trajectory.at(i).Z(); }
+    double t( size_t i=0 ) const { return trajectory.at(i).T(); }
+
+    double Px( size_t i=0 ) const { return trajectory.at(i).Px(); }
+    double Py( size_t i=0 ) const { return trajectory.at(i).Py(); }
+    double Pz( size_t i=0 ) const { return trajectory.at(i).Pz(); }
+    double E ( size_t i=0 ) const { return trajectory.at(i).E(); }
+    double Energy ( size_t i=0 ) const { return trajectory.at(i).E(); }
+
+    double px( size_t i=0 ) const { return trajectory.at(i).Px(); }
+    double py( size_t i=0 ) const { return trajectory.at(i).Py(); }
+    double pz( size_t i=0 ) const { return trajectory.at(i).Pz(); }
+    double e ( size_t i=0 ) const { return trajectory.at(i).E(); }
+    double energy ( size_t i=0 ) const { return trajectory.at(i).E(); }
+
+    // If the above additional accessors are a mistake, then this is
+    // probably an even bigger one: Give users a method that they're
+    // used to using to get the number of trajectory points. The
+    // problem is that they may start thinking that a track _is_ a
+    // trajectory vector, rather than understanding that a track _has_ a
+    // trajectory vector.
+    size_t size() const { return trajectory.size(); }
+    
     // Many ways to set and get a vector.
     ROOT::Math::XYZVector Polarization() const { return polarization; }
     void SetPolarization( const ROOT::Math::XYZVector& p ) { polarization = p; }
@@ -182,7 +240,7 @@ namespace grams {
     std::set<int> daughters;
 
     // The simulation process that created this track. If this is a
-    // primary particle, its value will be "primary". 
+    // primary particle, its value will be "Primary". 
     std::string process;
 
     // The process that ended this track. 

@@ -5,8 +5,8 @@
 // following the recipe in the documentation:
 // https://github.com/wgseligman/GramsSim/blob/develop/README.md and
 // are running the script with the above command in that directory. If
-// you've moved the script, then you'll have to copy and adjust the
-// contents of rootlogon.C.
+// you're working outside your build directory, you may have to copy
+// and edit the contents of rootlogon.C.
 
 void SimpleAnalysis() {
   // A very simple look at the tree produced by gramsg4.

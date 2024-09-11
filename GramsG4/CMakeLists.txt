@@ -29,7 +29,7 @@ add_executable(${PROG} gramsg4.cc ${sources})
 
 # Include any internal libraries, such as this project's utilities and
 # its data objects.
-target_link_libraries(${PROG} ${CMAKE_PROJECT_NAME}Utilities )
+target_link_libraries(${PROG} Utilities )
 target_link_libraries(${PROG} Dictionary)
 if (NOT MACOSX)
    # The following line is needed to make sure Dictionary is linked with the executable.

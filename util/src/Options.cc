@@ -36,6 +36,15 @@
 
 namespace util {
 
+  /// Implementation needed for a singleton class.
+  /// According to <https://stackoverflow.com/questions/12248747/singleton-with-multithreads>
+  /// this method is compatible with multi-threaded running. 
+  Options* Options::GetInstance()
+  {
+    static Options instance;
+    return &instance;
+  }
+
   // Why don't we get this flag from the command line? Because this is
   // the routine that parses the command line! At this point in the
   // processing we don't know the state of the --debug option yet.
@@ -183,9 +192,9 @@ namespace util {
       int index = 0;
       // For the passing of the options to findOption to work correctly, I have
       // to make sure that each option name is in its own char* memory location that's
-      // not going to change. Hence this array: up to 100 options that are up to
+      // not going to change. Hence this array: up to 500 options that are up to
       // 50 characters long. 
-      char cname[100][50];
+      char cname[500][50];
       // For every entry in the options map...
       for ( auto option_iter = m_options.cbegin(); option_iter != m_options.cend(); ++option_iter )
 	{
@@ -448,7 +457,8 @@ namespace util {
       } // for each option
 
     if (debug) PrintOptions();
-
+    if (debug) std::cout << "Options::ParseOptions - at end " << std::endl;
+    
     return success;
   }
 
@@ -460,8 +470,8 @@ namespace util {
 
   bool Options::GetOption(const std::string name, double& value) const
   {
-    auto result = m_options.find( name );
-    if ( result != m_options.end() )
+    const auto result = m_options.find( name );
+    if ( result != m_options.cend() )
       {
 	if ( (*result).second.type == e_double ) {
 	  // "stod" is "string to double"
@@ -474,8 +484,8 @@ namespace util {
 
   bool Options::GetOption(const std::string name, int& value) const
   {
-    auto result = m_options.find( name );
-    if ( result != m_options.end() )
+    const auto result = m_options.find( name );
+    if ( result != m_options.cend() )
       {
 	if ( (*result).second.type == e_integer ) {
 	  // "stoi" is "string to integer"
@@ -488,8 +498,8 @@ namespace util {
 
   bool Options::GetOption(const std::string name, bool& value) const
   {
-    auto result = m_options.find( name );
-    if ( result != m_options.end() )
+    const auto result = m_options.find( name );
+    if ( result != m_options.cend() )
       {
 	value = false;
 	if ( ( (*result).second.type == e_boolean ) || 
@@ -503,8 +513,8 @@ namespace util {
 
   bool Options::GetOption(const std::string name, std::string& value) const
   {
-    auto result = m_options.find( name );
-    if ( result != m_options.end() )
+    const auto result = m_options.find( name );
+    if ( result != m_options.cend() )
       {
 	if ( (*result).second.type == e_string ) {
 	  value = (*result).second.value;
@@ -516,8 +526,8 @@ namespace util {
 
   bool Options::GetOption(const std::string name, std::vector<double>& value) const
   {
-    auto result = m_options.find( name );
-    if ( result != m_options.end() )
+    const auto result = m_options.find( name );
+    if ( result != m_options.cend() )
       {
 	if ( (*result).second.type == e_vector ) {
 	  value = m_stringToValues( (*result).second.value );

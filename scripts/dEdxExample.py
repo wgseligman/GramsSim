@@ -10,28 +10,31 @@
 
 # You can copy this program and make changes to suit your work.
 
-# The ROOT classes we'll need:
-from ROOT import TFile, TTree, gSystem, gDirectory, TH1D
-
-# We'll also need the GramsSim custom dictionary for its data objects
-# (see GramsSim/GramsDataObj/README.md and
-# https://www.nevis.columbia.edu/~seligman/root-class/html/appendix/dictionary/index.html).
-# The following statement assumes this program is being run from the
-# build directory you created by following the directions in
-# https://github.com/wgseligman/GramsSim/tree/develop:
-
-gSystem.Load("./libDictionary.so")
-
-# Open the input file and access the n-tuple. 
-inputFile = TFile("gramsg4.root")
-tree = gDirectory.Get( 'gramsg4' )
+import ROOT
 
 # The vague purpose of this example program is to calculate
 # dE/dx. What we do with that value is up to us. As an example,
 # we'll just make a histogram. Note that we're not doing anything
 # with that histogram, not even writing or drawing it.
 
-dEdxHistogram = TH1D("dEdx","Histogram of dE/dx",100,0.0,0.005);
+dEdxHistogram = ROOT.TH1D("dEdx","Histogram of dE/dx",100,0.0,0.005);
+
+# We'll need the GramsSim custom dictionary for its data objects; see
+# GramsSim/GramsDataObj/README.md and
+# https://www.nevis.columbia.edu/~seligman/root-class/html/appendix/dictionary/index.html.
+# The following statement assumes this program is being run from the
+# build directory you created by following the directions in
+# https://github.com/wgseligman/GramsSim/tree/develop:
+
+import platform
+if ( platform.system() == "Darwin"):
+    ROOT.gSystem.Load("libDictionary.dylib")
+else:
+    ROOT.gSystem.Load("libDictionary.so")
+
+# Open the input file and access the n-tuple. 
+inputFile = ROOT.TFile("gramsg4.root")
+tree = ROOT.gDirectory.Get( 'gramsg4' )
 
 # For each row (or entry) in the tree:
 for entry in tree:
@@ -42,15 +45,14 @@ for entry in tree:
 
     # For this calculation, we only need the 'LArHits" branch within
     # the tree, You can look up the structure of MCLArHits in
-    # GramsSim/GramsDataObj/include/MCLArHits.h. What's relevant for
-    # this example is that, for the (key,value) pairs that make up
-    # this map/dict, the value has the type 'MCLArHit'.
+    # include/MCLArHits.h. What's relevant for this example is that,
+    # for the (key,value) pairs that make up this map/dict, the value
+    # has the type 'MCLArHit'.
 
     for ( key, LArHit ) in tree.LArHits:
 
       # For the list of ways to access the information in
-      # grams::MCLArHit, again see
-      # GramsSim/GramsDataObj/include/MCLArHits.h.
+      # grams::MCLArHit, again see include/MCLArHits.h.
 
       energy = LArHit.Energy()
       start = LArHit.Start4D()
@@ -63,6 +65,7 @@ for entry in tree:
       # Now take the 3D magnitude of the difference.
       dx = diff.R();
 
+      # Accumulate the dE/dx values in a histogram. 
       if  dx > 0. :
           dEdx = energy / dx
           dEdxHistogram.Fill( dEdx )

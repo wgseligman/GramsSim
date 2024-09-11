@@ -9,8 +9,7 @@
 # execution efficiency (as I discovered when I ran it for 10,000
 # events).
 
-import ROOT
-import math
+import platform, ROOT, math
 
 # We'll also need the GramsSim custom dictionary for its data objects
 # (see GramsSim/GramsDataObj/README.md and
@@ -19,7 +18,10 @@ import math
 # build directory you created by following the directions in
 # https://github.com/wgseligman/GramsSim/tree/develop:
 
-ROOT.gSystem.Load("./libDictionary.so")
+if ( platform.system() == "Darwin"):
+    ROOT.gSystem.Load("libDictionary.dylib")
+else:
+    ROOT.gSystem.Load("libDictionary.so")
 
 # Fetch the input file. (If I were fancier, I'd get the
 # name of the file from an argument to this program.)
@@ -43,7 +45,7 @@ for event in inputTree:
     # There are three branches in the input tree. We'll only use one
     # of them, but I'll show all three here so you know how the
     # process works. You can see the properties of all these data
-    # objects in GramsSim/GramsDataObj/include.
+    # objects in the include/ sub-directory.
     eventID = inputTree.EventID;
     TrackList = inputTree.TrackList;
     LArHits = inputTree.LArHits;

@@ -37,21 +37,23 @@ The short version of the rest of this section: Follow the examples in the [`scri
 
 Your "build directory" is the one in which you built `GramsSim`. If you followed the exact directions in [GramsSim/README.md](../README.md), that directory will be named `GramsSim-work`, but it can have any name you choose. 
 
-Once you've compiled `GramsSim` (via `make`), you will see two files in the build directory: `Dictionary_rdict.pcm` and `libDictionary.so`.[^dylib] If you work with code that's outside your original build directory, these files must be present in the dictionary that contains your programs. 
+Once you've compiled `GramsSim` (via `make`), you will see two files in the build directory: `Dictionary_rdict.pcm` and `libDictionary.so` (these are different in Mac OS[^dylib]) If you want to develop code outside your original build directory, these files must be copied from the build directory to the dictionary that contains your programs. 
 
-[^dylib]: If you're running a Mac, that second file will be `libDictionary.dylib`. There will also be a third file that must be copied: `Dictionary.rootmap`. However, as of Jun-2024 `GramsSim` does not reliably execute on the Mac operating system. 
+[^dylib]: If you're running a Mac, the files that must be copied are: `Dictionary_rdict.pcm`, `libDictionary.dylib`, and `Dictionary.rootmap`. The reason for the difference is that Mac OS X Darwin handles its shared libraries in a different manner than other systems. 
 
 There are three kinds of programs that might use the dictionary:
 
 - If you want to compile a C++ program (the code is in a file that ends in `.cc` or `.cxx`), see the examples in the [`scripts`](../scripts). You can start with [`dEdxExample.cc`](../scripts/dEdxExample.cc); the comments at the top of the file show how to compile the program. 
 
-- For Python scripts, you need this line near the top of your code: 
+- For Python scripts, you need this line near the top of your code (in Linux[^moredy]):
 
       ROOT.gSystem.Load("./libDictionary.so")
 
-  See [`SimpleAnalysis.py`](../scripts/SimpleAnalysis.py)) for an example. 
+  See [`SimpleAnalysis.py`](../scripts/SimpleAnalysis.py) for an example. 
   
-- ROOT macros; that is, files ending in `.C` that are meant to be executed from within an interactive ROOT session; an example is [`SimpleAnalysis.C`](../scripts/SimpleAnalysis.C)).
+[^moredy]: On a Mac, the file's name will be `libDictionary.dylib`.
+  
+- ROOT macros; that is, files ending in `.C` that are meant to be executed from within an interactive ROOT session; an example is [`SimpleAnalysis.C`](../scripts/SimpleAnalysis.C).
 
   If you run the `root` command from within the build directory, interactive ROOT will execute [`rootlogon.C`](../rootlogon.C). This applies to both interactive sessions, and to running macros from the command line; e.g.,
   
@@ -61,10 +63,10 @@ There are three kinds of programs that might use the dictionary:
     
   An advantage of having `rootlogon.C` in in your current directory is that you can run ROOT, invoke the TBrowser, and use the the dictionary classes directory; e.g.,
   
-  root
-  TBrowser tb
-  auto event = grams::EventID(0,23);
-  cout << event << endl;
+      root
+      TBrowser tb
+      auto event = grams::EventID(0,23);
+      cout << event << endl;
   
 ## Using the data objects
 
@@ -78,6 +80,9 @@ The data objects are defined by header files in [the GramsDataObj/include/
 directory](./include). If any implementations are needed, they're
 either in `.icc` files in the `include/` directory or in `.cc` files
 in [the src/ directory](./src).
+
+If you want to look up the header files, a copy of all the user-related headers is made
+into the `include/` directory within your build directory. 
 
 ### Linkdef.hh
 
@@ -105,7 +110,7 @@ be displayed easily in C++. For example:
 Some of the data objects are lists ([std::set][30],
 [std::multiset][40], [std::map][50], etc.). Others are C++ types such
 as `struct` or `class`. For the non-list types, an explicit or
-implicit [operator<][60] is defined. This means that these objects can be
+implicit [operator<<][60] is defined. This means that these objects can be
 sorted, or used as keys in sorted containers like `std::set`.
 
 [30]: https://cplusplus.com/reference/set/set/
@@ -260,7 +265,7 @@ for ( const auto& [key, cluster] : (*clusters) ) {
 }
 ```
 
-This is illustrated in greater detail in [GramsSim/scripts/AllFilesExample.cc](../scripts/AllFilesExample.cc) [GramsSim/scripts/AllFilesExample.py](../scripts/AllFilesExample.py). 
+This is illustrated in greater detail in [scripts/AllFilesExample.cc](../scripts/AllFilesExample.cc) and [scripts/AllFilesExample.py](../scripts/AllFilesExample.py). 
 
 
 ## The data objects
@@ -270,7 +275,7 @@ Many of the data objects are organized in the form of maps. In C++, a [std::map]
 [130]: https://cplusplus.com/reference/map/map/
 [140]: https://www.w3schools.com/python/python_dictionaries.asp
 
-As you look through the description of the data objects below, consult the [GramsDataObj/include](../GramsDataObj/include) directory for the header files. These are the files that define the methods for accessing the values stored in these objects. Documentation may be inaccurate; the code is actual definition.
+As you look through the description of the data objects below, consult the `include/` directory within your build directory for the header files. These are the files that define the methods for accessing the values stored in these objects. Documentation may be inaccurate; the code is the actual definition.
 
 ### grams::EventID
 

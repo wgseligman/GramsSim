@@ -19,6 +19,8 @@
 #include "G4Run.hh"
 #include "G4TransportationManager.hh"
 #include "G4VPhysicalVolume.hh"
+#include "G4ParticleTable.hh"
+#include "G4ParticleMomentum.hh"
 #include "G4Exception.hh"
 #include "G4SystemOfUnits.hh"
 #include "G4Threading.hh"
@@ -389,26 +391,12 @@ namespace gramsg4 {
 	auto pdgCode = particle->pid();
 	auto momentum = particle->momentum();
 
-	auto g4particle 
-	  = new G4PrimaryParticle(pdgCode,
-				  momentum.px() * energyScale,
-				  momentum.py() * energyScale,
-				  momentum.pz() * energyScale,
-				  momentum.e () * energyScale );
- 
-	if ( m_debug ) {
-	  G4cout << "GramsG4HepMC3GeneratorAction::HepMC2G4 - "
-		 << "   PDG ID = " << pdgCode
-		 << " momentum = (" 
-		 << momentum.px() << "," 
-		 << momentum.py() << "," 
-		 << momentum.pz()
-		 << ")" << G4endl;
-	}
+	// Get Geant4's definition for this PDG code.
+	auto properties = G4ParticleTable::GetParticleTable()->FindParticle(pdgCode);
 
 	// It's not likely, but what if the user supplied a PDG code
 	// that Geant4 does not recognize?
-	if ( !g4particle->GetParticleDefinition() ) {
+	if ( !properties ) {
 	  G4ExceptionDescription description;
 	  description << "File " << __FILE__ << " Line " << __LINE__ << " " << G4endl
 		      << " Event number from '" << m_inputFile 
@@ -418,9 +406,26 @@ namespace gramsg4 {
 		      << pdgCode << "'; particle skipped";
 	  G4Exception("gramsg4::HepMC3GeneratorAction::HepMC2G4","invalid PDG code",
 		      JustWarning, description);
-
-	  delete g4particle;
 	  continue;
+	}
+
+	auto g4particle = new G4PrimaryParticle(properties);
+	g4particle->SetKineticEnergy( momentum.e() * energyScale );
+	auto mass = properties->GetPDGMass();
+	g4particle->SetMass( mass );
+	g4particle->SetMomentum( momentum.px() * energyScale,
+				 momentum.py() * energyScale,
+				 momentum.pz() * energyScale );
+	g4particle->SetCharge( properties->GetPDGCharge() );
+ 
+	if ( m_debug ) {
+	  G4cout << "GramsG4HepMC3GeneratorAction::HepMC2G4 - "
+		 << "   PDG ID = " << pdgCode
+		 << " momentum = (" 
+		 << momentum.px() << "," 
+		 << momentum.py() << "," 
+		 << momentum.pz()
+		 << ")" << G4endl;
 	}
 
 	// Polarization in HepMC3 is not stored in a dedicated
@@ -439,7 +444,8 @@ namespace gramsg4 {
 	// Note: Weights in HepMC3 are stored as a vector of values.
 	// It's not clear that there's a general way to interpret
 	// this, so leave weights alone for now.
-
+	g4particle->SetWeight( 1.0 );
+	
 	if ( m_debug ) {
 	  G4cout << "GramsG4HepMC3GeneratorAction::HepMC2G4 - "
 		 << "   Adding particle" 

@@ -134,10 +134,12 @@ namespace gramsg4 {
       s_tree = new TTree(m_treeName, "GramsG4 MC Truth");
 
       // Define the branches within that tree.
-      s_tree->Branch("EventID",  &m_eventID);
-      s_tree->Branch("TrackList",&m_mcTrackList);
-      s_tree->Branch("LArHits",  &m_mcLArHits);
-      s_tree->Branch("ScintHits",&m_mcScintHits);
+      // By experimenting, it turns out that setting the splitlevel to 0
+      // improves potential issues with ROOT's TBrowser.
+      s_tree->Branch("EventID",  &m_eventID,     32000, 0);
+      s_tree->Branch("TrackList",&m_mcTrackList, 32000, 0);
+      s_tree->Branch("LArHits",  &m_mcLArHits,   32000, 0);
+      s_tree->Branch("ScintHits",&m_mcScintHits, 32000, 0);
 
       // Write the options used to run this program. See
       // GramsSim/util/README.md for why we do this.

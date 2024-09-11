@@ -8,37 +8,25 @@
 // tutorial at
 // https://www.nevis.columbia.edu/~seligman/root-class/html/
 
-// At this moment, you're tempted to just copy this program and
-// blindly place your analysis code in the main program loop. DON'T DO
-// THIS WITHOUT THINKING ABOUT WHAT YOU'RE DOING! This program is
-// meant as an example of the code needed to access a group of friend
-// trees in parallel, and how the GramsSim maps link to each other.
+// At this moment, you're tempted to copy this program and blindly
+// place your analysis code in the main program loop. DON'T DO THIS
+// WITHOUT THINKING ABOUT WHAT YOU'RE DOING! Look at the smaller and
+// perhaps more realistic examples in SimpleAnalysis, dEdxExample, and
+// RadialDistance.
 
-// The odds are high that you don't need to read multiple columns from
-// multiple trees in multiple files to accomplish your analysis
-// task. Only use the files/trees/columns that you need. The
-// 'dEdxExample' programs show this.
-
-// Now that you've been warned:
-
-// This program will automatically be compiled during the cmake/make
-// process for GramsSim, from its source in GramsSim/scripts. 
-
-// You can copy this program and make changes to suit your work,
-// heeding the above histrionic warning. If you do, you'll have to
-// compile it "by hand". If the program is located in the build
-// directory you set up according to the instructions in
+// This programs in GramsSim/scripts will automatically be compiled
+// during the cmake/make process for GramsSim. For your own program,
+// you'll have to compile it "by hand". If <program-name>.cc is
+// located in the build directory you set up according to the
+// instructions in
 // https://github.com/wgseligman/GramsSim/tree/develop, you can
 // compile it with:
 
 /*
-  g++ -o <program-name> <program-name>.cc `root-config --cflags --libs` \
-  -I../GramsSim/GramsDataObj/include \
-  ./libDictionary.so
+g++ -o <program-name> <program-name>.cc \
+   `root-config --cflags --libs` \
+   -Iinclude -Wl,-rpath,. -L. -lDictionary
 */
-
-// If the program is located elsewhere in your directory hierarchy,
-// you'll have to adjust the paths in the above command.
 
 // From the GramsDataObj library, include all the data objects that
 // we'll read. Since this is an example of how to read all the
@@ -136,6 +124,11 @@ int main( int, char**  ) {
     // through the maps, sets, and vectors that make up the data
     // objects.
 
+    // IF YOU'RE COPYING THIS CODE LINE-FOR-LINE AND LOOP-FOR-LOOP,
+    // STOP! Most of what the code does has no purpose other than to
+    // serve as an example. Look at what the code is doing, and ask if
+    // that's what you want to do.
+
     // For a list of the various methods you can use to access the
     // information in the data objects, see the header files in
     // GramsSim/GramsDataObj/include.
@@ -232,145 +225,6 @@ int main( int, char**  ) {
 	} // for every cluster key
       } // for every waveform
     } // matched arbitraryEvent
-
-
-    // The above shows how to "go forward" through the
-    // tracks->hits->clusters->readout chain of information. What
-    // follows is the reverse: How one might back-track up the chain.
-
-    // For every waveform in the event:
-    for ( auto const& [ readoutID, waveform ] : (*Waveforms) ) {
-
-      // Sum the ADC counts in all the bins in the digital
-      // waveform. (There is no scientific reason to do this.)
-      auto& digital = waveform.Digital();
-      auto sumADC = std::accumulate( digital.cbegin(), digital.cend(), 0 );
-
-      // If the sum of the ADC counts is greater than some arbitrary
-      // number that I just made up:
-      static const int madeUpNumber = 219697;
-      if ( sumADC > madeUpNumber ) {
-
-	// The purpose of the following line is to illustrate that all
-	// the data objects in GramsDataObj have C++-style output
-	// operators defined for them.
-	std::cout << "EventID " << (*EventID) 
-		  << " ReadoutID " << readoutID
-		  << " accumulates to " << sumADC
-		  << " which is more than " << madeUpNumber
-		  << std::endl;
-
-	// Let's assume that this means the waveform is
-	// "interesting". Look at all the electron clusters that went
-	// into creating this waveform.
-	auto const search = ReadoutMap->find( readoutID );
-	if ( search == ReadoutMap->cend() ) {
-	  // This should not happen. It would mean that somehow a
-	  // readout waveform exists but the corresponding electron
-	  // clusters do not.
-	  std::cerr << "File " << __FILE__ << " Line " << __LINE__ << " " << std::endl
-		    << "Inconsist waveform->cluster map"
-		    << std::endl;
-	  exit(EXIT_FAILURE);
-	}
-
-	// 'ReadoutMap' is a map of (readoutID, clusterKeys). The
-	// cluster keys are the second element in this pair.
-	auto& clusterKeys = (*search).second;
-
-	// The cluster keys are, in turn, a set of keys into the
-	// ElectronClusters map. The following looks at all the
-	// electron clusters associated with those keys.
-
-	// If this seems complex, you can think of this arrangement as:
-	//
-	// (a) a multi-dimensional array of indexed by [trackID][hitID][clusterID][readoutID];
-	// (b) if you're into Python, nested dictionaries (dicts of dicts).. 
-
-	for ( auto const& clusterKey : clusterKeys ) {
-
-	  auto const result = Clusters->find( clusterKey ); 
-	  if ( result == Clusters->cend() ) {
-	    // Again, this should not happen.
-	    std::cerr << "File " << __FILE__ << " Line " << __LINE__ << " " << std::endl
-		      << "Inconsist readout->electron cluster map"
-		      << std::endl;
-	    exit(EXIT_FAILURE);
-	  }
-
-	  // As above, the electron cluster is second element in a map
-	  // (key, value) pair. 
-	  auto& electronCluster = (*result).second; 
-
-	  // What can we do with an electron cluster? We might print
-	  // it out, according to some imaginary non-scientific
-	  // criteria.
-	  static const int imaginaryCriteria = 38;
-	  if ( electronCluster.NumElectrons() < imaginaryCriteria )
-	    std::cout << electronCluster << std::endl;
-
-	  // We can also use it to back-track to a particular
-	  // simulated hit in the LAr. The data object MCLArHits is,
-	  // once again, a map of (key,value) pairs, with the the key
-	  // itself being a pair of (trackID,hitID):
-	  auto trackID = electronCluster.TrackID();
-	  auto hitID   = electronCluster.HitID();
-	  auto const hitKey = std::make_pair( trackID, hitID );
-	  auto const hitSearch = Hits->find( hitKey );
-
-	  // Another test for something that's not supposed to happen.  
-	  if ( hitSearch == Hits->cend() ) {
-	    std::cerr << "File " << __FILE__ << " Line " << __LINE__ << " " << std::endl
-		      << "could not find trackID=" << trackID << " hitID=" << hitID
-		      << " in MCLArHits map"
-		      << std::endl;
-	    exit(EXIT_FAILURE);
-	  }
-	  
-	  auto& hit = (*hitSearch).second;
-
-	  // Now we have the MCLArHit associated with this particular
-	  // electron cluster. Let's apply an arbitrary non-scientific
-	  // cut on the number of scintillation photons to show how to
-	  // work with a hit.
-	  auto numPhotons = hit.NumPhotons();
-	  static const int unscientificCut = 200;
-	  if ( numPhotons < unscientificCut ) {
-
-	    // We can print out the hit if we wish.
-	    std::cout << hit << std::endl;
-
-	    // As a final example of back-tracking, let's go to the
-	    // track that created the hit.
-	    const auto createID = hit.TrackID();
-	    const auto findTrack = Tracks->find( createID );
-
-	    // Unlike the previous "impossible" searches, this one is
-	    // possible, depending on the simulation. If we introduce
-	    // energy cuts in the Geant4 output, we might get hits for
-	    // tracks that were never written, and tracks with no hits
-	    // if the track didn't deposit enough energy in the LAr.
-	    if ( findTrack != Tracks->cend() ) {
-
-	      auto& track = (*findTrack).second;
-
-	      // Now that we have a track, let's look at its trajectory.
-	      const auto& trajectory = track.Trajectory();
-
-	      // Let's print the first point in the trajectory:
-	      const auto& firstPoint = trajectory[0];
-	      std::cout << "First point in track " << createID << " "
-			<< firstPoint
-			<< std::endl;
-	    }
-	  
-	  } // numPhotons < unscientificCut
-	  
-	} // For each cluster key
-
-      } // sumADC > madeUpNumber
-
-    } // Loop over waveforms in the event
 
   } // for every event in the combined trees
 

@@ -6,9 +6,6 @@
 #ifndef Geometry_h
 #define Geometry_h 1
 
-// For processing command-line and XML file options.
-#include "Options.h" // in util/
-
 #include <TGeoManager.h>
 #include <TDirectory.h>
 #include <memory>
@@ -21,13 +18,7 @@ namespace util {
   public:
     
     /// This is a singleton class.
-    /// According to <https://stackoverflow.com/questions/12248747/singleton-with-multithreads>
-    /// this method is compatible with multi-threaded running. 
-    static Geometry* GetInstance()
-    {
-      static Geometry instance;
-      return &instance;
-    }
+    static Geometry* GetInstance();
 
     // Copy a TGeoManager structure from TDirectory "input" to
     // TDirectory "output" (almost certainly TFiles). If an explicit
@@ -97,7 +88,11 @@ namespace util {
 		    std::string gdmlFile = "",
 		    std::string geometry = "" );
 
-  protected:
+    /// Prevent copy construction for a singleton class.
+    Geometry(const Geometry&) = delete; 
+    void operator=(Geometry const&) = delete;
+
+  private:
     /// Standard null constructor for a singleton class.
     Geometry() {}
   };

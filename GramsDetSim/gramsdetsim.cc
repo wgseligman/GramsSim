@@ -165,8 +165,10 @@ int main(int argc,char **argv)
 
   auto eventID = new grams::EventID();
   auto clusters = new grams::ElectronClusters();
-  outputTree->Branch("EventID",   &eventID);
-  outputTree->Branch("ElectronClusters",  &clusters);
+  // By experimenting, it turns out that setting the splitlevel to 0
+  // improves potential issues with ROOT's TBrowser.
+  outputTree->Branch("EventID",          &eventID,  32000, 0);
+  outputTree->Branch("ElectronClusters", &clusters, 32000, 0);
 
   // Are we using this particular model?
   bool doRecombination;
@@ -215,20 +217,15 @@ int main(int argc,char **argv)
       std::cout << "gramsdetsim: DiffusionModel turned off" << std::endl;
   }
 
-  // The total hit energy, which is gradually adjusted by the models
-  // during this routine.
-  double energy_sca;
-
-  // A holding place for the clusters before we add them to the formal
-  // grams::ElectronClusters object.
-  std::vector<grams::ElectronCluster> holdingClusters;
-
   if (debug) 
     std::cout << "gramsdetsim.cc - debug 1000" 
 	      << std::endl;
 
   // For each row in the input tree:
   while ( (*reader).Next() ) {
+
+    // Increase the clusterID across all the hits in this event.
+    int clusterID = 0;
     
     // Clean out any cluster data from the previous event.
     clusters->clear();
@@ -239,34 +236,17 @@ int main(int argc,char **argv)
     // For each hit in the event:
     for ( const auto& [ key, hit ] : (*LArHits) ) {
 
-      // Clear out the holding area.
-      holdingClusters.clear();
-
       if (debug)
 	std::cout << "gramsdetsim: at entry " << reader->GetCurrentEntry() << std::endl;
-    
-      // Create a "default" cluster. This will almost certainly be
-      // overwritten by the output of DiffusionModel below.
-      grams::ElectronCluster defaultCluster;
-      defaultCluster.trackID = hit.trackID;
-      defaultCluster.hitID = hit.hitID;
-      defaultCluster.clusterID = 0;
-      energy_sca = hit.energy;
-      defaultCluster.energy = energy_sca;
-      defaultCluster.numElectrons = energy_sca * m_MeVToElectrons;
-      double zPos = (0.5 * (hit.StartZ() + hit.EndZ()));
-      defaultCluster.position 
-	= ROOT::Math::XYZTVector(
-				 (0.5 * (hit.StartX() + hit.EndX())), 
-				 (0.5 * (hit.StartY() + hit.EndY())), 
-				 zPos,
-				 ((m_readout_plane_coord - zPos) / m_DriftVel)
-				 );
+
+      // The total hit energy, which is gradually adjusted by the models
+      // during this routine.
+      double energy_sca = hit.energy;
 
       if (debug)
         std::cout << "gramsdetsim: before model corrections, energy=" 
-		  << energy_sca 
-		  << " timeAtAnode=" << defaultCluster.position.T() << std::endl;
+		  << energy_sca
+		  << std::endl;
 
       // Apply the model(s). Handle potential computation errors (i.e.,
       // if dx is zero) within the different models.
@@ -274,9 +254,7 @@ int main(int argc,char **argv)
       if ( doRecombination ) {
 	energy_sca = recombinationModel->Calculate(energy_sca, hit);
 	if ( std::isnan(energy_sca) ) 
-	  defaultCluster.energy = 0.0;
-	else
-	  defaultCluster.energy = energy_sca;
+	  energy_sca = 0.0;
       }
 
       if (debug)
@@ -284,40 +262,35 @@ int main(int argc,char **argv)
 		  << energy_sca << std::endl;
     
       //absorption
-      if ( doAbsorption  &&  ! std::isnan(energy_sca) ) {
+      if ( doAbsorption  &&  energy_sca > 0. )
 	energy_sca = absorptionModel->Calculate(energy_sca, hit);
-	defaultCluster.energy = energy_sca;
-      }
-      else
-	defaultCluster.energy = 0.0;
       
       if (debug)
 	std::cout << "gramsdetsim: after absorption model corrections, energyAtAnode=" 
 		  << energy_sca << std::endl;
     
       //diffusion
-      if ( doDiffusion  &&  ! std::isnan(energy_sca) ) {
+      std::vector< grams::ElectronCluster > calcClusters;
+      if ( doDiffusion  &&  energy_sca > 0. ) {
 	// The clusters in this vector returned by DiffusionModel will
-	// replace the "default cluster", if all goes well.
-	holdingClusters = diffusionModel->Calculate(energy_sca, hit);
+	// replace the "default cluster", if all goes well. Maintain
+	// and increment the cluster ID across all the clusters in
+	// this event.
+	calcClusters = diffusionModel->Calculate(energy_sca, hit, clusterID);
       }
 
       if (debug) {
-	std::cout << "gramsdetsim: after diffusion model corrections, holdingClusters.size()=" 
-		  << holdingClusters.size() << std::endl;
+	std::cout << "gramsdetsim: after diffusion model corrections, calcClusters.size()=" 
+		  << calcClusters.size() << std::endl;
 	std::cout << hit << std::endl;
-	for ( const auto& c : holdingClusters ) {
+	for ( const auto& c : calcClusters ) {
 	  std::cout << c << std::endl;
 	}
 	std::cout << std::endl;
       }
 
-      // If something went wrong, use the default cluster.
-      if ( holdingClusters.empty() )
-	holdingClusters.push_back( defaultCluster );
-
-      // For each cluster in the holding area:
-      for ( auto& cluster : holdingClusters ) {
+      // For each cluster returned by the diffusion model::
+      for ( auto& cluster : calcClusters ) {
 	// Create the key for this cluster.
 	auto ckey = std::make_tuple( cluster.trackID, cluster.hitID, cluster.clusterID );
 

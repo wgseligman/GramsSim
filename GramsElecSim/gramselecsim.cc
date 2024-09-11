@@ -206,8 +206,10 @@ int main(int argc,char **argv)
 
   auto eventID = new grams::EventID();
   auto readoutWaveforms = new grams::ReadoutWaveforms();
-  outputTree->Branch("EventID",          &eventID);
-  outputTree->Branch("ReadoutWaveforms", &readoutWaveforms);
+  // By experimenting, it turns out that setting the splitlevel to 0
+  // improves potential issues with ROOT's TBrowser.
+  outputTree->Branch("EventID",          &eventID         , 32000, 0);
+  outputTree->Branch("ReadoutWaveforms", &readoutWaveforms, 32000, 0);
 
   if (debug) {
     std::cout << "gramselecsim main: output tree defined" << std::endl;
