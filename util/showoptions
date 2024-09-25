@@ -4,7 +4,7 @@
 # 06-Dec-2022 WGS
 
 import sys
-from ROOT import TFile, gDirectory
+import ROOT
 debug = False
 
 # Look at the arguments.
@@ -15,7 +15,7 @@ if ( len(sys.argv) < 2 ):
 # Open the file. 
 fileName = sys.argv[1]
 try:
-    myfile = TFile( fileName )
+    myfile = ROOT.TFile( fileName )
 except OSError as error:
     print (error)
     sys.exit(1)
@@ -27,7 +27,7 @@ if ( len(sys.argv) > 2 ):
    ntupleName = sys.argv[2]
 
 # Retrieve the Options ntuple.
-optionsNtuple = gDirectory.Get( ntupleName )
+optionsNtuple = ROOT.gDirectory.Get( ntupleName )
 
 # Number of rows in the ntuple.
 try:
@@ -63,12 +63,12 @@ for jentry in range( entries ):
         continue
 
     try:
-        name = optionsNtuple.OptionName
-        value = optionsNtuple.OptionValue
-        otype = optionsNtuple.OptionType
-        brief = optionsNtuple.OptionBrief
-        desc = optionsNtuple.OptionDesc
-        source = optionsNtuple.OptionSource
+        name   = optionsNtuple.OptionName.as_string()
+        value  = optionsNtuple.OptionValue.as_string()
+        otype  = optionsNtuple.OptionType.as_string()
+        brief  = optionsNtuple.OptionBrief.as_string()
+        desc   = optionsNtuple.OptionDesc.as_string()
+        source = optionsNtuple.OptionSource.as_string()
     except AttributeError as error:
         print ("ntuple",ntupleName,"in file",fileName,"is not a complete options ntuple")
         sys.exit(1)
@@ -85,8 +85,8 @@ for jentry in range( entries ):
         if ( value == '1' ):
             bvalue = 'True'
         print (outputstring.format(brief,name,bvalue,desc,source))
-    else: 
-        print (outputstring.format(brief,name,value,desc,source))
+    else:
+       print (outputstring.format(brief,name,value,desc,source))
 
 # Write a "bottom of table" delimiter.
 print (outputunderline.format("","","","",""))
