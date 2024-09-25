@@ -12,6 +12,8 @@ someone typed "git commit"), see the output of "git log".
 
 Sep-2024
 
+   - Fix bug in showoptions
+
    - git tag -a v2.3 to mark the new `simd` program. 
 
    - Added a new sub-directory, `Display`, for general views and diagnostics.
