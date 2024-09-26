@@ -3,11 +3,20 @@
 # Display the contents of an Options ntuple within a ROOT file.
 # 06-Dec-2022 WGS
 
-import sys
-import ROOT
+import sys, platform, ROOT
 debug = False
 
-# Look at the arguments.
+# To avoid an error message, we'll also need the GramsSim custom
+# dictionary for its data objects (see GramsSim/GramsDataObj/README.md
+# and
+# https://www.nevis.columbia.edu/~seligman/root-class/html/appendix/dictionary/index.html).
+
+if ( platform.system() == "Darwin"):
+    ROOT.gSystem.Load("libDictionary.dylib")
+else:
+    ROOT.gSystem.Load("libDictionary.so")
+
+# Look at the command-line arguments.
 if ( len(sys.argv) < 2 ):
    print (sys.argv[0]," needs at least one argument: the name of the ROOT file with an Options nutple")
    sys.exit(1)
@@ -27,7 +36,7 @@ if ( len(sys.argv) > 2 ):
    ntupleName = sys.argv[2]
 
 # Retrieve the Options ntuple.
-optionsNtuple = ROOT.gDirectory.Get( ntupleName )
+optionsNtuple = myfile[ ntupleName ]
 
 # Number of rows in the ntuple.
 try:
