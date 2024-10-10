@@ -742,20 +742,20 @@ TH1* SimulationDisplay::HistogramViewX() {
 TH1* SimulationDisplay::HistogramViewY() {
 
   if (debug) std::cout << "HistogramViewY"
-		       << " yBins=" << MyPlotsInfo[ PlotKind ].yBins / MyScaleFactor[ ScaleID ]
+		       << " yBins=" << MyPlotsInfo[ PlotKind ].yBins
 		       << " yLow="  << MyPlotsInfo[ PlotKind ].yLow
 		       << " yHigh=" << MyPlotsInfo[ PlotKind ].yHigh
-		       << " zBins=" << MyPlotsInfo[ PlotKind ].zBins / MyScaleFactor[ ScaleID ]
+		       << " zBins=" << MyPlotsInfo[ PlotKind ].zBins
 		       << " zLow="  << MyPlotsInfo[ PlotKind ].zLow
 		       << " zHigh=" << MyPlotsInfo[ PlotKind ].zHigh
 		       << " scale=" << MyScaleFactor[ ScaleID ]
 		       << std::endl;
 
   auto theHist = new TH2D("hist", "", 
-			  MyPlotsInfo[ PlotKind ].yBins,
+			  MyPlotsInfo[ PlotKind ].yBins / MyScaleFactor[ ScaleID ],
 			  MyPlotsInfo[ PlotKind ].yLow,
 			  MyPlotsInfo[ PlotKind ].yHigh,
-			  MyPlotsInfo[ PlotKind ].zBins,
+			  MyPlotsInfo[ PlotKind ].zBins / MyScaleFactor[ ScaleID ],
 			  MyPlotsInfo[ PlotKind ].zLow,
 			  MyPlotsInfo[ PlotKind ].zHigh );
   for (size_t i = 0; i < e_val.size(); i++) {
