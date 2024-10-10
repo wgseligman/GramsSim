@@ -495,7 +495,7 @@ for example, to save the options in an ntuple for later reference. The following
 
 The `Options` class offers several methods for saving, restoring, and tracking the values of options in your analysis. For this discussion, consider the following case:
 
-|  <img src="/images/UsingOptions.png" width="75%"/> |
+|  <img src="images/UsingOptions.png" width="75%"/> |
 | :---------------------------------------------: | 
 |  <small><strong>Fig 1. A typical use of the `Options` class. Note that in this and the following figures, the options for Program A would be contained in a tag block such as `<programa>...</programa>`; this is omitted from these figures for clarity. </strong></small> |
 
