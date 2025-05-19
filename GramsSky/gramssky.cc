@@ -240,8 +240,8 @@ int main(int argc, char** argv) {
       if ( ! ( std::isnan(theta) || std::isnan(phi) ) ) {
 	auto thetaAttribute = std::make_shared<HepMC3::DoubleAttribute>(theta);
 	auto phiAttribute = std::make_shared<HepMC3::DoubleAttribute>(phi);
-	particle->add_attribute("theta",thetaAttribute);
-	particle->add_attribute("phi",phiAttribute); 
+	particle->add_attribute("poltheta",thetaAttribute);
+	particle->add_attribute("polphi",phiAttribute); 
       }
 
       // Save event to output file
