@@ -273,6 +273,11 @@
 
   <gramsg4>
 
+    <!-- Number of events to generate. If this value does not seem to "take effect",
+	 that means it's being overriden by a /run/beamOn command in the G4
+	 macrofile (see below). -->
+    <option name="events" short="n" value="1000" type="integer" desc="number of events" />
+
     <!-- The file that contains the GDML description of the detector -->
     <option name="gdmlfile" short="g" value="grams.gdml" type="string" 
         desc="input GDML detector desc"/>    
