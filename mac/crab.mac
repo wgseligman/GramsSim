@@ -39,7 +39,8 @@
 # We want the particle to be aimed in the negative z-direction. 
 /gps/direction 0 0 -1
 
-# This means "run Geant4 and generate 1000 events"
-/run/beamOn 1000
-
-exit
+# '/run/beamOn' means "run Geant4 and generate 1000 events"
+# It's commented out to allow the number of events to come
+# from either options.xml or the --event/-n option on the
+# command line. 
+# /run/beamOn 1000
