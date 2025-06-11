@@ -414,6 +414,7 @@ int main(int argc,char **argv)
 	  isBeamOn = true;
       }
     }
+    mfile.close();
 
     // If there is a /run/beamOn command in the macro file, we don't
     // do anything. But if there isn't, get the number of events from
