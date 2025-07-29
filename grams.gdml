@@ -1,5 +1,10 @@
 <?xml version="1.0" ?>
-<gdml xmlns:gdml="http://cern.ch/2001/Schemas/GDML" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="GDMLSchema/gdml.xsd">
+<!-- 29-Jul-2025 WGS: For some reason, the CERN web server that shares
+     gdml.xsd has become unreliable. To simplify things, I copied the
+     file onto the Nevis web server.
+     -->
+<gdml xmlns:xsi="https://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://www.nevis.columbia.edu/~seligman/GDML/schemas/gdml/gdml.xsd" >
+
 <!-- 
 
 07-Apr-2020 WGS: 
