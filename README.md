@@ -1,3 +1,13 @@
+# IMPORTANT: This project is no longer maintained on github.
+
+It has been migrated to a repository on
+[codeberg](https://codeberg.org/wgseligman/GramsSim/src/branch/develop). Please
+go to that site for the current version of this package.
+
+The remainder of this package has been left unchanged from the time of
+migration. No further changes will be made. This github repository has
+been marked read-only.
+
 # GramsSim
 *Principle Maintainer: [William Seligman](https://github.com/wgseligman)*
 
