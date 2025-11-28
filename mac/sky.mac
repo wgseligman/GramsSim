@@ -37,7 +37,9 @@
 /gps/ang/type focused
 /gps/ang/focuspoint 0 0 -0.1 m
 
-# This means "run Geant4 and generate 1000 events"
-/run/beamOn 1000
+# '/run/beamOn' means "run Geant4 and generate 1000 events"
+# It's commented out to allow the number of events to come
+# from either options.xml or the --event/-n option on the
+# command line. 
+# /run/beamOn 1000
 
-exit

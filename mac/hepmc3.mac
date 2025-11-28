@@ -4,8 +4,9 @@
 
 # This file is meant to be used with an input file
 # of generated events. A typical command might be
+# (assuming you generated 5000 events in gramssky):
 #
-# ./gramsg4 -i gramssky.hepmc3 -m mac/hepmc3.mac
+# ./gramsg4 -i gramssky.hepmc3 -m mac/hepmc3.mac -n 5000
 #
 # See the main README.md file for more documentation.
 
@@ -20,11 +21,13 @@
 # but before any generation/visualization commands.
 /run/initialize
 
-# This means "run Geant4 and generate 1000 events".  Note that if this
-# number is greater than the number of events in the input file of
-# generated events, the program will "rewind" the file and start
-# reading from the begining.
+# '/run/beamOn' means "run Geant4 and generate 1000 events"
+# It's commented out to allow the number of events to come
+# from either options.xml or the --event/-n option on the
+# command line. 
 
-/run/beamOn 1000
+# Note that if this number is greater than the number of events in the
+# input file of generated events, the program will "rewind" the file
+# and start reading from the begining.
 
-exit
+# /run/beamOn 1000

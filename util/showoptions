@@ -3,11 +3,20 @@
 # Display the contents of an Options ntuple within a ROOT file.
 # 06-Dec-2022 WGS
 
-import sys
-from ROOT import TFile, gDirectory
+import sys, platform, ROOT
 debug = False
 
-# Look at the arguments.
+# To avoid an error message, we'll also need the GramsSim custom
+# dictionary for its data objects (see GramsSim/GramsDataObj/README.md
+# and
+# https://www.nevis.columbia.edu/~seligman/root-class/html/appendix/dictionary/index.html).
+
+if ( platform.system() == "Darwin"):
+    ROOT.gSystem.Load("libDictionary.dylib")
+else:
+    ROOT.gSystem.Load("libDictionary.so")
+
+# Look at the command-line arguments.
 if ( len(sys.argv) < 2 ):
    print (sys.argv[0]," needs at least one argument: the name of the ROOT file with an Options nutple")
    sys.exit(1)
@@ -15,7 +24,7 @@ if ( len(sys.argv) < 2 ):
 # Open the file. 
 fileName = sys.argv[1]
 try:
-    myfile = TFile( fileName )
+    myfile = ROOT.TFile( fileName )
 except OSError as error:
     print (error)
     sys.exit(1)
@@ -27,7 +36,7 @@ if ( len(sys.argv) > 2 ):
    ntupleName = sys.argv[2]
 
 # Retrieve the Options ntuple.
-optionsNtuple = gDirectory.Get( ntupleName )
+optionsNtuple = myfile[ ntupleName ]
 
 # Number of rows in the ntuple.
 try:
@@ -63,12 +72,12 @@ for jentry in range( entries ):
         continue
 
     try:
-        name = optionsNtuple.OptionName
-        value = optionsNtuple.OptionValue
-        otype = optionsNtuple.OptionType
-        brief = optionsNtuple.OptionBrief
-        desc = optionsNtuple.OptionDesc
-        source = optionsNtuple.OptionSource
+        name   = optionsNtuple.OptionName.as_string()
+        value  = optionsNtuple.OptionValue.as_string()
+        otype  = optionsNtuple.OptionType.as_string()
+        brief  = optionsNtuple.OptionBrief.as_string()
+        desc   = optionsNtuple.OptionDesc.as_string()
+        source = optionsNtuple.OptionSource.as_string()
     except AttributeError as error:
         print ("ntuple",ntupleName,"in file",fileName,"is not a complete options ntuple")
         sys.exit(1)
@@ -85,8 +94,8 @@ for jentry in range( entries ):
         if ( value == '1' ):
             bvalue = 'True'
         print (outputstring.format(brief,name,bvalue,desc,source))
-    else: 
-        print (outputstring.format(brief,name,value,desc,source))
+    else:
+       print (outputstring.format(brief,name,value,desc,source))
 
 # Write a "bottom of table" delimiter.
 print (outputunderline.format("","","","",""))

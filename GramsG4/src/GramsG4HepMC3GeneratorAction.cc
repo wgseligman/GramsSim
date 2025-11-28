@@ -430,8 +430,8 @@ namespace gramsg4 {
 
 	// Polarization in HepMC3 is not stored in a dedicated
 	// variable, but assigned an "attribute".
-	auto theta = particle->attribute<HepMC3::DoubleAttribute>("theta");
-	auto phi   = particle->attribute<HepMC3::DoubleAttribute>("phi");
+	auto theta = particle->attribute<HepMC3::DoubleAttribute>("poltheta");
+	auto phi   = particle->attribute<HepMC3::DoubleAttribute>("polphi");
 	// If these pointers are not null, then fetch the value and
 	// assign it to the particle's polarization.
 	if (theta && phi) {

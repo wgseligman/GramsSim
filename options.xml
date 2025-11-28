@@ -273,6 +273,11 @@
 
   <gramsg4>
 
+    <!-- Number of events to generate. If this value does not seem to "take effect",
+	 that means it's being overriden by a /run/beamOn command in the G4
+	 macrofile (see below). -->
+    <option name="events" short="n" value="1000" type="integer" desc="number of events" />
+
     <!-- The file that contains the GDML description of the detector -->
     <option name="gdmlfile" short="g" value="grams.gdml" type="string" 
         desc="input GDML detector desc"/>    
@@ -467,7 +472,7 @@
     Electric field in the LArTPC, which affects the cloud of ionized
     particles. This varies with position due to space charge, which we
     don't have a model for yet.
-    <option name="ElectricField"  value="1.0" type="double"
+    <option name="ElectricField"  value="0.5" type="double"
 	    desc="electric field [kV/cm]"/>
 
     Choice of recombination model:
@@ -503,7 +508,7 @@
     <option name="absorption" value="true" type="boolean" 
 	    desc="model absorption effects"/>
 
-    <option name="ElectronLifeTimeCorr" value="50000.0" type="double"
+    <option name="ElectronLifeTimeCorr" value="300000.0" type="double"
         desc="mean life of electrons (ns)"/>
 
     <option name="ElectronDriftVelocity" value="0.00016" type="double"

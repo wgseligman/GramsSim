@@ -95,6 +95,11 @@
 #include "MySpecialPhysList.hh"
 G4_DECLARE_PHYSLIST_FACTORY(MySpecialPhysList);
 
+// C++ includes
+#include <iostream>
+#include <fstream>
+#include <vector>
+
 // --------------------------------------------------------------
 
 // forward declaration.
@@ -377,9 +382,59 @@ int main(int argc,char **argv)
     ui->SessionStart();
     delete ui;
   }
-  else
-    UImanager->ApplyCommand(command+macroFile);
+  else {
+    // To be able to accept the number of events to generate
+    // from the command line as parsed by Options, we have
+    // to be able to fiddle with the Geant4 macrofile.
 
+    // Slurp the contents of the G4 macro file into a string vector.
+    std::ifstream mfile(macroFile); 
+    std::vector<G4String> macroLines;
+    G4String line;
+    G4bool isBeamOn = false;
+    while ( std::getline(mfile,line) ) {
+
+      // Strip away anything following a "#" (a comment)
+      auto loc = line.find('#');
+      if ( loc != std::string::npos ) line.erase( loc );
+
+      // Strip away any leading or trailing spaces
+      G4StrUtil::strip(line, ' ');
+
+      // Skip the line if it's now empty.
+      if ( line.empty() )
+	continue;
+      
+      // Save the line.
+      macroLines.push_back( line );
+
+      // Is there a /run/beamOn command in the macro file?
+      if ( ! isBeamOn ) {
+	if ( G4StrUtil::contains( line, "/run/beamOn" ) )
+	  isBeamOn = true;
+      }
+    }
+    mfile.close();
+
+    // If there is a /run/beamOn command in the macro file, we don't
+    // do anything. But if there isn't, get the number of events from
+    // the Options and add our own command.
+    if ( ! isBeamOn ) {
+      int nevents;
+      options->GetOption("events",nevents);
+      G4String beamOnCommand = "/run/beamOn " + std::to_string( nevents );
+      macroLines.push_back( beamOnCommand );
+    }
+    
+    // For each line in the macro file:
+    for (auto& line : macroLines) {
+      // Execute the line
+      if (verbose)
+	G4cout << line << G4endl;
+      UImanager->ApplyCommand(line);
+    }
+  }
+  
   // Clean-up
 
   delete visManager;

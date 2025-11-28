@@ -16,7 +16,7 @@ _If you want a formatted (or easier-to-read) version of this file, scroll to the
       - [MC Tracks](#mc-tracks)
       - [Readout channel energies](#readout-channel-energies)
       - [ADC counts](#adc-counts)
-      - [x-, y-, and z-views](#x-y-and-z-views)
+      - [x-, y-, and z-views](#x--y--and-z-views)
       - [Binning](#binning)
       - [Navigating events](#navigating-events)
       - [Saving a plot](#saving-a-plot)
@@ -200,7 +200,7 @@ If you type a number in the Event field at the bottom of the display and hit Ent
 
 When using `simd`, look carefully at the axes and their labels. They were chosen so that the visual location of the anode matches that of the physical detector. That doesn't always match with the physical value of the variable in the z-axis; in many of the plots you'll see "negative z" to reflect this.
 
-The ideal solution would be to reverse the axis somehow. Unfortunately, while ROOT has an *ad hoc* mechanism for reversing the axis of a 2D mechanism, there's no such method for a 3D histogram.
+The ideal solution would be to reverse the axis somehow. Unfortunately, while ROOT has an *ad hoc* mechanism for reversing the axis of a 2D histogram, there's no such method for a 3D histogram.
 
 #### Consistency between files
 
